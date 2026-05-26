@@ -18,14 +18,16 @@ export const ID = "llm";
 const MODEL = "claude-haiku-4-5-20251001";
 const ANTHROPIC_API = "https://api.anthropic.com/v1/messages";
 
-export function detect({ url, title, meta, jsonld, llmKey }) {
-  if (!llmKey) return null;
+// Either an API key (sk-ant-…) OR an OAuth bearer token (user:inference scope
+// from Claude Max / Anthropic Console). The worker decides which to pass based
+// on the calling user's connected providers.
+export function detect({ url, title, meta, jsonld, llmKey, oauthToken }) {
+  if (!llmKey && !oauthToken) return null;
   if (!url) return null;
-  // Need *some* signal to feed the model.
   const hasJsonld = Array.isArray(jsonld) && jsonld.length > 0;
   const hasMeta = meta && Object.keys(meta).length > 0;
   if (!title && !hasMeta && !hasJsonld) return null;
-  return { adapter: ID, url, title, meta, jsonld, llmKey };
+  return { adapter: ID, url, title, meta, jsonld, llmKey, oauthToken };
 }
 
 // Forced output shape. Anthropic's tool_use API enforces this on the response.
@@ -110,10 +112,17 @@ export async function extract(ctx) {
     "Signals:\n" +
     JSON.stringify(signals, null, 2);
 
+  // Build auth headers depending on credential type.
+  // API key: x-api-key header (standard Anthropic API auth)
+  // OAuth bearer: Authorization header (Max user:inference scope)
+  const authHeaders = ctx.oauthToken
+    ? { authorization: `Bearer ${ctx.oauthToken}` }
+    : { "x-api-key": ctx.llmKey };
+
   const res = await fetch(ANTHROPIC_API, {
     method: "POST",
     headers: {
-      "x-api-key": ctx.llmKey,
+      ...authHeaders,
       "anthropic-version": "2023-06-01",
       "content-type": "application/json",
     },

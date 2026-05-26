@@ -18,6 +18,8 @@ import {
   providerSaveApiKey,
   providerDisconnect,
 } from "./provider_routes";
+import { resolveTokenForUrl, providerForUrl } from "./token_resolver";
+import { loadProviderToken } from "./token_vault";
 import { gate, issueKey, revokeKey, type AuthCtx, type Plan } from "./auth";
 import {
   stripeWebhook,
@@ -308,12 +310,29 @@ app.get("/api/v1/tools", gate("read"), async (c) => {
   }
 
   // 4) LLM fallback — last resort. Sends already-extracted signals to Haiku.
+  // Prefer the calling user's own Claude Max / Anthropic Console OAuth token
+  // if they've connected one. This shifts inference cost to their account.
+  let userOauthToken: string | undefined;
+  const auth_user = c.var.auth?.user_id;
+  if (auth_user && !auth_user.startsWith("anon:")) {
+    for (const pid of ["claude_max", "anthropic"]) {
+      try {
+        const tok = await loadProviderToken(c.env, auth_user, pid);
+        if (tok) {
+          userOauthToken = tok.access_token;
+          break;
+        }
+      } catch {}
+    }
+  }
+
   const llmCtx = llm.detect({
     url: page.finalUrl || url,
     title: page.title,
     meta: page.meta,
     jsonld: page.jsonld,
-    llmKey: c.env.ANTHROPIC_API_KEY,
+    llmKey: userOauthToken ? undefined : c.env.ANTHROPIC_API_KEY,
+    oauthToken: userOauthToken,
   });
   if (llmCtx) {
     try {
@@ -380,7 +399,20 @@ app.post("/api/v1/tools/execute", gate("execute"), async (c) => {
       const kind = tool.action?.kind;
       const handler = (openapi.actions as any)[kind];
       if (!handler) return c.json({ error: "no action handler" }, 500);
-      const value = await handler({ ...tool.action, args: body.args || {} });
+      // Inject a token resolver bound to (env, user_id) so the openapi action
+      // can auto-authenticate against the calling user's connected providers.
+      const user_id = c.var.auth?.user_id;
+      const resolveToken = async (host: string) => {
+        // Build a dummy URL from the host so we can reuse the resolver.
+        const target = `https://${host}`;
+        const r = await resolveTokenForUrl(c.env, user_id, target);
+        return r?.access_token || null;
+      };
+      const value = await handler({
+        ...tool.action,
+        args: body.args || {},
+        resolveToken,
+      });
       return c.json({ ok: true, value });
     } catch (err: any) {
       return c.json({ ok: false, error: String(err?.message || err) }, 500);

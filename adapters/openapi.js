@@ -168,9 +168,13 @@ function resolveBaseUrl(spec, specUrl) {
 
 export const actions = {
   // Live request. Agents pass args matching the operation's input schema.
-  // Auth is the caller's responsibility — pass via the `_auth` pseudo-arg
-  // (sent as `Authorization` header) or any header param named in the spec.
-  openapi_request: async ({ method, baseUrl, path, params, args }) => {
+  //
+  // Auth resolution order:
+  //   1. `args._auth` — explicit value, full header (e.g. "Bearer sk_…")
+  //   2. `resolveToken(host)` — async closure provided by the worker that
+  //      looks up the calling user's stored OAuth token for the host
+  //   3. no auth — call is made unauthenticated (will 401/403 if required)
+  openapi_request: async ({ method, baseUrl, path, params, args, resolveToken }) => {
     let url = baseUrl + path;
     const query = new URLSearchParams();
     const body = {};
@@ -197,7 +201,17 @@ export const actions = {
       }
     }
 
-    if (a._auth) headers.authorization = String(a._auth);
+    if (a._auth) {
+      headers.authorization = String(a._auth);
+    } else if (typeof resolveToken === "function") {
+      try {
+        const host = new URL(url).hostname;
+        const tok = await resolveToken(host);
+        if (tok) headers.authorization = `Bearer ${tok}`;
+      } catch {
+        // ignore — falls through to no-auth call
+      }
+    }
 
     const qs = query.toString();
     if (qs) url += (url.includes("?") ? "&" : "?") + qs;

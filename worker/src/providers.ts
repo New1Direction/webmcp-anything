@@ -38,6 +38,11 @@ export interface Provider {
   clientIdSecret?: string;
   clientSecretSecret?: string;
 
+  // Hosts whose URLs this provider's tokens can authenticate.
+  // Used by the openapi action handler to auto-inject the user's stored token
+  // when their agent calls an API matching one of these hosts.
+  apiHosts?: string[];
+
   // Marketing
   category: "auth" | "comms" | "billing" | "dev" | "ai" | "productivity";
   status: "stable" | "experimental";
@@ -58,6 +63,7 @@ export const PROVIDERS: Record<string, Provider> = {
     userInfoHeaders: { "user-agent": "wmcp.sh" },
     clientIdSecret: "GITHUB_CLIENT_ID",
     clientSecretSecret: "GITHUB_CLIENT_SECRET",
+    apiHosts: ["api.github.com", "uploads.github.com"],
     category: "dev",
     status: "stable",
   },
@@ -79,6 +85,14 @@ export const PROVIDERS: Record<string, Provider> = {
     userInfoUrl: "https://openidconnect.googleapis.com/v1/userinfo",
     clientIdSecret: "GOOGLE_CLIENT_ID",
     clientSecretSecret: "GOOGLE_CLIENT_SECRET",
+    apiHosts: [
+      "www.googleapis.com",
+      "gmail.googleapis.com",
+      "calendar-json.googleapis.com",
+      "sheets.googleapis.com",
+      "docs.googleapis.com",
+      "drive.googleapis.com",
+    ],
     category: "productivity",
     status: "stable",
     notes:
@@ -98,6 +112,7 @@ export const PROVIDERS: Record<string, Provider> = {
     userInfoUrl: "https://api.stripe.com/v1/account",
     clientIdSecret: "STRIPE_CONNECT_CLIENT_ID",
     clientSecretSecret: "STRIPE_SECRET_KEY", // Stripe reuses your secret key as the OAuth secret
+    apiHosts: ["api.stripe.com"],
     category: "billing",
     status: "stable",
   },
@@ -115,6 +130,7 @@ export const PROVIDERS: Record<string, Provider> = {
     userInfoUrl: "https://slack.com/api/auth.test",
     clientIdSecret: "SLACK_CLIENT_ID",
     clientSecretSecret: "SLACK_CLIENT_SECRET",
+    apiHosts: ["slack.com"],
     category: "comms",
     status: "stable",
   },
@@ -133,6 +149,7 @@ export const PROVIDERS: Record<string, Provider> = {
     userInfoHeaders: { "notion-version": "2022-06-28" },
     clientIdSecret: "NOTION_CLIENT_ID",
     clientSecretSecret: "NOTION_CLIENT_SECRET",
+    apiHosts: ["api.notion.com"],
     category: "productivity",
     status: "stable",
   },
@@ -148,6 +165,7 @@ export const PROVIDERS: Record<string, Provider> = {
     userInfoUrl: "https://api.linear.app/graphql", // GraphQL: viewer { id name email }
     clientIdSecret: "LINEAR_CLIENT_ID",
     clientSecretSecret: "LINEAR_CLIENT_SECRET",
+    apiHosts: ["api.linear.app"],
     category: "dev",
     status: "stable",
   },
@@ -165,6 +183,7 @@ export const PROVIDERS: Record<string, Provider> = {
     userInfoUrl: "https://api.anthropic.com/v1/profile",
     clientIdSecret: "ANTHROPIC_CLIENT_ID",
     clientSecretSecret: "ANTHROPIC_CLIENT_SECRET",
+    apiHosts: ["api.anthropic.com"],
     category: "ai",
     status: "experimental",
     notes:
@@ -183,6 +202,7 @@ export const PROVIDERS: Record<string, Provider> = {
     scopes: "user:inference",
     clientIdSecret: "CLAUDE_MAX_CLIENT_ID",
     clientSecretSecret: "CLAUDE_MAX_CLIENT_SECRET",
+    apiHosts: ["api.anthropic.com", "platform.claude.com"],
     category: "ai",
     status: "experimental",
     notes:
@@ -199,6 +219,7 @@ export const PROVIDERS: Record<string, Provider> = {
     authType: "api_key",
     apiKeyHint: "sk-…",
     apiKeyDocsUrl: "https://platform.openai.com/api-keys",
+    apiHosts: ["api.openai.com"],
     category: "ai",
     status: "stable",
     notes:
@@ -219,6 +240,7 @@ export const PROVIDERS: Record<string, Provider> = {
     scopes: "read_products write_products read_orders write_orders",
     clientIdSecret: "SHOPIFY_API_KEY",
     clientSecretSecret: "SHOPIFY_API_SECRET",
+    apiHosts: ["myshopify.com"], // matched as suffix
     category: "billing",
     status: "experimental",
     notes:
