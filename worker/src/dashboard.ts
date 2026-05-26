@@ -134,6 +134,25 @@ export function dashboardHtml(origin: string): string {
   <!-- populated by JS — either sign-in CTA or signed-in account view -->
 </div>
 
+<div id="connections-area" class="key-box" style="display:none">
+  <strong>Connections</strong>
+  <p class="muted" style="margin:6px 0 14px;font-size:.88rem">
+    Connect a service once. Your agents can then call tools on it via wmcp.sh —
+    no API keys in tool args. <span style="color:var(--accent2)">Experimental</span> providers are research previews.
+  </p>
+  <div id="connections-grid" style="display:grid;gap:8px"></div>
+  <div id="apikey-modal" style="display:none;margin-top:14px;padding:16px;border:1px solid var(--accent);border-radius:10px;background:var(--bg2)">
+    <strong id="apikey-title">Add API key</strong>
+    <p class="muted" style="margin:6px 0;font-size:.85rem" id="apikey-hint"></p>
+    <div class="key-row">
+      <input type="password" id="apikey-input" placeholder="sk-…" style="font-family:'SF Mono',monospace" />
+      <button class="input-btn" id="apikey-save">Save</button>
+      <button class="input-btn" id="apikey-cancel">Cancel</button>
+    </div>
+    <div id="apikey-result" class="muted" style="margin-top:8px;font-size:.82rem"></div>
+  </div>
+</div>
+
 <div class="key-box">
   <strong>Your API key</strong>
   <p class="muted" style="margin:6px 0 0;font-size:.88rem">Paste a key to see plan + usage. Don't have one? Use <code style="color:var(--accent2)">webmcp_dev_local_anything</code> in local dev or upgrade below.</p>
@@ -248,6 +267,9 @@ const inp = document.getElementById("key");
 const lookupBtn = document.getElementById("lookup");
 const result = document.getElementById("result");
 const authArea = document.getElementById("auth-area");
+const connectionsArea = document.getElementById("connections-area");
+const connGrid = document.getElementById("connections-grid");
+let activeApiKeyProvider = null;
 
 // ----- auth area (GitHub sign-in OR signed-in account view) -----
 (async function loadAuth() {
@@ -315,8 +337,103 @@ const authArea = document.getElementById("auth-area");
 
     // Pre-fill the manual lookup box if we have a key
     if (lastKey && !inp.value) inp.value = lastKey;
+
+    // Connections area only shown when signed in
+    await loadConnections();
   } catch {}
 })();
+
+// ----- connections (Phase B) -----
+async function loadConnections() {
+  try {
+    const [provRes, connRes] = await Promise.all([
+      fetch(ORIGIN + "/api/v1/providers"),
+      fetch(ORIGIN + "/api/v1/me/connections", { credentials: "include" }),
+    ]);
+    const provs = (await provRes.json()).providers || [];
+    const conn = await connRes.json();
+    if (conn.error) return; // not authenticated, skip
+    const active = new Map((conn.connections || []).map(c => [c.provider_id, c]));
+    const catLabel = {
+      auth: "Identity", comms: "Comms", billing: "Billing",
+      dev: "Dev tools", ai: "AI providers", productivity: "Productivity",
+    };
+    connGrid.innerHTML = provs.map(p => {
+      const a = active.get(p.id);
+      const statusPill = p.status === "experimental"
+        ? '<span style="color:var(--accent2);font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:2px 6px;border:1px solid var(--accent2);border-radius:999px;margin-left:6px">EXPERIMENTAL</span>'
+        : '';
+      const btn = a
+        ? \`<button class="input-btn" data-disconnect="\${p.id}" style="background:var(--bg2);color:var(--red);border-color:var(--border)">Disconnect</button>\`
+        : p.authType === "api_key"
+          ? \`<button class="input-btn" data-apikey="\${p.id}">Add API key</button>\`
+          : \`<button class="input-btn" data-connect="\${p.id}" style="background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;border:none">Connect</button>\`;
+      return \`
+        <div style="display:flex;align-items:center;gap:14px;padding:12px;background:var(--bg2);border:1px solid var(--border);border-radius:10px">
+          <div style="width:36px;height:36px;border-radius:8px;background:var(--bg);display:grid;place-items:center;font-weight:800;color:var(--accent2)">\${p.name[0]}</div>
+          <div style="flex:1;min-width:0">
+            <div><strong>\${p.name}</strong>\${statusPill}
+              <span style="color:var(--dim);font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;margin-left:8px">\${catLabel[p.category]||p.category}</span>
+            </div>
+            <div class="muted" style="font-size:.82rem;margin-top:2px">\${p.description}</div>
+            \${a ? \`<div style="color:var(--green);font-size:.76rem;margin-top:4px">✓ Connected\${a.account_name?\` as <strong>\${a.account_name}</strong>\`:""}</div>\`:""}
+          </div>
+          \${btn}
+        </div>\`;
+    }).join("");
+    connectionsArea.style.display = "block";
+
+    // Wire connect/disconnect/api-key
+    connGrid.querySelectorAll("[data-connect]").forEach(b => {
+      b.addEventListener("click", () => {
+        window.location.href = ORIGIN + "/api/v1/providers/" + b.dataset.connect + "/start";
+      });
+    });
+    connGrid.querySelectorAll("[data-disconnect]").forEach(b => {
+      b.addEventListener("click", async () => {
+        if (!confirm("Disconnect " + b.dataset.disconnect + "?")) return;
+        await fetch(ORIGIN + "/api/v1/providers/" + b.dataset.disconnect + "/disconnect", { method: "POST", credentials: "include" });
+        loadConnections();
+      });
+    });
+    connGrid.querySelectorAll("[data-apikey]").forEach(b => {
+      b.addEventListener("click", async () => {
+        activeApiKeyProvider = b.dataset.apikey;
+        const meta = provs.find(p => p.id === activeApiKeyProvider);
+        document.getElementById("apikey-title").textContent = "Add " + meta.name + " API key";
+        document.getElementById("apikey-hint").innerHTML = "Get it from <a href='" + (meta.apiKeyDocsUrl||"#") + "' target='_blank' style='color:var(--accent2)'>" + (meta.apiKeyDocsUrl||"the provider") + "</a>. Stored encrypted at rest.";
+        document.getElementById("apikey-input").value = "";
+        document.getElementById("apikey-result").textContent = "";
+        document.getElementById("apikey-modal").style.display = "block";
+      });
+    });
+  } catch {}
+}
+
+// API-key modal handlers
+document.getElementById("apikey-cancel")?.addEventListener("click", () => {
+  document.getElementById("apikey-modal").style.display = "none";
+});
+document.getElementById("apikey-save")?.addEventListener("click", async () => {
+  if (!activeApiKeyProvider) return;
+  const key = document.getElementById("apikey-input").value.trim();
+  if (!key) return;
+  const resultEl = document.getElementById("apikey-result");
+  resultEl.textContent = "Saving…";
+  const r = await fetch(ORIGIN + "/api/v1/providers/" + activeApiKeyProvider + "/api-key", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ api_key: key }),
+  });
+  const d = await r.json();
+  if (d.ok) {
+    document.getElementById("apikey-modal").style.display = "none";
+    loadConnections();
+  } else {
+    resultEl.textContent = "Error: " + (d.error || "failed");
+  }
+});
 
 lookupBtn.addEventListener("click", check);
 inp.addEventListener("keydown", e => { if (e.key === "Enter") check(); });

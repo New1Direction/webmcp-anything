@@ -10,6 +10,14 @@ import { dashboardHtml } from "./dashboard";
 import { directoryHtml } from "./directory";
 import { ogSvg } from "./og";
 import { githubStart, githubCallback, logout, me, issueOwnKey } from "./oauth";
+import {
+  getProviders,
+  getMyConnections,
+  providerStart,
+  providerCallback,
+  providerSaveApiKey,
+  providerDisconnect,
+} from "./provider_routes";
 import { gate, issueKey, revokeKey, type AuthCtx, type Plan } from "./auth";
 import {
   stripeWebhook,
@@ -461,5 +469,14 @@ app.get("/api/v1/auth/github/callback", async (c) => githubCallback(c as any));
 app.post("/api/v1/auth/logout", async (c) => logout(c as any));
 app.get("/api/v1/me", async (c) => me(c as any));
 app.post("/api/v1/me/keys", async (c) => issueOwnKey(c as any));
+
+// --------------------- providers (Phase B: per-provider OAuth + API key) ---------------------
+
+app.get("/api/v1/providers", async (c) => getProviders(c as any));
+app.get("/api/v1/me/connections", async (c) => getMyConnections(c as any));
+app.get("/api/v1/providers/:id/start", async (c) => providerStart(c as any));
+app.get("/api/v1/providers/:id/callback", async (c) => providerCallback(c as any));
+app.post("/api/v1/providers/:id/api-key", async (c) => providerSaveApiKey(c as any));
+app.post("/api/v1/providers/:id/disconnect", async (c) => providerDisconnect(c as any));
 
 export default app;
