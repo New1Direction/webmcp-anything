@@ -164,12 +164,13 @@ function render() {
     const host = (() => { try { return new URL(e.url).hostname.replace(/^www\\./, ""); } catch { return e.url; } })();
     const title = e.title || host;
     const cls = e.adapter === "shopify" ? "shopify" : e.adapter === "jsonld" ? "jsonld" : "other";
+    const encoded = btoa(e.url).replace(/\\+/g, "-").replace(/\\//g, "_").replace(/=+$/, "");
     return \`<div class="row">
       <span class="badge \${cls}">\${e.adapter}</span>
-      <div>
+      <a href="/u/\${encoded}" style="text-decoration:none;color:inherit;min-width:0;display:block">
         <div class="title">\${escapeHtml(title)}</div>
         <div class="url">\${escapeHtml(e.url)}</div>
-      </div>
+      </a>
       <span class="age">\${relTime(e.ts)}</span>
       <a class="open" href="\${ORIGIN}/api/v1/tools?url=\${encodeURIComponent(e.url)}" target="_blank">JSON →</a>
     </div>\`;

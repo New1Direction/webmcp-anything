@@ -141,6 +141,96 @@ app.get("/connect/anthropic", async (c) => {
   return c.html(connectAnthropicHtml());
 });
 
+// --------------------- SEO pages ---------------------
+
+app.get("/u/:encoded", async (c) => {
+  const { uHtml, notFoundHtml, base64urlDecode } = await import("./u");
+  const enc = c.req.param("encoded");
+  let sourceUrl: string;
+  try {
+    sourceUrl = base64urlDecode(enc);
+  } catch {
+    return new Response(notFoundHtml("(invalid URL)", new URL(c.req.url).origin), {
+      status: 400,
+      headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" },
+    });
+  }
+  const origin = new URL(c.req.url).origin;
+
+  // Primary: full cache entry (tools, product, variants)
+  const raw = await c.env.CACHE.get(cacheKey(sourceUrl));
+  if (raw) {
+    try {
+      const entry = JSON.parse(raw);
+      return new Response(uHtml(sourceUrl, entry, origin), {
+        headers: {
+          "content-type": "text/html; charset=utf-8",
+          "cache-control": "public, max-age=300, s-maxage=300",
+        },
+      });
+    } catch {}
+  }
+
+  // Fallback: seen: metadata (adapter, title, ts) — we know about this URL
+  // even if the rich cache has expired. Render a minimal page that still
+  // helps Google index AND triggers a fresh fetch in the background.
+  const seenList = await c.env.CACHE.list({
+    prefix: `seen:${normalizeUrl(sourceUrl)}`,
+    limit: 1,
+  });
+  const meta: any = seenList.keys[0]?.metadata;
+  if (meta?.url) {
+    // Best-effort refresh of the cache for next request
+    c.executionCtx.waitUntil(
+      fetch(`${origin}/api/v1/tools?url=${encodeURIComponent(sourceUrl)}`).catch(() => {})
+    );
+    const minimalEntry = {
+      payload: {
+        adapter: meta.adapter || "other",
+        tools: [],
+        product: { title: meta.title || hostnameOf(sourceUrl) },
+      },
+      ts: meta.ts || Date.now(),
+    };
+    return new Response(uHtml(sourceUrl, minimalEntry, origin), {
+      headers: {
+        "content-type": "text/html; charset=utf-8",
+        "cache-control": "public, max-age=60, s-maxage=60",
+      },
+    });
+  }
+
+  return new Response(notFoundHtml(sourceUrl, origin), {
+    status: 404,
+    headers: {
+      "content-type": "text/html; charset=utf-8",
+      "cache-control": "no-store",
+    },
+  });
+});
+
+function hostnameOf(url: string): string {
+  try { return new URL(url).hostname.replace(/^www\./, ""); } catch { return url; }
+}
+
+app.get("/robots.txt", async (c) => {
+  const { robotsTxt } = await import("./u");
+  return new Response(robotsTxt(new URL(c.req.url).origin), {
+    headers: { "content-type": "text/plain; charset=utf-8" },
+  });
+});
+
+app.get("/sitemap.xml", async (c) => {
+  const { sitemapXml } = await import("./u");
+  const xml = await sitemapXml(c.env, new URL(c.req.url).origin);
+  return new Response(xml, {
+    headers: {
+      "content-type": "application/xml; charset=utf-8",
+      "cache-control": "public, max-age=3600",
+    },
+  });
+});
+
 app.get("/og.svg", (c) =>
   new Response(ogSvg(), {
     headers: {
@@ -252,7 +342,9 @@ app.get("/api/v1/tools", gate("read"), async (c) => {
         product: data.product,
         variants: data.variants,
       };
-      c.executionCtx.waitUntil(writeCache(c.env, url, payload, 60));
+      // 1h TTL — Shopify product data is stable enough; longer also gives /u/
+      // SEO pages cached content to render server-side.
+      c.executionCtx.waitUntil(writeCache(c.env, url, payload, 3600));
       return c.json({ ...payload, from: "live" });
     } catch (err: any) {
       // fall through
@@ -269,7 +361,8 @@ app.get("/api/v1/tools", gate("read"), async (c) => {
         tools: data.tools,
         product: data.product,
       };
-      c.executionCtx.waitUntil(writeCache(c.env, url, payload, 3600));
+      // 24h — OpenAPI specs rarely change between versions
+      c.executionCtx.waitUntil(writeCache(c.env, url, payload, 24 * 3600));
       return c.json({ ...payload, from: "live" });
     } catch (err: any) {
       // fall through to jsonld
@@ -307,7 +400,8 @@ app.get("/api/v1/tools", gate("read"), async (c) => {
         product: data.product,
         variants: data.variants,
       };
-      c.executionCtx.waitUntil(writeCache(c.env, url, payload, 3600));
+      // 6h — JSON-LD product data is fairly stable
+      c.executionCtx.waitUntil(writeCache(c.env, url, payload, 6 * 3600));
       return c.json({ ...payload, from: "live" });
     } catch (err: any) {
       // fall through to LLM fallback
