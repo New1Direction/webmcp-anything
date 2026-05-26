@@ -88,6 +88,23 @@ test("openapi exports an action handler", async () => {
   assert.equal(typeof openapi.actions.openapi_request, "function");
 });
 
+// --- llm fallback ---
+test("llm.detect needs an API key", async () => {
+  const llm = await import("../llm.js");
+  // No key → null
+  assert.equal(llm.detect({ url: "https://example.com", title: "t" }), null);
+  // No signals → null
+  assert.equal(llm.detect({ url: "https://example.com", llmKey: "sk-test" }), null);
+  // Has key + has signal → context
+  const ctx = llm.detect({
+    url: "https://example.com",
+    title: "Some Product",
+    llmKey: "sk-test",
+  });
+  assert.ok(ctx);
+  assert.equal(ctx.adapter, "llm");
+});
+
 // --- template guard ---
 // Make sure the _template/ file is still syntactically valid + exports the
 // right shape, so contributors copying it don't start from broken code.

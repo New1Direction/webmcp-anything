@@ -3,6 +3,7 @@ import { cors } from "hono/cors";
 import * as shopify from "../../adapters/shopify.js";
 import * as jsonld from "../../adapters/jsonld.js";
 import * as openapi from "../../adapters/openapi.js";
+import * as llm from "../../adapters/llm.js";
 import { fetchAndParse } from "./html";
 import { landingHtml } from "./landing";
 import { dashboardHtml } from "./dashboard";
@@ -25,6 +26,7 @@ type Bindings = {
   STRIPE_WEBHOOK_SECRET?: string;
   STRIPE_PRICE_TO_PLAN?: string;
   ADMIN_TOKEN?: string;
+  ANTHROPIC_API_KEY?: string;
 };
 
 type Variables = { auth: AuthCtx };
@@ -257,25 +259,9 @@ app.get("/api/v1/tools", gate("read"), async (c) => {
   }
 
   // 3) html + jsonld
+  let page;
   try {
-    const page = await fetchAndParse(url);
-    const jsonldCtx = jsonld.detect({
-      jsonld: page.jsonld,
-      meta: page.meta,
-      url: page.finalUrl || url,
-      title: page.title,
-    });
-    if (jsonldCtx) {
-      const data = await jsonld.extract(jsonldCtx);
-      const payload = {
-        adapter: "jsonld",
-        tools: data.tools,
-        product: data.product,
-        variants: data.variants,
-      };
-      c.executionCtx.waitUntil(writeCache(c.env, url, payload, 3600));
-      return c.json({ ...payload, from: "live" });
-    }
+    page = await fetchAndParse(url);
   } catch (err: any) {
     return c.json(
       {
@@ -288,10 +274,58 @@ app.get("/api/v1/tools", gate("read"), async (c) => {
     );
   }
 
+  const jsonldCtx = jsonld.detect({
+    jsonld: page.jsonld,
+    meta: page.meta,
+    url: page.finalUrl || url,
+    title: page.title,
+  });
+  if (jsonldCtx) {
+    try {
+      const data = await jsonld.extract(jsonldCtx);
+      const payload = {
+        adapter: "jsonld",
+        tools: data.tools,
+        product: data.product,
+        variants: data.variants,
+      };
+      c.executionCtx.waitUntil(writeCache(c.env, url, payload, 3600));
+      return c.json({ ...payload, from: "live" });
+    } catch (err: any) {
+      // fall through to LLM fallback
+    }
+  }
+
+  // 4) LLM fallback — last resort. Sends already-extracted signals to Haiku.
+  const llmCtx = llm.detect({
+    url: page.finalUrl || url,
+    title: page.title,
+    meta: page.meta,
+    jsonld: page.jsonld,
+    llmKey: c.env.ANTHROPIC_API_KEY,
+  });
+  if (llmCtx) {
+    try {
+      const data = await llm.extract(llmCtx);
+      if (data.tools?.length) {
+        const payload = {
+          adapter: "llm",
+          tools: data.tools,
+          product: data.product,
+        };
+        // 30-day cache: LLM calls are expensive, amortize aggressively.
+        c.executionCtx.waitUntil(writeCache(c.env, url, payload, 30 * 86400));
+        return c.json({ ...payload, from: "llm" });
+      }
+    } catch (err: any) {
+      // fall through to no_tools
+    }
+  }
+
   return c.json(
     {
       error: "no_tools_extracted",
-      hint: "No Shopify endpoint and no JSON-LD product schema on the page. Try the Chrome extension or wait for the LLM-fallback adapter.",
+      hint: "No matching adapter and LLM fallback couldn't extract tools. Install the Chrome extension for client-side extraction.",
       url,
     },
     404
