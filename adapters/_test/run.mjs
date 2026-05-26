@@ -68,6 +68,26 @@ test("jsonld ignores pages with no Product node", async () => {
   );
 });
 
+// --- openapi ---
+test("openapi detects openapi.json + swagger.json URLs", async () => {
+  const openapi = await import("../openapi.js");
+  assert.ok(openapi.detect({ url: "https://petstore3.swagger.io/api/v3/openapi.json" }));
+  assert.ok(openapi.detect({ url: "https://api.example.com/swagger.json" }));
+  assert.ok(openapi.detect({ url: "https://example.com/api-docs" }));
+  assert.ok(openapi.detect({ url: "https://example.com/v2/swagger.json" }));
+});
+
+test("openapi rejects plain URLs", async () => {
+  const openapi = await import("../openapi.js");
+  assert.equal(openapi.detect({ url: "https://example.com" }), null);
+  assert.equal(openapi.detect({ url: "https://allbirds.com/products/runner" }), null);
+});
+
+test("openapi exports an action handler", async () => {
+  const openapi = await import("../openapi.js");
+  assert.equal(typeof openapi.actions.openapi_request, "function");
+});
+
 // --- template guard ---
 // Make sure the _template/ file is still syntactically valid + exports the
 // right shape, so contributors copying it don't start from broken code.

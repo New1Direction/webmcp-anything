@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import * as shopify from "../../adapters/shopify.js";
 import * as jsonld from "../../adapters/jsonld.js";
+import * as openapi from "../../adapters/openapi.js";
 import { fetchAndParse } from "./html";
 import { landingHtml } from "./landing";
 import { dashboardHtml } from "./dashboard";
@@ -224,7 +225,24 @@ app.get("/api/v1/tools", gate("read"), async (c) => {
       c.executionCtx.waitUntil(writeCache(c.env, url, payload, 60));
       return c.json({ ...payload, from: "live" });
     } catch (err: any) {
-      // fall through to jsonld attempt
+      // fall through
+    }
+  }
+
+  // 2b) openapi — URL pattern: openapi.json, swagger.json, /api-docs, etc.
+  const openapiCtx = openapi.detect({ url });
+  if (openapiCtx) {
+    try {
+      const data = await openapi.extract(openapiCtx);
+      const payload = {
+        adapter: "openapi",
+        tools: data.tools,
+        product: data.product,
+      };
+      c.executionCtx.waitUntil(writeCache(c.env, url, payload, 3600));
+      return c.json({ ...payload, from: "live" });
+    } catch (err: any) {
+      // fall through to jsonld
     }
   }
 
@@ -290,6 +308,22 @@ app.post("/api/v1/tools/execute", gate("execute"), async (c) => {
       const kind = tool.action?.kind;
       if (!kind) return c.json({ error: "static result tool — no action to execute" }, 400);
       const handler = (shopify.actions as any)[kind];
+      if (!handler) return c.json({ error: "no action handler" }, 500);
+      const value = await handler({ ...tool.action, args: body.args || {} });
+      return c.json({ ok: true, value });
+    } catch (err: any) {
+      return c.json({ ok: false, error: String(err?.message || err) }, 500);
+    }
+  }
+
+  const oaCtx = openapi.detect({ url: body.url });
+  if (oaCtx) {
+    try {
+      const data = await openapi.extract(oaCtx);
+      const tool = data.tools.find((t: any) => t.name === body.tool);
+      if (!tool) return c.json({ error: `tool ${body.tool} not found` }, 404);
+      const kind = tool.action?.kind;
+      const handler = (openapi.actions as any)[kind];
       if (!handler) return c.json({ error: "no action handler" }, 500);
       const value = await handler({ ...tool.action, args: body.args || {} });
       return c.json({ ok: true, value });
