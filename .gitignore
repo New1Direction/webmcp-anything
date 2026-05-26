@@ -33,3 +33,16 @@ npm-debug.log*
 # Local experiments (don't commit speculative work)
 scratch/
 TODO.txt
+
+# Python bytecode (added 2026-05-26)
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+
+# SDK build artifacts
+sdks/python/dist/
+sdks/python/build/
+sdks/javascript/dist/
+sdks/javascript/node_modules/
+
