@@ -130,6 +130,10 @@ export function dashboardHtml(origin: string): string {
   <p class="muted">Manage your API key and usage. Save your key in the extension at chrome-extension://&lt;id&gt;/options.html.</p>
 </header>
 
+<div id="auth-area" class="key-box" style="display:none">
+  <!-- populated by JS — either sign-in CTA or signed-in account view -->
+</div>
+
 <div class="key-box">
   <strong>Your API key</strong>
   <p class="muted" style="margin:6px 0 0;font-size:.88rem">Paste a key to see plan + usage. Don't have one? Use <code style="color:var(--accent2)">webmcp_dev_local_anything</code> in local dev or upgrade below.</p>
@@ -243,6 +247,76 @@ const ORIGIN = ${JSON.stringify(origin)};
 const inp = document.getElementById("key");
 const lookupBtn = document.getElementById("lookup");
 const result = document.getElementById("result");
+const authArea = document.getElementById("auth-area");
+
+// ----- auth area (GitHub sign-in OR signed-in account view) -----
+(async function loadAuth() {
+  try {
+    const r = await fetch(ORIGIN + "/api/v1/me", { credentials: "include" });
+    const d = await r.json();
+    if (!d.authenticated) {
+      authArea.innerHTML = \`
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+          <div>
+            <strong>Sign in for an account</strong>
+            <p class="muted" style="margin:4px 0 0;font-size:.88rem">Get a key, see your usage, and (soon) connect Stripe/GitHub/Google to give your agents real powers.</p>
+          </div>
+          <a class="input-btn" style="background:#24292f;color:#fff;border:none;display:inline-flex;align-items:center;gap:8px;padding:11px 18px;text-decoration:none" href="\${ORIGIN}/api/v1/auth/github/start?redirect_to=/dashboard">
+            <svg height="18" viewBox="0 0 16 16" width="18" fill="currentColor"><path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"/></svg>
+            Sign in with GitHub
+          </a>
+        </div>\`;
+      authArea.style.display = "block";
+      return;
+    }
+
+    // Signed in: show identity + plan + keys + actions
+    const keys = (d.keys || []).filter(Boolean);
+    const lastKey = keys[keys.length - 1];
+    authArea.innerHTML = \`
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+        <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;color:white;font-weight:700">\${(d.github_login || d.email || "U")[0].toUpperCase()}</div>
+        <div style="flex:1">
+          <strong>@\${d.github_login || d.email || "you"}</strong>
+          <span class="pill \${d.plan}" style="margin-left:8px">\${d.plan}</span>
+          <div class="muted" style="font-size:.82rem">\${d.user_id}</div>
+        </div>
+        <button class="input-btn" id="signout">Sign out</button>
+      </div>
+      <div style="margin-top:8px">
+        <strong>Your keys</strong>
+        \${keys.length ? \`
+          <div class="key-row" style="margin-top:8px">
+            <div class="key-display">\${lastKey}</div>
+            <button class="copy-btn" id="copy-key">Copy</button>
+          </div>
+          <p class="muted" style="font-size:.82rem;margin:6px 0 0">\${keys.length} key\${keys.length===1?"":"s"} total. Use any of them as <code style="color:var(--accent2)">Authorization: Bearer …</code> on /api/v1/* calls.</p>
+        \` : \`
+          <p class="muted" style="font-size:.88rem;margin:6px 0 12px">You don't have a key yet. Issue one for the free tier:</p>
+          <button class="input-btn" id="issue-key">Issue free-tier key</button>
+        \`}
+      </div>
+    \`;
+    authArea.style.display = "block";
+
+    // Wire up signed-in actions
+    document.getElementById("signout")?.addEventListener("click", async () => {
+      await fetch(ORIGIN + "/api/v1/auth/logout", { method: "POST", credentials: "include" });
+      window.location.reload();
+    });
+    document.getElementById("copy-key")?.addEventListener("click", () => {
+      navigator.clipboard.writeText(lastKey);
+    });
+    document.getElementById("issue-key")?.addEventListener("click", async () => {
+      const r = await fetch(ORIGIN + "/api/v1/me/keys", { method: "POST", credentials: "include" });
+      const d = await r.json();
+      if (d.key) { inp.value = d.key; loadAuth(); }
+    });
+
+    // Pre-fill the manual lookup box if we have a key
+    if (lastKey && !inp.value) inp.value = lastKey;
+  } catch {}
+})();
 
 lookupBtn.addEventListener("click", check);
 inp.addEventListener("keydown", e => { if (e.key === "Enter") check(); });

@@ -11,6 +11,7 @@
 // pro plan so you don't need Stripe setup just to test execute endpoints.
 
 import type { Context, MiddlewareHandler, Next } from "hono";
+import { readSessionCookie } from "./session";
 
 export type Plan = "free" | "pro" | "reseller";
 
@@ -58,30 +59,51 @@ export function bearer(c: Context): string | null {
 }
 
 export async function resolveAuth(c: Context<{ Bindings: Bindings }>): Promise<AuthCtx> {
+  // 1. Bearer token (API key) — highest priority.
   const key = bearer(c);
-
-  // No key → anonymous free tier (rate-limited per IP)
-  if (!key) {
-    const ip = c.req.header("cf-connecting-ip") || "anon";
-    return { key: `anon:${ip}`, plan: "free", user_id: `anon:${ip}`, anonymous: true };
+  if (key) {
+    // Dev convenience key in development env only.
+    if (key === DEV_KEY && c.env.ENVIRONMENT === "development") {
+      return { key, plan: "pro", user_id: "dev:local", anonymous: false };
+    }
+    const raw = await c.env.KEYS.get(`key:${key}`);
+    if (raw) {
+      try {
+        const rec = JSON.parse(raw) as KeyRecord;
+        if (rec.status === "active") {
+          return { key, plan: rec.plan, user_id: rec.user_id, anonymous: false };
+        }
+      } catch {
+        // fall through to session/anon
+      }
+    }
+    // Invalid/revoked key → don't elevate; fall through to session or anon.
   }
 
-  // Dev convenience key in development env only
-  if (key === DEV_KEY && c.env.ENVIRONMENT === "development") {
-    return { key, plan: "pro", user_id: "dev:local", anonymous: false };
+  // 2. Session cookie (browser-side auth via GitHub OAuth).
+  const sid = readSessionCookie(c);
+  if (sid) {
+    const sessRaw = await c.env.KEYS.get(`session:${sid}`);
+    if (sessRaw) {
+      try {
+        const sess = JSON.parse(sessRaw);
+        const userRaw = await c.env.KEYS.get(`user:${sess.user_id}`);
+        const plan: Plan = userRaw ? JSON.parse(userRaw).plan || "free" : "free";
+        return {
+          key: `session:${sid.slice(0, 8)}`,
+          plan,
+          user_id: sess.user_id,
+          anonymous: false,
+        };
+      } catch {
+        // fall through to anon
+      }
+    }
   }
 
-  const raw = await c.env.KEYS.get(`key:${key}`);
-  if (!raw) return { key: `bad:${key.slice(0, 8)}`, plan: "free", user_id: "unknown", anonymous: true };
-
-  let rec: KeyRecord;
-  try { rec = JSON.parse(raw); } catch {
-    return { key: `bad:${key.slice(0, 8)}`, plan: "free", user_id: "unknown", anonymous: true };
-  }
-  if (rec.status !== "active") {
-    return { key: `revoked`, plan: "free", user_id: rec.user_id, anonymous: true };
-  }
-  return { key, plan: rec.plan, user_id: rec.user_id, anonymous: false };
+  // 3. Anonymous — IP-rate-limited free tier.
+  const ip = c.req.header("cf-connecting-ip") || "anon";
+  return { key: `anon:${ip}`, plan: "free", user_id: `anon:${ip}`, anonymous: true };
 }
 
 /** Increment & enforce daily quota for a given action category. Returns true on allow. */

@@ -9,6 +9,7 @@ import { landingHtml } from "./landing";
 import { dashboardHtml } from "./dashboard";
 import { directoryHtml } from "./directory";
 import { ogSvg } from "./og";
+import { githubStart, githubCallback, logout, me, issueOwnKey } from "./oauth";
 import { gate, issueKey, revokeKey, type AuthCtx, type Plan } from "./auth";
 import {
   stripeWebhook,
@@ -27,6 +28,8 @@ type Bindings = {
   STRIPE_PRICE_TO_PLAN?: string;
   ADMIN_TOKEN?: string;
   ANTHROPIC_API_KEY?: string;
+  GITHUB_CLIENT_ID?: string;
+  GITHUB_CLIENT_SECRET?: string;
 };
 
 type Variables = { auth: AuthCtx };
@@ -450,5 +453,13 @@ app.post("/api/v1/keys/recover", async (c) => recoverByEmail(c as any));
 // --------------------- dashboard ---------------------
 
 app.get("/dashboard", (c) => c.html(dashboardHtml(new URL(c.req.url).origin)));
+
+// --------------------- oauth (Phase A: sign-in) ---------------------
+
+app.get("/api/v1/auth/github/start", async (c) => githubStart(c as any));
+app.get("/api/v1/auth/github/callback", async (c) => githubCallback(c as any));
+app.post("/api/v1/auth/logout", async (c) => logout(c as any));
+app.get("/api/v1/me", async (c) => me(c as any));
+app.post("/api/v1/me/keys", async (c) => issueOwnKey(c as any));
 
 export default app;
