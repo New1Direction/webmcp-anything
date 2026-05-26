@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wmcp"
+version = "0.1.0"
+description = "Python SDK for wmcp.sh — turn any URL into agent-callable MCP tools"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "WebMCP Anything contributors" }]
+requires-python = ">=3.9"
+# Zero required dependencies — uses urllib so `pip install wmcp` is instant.
+dependencies = []
+
+[project.optional-dependencies]
+# Install with `pip install 'wmcp[langchain]'` etc.
+langchain = ["langchain-core>=0.3"]
+anthropic = ["anthropic>=0.40"]
+openai = ["openai>=1.50"]
+
+[project.urls]
+Homepage = "https://wmcp.sh"
+Repository = "https://github.com/New1Direction/webmcp-anything"
+Documentation = "https://wmcp.sh"
+
+[tool.setuptools.packages.find]
+include = ["wmcp*"]

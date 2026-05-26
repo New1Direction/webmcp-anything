@@ -1,0 +1,36 @@
+{
+  "name": "@wmcp/sdk",
+  "version": "0.1.0",
+  "description": "JavaScript/TypeScript SDK for wmcp.sh — turn any URL into agent-callable MCP tools",
+  "type": "module",
+  "main": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./anthropic": "./src/anthropic.ts",
+    "./openai": "./src/openai.ts",
+    "./vercel-ai": "./src/vercel-ai.ts",
+    "./langchain": "./src/langchain.ts"
+  },
+  "files": ["src", "README.md", "LICENSE"],
+  "scripts": {
+    "test": "node --test test/",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": ["mcp", "webmcp", "ai-agents", "llm-tools", "claude", "openai", "langchain"],
+  "license": "MIT",
+  "homepage": "https://wmcp.sh",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/New1Direction/webmcp-anything.git",
+    "directory": "sdks/javascript"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0"
+  },
+  "peerDependenciesMeta": {
+    "@anthropic-ai/sdk": { "optional": true },
+    "openai": { "optional": true },
+    "ai": { "optional": true },
+    "@langchain/core": { "optional": true }
+  }
+}
