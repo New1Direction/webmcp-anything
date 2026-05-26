@@ -1,0 +1,113 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>WebMCP Anything — Settings</title>
+<style>
+  :root {
+    --bg: #0a0a12; --card: #16161f; --bg2: #11111c; --border: #26263a;
+    --text: #ececf5; --muted: #8a8aa8;
+    --accent: #7c5cff; --accent2: #00e5ff; --green: #4ade80;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; padding: 50px 24px;
+    color: var(--text); background: var(--bg);
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+    line-height: 1.6;
+  }
+  .wrap { max-width: 640px; margin: 0 auto; }
+  h1 {
+    font-size: 1.8rem; margin: 0 0 8px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .sub { color: var(--muted); margin-bottom: 32px; }
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 22px; margin-bottom: 16px;
+  }
+  .row {
+    display: flex; align-items: center; gap: 14px;
+    justify-content: space-between;
+  }
+  .row .text strong { display: block; font-size: 1rem; }
+  .row .text span { color: var(--muted); font-size: 0.88rem; }
+  .toggle { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
+  .toggle input { opacity: 0; width: 0; height: 0; }
+  .slider {
+    position: absolute; cursor: pointer; inset: 0;
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 999px; transition: .2s;
+  }
+  .slider::before {
+    content: ""; position: absolute;
+    width: 18px; height: 18px; left: 3px; top: 2px;
+    background: var(--muted); border-radius: 50%; transition: .2s;
+  }
+  input:checked + .slider { background: linear-gradient(90deg, var(--accent), var(--accent2)); border-color: transparent; }
+  input:checked + .slider::before { transform: translateX(20px); background: white; }
+  label.field { display: block; margin-top: 14px; font-size: 0.85rem; color: var(--muted); }
+  label.field input {
+    display: block; margin-top: 4px; width: 100%;
+    background: var(--bg2); border: 1px solid var(--border);
+    color: var(--text); padding: 10px 12px; border-radius: 8px;
+    font-family: "SF Mono", Menlo, monospace; font-size: 0.85rem;
+  }
+  label.field input:focus { outline: none; border-color: var(--accent); }
+  .save {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: white; border: none; padding: 11px 22px;
+    border-radius: 10px; font-weight: 600; cursor: pointer;
+    font-family: inherit; margin-top: 16px;
+  }
+  .save:hover { transform: translateY(-1px); }
+  .status { color: var(--green); margin-left: 12px; font-size: 0.85rem; opacity: 0; transition: opacity .3s; }
+  .status.show { opacity: 1; }
+  .note {
+    font-size: 0.82rem; color: var(--muted); margin-top: 10px;
+    padding-left: 12px; border-left: 2px solid var(--accent);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>WebMCP Anything Settings</h1>
+  <p class="sub">Local-only by default. Nothing leaves your browser unless you flip a switch.</p>
+
+  <div class="card">
+    <div class="row">
+      <div class="text">
+        <strong>Share extracted schemas</strong>
+        <span>When you visit a product page, upload only the WebMCP tool schema (price, name, stock — all data already public on the page) to our worker so other users get instant cache hits.</span>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" id="push" />
+        <span class="slider"></span>
+      </label>
+    </div>
+    <p class="note">URLs are normalized (utm/gclid removed). Your browsing history is never sent. Disable any time.</p>
+  </div>
+
+  <div class="card">
+    <strong>Worker API endpoint</strong>
+    <label class="field">URL of the WebMCP Anything API
+      <input type="text" id="endpoint" placeholder="https://wmcp.sh" />
+    </label>
+    <p class="note">Defaults to the public API. Point at <code>http://localhost:8787</code> for local dev.</p>
+  </div>
+
+  <div class="card">
+    <strong>API key (optional)</strong>
+    <label class="field">Bearer key
+      <input type="password" id="apikey" placeholder="webmcp_live_..." />
+    </label>
+    <p class="note">Required for paid features (live execute on protected sites). Get one at <a href="#" id="dashlink" style="color:var(--accent2)">/dashboard</a>.</p>
+  </div>
+
+  <button class="save" id="save">Save</button>
+  <span class="status" id="status">✓ Saved</span>
+</div>
+<script src="options.js"></script>
+</body>
+</html>

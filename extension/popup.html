@@ -1,0 +1,208 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>WebMCP Anything</title>
+<style>
+  :root {
+    --bg: #0a0a12;
+    --card: #16161f;
+    --card2: #1d1d2b;
+    --text: #ececf5;
+    --muted: #8a8aa8;
+    --accent: #7c5cff;
+    --accent2: #00e5ff;
+    --green: #4ade80;
+    --border: #26263a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    width: 380px;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  header {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, rgba(124,92,255,0.12), rgba(0,229,255,0.05));
+  }
+  .logo {
+    font-weight: 800;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-size: 14px;
+  }
+  .status {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
+  .dot.ok { background: var(--green); box-shadow: 0 0 8px var(--green); }
+  main {
+    padding: 12px 16px;
+    max-height: 520px;
+    overflow-y: auto;
+  }
+  .empty {
+    text-align: center;
+    color: var(--muted);
+    padding: 30px 10px;
+    font-size: 12px;
+  }
+  .empty strong { color: var(--text); display: block; margin-bottom: 6px; font-size: 13px; }
+  .adapter-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    background: rgba(0,229,255,0.15);
+    color: var(--accent2);
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 10px;
+  }
+
+  .tool {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 10px;
+    transition: border-color 0.15s;
+  }
+  .tool:hover { border-color: rgba(124,92,255,0.5); }
+  .tool-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .tool .icon { font-size: 16px; }
+  .tool .label {
+    flex: 1;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--text);
+  }
+  .tool .desc {
+    color: var(--muted);
+    font-size: 11.5px;
+    margin-top: 4px;
+  }
+  .run-btn {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-weight: 600;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: transform 0.1s, opacity 0.15s;
+    white-space: nowrap;
+  }
+  .run-btn:hover { transform: scale(1.04); }
+  .run-btn:active { transform: scale(0.97); }
+  .run-btn:disabled { opacity: 0.5; cursor: wait; }
+
+  .inputs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+  }
+  .inputs label {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    font-size: 10.5px;
+    color: var(--muted);
+    flex: 1 1 100px;
+  }
+  .inputs input, .inputs select {
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 8px;
+    font-size: 12px;
+    font-family: inherit;
+  }
+  .inputs input:focus, .inputs select:focus { outline: none; border-color: var(--accent); }
+
+  .result {
+    margin-top: 10px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+    font-family: "SF Mono", Menlo, monospace;
+    font-size: 11px;
+    color: var(--green);
+    word-break: break-word;
+    max-height: 140px;
+    overflow-y: auto;
+    display: none;
+  }
+  .result.show { display: block; }
+  .result.error { color: #f87171; }
+  .result .key { color: var(--accent2); }
+  .result .str { color: #f0abfc; }
+
+  .cart-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--green);
+    color: #06250f;
+    text-decoration: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 12px;
+    margin-top: 8px;
+    transition: transform 0.1s;
+  }
+  .cart-btn:hover { transform: scale(1.03); }
+
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 8px 16px;
+    font-size: 10.5px;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+  }
+  footer a { color: var(--accent2); text-decoration: none; }
+</style>
+</head>
+<body>
+  <header>
+    <div class="logo">⚡ WebMCP Anything</div>
+    <div class="status"><span class="dot" id="dot"></span><span id="status-text">scanning…</span></div>
+  </header>
+  <main id="main">
+    <div class="empty">Scanning current page…</div>
+  </main>
+  <footer>
+    <span id="url-tag">—</span>
+    <a href="https://developer.chrome.com/docs/ai/webmcp" target="_blank">WebMCP docs ↗</a>
+  </footer>
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+name = "webmcp-anything"
+main = "src/index.ts"
+compatibility_date = "2025-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Local dev binds in-memory KVs automatically (Miniflare).
+# For production, run for each namespace:
+#   npx wrangler kv namespace create CACHE
+#   npx wrangler kv namespace create CACHE --preview
+# then paste the returned IDs below.
+[[kv_namespaces]]
+binding = "CACHE"
+id = "bce83360f71d465c8b353f1c3e53c1e1"
+preview_id = "94fb180362c04868ba94e41de3e673a3"
+
+[[kv_namespaces]]
+binding = "KEYS"
+id = "af79428b6f894201873139b7a86bbad3"
+preview_id = "313bbf2d6a85487a9a16ad20f7084221"
+
+[[kv_namespaces]]
+binding = "USAGE"
+id = "4db972de21004e63aac15393862a8821"
+preview_id = "db7705f4cdd24d0282d4d33af9b5f194"
+
+[vars]
+ENVIRONMENT = "production"
+
+[observability]
+enabled = true

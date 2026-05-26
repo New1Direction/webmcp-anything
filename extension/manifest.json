@@ -1,0 +1,45 @@
+{
+  "manifest_version": 3,
+  "name": "WebMCP Anything",
+  "version": "0.1.0",
+  "description": "Retrofits Chrome WebMCP tools onto any website. Paste, browse, agent calls. Starting with Shopify.",
+  "minimum_chrome_version": "132",
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "WebMCP Anything",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_start",
+      "all_frames": false
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["injected.js"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "host_permissions": ["<all_urls>"],
+  "permissions": ["storage", "activeTab", "scripting"]
+}

@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Wrangler / Cloudflare local state
+.wrangler/
+**/.wrangler/
+.dev.vars
+
+# Build output (not used yet but reserved)
+dist/
+build/
+
+# OS noise
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*~
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+
+# Local experiments (don't commit speculative work)
+scratch/
+TODO.txt
