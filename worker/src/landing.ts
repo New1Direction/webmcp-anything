@@ -9,6 +9,14 @@ export function landingHtml(origin: string): string {
 <meta property="og:title" content="WebMCP Anything" />
 <meta property="og:description" content="Turn any URL into agent-callable MCP tools." />
 <meta property="og:url" content="https://wmcp.sh" />
+<meta property="og:image" content="https://wmcp.sh/og.svg" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="WebMCP Anything" />
+<meta name="twitter:description" content="Turn any URL into agent-callable MCP tools." />
+<meta name="twitter:image" content="https://wmcp.sh/og.svg" />
 <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
 <style>
   :root {

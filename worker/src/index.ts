@@ -7,6 +7,7 @@ import { fetchAndParse } from "./html";
 import { landingHtml } from "./landing";
 import { dashboardHtml } from "./dashboard";
 import { directoryHtml } from "./directory";
+import { ogSvg } from "./og";
 import { gate, issueKey, revokeKey, type AuthCtx, type Plan } from "./auth";
 import {
   stripeWebhook,
@@ -119,6 +120,15 @@ app.get("/api/v1/directory", async (c) => {
 });
 
 app.get("/directory", (c) => c.html(directoryHtml(new URL(c.req.url).origin)));
+
+app.get("/og.svg", (c) =>
+  new Response(ogSvg(), {
+    headers: {
+      "content-type": "image/svg+xml; charset=utf-8",
+      "cache-control": "public, max-age=3600",
+    },
+  })
+);
 
 app.get("/api/v1/debug", async (c) => {
   const url = c.req.query("url") || "https://www.allbirds.com/products/mens-wool-runners";
