@@ -136,6 +136,11 @@ app.get("/api/v1/directory", async (c) => {
 
 app.get("/directory", (c) => c.html(directoryHtml(new URL(c.req.url).origin)));
 
+app.get("/connect/anthropic", async (c) => {
+  const { connectAnthropicHtml } = await import("./connect_anthropic");
+  return c.html(connectAnthropicHtml());
+});
+
 app.get("/og.svg", (c) =>
   new Response(ogSvg(), {
     headers: {
@@ -510,5 +515,11 @@ app.get("/api/v1/providers/:id/start", async (c) => providerStart(c as any));
 app.get("/api/v1/providers/:id/callback", async (c) => providerCallback(c as any));
 app.post("/api/v1/providers/:id/api-key", async (c) => providerSaveApiKey(c as any));
 app.post("/api/v1/providers/:id/disconnect", async (c) => providerDisconnect(c as any));
+
+// Anthropic-specific OOB PKCE exchange (after user pastes the code from claude.ai)
+app.post("/api/v1/providers/anthropic/exchange", async (c) => {
+  const { anthropicExchange } = await import("./anthropic_oauth");
+  return anthropicExchange(c as any);
+});
 
 export default app;

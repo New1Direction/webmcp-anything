@@ -107,6 +107,26 @@ export async function providerStart(c: Context<{ Bindings: Env }>) {
     });
   }
 
+  // GitHub has only one OAuth App with one registered callback URL — the
+  // sign-in path. Funnel "Connect" through that same flow so we don't need
+  // a second OAuth App. The sign-in callback already saves a github vault
+  // entry, so the end result is identical to a regular connector flow.
+  if (p.id === "github") {
+    const redirect_to = c.req.query("redirect_to") || "/dashboard?connected=github";
+    return c.redirect(
+      `/api/v1/auth/github/start?redirect_to=${encodeURIComponent(redirect_to)}`,
+      302
+    );
+  }
+
+  // Anthropic uses a custom PKCE + OOB flow (no per-app redirect URI). The
+  // start endpoint returns JSON (authorize_url + state) for the dashboard
+  // to render a paste-the-code form rather than doing a 302.
+  if (p.id === "anthropic") {
+    const { anthropicStart } = await import("./anthropic_oauth");
+    return anthropicStart(c as any);
+  }
+
   const { id: clientId } = clientCreds(c.env, p);
   if (!clientId) {
     return c.json(

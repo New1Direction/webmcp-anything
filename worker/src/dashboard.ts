@@ -151,6 +151,24 @@ export function dashboardHtml(origin: string): string {
     </div>
     <div id="apikey-result" class="muted" style="margin-top:8px;font-size:.82rem"></div>
   </div>
+
+  <div id="anthropic-modal" style="display:none;margin-top:14px;padding:16px;border:1px solid var(--accent);border-radius:10px;background:var(--bg2)">
+    <strong>Connect Anthropic (Claude Code + Max)</strong>
+    <p class="muted" style="margin:6px 0 12px;font-size:.85rem">
+      Two-step flow because Anthropic doesn't expose per-app redirect URIs for third parties.
+    </p>
+    <ol style="font-size:.88rem;line-height:1.7;color:var(--muted);margin:0 0 12px;padding-left:20px">
+      <li><a id="anthropic-link" href="#" target="_blank" style="color:var(--accent2)">Click here to authorize on claude.ai</a> (opens new tab). Approve.</li>
+      <li>Anthropic shows a code on its callback page — copy the whole string (it may contain a <code style="color:var(--accent2)">#</code> followed by a state suffix).</li>
+      <li>Paste it below.</li>
+    </ol>
+    <div class="key-row">
+      <input type="text" id="anthropic-code" placeholder="paste code here" style="font-family:'SF Mono',monospace" />
+      <button class="input-btn" id="anthropic-submit">Submit</button>
+      <button class="input-btn" id="anthropic-cancel">Cancel</button>
+    </div>
+    <div id="anthropic-result" class="muted" style="margin-top:8px;font-size:.82rem"></div>
+  </div>
 </div>
 
 <div class="key-box">
@@ -385,8 +403,15 @@ async function loadConnections() {
 
     // Wire connect/disconnect/api-key
     connGrid.querySelectorAll("[data-connect]").forEach(b => {
-      b.addEventListener("click", () => {
-        window.location.href = ORIGIN + "/api/v1/providers/" + b.dataset.connect + "/start";
+      b.addEventListener("click", async () => {
+        const pid = b.dataset.connect;
+        if (pid === "anthropic") {
+          // Send user to the dedicated full-page connect flow instead of a modal —
+          // the OOB paste step is too easy to miss in a tab-switching dance.
+          window.location.href = ORIGIN + "/connect/anthropic";
+          return;
+        }
+        window.location.href = ORIGIN + "/api/v1/providers/" + pid + "/start";
       });
     });
     connGrid.querySelectorAll("[data-disconnect]").forEach(b => {
@@ -413,6 +438,29 @@ async function loadConnections() {
 // API-key modal handlers
 document.getElementById("apikey-cancel")?.addEventListener("click", () => {
   document.getElementById("apikey-modal").style.display = "none";
+});
+
+document.getElementById("anthropic-cancel")?.addEventListener("click", () => {
+  document.getElementById("anthropic-modal").style.display = "none";
+});
+document.getElementById("anthropic-submit")?.addEventListener("click", async () => {
+  const code = document.getElementById("anthropic-code").value.trim();
+  if (!code) return;
+  const resultEl = document.getElementById("anthropic-result");
+  resultEl.textContent = "Exchanging…";
+  const r = await fetch(ORIGIN + "/api/v1/providers/anthropic/exchange", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ code, state: window.anthropicState }),
+  });
+  const d = await r.json();
+  if (d.ok) {
+    document.getElementById("anthropic-modal").style.display = "none";
+    loadConnections();
+  } else {
+    resultEl.textContent = "Error: " + (d.error || "exchange failed") + (d.detail ? " — " + JSON.stringify(d.detail).slice(0,200) : "");
+  }
 });
 document.getElementById("apikey-save")?.addEventListener("click", async () => {
   if (!activeApiKeyProvider) return;

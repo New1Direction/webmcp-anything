@@ -171,44 +171,27 @@ export const PROVIDERS: Record<string, Provider> = {
   },
 
   // --- AI providers ---
+  // One connection covers API key creation (org:create_api_key), profile
+  // (user:profile), and Claude Pro/Max inference (user:inference). Uses the
+  // public Claude Code client_id + PKCE + OOB (out-of-band) callback flow —
+  // user copies a code from Anthropic's page, pastes it back into wmcp.sh.
+  // Same pattern as Claude Code, OpenCode, pi-ai, Hermes.
   anthropic: {
     id: "anthropic",
-    name: "Anthropic Console",
+    name: "Anthropic (Claude Code + Max)",
     description:
-      "Create API keys on the user's behalf — wmcp.sh uses the user's Anthropic billing.",
+      "API key creation + Claude Pro/Max inference. One connection covers both.",
     authType: "oauth2",
-    authUrl: "https://platform.claude.com/oauth/authorize",
-    tokenUrl: "https://platform.claude.com/v1/oauth/token",
-    scopes: "org:create_api_key user:profile",
-    userInfoUrl: "https://api.anthropic.com/v1/profile",
-    clientIdSecret: "ANTHROPIC_CLIENT_ID",
-    clientSecretSecret: "ANTHROPIC_CLIENT_SECRET",
-    apiHosts: ["api.anthropic.com"],
-    category: "ai",
-    status: "experimental",
-    notes:
-      "Requires a registered OAuth client_id from Anthropic. The console path " +
-      "lets us call inference on the user's behalf via API keys created in their org.",
-  },
-
-  claude_max: {
-    id: "claude_max",
-    name: "Claude Max",
-    description:
-      "Use the user's Claude Max subscription for inference (experimental, ToS gray area).",
-    authType: "oauth2",
-    authUrl: "https://platform.claude.com/oauth/authorize",
-    tokenUrl: "https://platform.claude.com/v1/oauth/token",
-    scopes: "user:inference",
-    clientIdSecret: "CLAUDE_MAX_CLIENT_ID",
-    clientSecretSecret: "CLAUDE_MAX_CLIENT_SECRET",
+    authUrl: "https://claude.ai/oauth/authorize",
+    tokenUrl: "https://console.anthropic.com/v1/oauth/token",
+    scopes: "org:create_api_key user:profile user:inference",
     apiHosts: ["api.anthropic.com", "platform.claude.com"],
     category: "ai",
     status: "experimental",
     notes:
-      "Unofficial flow reverse-engineered from Claude Desktop. Reusing the " +
-      "desktop client_id violates ToS; production use needs Anthropic to issue " +
-      "a custom client for wmcp.sh. Treat this as a research prototype until then.",
+      "Uses the Claude Code OAuth client_id with PKCE + OOB callback. " +
+      "Gray area under Anthropic ToS — they could revoke client_id at any time. " +
+      "OK for research/personal use; production wants a dedicated client_id.",
   },
 
   openai: {

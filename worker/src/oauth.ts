@@ -23,6 +23,7 @@ import {
   clearCookieHeader,
 } from "./session";
 import { issueKey } from "./auth";
+import { saveProviderToken } from "./token_vault";
 
 type Env = {
   KEYS: KVNamespace;
@@ -45,7 +46,9 @@ export async function githubStart(c: Context<{ Bindings: Env }>) {
   const params = new URLSearchParams({
     client_id,
     redirect_uri: `${origin}/api/v1/auth/github/callback`,
-    scope: "read:user user:email",
+    // Union of sign-in + connector scopes — single OAuth App, single token,
+    // works for both identity and API calls. User authorizes once.
+    scope: "read:user user:email repo gist read:org workflow",
     state,
     allow_signup: "true",
   });
@@ -141,7 +144,24 @@ export async function githubCallback(c: Context<{ Bindings: Env }>) {
     name: ghUser.name,
   });
 
-  // 4. Create session + set cookie + redirect
+  // 4. Save the GitHub token in the provider vault so "Connect GitHub" doesn't
+  //    need a separate OAuth round-trip — sign-in IS the github connection.
+  //    Best-effort: if TOKEN_ENC_KEY isn't set yet, log and continue.
+  try {
+    await saveProviderToken(c.env as any, user_id, "github", {
+      access_token: tokenJson.access_token,
+      scope: "read:user user:email repo gist read:org workflow",
+      token_type: "bearer",
+      metadata: {
+        account_id: String(ghUser.id),
+        account_name: ghUser.login,
+      },
+    });
+  } catch (err) {
+    console.warn("github sign-in: token vault save failed (continuing):", err);
+  }
+
+  // 5. Create session + set cookie + redirect
   const { cookie } = await createSession(c.env, {
     user_id,
     email: primaryEmail,
