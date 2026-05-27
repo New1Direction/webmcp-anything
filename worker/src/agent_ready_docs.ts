@@ -263,6 +263,23 @@ export function agentReadyDocsHtml(origin: string): string {
   </details>
 </section>
 
+<!-- ========== Docs-adjacent integrations ========== -->
+<section id="live-integrations">
+  <div class="section-label">Docs-adjacent on wmcp.sh</div>
+  <h2>Live integrations for content-heavy products.</h2>
+  <p class="section-sub">If your docs live in Notion, or your docs ARE your product (knowledge base, wiki), these wmcp.sh integrations are the closest match:</p>
+  <div class="fix-grid">
+    <a href="/integration/notion" class="fix-card" style="text-decoration:none;color:inherit;display:block">
+      <h3>→ Notion integration</h3>
+      <p class="body">Pages and databases as agent-callable tools. Same pattern works for docs-as-Notion-pages.</p>
+    </a>
+    <a href="/integration/openapi" class="fix-card" style="text-decoration:none;color:inherit;display:block">
+      <h3>→ OpenAPI (if your docs are an API surface)</h3>
+      <p class="body">Documentation often references an OpenAPI spec. wmcp.sh ingests the spec directly — your docs become the index, the spec is the tool surface.</p>
+    </a>
+  </div>
+</section>
+
 <!-- ========== Related ========== -->
 <section id="related">
   <div class="section-label">More verticals</div>

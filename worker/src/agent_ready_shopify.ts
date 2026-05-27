@@ -233,6 +233,23 @@ export function agentReadyShopifyHtml(origin: string): string {
   </details>
 </section>
 
+<!-- ========== Live Shopify integration ========== -->
+<section id="live-integration">
+  <div class="section-label">Live on wmcp.sh</div>
+  <h2>The Shopify adapter in detail.</h2>
+  <p class="section-sub">The wmcp.sh Shopify integration page covers everything the adapter does (products, variants, cart actions, search), with example curls + Python + cURL ready to paste:</p>
+  <div class="fix-grid">
+    <a href="/integration/shopify" class="fix-card" style="text-decoration:none;color:inherit;display:block">
+      <h3>→ /integration/shopify</h3>
+      <p class="body">Full adapter docs: works on every public Shopify storefront, variant-aware, add-to-cart actionable. Example code in Python + TypeScript + cURL.</p>
+    </a>
+    <a href="/integration/openapi" class="fix-card" style="text-decoration:none;color:inherit;display:block">
+      <h3>→ /integration/openapi</h3>
+      <p class="body">If your store has a custom app shipping its own OpenAPI spec (B2B, headless), the OpenAPI adapter chains in on top of the Shopify base adapter.</p>
+    </a>
+  </div>
+</section>
+
 <!-- ========== Related ========== -->
 <section id="related">
   <div class="section-label">More verticals</div>

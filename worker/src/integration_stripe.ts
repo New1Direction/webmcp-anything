@@ -138,11 +138,11 @@ export function integrationStripeHtml(origin: string): string {
 <nav>
   <div class="brand"><a href="/" style="color:inherit;text-decoration:none">wmcp<span>.sh</span></a></div>
   <div class="links">
-    <a href="/">Home</a>
-    <a href="/integration/openapi">OpenAPI</a>
-    <a href="/integration/shopify">Shopify</a>
-    <a href="/#pricing">Pricing</a>
-    <a href="https://github.com/New1Direction/webmcp-anything">GitHub</a>
+    <a href="/agent-ready">Agent-ready</a>
+    <a href="/agent-ready/api">API</a>
+    <a href="/managed">Done for you</a>
+    <a href="/price-data">Price data</a>
+    <a href="/directory">Directory</a>
   </div>
   <a class="cta" href="/dashboard">Dashboard →</a>
 </nav>
@@ -319,8 +319,14 @@ msg = anthropic.messages.create(
   </details>
 </section>
 
+<section id="see-also">
+  <div class="section-label">See also</div>
+  <h2>API agent-readiness — Stripe is the model</h2>
+  <p style="color:var(--muted);margin-bottom:14px">Stripe ships the canonical OpenAPI spec other APIs should follow. If you're building your own API and want it to be Stripe-grade agent-callable, the 5 things to ship are at <a href="/agent-ready/api" style="color:var(--accent2);text-decoration:none">/agent-ready/api</a> — OpenAPI publishing, operation tagging, MCP-spec OAuth, agent-friendly rate limits. Cornerstone: <a href="/agent-ready" style="color:var(--accent2);text-decoration:none">/agent-ready</a>. Or have us ship your spec: <a href="/managed" style="color:var(--accent2);text-decoration:none">/managed</a>.</p>
+</section>
+
 <footer>
-  <a href="/">Home</a> · <a href="/integration/openapi">OpenAPI</a> · <a href="/integration/shopify">Shopify</a> · <a href="/directory">Directory</a> · <a href="/dashboard">Dashboard</a> · <a href="https://github.com/New1Direction/webmcp-anything">GitHub</a>
+  <a href="/">Home</a> · <a href="/agent-ready">Agent-ready</a> · <a href="/agent-ready/api">API</a> · <a href="/managed">Done for you</a> · <a href="/price-data">Price data</a> · <a href="/integration/openapi">OpenAPI</a> · <a href="/integration/shopify">Shopify</a> · <a href="/directory">Directory</a> · <a href="https://github.com/New1Direction/webmcp-anything">GitHub</a>
 </footer>
 
 </div>

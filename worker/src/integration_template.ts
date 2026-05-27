@@ -39,8 +39,39 @@ function escapeAttr(s: string): string {
   return s.replace(/"/g, "&quot;").replace(/&/g, "&amp;");
 }
 
+// Provider → matching agent-readiness vertical. Drives the "see also"
+// section and cross-link copy at the bottom of each integration page.
+const VERTICAL_BY_PROVIDER: Record<string, { slug: string; label: string; hook: string }> = {
+  github: {
+    slug: "api",
+    label: "API agent-readiness",
+    hook: "GitHub's the canonical OpenAPI-as-MCP example. If you're building your own API, see how to ship a clean spec + agent-friendly auth.",
+  },
+  google: {
+    slug: "saas",
+    label: "SaaS agent-readiness",
+    hook: "Google Workspace OAuth is the example. If you're a SaaS founder thinking about agent traffic, see the founder-level checklist.",
+  },
+  slack: {
+    slug: "saas",
+    label: "SaaS agent-readiness",
+    hook: "Slack-as-an-integration is the SaaS pattern at scale. If you're a SaaS founder, see how to be recommendable, signupable, and usable to agents.",
+  },
+  notion: {
+    slug: "docs",
+    label: "Docs agent-readiness",
+    hook: "Notion overlaps with docs sites — same agent-discovery dynamics. See the docs-site guide for llms.txt + structured search.",
+  },
+  linear: {
+    slug: "api",
+    label: "API agent-readiness",
+    hook: "Linear's GraphQL + OAuth is a model for shipping an API agents can drive. See the API-side checklist.",
+  },
+};
+
 export function integrationPageHtml(c: IntegrationPageConfig): string {
   const badge = c.badge_label || `integration · ${c.provider_id}`;
+  const vertical = VERTICAL_BY_PROVIDER[c.provider_id];
   const faqSchema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -130,12 +161,11 @@ export function integrationPageHtml(c: IntegrationPageConfig): string {
 <nav>
   <div class="brand"><a href="/" style="color:inherit;text-decoration:none">wmcp<span>.sh</span></a></div>
   <div class="links">
-    <a href="/">Home</a>
-    <a href="/integration/shopify">Shopify</a>
+    <a href="/agent-ready">Agent-ready</a>
+    <a href="/managed">Done for you</a>
     <a href="/integration/openapi">OpenAPI</a>
-    <a href="/integration/stripe">Stripe</a>
-    <a href="/integration/github">GitHub</a>
-    <a href="/integration/google">Google</a>
+    <a href="/price-data">Price data</a>
+    <a href="/directory">Directory</a>
   </div>
   <a class="cta" href="/dashboard">Dashboard →</a>
 </nav>
@@ -201,8 +231,15 @@ export function integrationPageHtml(c: IntegrationPageConfig): string {
     .join("\n  ")}
 </section>
 
+${vertical ? `<section id="see-also">
+  <div class="section-label">See also</div>
+  <h2>${vertical.label}</h2>
+  <p style="color:var(--muted);margin-bottom:14px">${vertical.hook}</p>
+  <p><a href="/agent-ready/${vertical.slug}" style="color:var(--accent2);text-decoration:none;font-weight:600">→ /agent-ready/${vertical.slug}</a> &nbsp;·&nbsp; <a href="/agent-ready" style="color:var(--accent2);text-decoration:none">cornerstone</a> &nbsp;·&nbsp; <a href="/managed" style="color:var(--accent2);text-decoration:none">done-for-you ($499+)</a></p>
+</section>` : ""}
+
 <footer>
-  <a href="/">Home</a> · <a href="/integration/shopify">Shopify</a> · <a href="/integration/openapi">OpenAPI</a> · <a href="/integration/stripe">Stripe</a> · <a href="/integration/github">GitHub</a> · <a href="/integration/google">Google</a> · <a href="/integration/slack">Slack</a> · <a href="/integration/notion">Notion</a> · <a href="/integration/linear">Linear</a> · <a href="/directory">Directory</a> · <a href="/dashboard">Dashboard</a>
+  <a href="/">Home</a> · <a href="/agent-ready">Agent-ready</a> · <a href="/managed">Done for you</a> · <a href="/price-data">Price data</a> · <a href="/integration/openapi">OpenAPI</a> · <a href="/integration/shopify">Shopify</a> · <a href="/integration/stripe">Stripe</a> · <a href="/integration/github">GitHub</a> · <a href="/integration/google">Google</a> · <a href="/integration/slack">Slack</a> · <a href="/integration/notion">Notion</a> · <a href="/integration/linear">Linear</a> · <a href="/directory">Directory</a>
 </footer>
 
 </div>

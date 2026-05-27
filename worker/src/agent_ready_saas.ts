@@ -237,6 +237,31 @@ export function agentReadySaasHtml(origin: string): string {
   </details>
 </section>
 
+<!-- ========== SaaS-adjacent integrations ========== -->
+<section id="live-integrations">
+  <div class="section-label">SaaS examples on wmcp.sh</div>
+  <h2>How big SaaS products show up as agent tools.</h2>
+  <p class="section-sub">Each of these is a SaaS product that shipped agent-readability and now appears as MCP tools whenever a user's agent works with their account:</p>
+  <div class="fix-grid">
+    <a href="/integration/google" class="fix-card" style="text-decoration:none;color:inherit;display:block">
+      <h3>→ Google Workspace</h3>
+      <p class="body">Gmail, Calendar, Drive, Sheets, Docs — OAuth + scope-gated API. SaaS-at-scale agent-readiness.</p>
+    </a>
+    <a href="/integration/slack" class="fix-card" style="text-decoration:none;color:inherit;display:block">
+      <h3>→ Slack</h3>
+      <p class="body">Per-workspace OAuth + chat:write / channels:read scopes. The B2B SaaS pattern.</p>
+    </a>
+    <a href="/integration/notion" class="fix-card" style="text-decoration:none;color:inherit;display:block">
+      <h3>→ Notion</h3>
+      <p class="body">Pages and databases. Workspace-aware OAuth. Knowledge-base SaaS done right.</p>
+    </a>
+    <a href="/integration/linear" class="fix-card" style="text-decoration:none;color:inherit;display:block">
+      <h3>→ Linear</h3>
+      <p class="body">GraphQL + OAuth. Dev-tools SaaS — the issue-tracker pattern.</p>
+    </a>
+  </div>
+</section>
+
 <!-- ========== Related ========== -->
 <section id="related">
   <div class="section-label">More verticals</div>

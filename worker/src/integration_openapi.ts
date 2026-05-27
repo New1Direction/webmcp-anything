@@ -170,11 +170,11 @@ export function integrationOpenapiHtml(origin: string): string {
 <nav>
   <div class="brand"><a href="/" style="color:inherit;text-decoration:none">wmcp<span>.sh</span></a></div>
   <div class="links">
-    <a href="/">Home</a>
-    <a href="/#code">SDKs</a>
-    <a href="/#pricing">Pricing</a>
+    <a href="/agent-ready">Agent-ready</a>
+    <a href="/agent-ready/api">API</a>
+    <a href="/managed">Done for you</a>
+    <a href="/price-data">Price data</a>
     <a href="/directory">Directory</a>
-    <a href="https://github.com/New1Direction/webmcp-anything">GitHub</a>
   </div>
   <a class="cta" href="/dashboard">Dashboard →</a>
 </nav>
@@ -416,8 +416,14 @@ anthropic_tools = to_anthropic_tools(tools)  <span class="c"># Anthropic SDK sha
   </details>
 </section>
 
+<section id="see-also">
+  <div class="section-label">See also</div>
+  <h2>Making your API agent-callable</h2>
+  <p style="color:var(--muted);margin-bottom:14px">If you're shipping an API and want it to show up as MCP tools for Claude / Cursor / Codex users, the 5 things to get right are at <a href="/agent-ready/api" style="color:var(--accent2);text-decoration:none">/agent-ready/api</a>. The cornerstone diagnostic is at <a href="/agent-ready" style="color:var(--accent2);text-decoration:none">/agent-ready</a>. Or have us ship your spec + MCP server: <a href="/managed" style="color:var(--accent2);text-decoration:none">/managed</a> ($499 starter).</p>
+</section>
+
 <footer>
-  <a href="/">Home</a> · <a href="/directory">Directory</a> · <a href="/dashboard">Dashboard</a> · <a href="https://github.com/New1Direction/webmcp-anything">GitHub</a>
+  <a href="/">Home</a> · <a href="/agent-ready">Agent-ready</a> · <a href="/agent-ready/api">API</a> · <a href="/managed">Done for you</a> · <a href="/price-data">Price data</a> · <a href="/directory">Directory</a> · <a href="https://github.com/New1Direction/webmcp-anything">GitHub</a>
 </footer>
 
 </div>

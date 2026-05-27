@@ -156,12 +156,11 @@ export function integrationPriceDataHtml(origin: string): string {
 <nav>
   <div class="brand"><a href="/" style="color:inherit;text-decoration:none">wmcp<span>.sh</span></a></div>
   <div class="links">
-    <a href="/">Home</a>
+    <a href="/agent-ready">Agent-ready</a>
+    <a href="/managed">Done for you</a>
     <a href="/integration/openapi">OpenAPI</a>
-    <a href="/integration/shopify">Shopify</a>
-    <a href="/integration/stripe">Stripe</a>
+    <a href="/price-data">Price data</a>
     <a href="/directory">Directory</a>
-    <a href="https://github.com/New1Direction/webmcp-anything">GitHub</a>
   </div>
   <a class="cta" href="/dashboard">Dashboard →</a>
 </nav>
@@ -370,7 +369,7 @@ msg = anthropic.messages.create(
 </section>
 
 <footer>
-  <a href="/">Home</a> · <a href="/integration/openapi">OpenAPI</a> · <a href="/integration/stripe">Stripe</a> · <a href="/integration/shopify">Shopify</a> · <a href="/directory">Directory</a> · <a href="/dashboard">Dashboard</a> · <a href="https://github.com/New1Direction/webmcp-anything">GitHub</a>
+  <a href="/">Home</a> · <a href="/agent-ready">Agent-ready</a> · <a href="/managed">Done for you</a> · <a href="/integration/openapi">OpenAPI</a> · <a href="/integration/stripe">Stripe</a> · <a href="/integration/shopify">Shopify</a> · <a href="/directory">Directory</a> · <a href="https://github.com/New1Direction/webmcp-anything">GitHub</a>
 </footer>
 
 </div>

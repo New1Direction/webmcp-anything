@@ -216,12 +216,173 @@ function relTime(ts: number): string {
 // ---------- sitemap + robots ----------
 
 export function robotsTxt(origin: string): string {
-  return `User-agent: *
+  return `# wmcp.sh — robots policy
+#
+# We're explicit about which AI crawlers are welcome and which aren't.
+# AI agents indexing our content is a feature, not abuse — agent-ready
+# is literally the product. Generic SEO scrapers don't get the same
+# pass: we already publish a sitemap + llms.txt, so re-crawling the
+# whole site every hour is just bandwidth waste.
+
+# --- AI crawlers (explicit allow) ---
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: GoogleOther
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
+User-agent: Cohere-AI
+Allow: /
+
+User-agent: Bytespider
+Allow: /
+
+User-agent: Diffbot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Meta-ExternalAgent
+Allow: /
+
+User-agent: FacebookBot
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: YouBot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+# --- Aggressive SEO crawlers (rate-limit by disallowing) ---
+
+User-agent: AhrefsBot
+Crawl-delay: 60
+
+User-agent: SemrushBot
+Crawl-delay: 60
+
+User-agent: MJ12bot
+Crawl-delay: 60
+
+User-agent: DotBot
+Crawl-delay: 60
+
+User-agent: BLEXBot
+Disallow: /
+
+# --- Default ---
+
+User-agent: *
 Allow: /
 Disallow: /api/
 Disallow: /dashboard
 Disallow: /connect/
+Disallow: /mcp/
+
 Sitemap: ${origin}/sitemap.xml
+`;
+}
+
+// llmsTxt — agent-readable index at /llms.txt.
+//
+// Convention from llmstxt.org: a curated map of the site's priority
+// resources for AI agents. Same role as robots.txt, but pointed at
+// what's important, not just what's allowed.
+//
+// We're the agent-readiness company — eating our own dog food is
+// table stakes.
+export function llmsTxt(origin: string): string {
+  return `# wmcp.sh
+
+> wmcp.sh turns any URL into agent-callable MCP tools. Drop a URL in,
+> get a JSON tool list (Claude / OpenAI / MCP-compatible) describing
+> the page's actions (read price, add to cart, call API, etc.). Free
+> public tier + paid Pro + managed agent-readiness consulting.
+
+## Start here
+
+- [Homepage](${origin}/): one-paragraph pitch + live demo
+- [Agent-ready (cornerstone)](${origin}/agent-ready): the canonical guide on making your site work with AI agents
+- [Price-data adapters](${origin}/price-data): 5 oracle / price-data sources (CoinGecko, Pyth, Chainlink, DefiLlama, DexScreener) live as MCP tools
+- [Directory](${origin}/directory): every URL the community has turned into MCP tools
+
+## Vertical-specific agent-readiness guides
+
+- [Shopify](${origin}/agent-ready/shopify): variants, add-to-cart, multi-locale, shopper-side MCP
+- [API / SaaS APIs](${origin}/agent-ready/api): OpenAPI publishing, tagging, MCP-spec OAuth, agent-friendly rate limits
+- [Documentation sites](${origin}/agent-ready/docs): llms.txt template, code-example metadata, docs MCP servers
+- [SaaS founders](${origin}/agent-ready/saas): be recommendable, signupable, usable
+
+## How to integrate wmcp.sh with your agent
+
+- [OpenAPI → MCP guide](${origin}/integration/openapi): canonical method for any API-backed site
+- [Shopify integration](${origin}/integration/shopify): shopper-side MCP for all 4M+ Shopify stores
+- [Stripe integration](${origin}/integration/stripe): full Stripe API as MCP tools via OpenAPI ingestion
+- [GitHub integration](${origin}/integration/github): repo/issue/gist tools
+- [Google Workspace integration](${origin}/integration/google): Gmail, Calendar, Drive, Sheets, Docs
+- [Notion integration](${origin}/integration/notion): pages and databases
+- [Linear integration](${origin}/integration/linear): issues, projects, comments
+- [Slack integration](${origin}/integration/slack): post, react, manage channels
+
+## API reference
+
+- [GET /api/v1/tools?url=...](${origin}/api/v1/tools?url=https://www.allbirds.com/products/mens-wool-runners): live example
+- [Full API docs](${origin}/integration/openapi): all endpoints + auth + plan limits
+- [Sitemap](${origin}/sitemap.xml): every public URL on wmcp.sh
+- [GitHub repo](https://github.com/New1Direction/webmcp-anything): adapters + worker source
+
+## Paid services
+
+- [Managed agent-readiness](${origin}/managed): Starter $499 one-time / Pro $999/mo / Enterprise $4,999+/mo white-label MCP
+
+## What NOT to use
+
+- Anything under \`/dashboard\` — user-specific, requires auth
+- Anything under \`/api/v1/providers/*/start\` — OAuth flow endpoints
+- Anything under \`/mcp/*\` — proxy endpoints, require valid wmcp.sh API key
+- \`/connect/*\` — interactive OAuth pages
+
+## Conventions
+
+- All public pages ship JSON-LD (Article + FAQPage where applicable) — agents reading the page get structured metadata
+- Tool listings returned from \`/api/v1/tools\` follow the Claude tool_use / OpenAI function_call shape interchangeably
+- Caching: page HTML 15 min CDN, tool extractions 60s–24h depending on source volatility
 `;
 }
 

@@ -247,6 +247,31 @@ export function agentReadyApiHtml(origin: string): string {
   </details>
 </section>
 
+<!-- ========== Live integrations ========== -->
+<section id="live-integrations">
+  <div class="section-label">API integrations live on wmcp.sh</div>
+  <h2>Real examples of API → MCP.</h2>
+  <p class="section-sub">Each of these takes a published OpenAPI spec and turns it into agent-callable tools. Same pattern works for your API:</p>
+  <div class="fix-grid">
+    <a href="/integration/openapi" class="fix-card" style="text-decoration:none;color:inherit;display:block">
+      <h3>→ OpenAPI ingestion</h3>
+      <p class="body">The general-purpose adapter. Drop any OpenAPI spec URL, get MCP tools.</p>
+    </a>
+    <a href="/integration/stripe" class="fix-card" style="text-decoration:none;color:inherit;display:block">
+      <h3>→ Stripe (400+ tools)</h3>
+      <p class="body">Stripe ships the canonical OpenAPI. wmcp.sh's Stripe integration as the worked example.</p>
+    </a>
+    <a href="/integration/github" class="fix-card" style="text-decoration:none;color:inherit;display:block">
+      <h3>→ GitHub (~900 tools)</h3>
+      <p class="body">GitHub's published OpenAPI + OAuth — repos, issues, PRs, gists, workflows as MCP.</p>
+    </a>
+    <a href="/integration/linear" class="fix-card" style="text-decoration:none;color:inherit;display:block">
+      <h3>→ Linear</h3>
+      <p class="body">GraphQL + OAuth — issues, projects, comments as agent-callable tools.</p>
+    </a>
+  </div>
+</section>
+
 <!-- ========== Related ========== -->
 <section id="related">
   <div class="section-label">More verticals</div>

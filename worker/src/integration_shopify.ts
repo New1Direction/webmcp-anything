@@ -140,11 +140,11 @@ export function integrationShopifyHtml(origin: string): string {
 <nav>
   <div class="brand"><a href="/" style="color:inherit;text-decoration:none">wmcp<span>.sh</span></a></div>
   <div class="links">
-    <a href="/">Home</a>
-    <a href="/integration/openapi">OpenAPI</a>
-    <a href="/#pricing">Pricing</a>
+    <a href="/agent-ready">Agent-ready</a>
+    <a href="/agent-ready/shopify">Shopify</a>
+    <a href="/managed">Done for you</a>
+    <a href="/price-data">Price data</a>
     <a href="/directory">Directory</a>
-    <a href="https://github.com/New1Direction/webmcp-anything">GitHub</a>
   </div>
   <a class="cta" href="/dashboard">Dashboard →</a>
 </nav>
@@ -349,8 +349,14 @@ result = client.execute(
   </details>
 </section>
 
+<section id="see-also">
+  <div class="section-label">See also</div>
+  <h2>Shopify-specific agent-readiness</h2>
+  <p style="color:var(--muted);margin-bottom:14px">Most Shopify stores are 60% agent-ready out of the box — the remaining 40% (variants, add-to-cart actions, inventory awareness, Plus WAF allowlist) is covered at <a href="/agent-ready/shopify" style="color:var(--accent2);text-decoration:none">/agent-ready/shopify</a>. The cornerstone diagnostic is at <a href="/agent-ready" style="color:var(--accent2);text-decoration:none">/agent-ready</a>. Or have us audit your store: <a href="/managed" style="color:var(--accent2);text-decoration:none">/managed</a> ($499 starter).</p>
+</section>
+
 <footer>
-  <a href="/">Home</a> · <a href="/integration/openapi">OpenAPI</a> · <a href="/directory">Directory</a> · <a href="/dashboard">Dashboard</a> · <a href="https://github.com/New1Direction/webmcp-anything">GitHub</a>
+  <a href="/">Home</a> · <a href="/agent-ready">Agent-ready</a> · <a href="/agent-ready/shopify">Shopify</a> · <a href="/managed">Done for you</a> · <a href="/price-data">Price data</a> · <a href="/integration/openapi">OpenAPI</a> · <a href="/directory">Directory</a> · <a href="https://github.com/New1Direction/webmcp-anything">GitHub</a>
 </footer>
 
 </div>
