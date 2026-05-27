@@ -174,6 +174,41 @@ app.get("/integration/stripe", async (c) => {
   });
 });
 
+app.get("/integration/github", async (c) => {
+  const { integrationGithubHtml } = await import("./integration_github");
+  return new Response(integrationGithubHtml(new URL(c.req.url).origin), {
+    headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=900, s-maxage=900" },
+  });
+});
+
+app.get("/integration/google", async (c) => {
+  const { integrationGoogleHtml } = await import("./integration_google");
+  return new Response(integrationGoogleHtml(new URL(c.req.url).origin), {
+    headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=900, s-maxage=900" },
+  });
+});
+
+app.get("/integration/slack", async (c) => {
+  const { integrationSlackHtml } = await import("./integration_slack");
+  return new Response(integrationSlackHtml(new URL(c.req.url).origin), {
+    headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=900, s-maxage=900" },
+  });
+});
+
+app.get("/integration/notion", async (c) => {
+  const { integrationNotionHtml } = await import("./integration_notion");
+  return new Response(integrationNotionHtml(new URL(c.req.url).origin), {
+    headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=900, s-maxage=900" },
+  });
+});
+
+app.get("/integration/linear", async (c) => {
+  const { integrationLinearHtml } = await import("./integration_linear");
+  return new Response(integrationLinearHtml(new URL(c.req.url).origin), {
+    headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=900, s-maxage=900" },
+  });
+});
+
 // --------------------- SEO pages ---------------------
 
 app.get("/u/:encoded", async (c) => {
