@@ -154,6 +154,26 @@ app.get("/integration/openapi", async (c) => {
   });
 });
 
+app.get("/integration/shopify", async (c) => {
+  const { integrationShopifyHtml } = await import("./integration_shopify");
+  return new Response(integrationShopifyHtml(new URL(c.req.url).origin), {
+    headers: {
+      "content-type": "text/html; charset=utf-8",
+      "cache-control": "public, max-age=900, s-maxage=900",
+    },
+  });
+});
+
+app.get("/integration/stripe", async (c) => {
+  const { integrationStripeHtml } = await import("./integration_stripe");
+  return new Response(integrationStripeHtml(new URL(c.req.url).origin), {
+    headers: {
+      "content-type": "text/html; charset=utf-8",
+      "cache-control": "public, max-age=900, s-maxage=900",
+    },
+  });
+});
+
 // --------------------- SEO pages ---------------------
 
 app.get("/u/:encoded", async (c) => {

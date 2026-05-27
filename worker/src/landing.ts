@@ -416,9 +416,9 @@ export function landingHtml(origin: string): string {
   <div class="brand">wmcp<span>.sh</span></div>
   <div class="links">
     <a href="#demo">Demo</a>
-    <a href="#comparison">vs.</a>
+    <a href="/integration/shopify">Shopify</a>
     <a href="/integration/openapi">OpenAPI</a>
-    <a href="#code">Integrate</a>
+    <a href="/integration/stripe">Stripe</a>
     <a href="#pricing">Pricing</a>
     <a href="#faq">FAQ</a>
     <a href="/directory">Directory</a>
