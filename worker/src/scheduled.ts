@@ -207,6 +207,55 @@ export async function scheduledHandler(
   );
 }
 
+const STORE_HOSTNAME_RE = /^[a-z0-9]([a-z0-9.-]*[a-z0-9])?\.[a-z]{2,}$/i;
+
+/**
+ * Admin-gated. POST /api/v1/admin/seed-stores with
+ * { stores: ["www.foo.com", "shop.bar.com", ...] }
+ * Merges new hostnames into the `seed_stores:list` KV array. Cron picks
+ * them up on its next run automatically. Used by external agents (Gemini,
+ * Hermes) to expand wmcp.sh's coverage without redeploying.
+ */
+export async function addSeedStores(c: any): Promise<Response> {
+  const env: Env = c.env;
+  const token = c.req.header("x-admin-token");
+  if (!env.ADMIN_TOKEN || token !== env.ADMIN_TOKEN) {
+    return c.json({ error: "admin only" }, 401);
+  }
+  const body: { stores?: string[] } | null = await c.req
+    .json()
+    .catch(() => null);
+  if (!body || !Array.isArray(body.stores)) {
+    return c.json({ error: "stores array required" }, 400);
+  }
+
+  const cleaned: string[] = body.stores
+    .map((s) => String(s).trim().toLowerCase().replace(/^https?:\/\//, "").replace(/\/.*$/, ""))
+    .filter((s) => STORE_HOSTNAME_RE.test(s));
+
+  const existingRaw = await env.CACHE.get("seed_stores:list");
+  let existing: string[] = [];
+  if (existingRaw) {
+    try {
+      const parsed = JSON.parse(existingRaw);
+      if (Array.isArray(parsed)) existing = parsed;
+    } catch {}
+  }
+  const before = new Set(existing);
+  const merged = [...new Set([...existing, ...cleaned])];
+  const newly_added = merged.filter((s) => !before.has(s));
+
+  await env.CACHE.put("seed_stores:list", JSON.stringify(merged));
+
+  return c.json({
+    ok: true,
+    accepted: cleaned.length,
+    rejected: body.stores.length - cleaned.length,
+    newly_added: newly_added.length,
+    total_stores_in_list: merged.length,
+  });
+}
+
 /**
  * Admin-gated manual trigger. POST /api/v1/admin/seed-now with
  * `x-admin-token: <ADMIN_TOKEN>`. Runs the same logic as the cron and
