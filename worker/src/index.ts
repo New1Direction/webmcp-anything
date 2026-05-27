@@ -187,6 +187,35 @@ app.all("/mcp/:provider/*", gate("execute"), async (c) => {
   return mcpProxyHandler(c as any);
 });
 
+// ---------- agent-ready cornerstone + managed-service landing ----------
+// SEO funnel: /agent-ready is the cornerstone for "how to make my site
+// AI-ready" queries; /managed is the paid done-for-you offer. Leads
+// land in KV via POST /api/v1/leads.
+app.get("/agent-ready", async (c) => {
+  const { agentReadyHtml } = await import("./agent_ready");
+  return new Response(agentReadyHtml(new URL(c.req.url).origin), {
+    headers: {
+      "content-type": "text/html; charset=utf-8",
+      "cache-control": "public, max-age=900, s-maxage=900",
+    },
+  });
+});
+
+app.get("/managed", async (c) => {
+  const { managedHtml } = await import("./managed");
+  return new Response(managedHtml(new URL(c.req.url).origin), {
+    headers: {
+      "content-type": "text/html; charset=utf-8",
+      "cache-control": "public, max-age=900, s-maxage=900",
+    },
+  });
+});
+
+app.post("/api/v1/leads", async (c) => {
+  const { captureLead } = await import("./lead_capture");
+  return captureLead(c as any);
+});
+
 // Category landing — groups all 5 oracle / price-data adapters under one URL.
 // Distinct from /integration/* (single-provider pages) — this is a category.
 app.get("/price-data", async (c) => {
