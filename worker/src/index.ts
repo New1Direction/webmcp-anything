@@ -9,6 +9,7 @@ import { landingHtml } from "./landing";
 import { dashboardHtml } from "./dashboard";
 import { directoryHtml } from "./directory";
 import { ogSvg } from "./og";
+import { scheduledHandler, runSeedNow } from "./scheduled";
 import { githubStart, githubCallback, logout, me, issueOwnKey } from "./oauth";
 import {
   getProviders,
@@ -630,4 +631,14 @@ app.post("/api/v1/providers/anthropic/exchange", async (c) => {
   return anthropicExchange(c as any);
 });
 
-export default app;
+// --------------------- admin: manual seed trigger ---------------------
+// Same code path as the cron — but on-demand. Useful for verifying after
+// updating the seed_stores:list KV or for one-off pushes before a launch.
+app.post("/api/v1/admin/seed-now", (c) => runSeedNow(c as any));
+
+// Default export — Cloudflare Workers expects `fetch` and (since we added
+// crons) `scheduled` as named handlers on the default export.
+export default {
+  fetch: app.fetch,
+  scheduled: scheduledHandler,
+};
