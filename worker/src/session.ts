@@ -17,7 +17,7 @@ export interface Session {
   connections?: string[];
 }
 
-type Env = { KEYS: KVNamespace };
+type Env = { KEYS: KVNamespace; TOKEN_ENC_KEY?: string };
 
 const COOKIE_NAME = "wmcp_session";
 const SESSION_TTL = 30 * 86400; // 30 days
@@ -82,23 +82,94 @@ export function clearCookieHeader(): string {
   return `${COOKIE_NAME}=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0`;
 }
 
-// CSRF state — short-lived random string stored against the session-to-be.
-// Verified on callback to prevent CSRF on the OAuth flow.
-const STATE_TTL = 600; // 10 min
+// CSRF state for the OAuth flow.
+//
+// Default mode (TOKEN_ENC_KEY set): the state is a stateless HMAC-signed
+// payload encoded into the `state` URL parameter — zero KV writes. Signature
+// uses HMAC-SHA256 keyed by TOKEN_ENC_KEY (already in env for the token vault).
+// Replay protection comes from a 10-minute embedded expiry: an attacker
+// recapturing the state has at most 10min to use it, and the upstream code
+// is single-use so a second exchange would already 4xx at GitHub/Google/etc.
+//
+// Legacy mode (no TOKEN_ENC_KEY): falls back to the original KV-stored state.
+// Pre-existing in-flight OAuth flows are also accepted by consumeOauthState's
+// KV lookup, so a deploy mid-flow doesn't break anyone.
+
+const STATE_TTL_SEC = 600; // 10 min
+const SIGNED_STATE_PREFIX = "v1.";
+
+interface StatePayload {
+  provider: string;
+  redirect_to?: string;
+  // PKCE verifier (RFC 7636) — set when the provider uses usePKCERedirect.
+  // Round-trips through the OAuth state so the callback can exchange the code.
+  pkce_verifier?: string;
+}
+
+interface InternalStatePayload extends StatePayload {
+  exp: number; // ms epoch
+}
+
+function b64urlEncode(bytes: Uint8Array): string {
+  let s = "";
+  for (let i = 0; i < bytes.length; i++) s += String.fromCharCode(bytes[i]);
+  return btoa(s).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+function b64urlDecode(s: string): Uint8Array {
+  const pad = s.length % 4 === 0 ? "" : "=".repeat(4 - (s.length % 4));
+  const b64 = (s + pad).replace(/-/g, "+").replace(/_/g, "/");
+  const bin = atob(b64);
+  const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
+
+async function hmacSha256(secret: string, data: string): Promise<Uint8Array> {
+  const key = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign", "verify"]
+  );
+  const sig = await crypto.subtle.sign(
+    "HMAC",
+    key,
+    new TextEncoder().encode(data)
+  );
+  return new Uint8Array(sig);
+}
+
+// Constant-time byte compare to avoid signature-timing leaks.
+function constantTimeEqual(a: Uint8Array, b: Uint8Array): boolean {
+  if (a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a[i] ^ b[i];
+  return diff === 0;
+}
 
 export async function createOauthState(
   env: Env,
-  payload: {
-    provider: string;
-    redirect_to?: string;
-    // PKCE verifier (RFC 7636) — set when the provider uses usePKCERedirect.
-    // Round-trips through the OAuth state so the callback can exchange the code.
-    pkce_verifier?: string;
-  }
+  payload: StatePayload
 ): Promise<string> {
+  const secret = env.TOKEN_ENC_KEY;
+  if (secret) {
+    const full: InternalStatePayload = {
+      ...payload,
+      exp: Date.now() + STATE_TTL_SEC * 1000,
+    };
+    const payloadB64 = b64urlEncode(
+      new TextEncoder().encode(JSON.stringify(full))
+    );
+    const sig = await hmacSha256(secret, payloadB64);
+    return SIGNED_STATE_PREFIX + payloadB64 + "." + b64urlEncode(sig);
+  }
+
+  // Legacy fallback: store in KV.
   const state = randomId(16);
   await env.KEYS.put(`oauth_state:${state}`, JSON.stringify(payload), {
-    expirationTtl: STATE_TTL,
+    expirationTtl: STATE_TTL_SEC,
   });
   return state;
 }
@@ -106,13 +177,43 @@ export async function createOauthState(
 export async function consumeOauthState(
   env: Env,
   state: string
-): Promise<{ provider: string; redirect_to?: string; pkce_verifier?: string } | null> {
+): Promise<StatePayload | null> {
+  // Modern path: signed stateless payload.
+  if (state.startsWith(SIGNED_STATE_PREFIX) && env.TOKEN_ENC_KEY) {
+    const rest = state.slice(SIGNED_STATE_PREFIX.length);
+    const dot = rest.lastIndexOf(".");
+    if (dot <= 0) return null;
+    const payloadB64 = rest.slice(0, dot);
+    const sigB64 = rest.slice(dot + 1);
+    const expectedSig = await hmacSha256(env.TOKEN_ENC_KEY, payloadB64);
+    let providedSig: Uint8Array;
+    try {
+      providedSig = b64urlDecode(sigB64);
+    } catch {
+      return null;
+    }
+    if (!constantTimeEqual(expectedSig, providedSig)) return null;
+    let inner: InternalStatePayload;
+    try {
+      inner = JSON.parse(new TextDecoder().decode(b64urlDecode(payloadB64)));
+    } catch {
+      return null;
+    }
+    if (typeof inner.exp !== "number" || inner.exp < Date.now()) return null;
+    return {
+      provider: inner.provider,
+      redirect_to: inner.redirect_to,
+      pkce_verifier: inner.pkce_verifier,
+    };
+  }
+
+  // Legacy path: KV-stored state. Kept for in-flight flows that started
+  // before this deploy. Single-use: delete after read.
   const raw = await env.KEYS.get(`oauth_state:${state}`);
   if (!raw) return null;
-  // Single-use: delete after read.
   await env.KEYS.delete(`oauth_state:${state}`);
   try {
-    return JSON.parse(raw);
+    return JSON.parse(raw) as StatePayload;
   } catch {
     return null;
   }
