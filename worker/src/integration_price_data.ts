@@ -208,11 +208,11 @@ export function integrationPriceDataHtml(origin: string): string {
     </div>
 
     <div class="src-card paid">
-      <span class="tier mixed">OAuth proxy</span>
+      <span class="tier mixed">Included with wmcp.sh Pro</span>
       <h3>DefiLlama MCP <span style="font-size:.7em;color:var(--dim)">(via wmcp.sh)</span></h3>
-      <p class="desc">DefiLlama's official OAuth-protected MCP server, proxied through wmcp.sh so you only authenticate once. 23 first-party DeFi-analytics tools with computed metrics (P/S ratio, mNAV, signed ETF flows, hack history). Requires a paid DefiLlama API subscription.</p>
+      <p class="desc">DefiLlama's official 23-tool MCP server (TVL, fees, yields, stablecoins, bridges, ETFs, hacks, raises, institutional holdings, token unlocks, oracle coverage, income statements) — bundled with your wmcp.sh Pro plan. No separate DefiLlama subscription required, no per-user OAuth.</p>
       <p class="tools">get_market_totals · get_protocol_metrics · get_chain_metrics · get_token_prices · get_yield_pools · get_stablecoin_supply · get_etf_flows · get_bridge_flows · get_events · get_dat_holdings · get_token_unlocks · get_oracle_metrics · resolve_entity · ...+10 more</p>
-      <p class="url">Connect at <a href="/dashboard" style="color:var(--accent2);text-decoration:none">/dashboard</a>, then point your agent at:<br />${origin}/mcp/defillama</p>
+      <p class="url">Point your agent at:<br />${origin}/mcp/defillama<br />Use your wmcp.sh API key as the bearer.</p>
     </div>
 
     <div class="src-card paid">

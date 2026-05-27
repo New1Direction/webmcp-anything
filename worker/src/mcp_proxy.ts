@@ -25,6 +25,26 @@ import { ensureMcpClient, refreshPkceToken } from "./mcp_oauth";
 type Env = {
   KEYS: KVNamespace;
   TOKEN_ENC_KEY?: string;
+  // Shared-tenant override.
+  //
+  // When SHARED_USER_<PROVIDER_ID_UPPERCASE> is set, the proxy uses THAT
+  // user's stored tokens for ALL /mcp/<provider> requests, regardless of who's
+  // calling. The calling user still needs a valid wmcp.sh API key + paid plan
+  // (gate("execute") in index.ts), so anonymous traffic can't ride for free —
+  // but they don't need to do an upstream OAuth dance.
+  //
+  // Operational + legal notes for the operator (you):
+  //   - Most upstream API providers' ToS prohibit single-account multi-tenant
+  //     resale. Read your upstream's terms before flipping this on at scale.
+  //   - All proxied requests originate from wmcp.sh worker IPs with the same
+  //     Bearer token. Upstream rate limits / abuse detection apply to the
+  //     single underlying account.
+  //   - If upstream suspends the underlying account, ALL wmcp.sh users lose
+  //     access at once. Build escalation paths accordingly.
+  //
+  // Set via:
+  //   wrangler secret put SHARED_USER_DEFILLAMA   (paste: gh:<your-github-id>)
+  [shared: `SHARED_USER_${string}`]: string | undefined;
 };
 
 // Refresh proactively when within this many ms of expiry.
@@ -60,7 +80,14 @@ async function getFreshUpstreamToken(
   provider: Provider,
   origin: string
 ): Promise<string | null> {
-  const tok = await loadProviderToken(env, user_id, provider.id);
+  // Shared-tenant override: if SHARED_USER_<PROVIDER> env var is set, route
+  // all calls through that user's token vault entry. See Env type above for
+  // the operational/legal context.
+  const sharedKey = `SHARED_USER_${provider.id.toUpperCase()}` as const;
+  const sharedUserId = (env as any)[sharedKey] as string | undefined;
+  const effectiveUserId = sharedUserId || user_id;
+
+  const tok = await loadProviderToken(env, effectiveUserId, provider.id);
   if (!tok) return null;
 
   const expiresAt = tok.record.expires_at;
@@ -79,7 +106,9 @@ async function getFreshUpstreamToken(
       clientId: clientRec.client_id,
       clientSecret: clientRec.client_secret,
     });
-    await saveProviderToken(env, user_id, provider.id, {
+    // Write back to the SAME user whose tokens we loaded — i.e. the shared
+    // tenant if SHARED_USER_<provider> is set, else the calling user.
+    await saveProviderToken(env, effectiveUserId, provider.id, {
       access_token: td.access_token,
       // Some providers issue rotating refresh tokens (RFC 8252 §6) — preserve
       // the new one if present, otherwise reuse the old one.
@@ -129,6 +158,24 @@ export async function mcpProxyHandler(
   const origin = new URL(c.req.url).origin;
   const upstreamToken = await getFreshUpstreamToken(c.env, auth.user_id, provider, origin);
   if (!upstreamToken) {
+    // If a shared tenant is configured for this provider but no token is
+    // present, it's a wmcp.sh-side configuration issue, not a user fault.
+    const sharedKey = `SHARED_USER_${provider.id.toUpperCase()}` as const;
+    const sharedConfigured = (c.env as any)[sharedKey] !== undefined;
+    if (sharedConfigured) {
+      return c.json(
+        {
+          error: "shared_tenant_not_initialized",
+          provider: provider.id,
+          hint:
+            provider.name +
+            " is configured as a shared-tenant proxy but no upstream token " +
+            "is stored. Operator: complete the OAuth dance once as the " +
+            "shared user, then this endpoint will work for all callers.",
+        },
+        503
+      );
+    }
     return c.json(
       {
         error: "provider_not_connected",
