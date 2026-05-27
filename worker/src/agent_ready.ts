@@ -286,6 +286,32 @@ export function agentReadyHtml(origin: string): string {
   </div>
 </section>
 
+<!-- ========== VERTICAL GUIDES ========== -->
+<section id="verticals">
+  <div class="section-label">Pick your stack</div>
+  <h2>Vertical-specific guides.</h2>
+  <p class="section-sub">The cornerstone above covers any site. These dig into the specific gotchas + checklists for each stack:</p>
+
+  <div class="fix-grid">
+    <a href="/agent-ready/shopify" class="fix-card" style="text-decoration:none;color:inherit;display:block">
+      <h3>→ Shopify</h3>
+      <p class="body">Variants, add-to-cart, inventory, Shopify Plus WAF. Most stores need zero code changes — wmcp.sh adapter works out of the box.</p>
+    </a>
+    <a href="/agent-ready/api" class="fix-card" style="text-decoration:none;color:inherit;display:block">
+      <h3>→ API / SaaS APIs</h3>
+      <p class="body">OpenAPI publishing, operation tagging, MCP-spec OAuth, agent-friendly rate limits. The 5 things API teams miss.</p>
+    </a>
+    <a href="/agent-ready/docs" class="fix-card" style="text-decoration:none;color:inherit;display:block">
+      <h3>→ Documentation sites</h3>
+      <p class="body">llms.txt template, code-example metadata, version signals, docs MCP servers. Mintlify / Docusaurus / Nextra compared.</p>
+    </a>
+    <a href="/agent-ready/saas" class="fix-card" style="text-decoration:none;color:inherit;display:block">
+      <h3>→ SaaS founders / GTM</h3>
+      <p class="body">Be recommendable when Claude picks tools for your buyer. Six non-technical moves any founder can ship in half a day.</p>
+    </a>
+  </div>
+</section>
+
 <!-- ========== TWO PATHS ========== -->
 <section id="paths">
   <div class="section-label">Two ways forward</div>

@@ -211,6 +211,49 @@ app.get("/managed", async (c) => {
   });
 });
 
+// /agent-ready/* — vertical-specific SEO pages keyed off the cornerstone.
+// Each targets a distinct buyer persona (Shopify operator, API team,
+// docs author, SaaS founder).
+app.get("/agent-ready/shopify", async (c) => {
+  const { agentReadyShopifyHtml } = await import("./agent_ready_shopify");
+  return new Response(agentReadyShopifyHtml(new URL(c.req.url).origin), {
+    headers: {
+      "content-type": "text/html; charset=utf-8",
+      "cache-control": "public, max-age=900, s-maxage=900",
+    },
+  });
+});
+
+app.get("/agent-ready/api", async (c) => {
+  const { agentReadyApiHtml } = await import("./agent_ready_api");
+  return new Response(agentReadyApiHtml(new URL(c.req.url).origin), {
+    headers: {
+      "content-type": "text/html; charset=utf-8",
+      "cache-control": "public, max-age=900, s-maxage=900",
+    },
+  });
+});
+
+app.get("/agent-ready/docs", async (c) => {
+  const { agentReadyDocsHtml } = await import("./agent_ready_docs");
+  return new Response(agentReadyDocsHtml(new URL(c.req.url).origin), {
+    headers: {
+      "content-type": "text/html; charset=utf-8",
+      "cache-control": "public, max-age=900, s-maxage=900",
+    },
+  });
+});
+
+app.get("/agent-ready/saas", async (c) => {
+  const { agentReadySaasHtml } = await import("./agent_ready_saas");
+  return new Response(agentReadySaasHtml(new URL(c.req.url).origin), {
+    headers: {
+      "content-type": "text/html; charset=utf-8",
+      "cache-control": "public, max-age=900, s-maxage=900",
+    },
+  });
+});
+
 app.post("/api/v1/leads", async (c) => {
   const { captureLead } = await import("./lead_capture");
   return captureLead(c as any);
