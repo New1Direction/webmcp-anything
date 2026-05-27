@@ -240,6 +240,20 @@ app.get("/og.svg", (c) =>
   })
 );
 
+app.get("/og.png", async (c) => {
+  const { OG_PNG_B64 } = await import("./og_png");
+  // atob → binary string → Uint8Array. Standard pattern in Workers.
+  const bin = atob(OG_PNG_B64);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return new Response(bytes, {
+    headers: {
+      "content-type": "image/png",
+      "cache-control": "public, max-age=86400, s-maxage=86400",
+    },
+  });
+});
+
 app.get("/api/v1/debug", async (c) => {
   const url = c.req.query("url") || "https://www.allbirds.com/products/mens-wool-runners";
   const result: any = { url, steps: [] };
