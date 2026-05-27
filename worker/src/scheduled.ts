@@ -39,10 +39,11 @@ const DEFAULT_STORES = [
   "us.mejuri.com",
 ];
 
-// Tuned for a ~500-store registry being harvested across the day.
-// 15 stores × 20 products = 300 fetches/run. Workers Bundled plan
-// allows 1000 subrequests per invocation — well under.
-const MAX_STORES_PER_RUN = 15;
+// Tuned for a ~2500-store registry harvested across the day.
+// 30 stores × 20 products = 600 subrequests/run. Workers Bundled plan
+// allows 1000 subrequests per invocation. Stores fan out in parallel
+// (Promise.all) so the run finishes inside the 30s wall-clock budget.
+const MAX_STORES_PER_RUN = 30;
 const PRODUCTS_PER_STORE = 20;
 const FETCH_TIMEOUT_MS = 8000;
 const SHOPIFY_TTL_SEC = 3600; // matches index.ts shopify cache TTL
@@ -189,12 +190,14 @@ export async function scheduledHandler(
 ): Promise<void> {
   const started = Date.now();
   const stores = await pickStores(env);
-  console.log(`[cron] starting; ${stores.length} stores: ${stores.join(", ")}`);
+  console.log(`[cron] starting; ${stores.length} stores`);
 
-  const reports: StoreReport[] = [];
-  for (const store of stores) {
-    const r = await seedStore(env, store);
-    reports.push(r);
+  // Stores in parallel — each store's internal handle loop stays sequential
+  // to avoid per-store rate-limiting. 30 stores × ~2s = ~6s wall-clock,
+  // well under the 30s worker budget.
+  const reports = await Promise.all(stores.map((s) => seedStore(env, s)));
+
+  for (const r of reports) {
     console.log(
       `[cron] ${r.store}: fetched=${r.fetched} new=${r.new_cached} ` +
         `skip=${r.skipped_existing}` +
@@ -272,10 +275,7 @@ export async function runSeedNow(c: any): Promise<Response> {
   }
 
   const stores = await pickStores(env);
-  const reports: StoreReport[] = [];
-  for (const store of stores) {
-    reports.push(await seedStore(env, store));
-  }
+  const reports = await Promise.all(stores.map((s) => seedStore(env, s)));
   const total_new = reports.reduce((s, r) => s + r.new_cached, 0);
   return c.json({ ok: true, total_new, stores: reports });
 }
