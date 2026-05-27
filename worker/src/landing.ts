@@ -4,18 +4,67 @@ export function landingHtml(origin: string): string {
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>WebMCP Anything — turn any URL into agent tools</title>
-<meta name="description" content="Hosted MCP server that turns any product URL into agent-callable tools. Live demo, free tier, open-source adapters." />
-<meta property="og:title" content="WebMCP Anything" />
-<meta property="og:description" content="Turn any URL into agent-callable MCP tools." />
+<title>WebMCP Anything — Hosted MCP Server for any URL + Shopify storefronts</title>
+<meta name="description" content="Hosted shopper-side MCP server. Turn any product URL or OpenAPI spec into agent-callable tools — Shopify storefronts, JSON-LD retailers, Claude Code, LangChain, OpenAI." />
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "WebMCP Anything",
+  "url": "https://wmcp.sh",
+  "description": "Hosted shopper-side MCP server that turns any URL into agent-callable tools."
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How does WebMCP differ from Shopify's AI Toolkit (dev-mcp)?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Shopify's dev-mcp is owner-side — it connects to the Shopify Admin API for store management and requires admin credentials. WebMCP is shopper-side — it runs on public storefronts using Shopify's storefront JSON, schema.org JSON-LD, or an LLM fallback, so AI shopping agents can fetch prices, list variants, and trigger add_to_cart without merchant credentials."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How does WebMCP differ from Composio?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Composio is an enterprise integration proxy for owner-side admin APIs. WebMCP is purpose-built for shopper-side transactional flows — product lookup, variant comparison, add_to_cart — and caches schemas in a shared global cache that serves under 100ms. WebMCP also supports OpenAPI ingestion: point it at any spec URL and you get an MCP tool list."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can WebMCP turn an OpenAPI spec into MCP tools?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Hand any JSON OpenAPI 3.x or Swagger 2.0 spec URL to WebMCP and the adapter walks every paths × methods, resolves $refs against #/components/schemas/, and emits a fully typed tool list ready for Claude tool_use, OpenAI function-calling, or LangChain. Try it: curl 'https://wmcp.sh/api/v1/tools?url=https://petstore3.swagger.io/api/v3/openapi.json'."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Which AI agent frameworks does WebMCP work with?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Drop-in SDKs for Anthropic SDK (Claude tool_use), OpenAI (function-calling), LangChain (StructuredTool), and Vercel AI SDK. Python: pip install wmcp. JavaScript/TypeScript: npm install @wmcp/sdk. Anything else that consumes MCP-shaped tools — Cursor, Cline, Claude Code, Gemini CLI — works directly with the public REST API."
+      }
+    }
+  ]
+}
+</script>
+<meta property="og:title" content="WebMCP Anything — Hosted MCP Server for any URL" />
+<meta property="og:description" content="Shopper-side MCP server. Turn any product URL or OpenAPI spec into agent-callable tools. Works with Claude, OpenAI, LangChain." />
 <meta property="og:url" content="https://wmcp.sh" />
 <meta property="og:image" content="https://wmcp.sh/og.png" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
 <meta property="og:type" content="website" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="WebMCP Anything" />
-<meta name="twitter:description" content="Turn any URL into agent-callable MCP tools." />
+<meta name="twitter:title" content="WebMCP Anything — Hosted MCP Server for any URL" />
+<meta name="twitter:description" content="Shopper-side MCP server. Turn any product URL or OpenAPI spec into agent-callable tools. Works with Claude, OpenAI, LangChain." />
 <meta name="twitter:image" content="https://wmcp.sh/og.png" />
 <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
 <style>
@@ -367,8 +416,10 @@ export function landingHtml(origin: string): string {
   <div class="brand">wmcp<span>.sh</span></div>
   <div class="links">
     <a href="#demo">Demo</a>
+    <a href="#comparison">vs.</a>
     <a href="#code">Integrate</a>
     <a href="#pricing">Pricing</a>
+    <a href="#faq">FAQ</a>
     <a href="/directory">Directory</a>
     <a href="https://github.com/New1Direction/webmcp-anything">GitHub</a>
   </div>
@@ -426,6 +477,70 @@ export function landingHtml(origin: string): string {
       <span class="chip" data-u="https://outdoorvoices.com/products/exercise-dress">outdoor voices (jsonld)</span>
     </div>
     <pre id="out"><span class="c">// Paste a URL and click Get tools.</span></pre>
+  </div>
+</section>
+
+<!-- ========== POSITIONING / COMPARISON ========== -->
+<section id="comparison">
+  <div class="section-label">Positioning</div>
+  <h2 class="section-h2">Shopper-side MCP vs. owner-side admin tools.</h2>
+  <p class="section-sub">Most existing "AI for e-commerce" tools target the merchant. wmcp.sh targets the shopper — public storefronts, no admin credentials, every store.</p>
+
+  <div style="overflow-x:auto;margin-top:24px;border:1px solid var(--border);border-radius:14px;background:var(--card)">
+    <table style="width:100%;border-collapse:collapse;text-align:left;font-size:.9rem">
+      <thead>
+        <tr>
+          <th style="padding:14px 18px;border-bottom:1px solid var(--border);background:var(--bg2);font-weight:700;color:var(--accent2)">Capability</th>
+          <th style="padding:14px 18px;border-bottom:1px solid var(--border);background:var(--bg2);font-weight:700;color:var(--accent2)">Shopify dev-mcp</th>
+          <th style="padding:14px 18px;border-bottom:1px solid var(--border);background:var(--bg2);font-weight:700;color:var(--accent2)">Composio</th>
+          <th style="padding:14px 18px;border-bottom:1px solid var(--border);background:var(--bg2);font-weight:700;color:var(--accent2)">wmcp.sh</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding:14px 18px;border-bottom:1px solid var(--border)"><strong style="color:var(--text)">Built for</strong></td>
+          <td style="padding:14px 18px;border-bottom:1px solid var(--border);color:var(--muted)">Merchants &amp; devs (owner)</td>
+          <td style="padding:14px 18px;border-bottom:1px solid var(--border);color:var(--muted)">Enterprise integrations (owner)</td>
+          <td style="padding:14px 18px;border-bottom:1px solid var(--border)"><strong style="color:var(--text)">AI shopping agents (shopper)</strong></td>
+        </tr>
+        <tr>
+          <td style="padding:14px 18px;border-bottom:1px solid var(--border)"><strong style="color:var(--text)">API surface</strong></td>
+          <td style="padding:14px 18px;border-bottom:1px solid var(--border);color:var(--muted)">Admin API + GraphQL</td>
+          <td style="padding:14px 18px;border-bottom:1px solid var(--border);color:var(--muted)">Admin APIs + webhooks</td>
+          <td style="padding:14px 18px;border-bottom:1px solid var(--border)"><strong style="color:var(--text)">Storefront + JSON-LD + LLM</strong></td>
+        </tr>
+        <tr>
+          <td style="padding:14px 18px;border-bottom:1px solid var(--border)"><strong style="color:var(--text)">Auth required</strong></td>
+          <td style="padding:14px 18px;border-bottom:1px solid var(--border);color:var(--muted)">Yes — admin token</td>
+          <td style="padding:14px 18px;border-bottom:1px solid var(--border);color:var(--muted)">Yes — OAuth / API key</td>
+          <td style="padding:14px 18px;border-bottom:1px solid var(--border)"><strong style="color:var(--green)">No — public endpoints</strong></td>
+        </tr>
+        <tr>
+          <td style="padding:14px 18px;border-bottom:1px solid var(--border)"><strong style="color:var(--text)">Stores covered</strong></td>
+          <td style="padding:14px 18px;border-bottom:1px solid var(--border);color:var(--muted)">The one you connect</td>
+          <td style="padding:14px 18px;border-bottom:1px solid var(--border);color:var(--muted)">Each user connects each one</td>
+          <td style="padding:14px 18px;border-bottom:1px solid var(--border)"><strong style="color:var(--text)">All 4M+ Shopify stores + JSON-LD retailers</strong></td>
+        </tr>
+        <tr>
+          <td style="padding:14px 18px;border-bottom:1px solid var(--border)"><strong style="color:var(--text)">Transactional tools</strong></td>
+          <td style="padding:14px 18px;border-bottom:1px solid var(--border);color:var(--muted)">Docs + schema lookup</td>
+          <td style="padding:14px 18px;border-bottom:1px solid var(--border);color:var(--muted)">CRUD on the store you own</td>
+          <td style="padding:14px 18px;border-bottom:1px solid var(--border)"><strong style="color:var(--text)">get_price · check_stock · add_to_cart</strong></td>
+        </tr>
+        <tr>
+          <td style="padding:14px 18px;border-bottom:1px solid var(--border)"><strong style="color:var(--text)">OpenAPI &rarr; tools</strong></td>
+          <td style="padding:14px 18px;border-bottom:1px solid var(--border);color:var(--red)">✗</td>
+          <td style="padding:14px 18px;border-bottom:1px solid var(--border);color:var(--muted)">Partial</td>
+          <td style="padding:14px 18px;border-bottom:1px solid var(--border)"><strong style="color:var(--green)">✓ any 3.x / Swagger 2.0 spec</strong></td>
+        </tr>
+        <tr>
+          <td style="padding:14px 18px"><strong style="color:var(--text)">Cache</strong></td>
+          <td style="padding:14px 18px;color:var(--muted)">Per-store realtime</td>
+          <td style="padding:14px 18px;color:var(--muted)">Proxy latency</td>
+          <td style="padding:14px 18px"><strong style="color:var(--text)">Shared global · &lt;100ms hits</strong></td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </section>
 
@@ -580,13 +695,58 @@ tools = [
   </div>
 </section>
 
+<!-- ========== FAQ ========== -->
+<section id="faq">
+  <div class="section-label">FAQ</div>
+  <h2 class="section-h2">Frequently asked questions</h2>
+  <p class="section-sub">What we get asked most. Schema-marked-up so Google can show these as rich snippets.</p>
+
+  <div style="display:flex;flex-direction:column;gap:12px;margin-top:24px">
+    <details style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 20px">
+      <summary style="font-weight:700;font-size:1rem;color:var(--text);cursor:pointer;list-style:none">How does wmcp.sh differ from Shopify's AI Toolkit (dev-mcp)?</summary>
+      <div style="color:var(--muted);font-size:.92rem;margin-top:12px;line-height:1.65">
+        Shopify's <code style="color:var(--accent2)">dev-mcp</code> is <strong style="color:var(--text)">owner-side</strong> — it connects to the Shopify Admin API for store management and requires admin credentials. wmcp.sh is <strong style="color:var(--text)">shopper-side</strong> — it operates on public storefronts using Shopify's storefront JSON, schema.org JSON-LD, or an LLM fallback, so AI shopping agents can fetch prices, list variants, and trigger <code style="color:var(--accent2)">add_to_cart</code> without merchant credentials.
+      </div>
+    </details>
+
+    <details style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 20px">
+      <summary style="font-weight:700;font-size:1rem;color:var(--text);cursor:pointer;list-style:none">How does wmcp.sh differ from Composio?</summary>
+      <div style="color:var(--muted);font-size:.92rem;margin-top:12px;line-height:1.65">
+        Composio is an enterprise integration proxy aimed at owner-side admin APIs (Stripe, GitHub, Slack, Shopify Admin). wmcp.sh is purpose-built for shopper-side transactional flows — product lookup, variant comparison, <code style="color:var(--accent2)">add_to_cart</code> — and caches schemas in a shared global cache that serves under 100ms. wmcp.sh also ingests any OpenAPI spec; Composio handles each integration separately.
+      </div>
+    </details>
+
+    <details style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 20px">
+      <summary style="font-weight:700;font-size:1rem;color:var(--text);cursor:pointer;list-style:none">Can wmcp.sh turn an OpenAPI spec into MCP tools?</summary>
+      <div style="color:var(--muted);font-size:.92rem;margin-top:12px;line-height:1.65">
+        Yes. Hand any JSON OpenAPI 3.x or Swagger 2.0 spec URL to wmcp.sh and the adapter walks every path × method, resolves <code style="color:var(--accent2)">$ref</code>s against <code style="color:var(--accent2)">#/components/schemas/</code>, and emits a typed tool list ready for Claude tool_use, OpenAI function-calling, or LangChain. Try it:
+        <pre style="margin-top:12px"><code><span class="k">curl</span> <span class="s">'https://wmcp.sh/api/v1/tools?url=https://petstore3.swagger.io/api/v3/openapi.json'</span></code></pre>
+      </div>
+    </details>
+
+    <details style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 20px">
+      <summary style="font-weight:700;font-size:1rem;color:var(--text);cursor:pointer;list-style:none">Which AI agent frameworks does wmcp.sh work with?</summary>
+      <div style="color:var(--muted);font-size:.92rem;margin-top:12px;line-height:1.65">
+        Drop-in SDKs for <strong style="color:var(--text)">Anthropic SDK</strong> (Claude tool_use), <strong style="color:var(--text)">OpenAI</strong> (function-calling), <strong style="color:var(--text)">LangChain</strong> (StructuredTool), and <strong style="color:var(--text)">Vercel AI SDK</strong>. Install: <code style="color:var(--accent2)">pip install wmcp</code> or <code style="color:var(--accent2)">npm install @wmcp/sdk</code>. Anything else that consumes MCP-shaped tools — Cursor, Cline, Claude Code, Gemini CLI — works directly with the public REST API.
+      </div>
+    </details>
+
+    <details style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 20px">
+      <summary style="font-weight:700;font-size:1rem;color:var(--text);cursor:pointer;list-style:none">What happens when a site blocks bot traffic?</summary>
+      <div style="color:var(--muted);font-size:.92rem;margin-top:12px;line-height:1.65">
+        Sites behind Akamai or Incapsula (Amazon, Nike) block server-side fetches. For these, the wmcp.sh Chrome extension extracts schemas client-side in your real browser and pushes them back to the shared cache. The next time anyone — any user, any agent — asks wmcp.sh for that URL, the cached schema is served server-side instantly.
+      </div>
+    </details>
+  </div>
+</section>
+
 <!-- ========== ABOUT ========== -->
 <section id="about">
   <div class="about">
     <div class="about-avatar">W</div>
     <div class="about-body">
       <p style="color:var(--muted)"><strong style="color:var(--text)">Why this exists.</strong> LLM agents can talk to ChatGPT but not to Allbirds. Every framework reinvents per-site scrapers and the same Shopify cart endpoint gets rediscovered weekly. wmcp.sh is the open layer that solves it once.</p>
-      <p style="color:var(--muted)">Built in the open. Adapters are MIT-licensed. PRs accepted. <a href="https://github.com/New1Direction/webmcp-anything">github.com/New1Direction/webmcp-anything</a> · <a href="/directory">directory</a></p>
+      <p style="color:var(--muted)">Built in the open. Adapters are MIT-licensed. PRs accepted. Last updated 2026-05-27. <a href="https://github.com/New1Direction/webmcp-anything">github.com/New1Direction/webmcp-anything</a> · <a href="/directory">directory</a></p>
     </div>
   </div>
 </section>
