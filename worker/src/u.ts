@@ -260,6 +260,11 @@ export async function sitemapXml(env: any, origin: string): Promise<string> {
     <priority>0.9</priority>
   </url>
   <url>
+    <loc>${origin}/integration/openapi</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
     <loc>${origin}/dashboard</loc>
     <priority>0.5</priority>
   </url>

@@ -142,6 +142,18 @@ app.get("/connect/anthropic", async (c) => {
   return c.html(connectAnthropicHtml());
 });
 
+// --------------------- integration SEO pages ---------------------
+
+app.get("/integration/openapi", async (c) => {
+  const { integrationOpenapiHtml } = await import("./integration_openapi");
+  return new Response(integrationOpenapiHtml(new URL(c.req.url).origin), {
+    headers: {
+      "content-type": "text/html; charset=utf-8",
+      "cache-control": "public, max-age=900, s-maxage=900",
+    },
+  });
+});
+
 // --------------------- SEO pages ---------------------
 
 app.get("/u/:encoded", async (c) => {

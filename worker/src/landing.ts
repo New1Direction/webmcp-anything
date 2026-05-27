@@ -417,6 +417,7 @@ export function landingHtml(origin: string): string {
   <div class="links">
     <a href="#demo">Demo</a>
     <a href="#comparison">vs.</a>
+    <a href="/integration/openapi">OpenAPI</a>
     <a href="#code">Integrate</a>
     <a href="#pricing">Pricing</a>
     <a href="#faq">FAQ</a>
