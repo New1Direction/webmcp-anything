@@ -39,8 +39,11 @@ const DEFAULT_STORES = [
   "us.mejuri.com",
 ];
 
-const MAX_STORES_PER_RUN = 8;
-const PRODUCTS_PER_STORE = 15;
+// Tuned for a ~500-store registry being harvested across the day.
+// 15 stores × 20 products = 300 fetches/run. Workers Bundled plan
+// allows 1000 subrequests per invocation — well under.
+const MAX_STORES_PER_RUN = 15;
+const PRODUCTS_PER_STORE = 20;
 const FETCH_TIMEOUT_MS = 8000;
 const SHOPIFY_TTL_SEC = 3600; // matches index.ts shopify cache TTL
 

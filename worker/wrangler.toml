@@ -31,7 +31,10 @@ ENVIRONMENT = "production"
 # each store's /products.json, and caches new product handles. Adds ~30-80
 # new indexable pages per day on autopilot.
 [triggers]
-crons = ["0 */6 * * *"]
+# Every 2h: 12 runs/day × 15 stores/run = ~180 stores/day at full capacity.
+# With a ~500-store registry that cycles each store every ~3 days, fresh
+# enough that products don't drift far. Tighten further if needed.
+crons = ["0 */2 * * *"]
 
 [observability]
 enabled = true
