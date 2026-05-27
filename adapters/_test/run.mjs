@@ -105,6 +105,159 @@ test("llm.detect needs an API key", async () => {
   assert.equal(ctx.adapter, "llm");
 });
 
+// --- coingecko ---
+test("coingecko detects all canonical hosts", async () => {
+  const cg = await import("../coingecko.js");
+  assert.ok(cg.detect({ url: "https://www.coingecko.com/en/coins/bitcoin" }));
+  assert.ok(cg.detect({ url: "https://api.coingecko.com/api/v3/simple/price" }));
+  assert.ok(cg.detect({ url: "https://pro-api.coingecko.com/api/v3" }));
+  assert.ok(cg.detect({ url: "https://docs.coingecko.com/" }));
+});
+
+test("coingecko ignores unrelated URLs", async () => {
+  const cg = await import("../coingecko.js");
+  assert.equal(cg.detect({ url: "https://coinmarketcap.com" }), null);
+  assert.equal(cg.detect({ url: "https://example.com" }), null);
+});
+
+test("coingecko extract returns hand-curated tool list", async () => {
+  const cg = await import("../coingecko.js");
+  const data = await cg.extract({ adapter: "coingecko", baseUrl: "x", sourceUrl: "x" });
+  assert.equal(data.tools.length, 5);
+  assert.ok(data.tools.find((t) => t.name === "get_coin_price"));
+  assert.ok(data.tools.find((t) => t.name === "search_coins"));
+  assert.equal(typeof cg.actions.coingecko_get, "function");
+});
+
+// --- defillama ---
+test("defillama detects llama hosts", async () => {
+  const dl = await import("../defillama.js");
+  assert.ok(dl.detect({ url: "https://defillama.com/" }));
+  assert.ok(dl.detect({ url: "https://api.llama.fi/protocols" }));
+  assert.ok(dl.detect({ url: "https://coins.llama.fi/prices/current/ethereum:0x..." }));
+  assert.ok(dl.detect({ url: "https://yields.llama.fi/pools" }));
+  assert.ok(dl.detect({ url: "https://stablecoins.llama.fi/stablecoins" }));
+});
+
+test("defillama ignores unrelated", async () => {
+  const dl = await import("../defillama.js");
+  assert.equal(dl.detect({ url: "https://llama.com" }), null);
+  assert.equal(dl.detect({ url: "https://example.com" }), null);
+});
+
+test("defillama extract returns curated tools", async () => {
+  const dl = await import("../defillama.js");
+  const data = await dl.extract({ adapter: "defillama", sourceUrl: "x" });
+  assert.equal(data.tools.length, 6);
+  assert.ok(data.tools.find((t) => t.name === "list_protocols"));
+  assert.ok(data.tools.find((t) => t.name === "get_current_prices"));
+  assert.equal(typeof dl.actions.defillama_get, "function");
+});
+
+// --- dexscreener ---
+test("dexscreener detects canonical hosts", async () => {
+  const ds = await import("../dexscreener.js");
+  assert.ok(ds.detect({ url: "https://dexscreener.com/ethereum/0x..." }));
+  assert.ok(ds.detect({ url: "https://api.dexscreener.com/latest/dex/tokens/0x..." }));
+  assert.ok(ds.detect({ url: "https://www.dexscreener.com" }));
+});
+
+test("dexscreener extract has token + pair + search tools", async () => {
+  const ds = await import("../dexscreener.js");
+  const data = await ds.extract({ adapter: "dexscreener", sourceUrl: "x" });
+  assert.ok(data.tools.find((t) => t.name === "get_token_pairs"));
+  assert.ok(data.tools.find((t) => t.name === "get_pair"));
+  assert.ok(data.tools.find((t) => t.name === "search_pairs"));
+  assert.equal(typeof ds.actions.dexscreener_get, "function");
+});
+
+// --- pyth ---
+test("pyth detects pyth.network hosts", async () => {
+  const py = await import("../pyth.js");
+  assert.ok(py.detect({ url: "https://pyth.network/price-feeds" }));
+  assert.ok(py.detect({ url: "https://hermes.pyth.network/v2/price_feeds" }));
+  assert.ok(py.detect({ url: "https://docs.pyth.network" }));
+});
+
+test("pyth ignores unrelated", async () => {
+  const py = await import("../pyth.js");
+  assert.equal(py.detect({ url: "https://example.com" }), null);
+});
+
+test("pyth extract has hermes + benchmarks + lazer-pro tools", async () => {
+  const py = await import("../pyth.js");
+  const data = await py.extract({ adapter: "pyth", sourceUrl: "x" });
+  // Hermes (free): list_price_feeds, get_latest_price, get_price_at_time, get_publisher_stake_caps
+  // Benchmarks (free): list_benchmarks_feeds, get_benchmarks_feed, get_historical_price, get_historical_price_interval, get_price_differences
+  // Lazer symbols (free): list_lazer_symbols
+  // Lazer Pro (paid): lazer_latest_price, lazer_price_at_timestamp, lazer_reduce_price
+  assert.equal(data.tools.length, 13);
+  const names = data.tools.map((t) => t.name);
+  for (const n of [
+    "list_price_feeds", "get_latest_price", "get_price_at_time", "get_publisher_stake_caps",
+    "list_benchmarks_feeds", "get_benchmarks_feed", "get_historical_price", "get_historical_price_interval", "get_price_differences",
+    "list_lazer_symbols",
+    "lazer_latest_price", "lazer_price_at_timestamp", "lazer_reduce_price",
+  ]) {
+    assert.ok(names.includes(n), `tool ${n} missing`);
+  }
+  assert.equal(typeof py.actions.pyth_call, "function");
+});
+
+test("pyth lazer tools mark paid + require bearer auth", async () => {
+  const py = await import("../pyth.js");
+  const data = await py.extract({ adapter: "pyth", sourceUrl: "x" });
+  const paid = data.tools.filter((t) => t.name.startsWith("lazer_"));
+  for (const t of paid) {
+    assert.ok(t.description.includes("[PAID"), `${t.name} should flag PAID`);
+    assert.equal(t.action.auth, "bearer", `${t.name} should require bearer`);
+  }
+  // calling a Lazer action without _auth should throw, not silently 401
+  await assert.rejects(
+    py.actions.pyth_call({ ...paid[0].action, args: { channel: "real_time", formats: ["evm"], properties: ["price"] } }),
+    /requires a Pyth Pro Bearer/
+  );
+});
+
+test("pyth detects app.pyth.network + dourolabs hosts", async () => {
+  const py = await import("../pyth.js");
+  assert.ok(py.detect({ url: "https://app.pyth.network/explore" }));
+  assert.ok(py.detect({ url: "https://benchmarks.pyth.network/v1/price_feeds/" }));
+  assert.ok(py.detect({ url: "https://pyth.dourolabs.app/v1/symbols" }));
+  assert.ok(py.detect({ url: "https://pyth-lazer.dourolabs.app/v1/latest_price" }));
+  assert.ok(py.detect({ url: "https://pyth-lazer-0.dourolabs.app/v1/stream" }));
+  assert.ok(py.detect({ url: "https://history.pyth-lazer.dourolabs.app/v1/state" }));
+});
+
+// --- chainlink ---
+test("chainlink detects chain.link domains", async () => {
+  const cl = await import("../chainlink.js");
+  assert.ok(cl.detect({ url: "https://chain.link/" }));
+  assert.ok(cl.detect({ url: "https://data.chain.link/feeds" }));
+  assert.ok(cl.detect({ url: "https://docs.chain.link/data-feeds/price-feeds" }));
+  assert.ok(cl.detect({ url: "https://chainlinklabs.com" }));
+});
+
+test("chainlink ignores chainlink-adjacent fake domains", async () => {
+  const cl = await import("../chainlink.js");
+  assert.equal(cl.detect({ url: "https://example.com" }), null);
+  assert.equal(cl.detect({ url: "https://chainlink-sucks.com" }), null);
+});
+
+test("chainlink extract returns static feed catalog", async () => {
+  const cl = await import("../chainlink.js");
+  const data = await cl.extract({ adapter: "chainlink", sourceUrl: "x" });
+  assert.ok(data.tools.find((t) => t.name === "list_feeds_ethereum"));
+  assert.ok(data.tools.find((t) => t.name === "get_feed_address"));
+  assert.ok(data.tools.find((t) => t.name === "get_read_call_template"));
+  // lookup action resolves a real pair
+  const v = await cl.actions.chainlink_lookup({ args: { pair: "BTC/USD" } });
+  assert.ok(v && v.address.startsWith("0x"));
+  // unknown pair returns null
+  const miss = await cl.actions.chainlink_lookup({ args: { pair: "XYZ/USD" } });
+  assert.equal(miss, null);
+});
+
 // --- template guard ---
 // Make sure the _template/ file is still syntactically valid + exports the
 // right shape, so contributors copying it don't start from broken code.

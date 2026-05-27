@@ -4,6 +4,21 @@ import * as shopify from "../../adapters/shopify.js";
 import * as jsonld from "../../adapters/jsonld.js";
 import * as openapi from "../../adapters/openapi.js";
 import * as llm from "../../adapters/llm.js";
+import * as coingecko from "../../adapters/coingecko.js";
+import * as defillama from "../../adapters/defillama.js";
+import * as dexscreener from "../../adapters/dexscreener.js";
+import * as pyth from "../../adapters/pyth.js";
+import * as chainlink from "../../adapters/chainlink.js";
+
+// Crypto/data adapters share the same structure: detect → extract → action.
+// They sit after openapi and before the HTML fetch in the /api/v1/tools chain.
+const CRYPTO_ADAPTERS = [
+  { name: "coingecko", mod: coingecko, ttl: 60 },        // prices change fast
+  { name: "dexscreener", mod: dexscreener, ttl: 60 },    // pair data changes fast
+  { name: "pyth", mod: pyth, ttl: 60 },                  // oracle prices
+  { name: "defillama", mod: defillama, ttl: 600 },       // TVL changes slowly
+  { name: "chainlink", mod: chainlink, ttl: 86400 },     // catalog only — daily cache fine
+];
 import { fetchAndParse } from "./html";
 import { landingHtml } from "./landing";
 import { dashboardHtml } from "./dashboard";
@@ -147,6 +162,18 @@ app.get("/connect/anthropic", async (c) => {
 app.get("/integration/openapi", async (c) => {
   const { integrationOpenapiHtml } = await import("./integration_openapi");
   return new Response(integrationOpenapiHtml(new URL(c.req.url).origin), {
+    headers: {
+      "content-type": "text/html; charset=utf-8",
+      "cache-control": "public, max-age=900, s-maxage=900",
+    },
+  });
+});
+
+// Category landing — groups all 5 oracle / price-data adapters under one URL.
+// Distinct from /integration/* (single-provider pages) — this is a category.
+app.get("/price-data", async (c) => {
+  const { integrationPriceDataHtml } = await import("./integration_price_data");
+  return new Response(integrationPriceDataHtml(new URL(c.req.url).origin), {
     headers: {
       "content-type": "text/html; charset=utf-8",
       "cache-control": "public, max-age=900, s-maxage=900",
@@ -451,6 +478,26 @@ app.get("/api/v1/tools", gate("read"), async (c) => {
     }
   }
 
+  // 2c) crypto / data adapters — hand-curated tool catalogs for CoinGecko,
+  // DefiLlama, DexScreener, Pyth, Chainlink. extract() is synchronous on
+  // these (no spec fetch), so this loop is cheap.
+  for (const { name, mod, ttl } of CRYPTO_ADAPTERS) {
+    const ctx = (mod as any).detect({ url });
+    if (!ctx) continue;
+    try {
+      const data = await (mod as any).extract(ctx);
+      const payload = {
+        adapter: name,
+        tools: data.tools,
+        product: data.product,
+      };
+      c.executionCtx.waitUntil(writeCache(c.env, url, payload, ttl));
+      return c.json({ ...payload, from: "live" });
+    } catch (err: any) {
+      // fall through to next adapter (extract() may throw on unsupported nested paths)
+    }
+  }
+
   // 3) html + jsonld
   let page;
   try {
@@ -568,6 +615,27 @@ app.post("/api/v1/tools/execute", gate("execute"), async (c) => {
       return c.json({ ok: true, value });
     } catch (err: any) {
       return c.json({ ok: false, error: String(err?.message || err) }, 500);
+    }
+  }
+
+  // Crypto/data adapter execute. Each adapter has a single action kind that
+  // dispatches based on path/params carried in the tool definition.
+  for (const { name, mod } of CRYPTO_ADAPTERS) {
+    const cctx = (mod as any).detect({ url: body.url });
+    if (!cctx) continue;
+    try {
+      const data = await (mod as any).extract(cctx);
+      const tool = data.tools.find((t: any) => t.name === body.tool);
+      if (!tool) return c.json({ error: `tool ${body.tool} not found` }, 404);
+      if (tool.result !== undefined) return c.json({ ok: true, value: tool.result });
+      const kind = tool.action?.kind;
+      if (!kind) return c.json({ error: "static result tool — no action to execute" }, 400);
+      const handler = (mod as any).actions?.[kind];
+      if (!handler) return c.json({ error: `no action handler for ${kind}` }, 500);
+      const value = await handler({ ...tool.action, args: body.args || {} });
+      return c.json({ ok: true, value });
+    } catch (err: any) {
+      return c.json({ ok: false, error: String(err?.message || err), adapter: name }, 500);
     }
   }
 
