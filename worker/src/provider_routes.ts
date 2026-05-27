@@ -24,6 +24,12 @@ import {
   listUserConnections,
   type RawTokenInput,
 } from "./token_vault";
+import {
+  ensureMcpClient,
+  generatePkceVerifier,
+  pkceChallengeS256,
+  exchangePkceCode,
+} from "./mcp_oauth";
 
 type Env = {
   KEYS: KVNamespace;
@@ -127,6 +133,41 @@ export async function providerStart(c: Context<{ Bindings: Env }>) {
     return anthropicStart(c as any);
   }
 
+  // ---- MCP-spec OAuth path: DCR + PKCE with redirect ----
+  // No pre-registered client. We register on first use, cache, reuse forever.
+  if (p.usePKCERedirect && p.dcrRegistrationUrl) {
+    const origin = new URL(c.req.url).origin;
+    let clientRec;
+    try {
+      clientRec = await ensureMcpClient(c.env, p, origin);
+    } catch (err: any) {
+      return c.json(
+        { error: "dcr_failed", detail: String(err?.message || err) },
+        502
+      );
+    }
+
+    const verifier = generatePkceVerifier();
+    const challenge = await pkceChallengeS256(verifier);
+    const state = await createOauthState(c.env, {
+      provider: p.id,
+      redirect_to: c.req.query("redirect_to") || `/dashboard?connected=${p.id}`,
+      pkce_verifier: verifier,
+    });
+
+    const params = new URLSearchParams({
+      client_id: clientRec.client_id,
+      redirect_uri: callbackUrl(origin, p.id),
+      response_type: "code",
+      state,
+      code_challenge: challenge,
+      code_challenge_method: "S256",
+    });
+    if (p.scopes) params.set("scope", p.scopes);
+
+    return c.redirect(`${p.authUrl}?${params.toString()}`, 302);
+  }
+
   const { id: clientId } = clientCreds(c.env, p);
   if (!clientId) {
     return c.json(
@@ -194,12 +235,51 @@ export async function providerCallback(c: Context<{ Bindings: Env }>) {
     return c.json({ error: "invalid_state" }, 400);
   }
 
+  const origin = new URL(c.req.url).origin;
+
+  // ---- MCP-spec PKCE+DCR callback ----
+  if (p.usePKCERedirect && p.dcrRegistrationUrl) {
+    if (!sp.pkce_verifier) {
+      return c.json({ error: "missing_pkce_verifier" }, 400);
+    }
+    let clientRec;
+    try {
+      clientRec = await ensureMcpClient(c.env, p, origin);
+    } catch (err: any) {
+      return c.json({ error: "dcr_lookup_failed", detail: String(err?.message || err) }, 502);
+    }
+    let td;
+    try {
+      td = await exchangePkceCode({
+        tokenUrl: p.tokenUrl!,
+        code,
+        codeVerifier: sp.pkce_verifier,
+        clientId: clientRec.client_id,
+        clientSecret: clientRec.client_secret,
+        redirectUri: callbackUrl(origin, p.id),
+      });
+    } catch (err: any) {
+      return c.json(
+        { error: "token_exchange_failed", detail: String(err?.message || err) },
+        502
+      );
+    }
+    await saveProviderToken(c.env, user_id, p.id, {
+      access_token: td.access_token,
+      refresh_token: td.refresh_token,
+      token_type: td.token_type,
+      scope: td.scope,
+      expires_in: typeof td.expires_in === "number" ? td.expires_in : undefined,
+      metadata: { account_name: p.name },
+    });
+    const target = sp.redirect_to || `/dashboard?connected=${p.id}`;
+    return c.redirect(target, 302);
+  }
+
   const { id: clientId, secret: clientSecret } = clientCreds(c.env, p);
   if (!clientId || !clientSecret) {
     return c.json({ error: "provider_not_configured" }, 503);
   }
-
-  const origin = new URL(c.req.url).origin;
 
   // Token exchange. Notion + a few others want auth in Basic header; rest in body.
   const tokenBody = new URLSearchParams({

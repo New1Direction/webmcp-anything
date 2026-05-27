@@ -43,8 +43,30 @@ export interface Provider {
   // when their agent calls an API matching one of these hosts.
   apiHosts?: string[];
 
+  // ---- MCP-proxy mode (for OAuth-protected upstream MCP servers) ----
+  // If true, this provider hosts an MCP server we expose via /mcp/:id.
+  // Agents connect to https://wmcp.sh/mcp/<id> instead of the upstream URL;
+  // we inject the user's stored OAuth bearer token transparently.
+  mcpProxy?: boolean;
+  mcpUrl?: string; // upstream MCP endpoint (e.g. https://mcp.defillama.com/mcp)
+
+  // ---- MCP-spec OAuth (DCR + PKCE-redirect) ----
+  // Modern MCP servers register themselves under RFC 7591 (dynamic client
+  // registration). Set dcrRegistrationUrl to enable auto-registration —
+  // wmcp.sh calls /register once, caches { client_id, client_secret? } in
+  // KV under `mcp_client:<provider_id>`, then reuses indefinitely.
+  // When set, clientIdSecret / clientSecretSecret are ignored.
+  dcrRegistrationUrl?: string;
+  // RFC 7636 PKCE with redirect (NOT the OOB pattern used by Anthropic).
+  // When true, the start handler generates a code_verifier + S256 challenge,
+  // stashes the verifier in the oauth_state KV record, and the callback
+  // handler pulls it back to exchange the code.
+  usePKCERedirect?: boolean;
+  // Marketing copy on connection success
+  scopeNotice?: string;
+
   // Marketing
-  category: "auth" | "comms" | "billing" | "dev" | "ai" | "productivity";
+  category: "auth" | "comms" | "billing" | "dev" | "ai" | "productivity" | "data";
   status: "stable" | "experimental";
   notes?: string;
 }
@@ -208,6 +230,36 @@ export const PROVIDERS: Record<string, Provider> = {
     notes:
       "OpenAI does not expose a consumer OAuth flow for inference. Users paste their " +
       "API key once; we store it encrypted and use it on their behalf.",
+  },
+
+  // --- MCP-proxy providers (OAuth-protected upstream MCP servers) ---
+  //
+  // wmcp.sh acts as an OAuth-bearer-injecting proxy in front of these.
+  // Agents point at https://wmcp.sh/mcp/<id> ; we forward to mcpUrl with
+  // the user's stored bearer token. Dynamic Client Registration + PKCE
+  // means zero per-app env config — wmcp.sh registers itself once.
+  defillama: {
+    id: "defillama",
+    name: "DefiLlama MCP",
+    description:
+      "23 DeFi analytics tools (TVL, fees, yields, stablecoins, bridges, ETFs, hacks, raises, institutional holdings, etc.) via DefiLlama's official OAuth-protected MCP server. Requires a paid DefiLlama API subscription.",
+    authType: "oauth2",
+    authUrl: "https://mcp.defillama.com/authorize",
+    tokenUrl: "https://mcp.defillama.com/token",
+    scopes: "openid",
+    usePKCERedirect: true,
+    dcrRegistrationUrl: "https://mcp.defillama.com/register",
+    mcpProxy: true,
+    mcpUrl: "https://mcp.defillama.com/mcp",
+    apiHosts: ["mcp.defillama.com"],
+    category: "data",
+    status: "experimental",
+    scopeNotice:
+      "Requires an active DefiLlama API subscription. Sign up at https://defillama.com/subscribe.",
+    notes:
+      "MCP-spec compliant. Uses Dynamic Client Registration (RFC 7591) + PKCE. " +
+      "wmcp.sh stores your refresh token encrypted and auto-refreshes every 24h. " +
+      "Agents connect to https://wmcp.sh/mcp/defillama instead of the upstream.",
   },
 
   // --- Shopify Admin (for Shopify reseller tier) ---

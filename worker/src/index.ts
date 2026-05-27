@@ -169,6 +169,24 @@ app.get("/integration/openapi", async (c) => {
   });
 });
 
+// ---------- MCP proxy (OAuth-bearer-injecting front for upstream MCP) ----------
+// Generic — works for any provider with mcpProxy:true in providers.ts.
+// Agents point at /mcp/<provider>; wmcp.sh injects the user's stored OAuth
+// bearer token transparently, refreshing as needed.
+app.get("/mcp", async (c) => {
+  const { listMcpProxies } = await import("./mcp_proxy");
+  return listMcpProxies(c as any);
+});
+app.all("/mcp/:provider", gate("execute"), async (c) => {
+  const { mcpProxyHandler } = await import("./mcp_proxy");
+  return mcpProxyHandler(c as any);
+});
+// Match subpaths too (rare with MCP servers but harmless to support).
+app.all("/mcp/:provider/*", gate("execute"), async (c) => {
+  const { mcpProxyHandler } = await import("./mcp_proxy");
+  return mcpProxyHandler(c as any);
+});
+
 // Category landing — groups all 5 oracle / price-data adapters under one URL.
 // Distinct from /integration/* (single-provider pages) — this is a category.
 app.get("/price-data", async (c) => {

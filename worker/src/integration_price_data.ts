@@ -208,6 +208,14 @@ export function integrationPriceDataHtml(origin: string): string {
     </div>
 
     <div class="src-card paid">
+      <span class="tier mixed">OAuth proxy</span>
+      <h3>DefiLlama MCP <span style="font-size:.7em;color:var(--dim)">(via wmcp.sh)</span></h3>
+      <p class="desc">DefiLlama's official OAuth-protected MCP server, proxied through wmcp.sh so you only authenticate once. 23 first-party DeFi-analytics tools with computed metrics (P/S ratio, mNAV, signed ETF flows, hack history). Requires a paid DefiLlama API subscription.</p>
+      <p class="tools">get_market_totals · get_protocol_metrics · get_chain_metrics · get_token_prices · get_yield_pools · get_stablecoin_supply · get_etf_flows · get_bridge_flows · get_events · get_dat_holdings · get_token_unlocks · get_oracle_metrics · resolve_entity · ...+10 more</p>
+      <p class="url">Connect at <a href="/dashboard" style="color:var(--accent2);text-decoration:none">/dashboard</a>, then point your agent at:<br />${origin}/mcp/defillama</p>
+    </div>
+
+    <div class="src-card paid">
       <span class="tier mixed">Free + paid</span>
       <h3>Pyth Network</h3>
       <p class="desc">13 tools across the full Pyth surface. Hermes (free, ~400ms): list + latest + historical + publisher stakes. Benchmarks (free, historical OHLCV with intervals). Pyth Pro / Lazer (paid, Bearer token via <code>_auth</code>): 50ms / 200ms / 1s channels, payload-reduce.</p>

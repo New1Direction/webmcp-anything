@@ -88,7 +88,13 @@ const STATE_TTL = 600; // 10 min
 
 export async function createOauthState(
   env: Env,
-  payload: { provider: string; redirect_to?: string }
+  payload: {
+    provider: string;
+    redirect_to?: string;
+    // PKCE verifier (RFC 7636) — set when the provider uses usePKCERedirect.
+    // Round-trips through the OAuth state so the callback can exchange the code.
+    pkce_verifier?: string;
+  }
 ): Promise<string> {
   const state = randomId(16);
   await env.KEYS.put(`oauth_state:${state}`, JSON.stringify(payload), {
@@ -100,7 +106,7 @@ export async function createOauthState(
 export async function consumeOauthState(
   env: Env,
   state: string
-): Promise<{ provider: string; redirect_to?: string } | null> {
+): Promise<{ provider: string; redirect_to?: string; pkce_verifier?: string } | null> {
   const raw = await env.KEYS.get(`oauth_state:${state}`);
   if (!raw) return null;
   // Single-use: delete after read.
