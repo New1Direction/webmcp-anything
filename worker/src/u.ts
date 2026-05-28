@@ -680,6 +680,37 @@ export async function sitemapXml(env: any, origin: string): Promise<string> {
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
+  <!-- 30-page SEO drop -->
+  <url><loc>${origin}/integration/nextjs</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>${origin}/integration/astro</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>${origin}/integration/svelte</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>${origin}/integration/remix</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>${origin}/integration/django</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>${origin}/integration/rails</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>${origin}/integration/fastapi</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>${origin}/integration/express</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>${origin}/use-case/customer-support</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>${origin}/use-case/research-agent</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>${origin}/use-case/sales-assistant</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>${origin}/use-case/code-review-bot</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>${origin}/use-case/data-pipeline</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>${origin}/use-case/content-moderation</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>${origin}/use-case/personal-assistant</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>${origin}/mcp-server/postgres</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>${origin}/mcp-server/redis</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>${origin}/mcp-server/elasticsearch</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>${origin}/mcp-server/snowflake</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>${origin}/mcp-server/sentry</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>${origin}/mcp-server/datadog</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>${origin}/mcp-server/cloudflare</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>${origin}/mcp-server/vercel</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>${origin}/vs/langchain-tools</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>${origin}/vs/arcade-ai</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>${origin}/vs/mcp-toolkit</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>${origin}/vs/anthropic-skills</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>${origin}/roundup/mcp-servers-2026</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>${origin}/roundup/agent-frameworks</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>${origin}/roundup/oauth-providers-mcp</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
   <url>
     <loc>${origin}/price-data</loc>
     <changefreq>weekly</changefreq>

@@ -426,6 +426,145 @@ app.get("/blog/:slug", async (c) => {
   });
 });
 
+// ---------- 30-page SEO drop: integrations + use-cases + MCP-servers + vs/roundups ----------
+// All standalone pages, lazy-imported per route. 15-min CDN cache.
+const HTML_HEADERS = {
+  "content-type": "text/html; charset=utf-8",
+  "cache-control": "public, max-age=900, s-maxage=900",
+} as const;
+
+// /integration/<framework> — 8 framework integration pages
+app.get("/integration/nextjs", async (c) => {
+  const { integrationNextjsHtml } = await import("./integration_nextjs");
+  return new Response(integrationNextjsHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+app.get("/integration/astro", async (c) => {
+  const { integrationAstroHtml } = await import("./integration_astro");
+  return new Response(integrationAstroHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+app.get("/integration/svelte", async (c) => {
+  const { integrationSvelteHtml } = await import("./integration_svelte");
+  return new Response(integrationSvelteHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+app.get("/integration/remix", async (c) => {
+  const { integrationRemixHtml } = await import("./integration_remix");
+  return new Response(integrationRemixHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+app.get("/integration/django", async (c) => {
+  const { integrationDjangoHtml } = await import("./integration_django");
+  return new Response(integrationDjangoHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+app.get("/integration/rails", async (c) => {
+  const { integrationRailsHtml } = await import("./integration_rails");
+  return new Response(integrationRailsHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+app.get("/integration/fastapi", async (c) => {
+  const { integrationFastapiHtml } = await import("./integration_fastapi");
+  return new Response(integrationFastapiHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+app.get("/integration/express", async (c) => {
+  const { integrationExpressHtml } = await import("./integration_express");
+  return new Response(integrationExpressHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+
+// /use-case/<slug> — 7 use-case narrative pages
+app.get("/use-case/customer-support", async (c) => {
+  const { useCaseCustomerSupportHtml } = await import("./use_case_customer_support");
+  return new Response(useCaseCustomerSupportHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+app.get("/use-case/research-agent", async (c) => {
+  const { useCaseResearchAgentHtml } = await import("./use_case_research_agent");
+  return new Response(useCaseResearchAgentHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+app.get("/use-case/sales-assistant", async (c) => {
+  const { useCaseSalesAssistantHtml } = await import("./use_case_sales_assistant");
+  return new Response(useCaseSalesAssistantHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+app.get("/use-case/code-review-bot", async (c) => {
+  const { useCaseCodeReviewBotHtml } = await import("./use_case_code_review_bot");
+  return new Response(useCaseCodeReviewBotHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+app.get("/use-case/data-pipeline", async (c) => {
+  const { useCaseDataPipelineHtml } = await import("./use_case_data_pipeline");
+  return new Response(useCaseDataPipelineHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+app.get("/use-case/content-moderation", async (c) => {
+  const { useCaseContentModerationHtml } = await import("./use_case_content_moderation");
+  return new Response(useCaseContentModerationHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+app.get("/use-case/personal-assistant", async (c) => {
+  const { useCasePersonalAssistantHtml } = await import("./use_case_personal_assistant");
+  return new Response(useCasePersonalAssistantHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+
+// /mcp-server/<tool> — 8 tool-specific MCP server pages.
+// IMPORTANT: prefix is `/mcp-server/` NOT `/mcp/` — the latter is the
+// live OAuth-proxy runtime, already defined above.
+app.get("/mcp-server/postgres", async (c) => {
+  const { mcpServerPostgresHtml } = await import("./mcp_server_postgres");
+  return new Response(mcpServerPostgresHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+app.get("/mcp-server/redis", async (c) => {
+  const { mcpServerRedisHtml } = await import("./mcp_server_redis");
+  return new Response(mcpServerRedisHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+app.get("/mcp-server/elasticsearch", async (c) => {
+  const { mcpServerElasticsearchHtml } = await import("./mcp_server_elasticsearch");
+  return new Response(mcpServerElasticsearchHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+app.get("/mcp-server/snowflake", async (c) => {
+  const { mcpServerSnowflakeHtml } = await import("./mcp_server_snowflake");
+  return new Response(mcpServerSnowflakeHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+app.get("/mcp-server/sentry", async (c) => {
+  const { mcpServerSentryHtml } = await import("./mcp_server_sentry");
+  return new Response(mcpServerSentryHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+app.get("/mcp-server/datadog", async (c) => {
+  const { mcpServerDatadogHtml } = await import("./mcp_server_datadog");
+  return new Response(mcpServerDatadogHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+app.get("/mcp-server/cloudflare", async (c) => {
+  const { mcpServerCloudflareHtml } = await import("./mcp_server_cloudflare");
+  return new Response(mcpServerCloudflareHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+app.get("/mcp-server/vercel", async (c) => {
+  const { mcpServerVercelHtml } = await import("./mcp_server_vercel");
+  return new Response(mcpServerVercelHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+
+// /vs/* (round 3) — 4 more competitor comparisons
+app.get("/vs/langchain-tools", async (c) => {
+  const { vsLangchainToolsHtml } = await import("./vs_langchain_tools");
+  return new Response(vsLangchainToolsHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+app.get("/vs/arcade-ai", async (c) => {
+  const { vsArcadeAiHtml } = await import("./vs_arcade_ai");
+  return new Response(vsArcadeAiHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+app.get("/vs/mcp-toolkit", async (c) => {
+  const { vsMcpToolkitHtml } = await import("./vs_mcp_toolkit");
+  return new Response(vsMcpToolkitHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+app.get("/vs/anthropic-skills", async (c) => {
+  const { vsAnthropicSkillsHtml } = await import("./vs_anthropic_skills");
+  return new Response(vsAnthropicSkillsHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+
+// /roundup/* — 3 listicle / category roundup pages
+app.get("/roundup/mcp-servers-2026", async (c) => {
+  const { roundupMcpServers2026Html } = await import("./roundup_mcp_servers_2026");
+  return new Response(roundupMcpServers2026Html(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+app.get("/roundup/agent-frameworks", async (c) => {
+  const { roundupAgentFrameworksHtml } = await import("./roundup_agent_frameworks");
+  return new Response(roundupAgentFrameworksHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+app.get("/roundup/oauth-providers-mcp", async (c) => {
+  const { roundupOauthProvidersMcpHtml } = await import("./roundup_oauth_providers_mcp");
+  return new Response(roundupOauthProvidersMcpHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+
 app.post("/api/v1/leads", async (c) => {
   const { captureLead } = await import("./lead_capture");
   return captureLead(c as any);
