@@ -711,6 +711,32 @@ export async function sitemapXml(env: any, origin: string): Promise<string> {
   <url><loc>${origin}/roundup/mcp-servers-2026</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
   <url><loc>${origin}/roundup/agent-frameworks</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
   <url><loc>${origin}/roundup/oauth-providers-mcp</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <!-- 25-page round-2 SEO drop -->
+  <url><loc>${origin}/for/healthcare</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>${origin}/for/fintech</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>${origin}/for/legal</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>${origin}/for/real-estate</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>${origin}/for/media</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>${origin}/for/marketing</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>${origin}/for/hr</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>${origin}/how-to/install-claude-desktop-mcp</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>${origin}/how-to/expose-shopify-as-mcp</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>${origin}/how-to/build-stripe-mcp-agent</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>${origin}/how-to/secure-mcp-oauth</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>${origin}/how-to/debug-mcp-tool-calls</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>${origin}/how-to/deploy-mcp-on-cloudflare-workers</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>${origin}/how-to/test-mcp-tools-locally</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>${origin}/how-to/claim-verified-mcp-badge</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>${origin}/glossary/mcp</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>${origin}/glossary/tool-use</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>${origin}/glossary/function-calling</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>${origin}/glossary/json-ld</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>${origin}/glossary/oauth-pkce</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>${origin}/glossary/openapi-spec</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>${origin}/integration/laravel</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>${origin}/integration/spring-boot</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>${origin}/integration/nestjs</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>${origin}/integration/hono</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
   <url>
     <loc>${origin}/price-data</loc>
     <changefreq>weekly</changefreq>

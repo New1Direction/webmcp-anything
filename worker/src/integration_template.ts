@@ -112,8 +112,8 @@ export function integrationPageHtml(c: IntegrationPageConfig): string {
     description: c.article_description,
     author: { "@type": "Organization", name: "WebMCP Anything" },
     publisher: { "@type": "Organization", name: "WebMCP Anything", url: "https://wmcp.sh" },
-    datePublished: "2026-05-27",
-    dateModified: "2026-05-27",
+    datePublished: "2026-05-28",
+    dateModified: "2026-05-28",
     mainEntityOfPage: `${c.origin}/integration/${c.provider_id}`,
   };
 
@@ -196,7 +196,7 @@ export function integrationPageHtml(c: IntegrationPageConfig): string {
   <div class="badge"><span class="dot"></span> ${badge}</div>
   <h1>${c.h1}</h1>
   <p class="sub">${c.sub}</p>
-  <p class="hint">Last updated 2026-05-27 · works with Claude, OpenAI, LangChain, and any MCP client</p>
+  <p class="hint">Last updated 2026-05-28 · works with Claude, OpenAI, LangChain, and any MCP client</p>
 </header>
 
 <section id="vs">
@@ -257,6 +257,20 @@ ${vertical ? `<section id="see-also">
   <p style="color:var(--muted);margin-bottom:14px">${vertical.hook}</p>
   <p><a href="/agent-ready/${vertical.slug}" style="color:var(--accent2);text-decoration:none;font-weight:600">→ /agent-ready/${vertical.slug}</a> &nbsp;·&nbsp; <a href="/agent-ready" style="color:var(--accent2);text-decoration:none">cornerstone</a> &nbsp;·&nbsp; <a href="/managed" style="color:var(--accent2);text-decoration:none">done-for-you ($499+)</a></p>
 </section>` : ""}
+
+<section id="upgrade" style="margin-top:36px;background:linear-gradient(135deg,var(--card),rgba(124,92,255,0.08));border:1px solid rgba(124,92,255,0.35);border-radius:16px;padding:22px 26px">
+  <div style="display:flex;align-items:center;gap:18px;flex-wrap:wrap;justify-content:space-between">
+    <div style="flex:1;min-width:240px">
+      <div style="font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent2);font-weight:700;margin-bottom:6px">Need this done for you?</div>
+      <h3 style="margin:0 0 4px;font-size:1.05rem;color:var(--text)">Skip the wiring — we build, deploy, and monitor.</h3>
+      <p style="color:var(--muted);margin:0;font-size:.92rem">Custom adapter + hosted MCP at <code>mcp.yourbrand.com</code> + verified badge. From <strong style="color:var(--text)">$499 one-time setup</strong>.</p>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <a href="/managed" style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#7c5cff,#00e5ff);color:#0c0c14;padding:10px 18px;border-radius:9px;text-decoration:none;font-weight:700;font-size:.9rem">See /managed →</a>
+      <a href="/directory/submit" style="display:inline-flex;align-items:center;gap:6px;background:#11111c;border:1px solid #26263a;color:var(--text);padding:10px 18px;border-radius:9px;text-decoration:none;font-weight:600;font-size:.9rem">Submit (free)</a>
+    </div>
+  </div>
+</section>
 
 <footer>
   <a href="/">Home</a> · <a href="/agent-ready">Agent-ready</a> · <a href="/managed">Done for you</a> · <a href="/price-data">Price data</a> · <a href="/integration/openapi">OpenAPI</a> · <a href="/integration/shopify">Shopify</a> · <a href="/integration/stripe">Stripe</a> · <a href="/integration/github">GitHub</a> · <a href="/integration/google">Google</a> · <a href="/integration/slack">Slack</a> · <a href="/integration/notion">Notion</a> · <a href="/integration/linear">Linear</a> · <a href="/directory">Directory</a> · <a href="/directory/submit">Submit</a>

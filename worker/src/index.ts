@@ -565,6 +565,115 @@ app.get("/roundup/oauth-providers-mcp", async (c) => {
   return new Response(roundupOauthProvidersMcpHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
 });
 
+// ---------- 25-page round-2 SEO drop: verticals + how-tos + glossary + frameworks ----------
+// /for/<vertical> — 7 industry pages
+app.get("/for/healthcare", async (c) => {
+  const { forHealthcareHtml } = await import("./for_healthcare");
+  return new Response(forHealthcareHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+app.get("/for/fintech", async (c) => {
+  const { forFintechHtml } = await import("./for_fintech");
+  return new Response(forFintechHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+app.get("/for/legal", async (c) => {
+  const { forLegalHtml } = await import("./for_legal");
+  return new Response(forLegalHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+app.get("/for/real-estate", async (c) => {
+  const { forRealEstateHtml } = await import("./for_real_estate");
+  return new Response(forRealEstateHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+app.get("/for/media", async (c) => {
+  const { forMediaHtml } = await import("./for_media");
+  return new Response(forMediaHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+app.get("/for/marketing", async (c) => {
+  const { forMarketingHtml } = await import("./for_marketing");
+  return new Response(forMarketingHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+app.get("/for/hr", async (c) => {
+  const { forHrHtml } = await import("./for_hr");
+  return new Response(forHrHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+
+// /how-to/<task> — 8 tutorial pages
+app.get("/how-to/install-claude-desktop-mcp", async (c) => {
+  const { howToInstallClaudeDesktopMcpHtml } = await import("./how_to_install_claude_desktop_mcp");
+  return new Response(howToInstallClaudeDesktopMcpHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+app.get("/how-to/expose-shopify-as-mcp", async (c) => {
+  const { howToExposeShopifyMcpHtml } = await import("./how_to_expose_shopify_mcp");
+  return new Response(howToExposeShopifyMcpHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+app.get("/how-to/build-stripe-mcp-agent", async (c) => {
+  const { howToBuildStripeAgentHtml } = await import("./how_to_build_stripe_agent");
+  return new Response(howToBuildStripeAgentHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+app.get("/how-to/secure-mcp-oauth", async (c) => {
+  const { howToSecureMcpOauthHtml } = await import("./how_to_secure_mcp_oauth");
+  return new Response(howToSecureMcpOauthHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+app.get("/how-to/debug-mcp-tool-calls", async (c) => {
+  const { howToDebugMcpToolCallsHtml } = await import("./how_to_debug_mcp_tool_calls");
+  return new Response(howToDebugMcpToolCallsHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+app.get("/how-to/deploy-mcp-on-cloudflare-workers", async (c) => {
+  const { howToDeployMcpCloudflareHtml } = await import("./how_to_deploy_mcp_cloudflare");
+  return new Response(howToDeployMcpCloudflareHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+app.get("/how-to/test-mcp-tools-locally", async (c) => {
+  const { howToTestMcpToolsLocallyHtml } = await import("./how_to_test_mcp_tools_locally");
+  return new Response(howToTestMcpToolsLocallyHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+app.get("/how-to/claim-verified-mcp-badge", async (c) => {
+  const { howToClaimVerifiedBadgeHtml } = await import("./how_to_claim_verified_badge");
+  return new Response(howToClaimVerifiedBadgeHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+
+// /glossary/<term> — 6 glossary pages
+app.get("/glossary/mcp", async (c) => {
+  const { glossaryMcpHtml } = await import("./glossary_mcp");
+  return new Response(glossaryMcpHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+app.get("/glossary/tool-use", async (c) => {
+  const { glossaryToolUseHtml } = await import("./glossary_tool_use");
+  return new Response(glossaryToolUseHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+app.get("/glossary/function-calling", async (c) => {
+  const { glossaryFunctionCallingHtml } = await import("./glossary_function_calling");
+  return new Response(glossaryFunctionCallingHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+app.get("/glossary/json-ld", async (c) => {
+  const { glossaryJsonLdHtml } = await import("./glossary_json_ld");
+  return new Response(glossaryJsonLdHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+app.get("/glossary/oauth-pkce", async (c) => {
+  const { glossaryOauthPkceHtml } = await import("./glossary_oauth_pkce");
+  return new Response(glossaryOauthPkceHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+app.get("/glossary/openapi-spec", async (c) => {
+  const { glossaryOpenapiSpecHtml } = await import("./glossary_openapi_spec");
+  return new Response(glossaryOpenapiSpecHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+
+// /integration/<framework> — 4 more frameworks
+app.get("/integration/laravel", async (c) => {
+  const { integrationLaravelHtml } = await import("./integration_laravel");
+  return new Response(integrationLaravelHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+app.get("/integration/spring-boot", async (c) => {
+  const { integrationSpringbootHtml } = await import("./integration_springboot");
+  return new Response(integrationSpringbootHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+app.get("/integration/nestjs", async (c) => {
+  const { integrationNestjsHtml } = await import("./integration_nestjs");
+  return new Response(integrationNestjsHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+app.get("/integration/hono", async (c) => {
+  const { integrationHonoHtml } = await import("./integration_hono");
+  return new Response(integrationHonoHtml(new URL(c.req.url).origin), { headers: HTML_HEADERS });
+});
+
 app.post("/api/v1/leads", async (c) => {
   const { captureLead } = await import("./lead_capture");
   return captureLead(c as any);
