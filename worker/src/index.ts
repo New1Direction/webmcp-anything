@@ -641,6 +641,16 @@ app.get("/robots.txt", async (c) => {
 
 // /llms.txt — agent-readable site index following llmstxt.org convention.
 // We're the agent-readiness company — eat our own dog food.
+app.get("/llms-full.txt", async (c) => {
+  const { llmsFullTxt } = await import("./u");
+  return new Response(llmsFullTxt(new URL(c.req.url).origin), {
+    headers: {
+      "content-type": "text/markdown; charset=utf-8",
+      "cache-control": "public, max-age=900, s-maxage=900",
+    },
+  });
+});
+
 app.get("/llms.txt", async (c) => {
   const { llmsTxt } = await import("./u");
   return new Response(llmsTxt(new URL(c.req.url).origin), {

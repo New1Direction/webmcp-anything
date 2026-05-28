@@ -7,6 +7,10 @@
 // tags + schema.org markup. People searching "[product name] MCP tools" or
 // "[brand] agent API" land here. Pure organic acquisition.
 
+// Static import — blog post map is part of the worker bundle. Used by
+// /llms.txt, /llms-full.txt, and sitemapXml below.
+import { BLOG_POSTS, BLOG_SLUGS } from "./blog_posts";
+
 const PROVIDER_BADGE: Record<string, { color: string; label: string }> = {
   shopify: { color: "#4ade80", label: "Shopify" },
   jsonld: { color: "#00e5ff", label: "JSON-LD" },
@@ -329,6 +333,10 @@ Disallow: /connect/
 Disallow: /mcp/
 
 Sitemap: ${origin}/sitemap.xml
+
+# LLM ingestion files (llmstxt.org convention)
+# /llms.txt       — curated navigation index for AI agents
+# /llms-full.txt  — full reading material (blog + cornerstones) as one doc
 `;
 }
 
@@ -341,19 +349,38 @@ Sitemap: ${origin}/sitemap.xml
 // We're the agent-readiness company — eating our own dog food is
 // table stakes.
 export function llmsTxt(origin: string): string {
+  // Build blog entries dynamically from the auto-generated post map so
+  // every new draft appears without a manual edit. Imported lazily inside
+  // the function to keep cold-start cost low for routes that don't need it.
+  // (Top-level import is fine here since this module is already loaded
+  // on every request; we keep require()-style awaitless via static import
+  // at the file's top.) Implemented inline below.
+  const blogCount = BLOG_SLUGS.length;
+  const blogLines = BLOG_SLUGS.map((slug) => {
+    const p = BLOG_POSTS[slug];
+    return `- [${p.title}](${origin}/blog/${slug}): ${p.description}`;
+  }).join("\n");
+
   return `# wmcp.sh
 
 > wmcp.sh turns any URL into agent-callable MCP tools. Drop a URL in,
 > get a JSON tool list (Claude / OpenAI / MCP-compatible) describing
 > the page's actions (read price, add to cart, call API, etc.). Free
 > public tier + paid Pro + managed agent-readiness consulting.
+>
+> This file follows the llmstxt.org convention. The companion file
+> [/llms-full.txt](${origin}/llms-full.txt) contains the full reading
+> material (every blog post + cornerstone landing page) as one document
+> for ingestion into an LLM context window.
 
 ## Start here
 
 - [Homepage](${origin}/): one-paragraph pitch + live demo
-- [Agent-ready (cornerstone)](${origin}/agent-ready): the canonical guide on making your site work with AI agents
-- [Price-data adapters](${origin}/price-data): 5 oracle / price-data sources (CoinGecko, Pyth, Chainlink, DefiLlama, DexScreener) live as MCP tools
-- [Directory](${origin}/directory): every URL the community has turned into MCP tools
+- [Agent-ready (cornerstone)](${origin}/agent-ready): canonical guide on making your site work with AI agents
+- [Engineering blog](${origin}/blog): ${blogCount} long-form posts on MCP, edge architecture, OAuth, e-commerce parsing, oracle adapters
+- [Directory](${origin}/directory): every URL the community has turned into MCP tools — ${blogCount > 0 ? "verified badges + featured placement available" : "open submission"}
+- [Submit your site](${origin}/directory/submit): free listing form for site owners
+- [Price-data adapters](${origin}/price-data): 5 oracle / price-data sources (CoinGecko, Pyth, Chainlink, DefiLlama, DexScreener)
 
 ## Vertical-specific agent-readiness guides
 
@@ -362,27 +389,51 @@ export function llmsTxt(origin: string): string {
 - [Documentation sites](${origin}/agent-ready/docs): llms.txt template, code-example metadata, docs MCP servers
 - [SaaS founders](${origin}/agent-ready/saas): be recommendable, signupable, usable
 
-## How to integrate wmcp.sh with your agent
+## Use-case narratives
 
-- [OpenAPI → MCP guide](${origin}/integration/openapi): canonical method for any API-backed site
-- [Shopify integration](${origin}/integration/shopify): shopper-side MCP for all 4M+ Shopify stores
-- [Stripe integration](${origin}/integration/stripe): full Stripe API as MCP tools via OpenAPI ingestion
-- [GitHub integration](${origin}/integration/github): repo/issue/gist tools
-- [Google Workspace integration](${origin}/integration/google): Gmail, Calendar, Drive, Sheets, Docs
-- [Notion integration](${origin}/integration/notion): pages and databases
-- [Linear integration](${origin}/integration/linear): issues, projects, comments
-- [Slack integration](${origin}/integration/slack): post, react, manage channels
+- [Agent commerce](${origin}/use-case/agent-commerce): autonomous shopping agents end-to-end
+- [DeFi yield watcher](${origin}/use-case/yield-watcher): DefiLlama + CoinGecko + Pyth + Chainlink + DexScreener as MCP
+
+## Integration pages (wmcp.sh ↔ third-party services)
+
+- [OpenAPI → MCP](${origin}/integration/openapi): canonical method for any API-backed site
+- [Shopify](${origin}/integration/shopify): shopper-side MCP for 4M+ stores
+- [Stripe](${origin}/integration/stripe): full Stripe API as MCP via OpenAPI
+- [GitHub](${origin}/integration/github): repos, issues, gists
+- [Google Workspace](${origin}/integration/google): Gmail, Calendar, Drive, Sheets, Docs
+- [Notion](${origin}/integration/notion): pages and databases
+- [Linear](${origin}/integration/linear): issues, projects, comments
+- [Slack](${origin}/integration/slack): post, react, manage channels
+- [Airtable](${origin}/integration/airtable): bases, tables, records
+- [Discord](${origin}/integration/discord): channels, messages, bot tokens (vault-stored)
+- [OpenAI](${origin}/integration/openai): chat completions through MCP for multi-model orchestration
+- [Anthropic](${origin}/integration/anthropic): Messages API as MCP (independent integration; not affiliated with Anthropic)
+
+## Competitor / alternative comparisons
+
+- [vs Composio](${origin}/vs/composio) · [Composio alternative](${origin}/alternatives/composio)
+- [vs Pipedream](${origin}/vs/pipedream) · [Pipedream alternative](${origin}/alternatives/pipedream)
+- [vs Zapier](${origin}/vs/zapier)
+- [vs Make.com](${origin}/vs/make-com)
+- [vs n8n](${origin}/vs/n8n)
+- [vs Smithery](${origin}/vs/smithery)
+
+## Engineering blog (${blogCount} posts)
+
+${blogLines}
 
 ## API reference
 
 - [GET /api/v1/tools?url=...](${origin}/api/v1/tools?url=https://www.allbirds.com/products/mens-wool-runners): live example
 - [Full API docs](${origin}/integration/openapi): all endpoints + auth + plan limits
 - [Sitemap](${origin}/sitemap.xml): every public URL on wmcp.sh
+- [Blog RSS](${origin}/blog/rss.xml): subscribe to new posts
 - [GitHub repo](https://github.com/New1Direction/webmcp-anything): adapters + worker source
 
-## Paid services
+## Paid services + verified listings
 
 - [Managed agent-readiness](${origin}/managed): Starter $499 one-time / Pro $999/mo / Enterprise $4,999+/mo white-label MCP
+- [Verified directory badge](${origin}/directory/submit): comes with /managed — embeddable SVG at /badge/&lt;slug&gt;.svg
 
 ## What NOT to use
 
@@ -390,13 +441,87 @@ export function llmsTxt(origin: string): string {
 - Anything under \`/api/v1/providers/*/start\` — OAuth flow endpoints
 - Anything under \`/mcp/*\` — proxy endpoints, require valid wmcp.sh API key
 - \`/connect/*\` — interactive OAuth pages
+- \`/api/v1/admin/*\` — admin-token gated; do not crawl
 
 ## Conventions
 
-- All public pages ship JSON-LD (Article + FAQPage where applicable) — agents reading the page get structured metadata
+- All public pages ship JSON-LD (Article + BlogPosting + FAQPage where applicable) — agents reading the page get structured metadata
 - Tool listings returned from \`/api/v1/tools\` follow the Claude tool_use / OpenAI function_call shape interchangeably
 - Caching: page HTML 15 min CDN, tool extractions 60s–24h depending on source volatility
+- Long-form content (the blog) is stable and safe to ingest — re-fetch monthly
 `;
+}
+
+// llmsFullTxt — full reading material companion to /llms.txt.
+//
+// Concatenates every blog post + cornerstone landing-page summary as one
+// continuous markdown document. Designed to be slurped into an LLM context
+// window in a single fetch by tools like ChatGPT, Perplexity, or Claude
+// with web search. See https://llmstxt.org/#format for the convention.
+export function llmsFullTxt(origin: string): string {
+  // Strip HTML tags to recover the original markdown-ish prose. We can't
+  // fully invert marked.parse, but for ingestion purposes plain text is
+  // what LLMs want — fluffy tags hurt the signal-to-noise ratio.
+  const stripTags = (html: string) =>
+    html
+      .replace(/<pre><code[^>]*>([\s\S]*?)<\/code><\/pre>/g, "\n```\n$1\n```\n")
+      .replace(/<code>([^<]+)<\/code>/g, "`$1`")
+      .replace(/<strong>([^<]+)<\/strong>/g, "**$1**")
+      .replace(/<em>([^<]+)<\/em>/g, "*$1*")
+      .replace(/<h2[^>]*>([^<]+)<\/h2>/g, "\n\n## $1\n")
+      .replace(/<h3[^>]*>([^<]+)<\/h3>/g, "\n\n### $1\n")
+      .replace(/<li>([\s\S]*?)<\/li>/g, "- $1")
+      .replace(/<\/?(p|ul|ol|table|thead|tbody|tr|th|td|hr|br|blockquote)[^>]*>/g, "\n")
+      .replace(/<a [^>]*href="([^"]+)"[^>]*>([^<]+)<\/a>/g, "$2 ($1)")
+      .replace(/<[^>]+>/g, "")
+      .replace(/&amp;/g, "&")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/\n{3,}/g, "\n\n")
+      .trim();
+
+  const header = `# wmcp.sh — full reading material
+
+> Generated from the canonical content at ${origin}. This file concatenates
+> the long-form engineering blog plus the cornerstone agent-readiness
+> guides into one document suitable for slurping into an LLM context
+> window. For the navigation index, see ${origin}/llms.txt.
+>
+> Last refreshed at request time. Cached for 15 minutes at the edge.
+
+---
+
+## About wmcp.sh
+
+wmcp.sh turns any URL into agent-callable MCP (Model Context Protocol)
+tools. Drop a URL in, get a JSON tool list (Claude tool_use / OpenAI
+function_call / MCP-compatible) describing the page's actions: read
+price, add to cart, call API, fetch oracle data, etc.
+
+Free public tier with rate limits + paid Pro plans + managed
+agent-readiness consulting ($499–$4,999+). The directory at
+${origin}/directory has every URL the community has turned into MCP
+tools, with verified badges available via ${origin}/managed.
+
+---
+`;
+
+  const blogBody = BLOG_SLUGS.map((slug) => {
+    const p = BLOG_POSTS[slug];
+    if (!p) return "";
+    return `## [${p.title}](${origin}/blog/${slug})
+
+*${p.date}${p.primary_query ? ` · targets: ${p.primary_query}` : ""}*
+
+${p.subtitle ? "**" + p.subtitle + "**\n\n" : ""}${stripTags(p.html)}
+
+---
+`;
+  }).join("\n");
+
+  return header + "\n# Engineering blog (" + BLOG_SLUGS.length + " posts)\n\n" + blogBody;
 }
 
 export async function sitemapXml(env: any, origin: string): Promise<string> {
@@ -410,7 +535,6 @@ export async function sitemapXml(env: any, origin: string): Promise<string> {
     .map((m: any) => ({ url: m.url, ts: m.ts || 0 }));
 
   // Blog posts (auto-generated; 24 at time of writing).
-  const { BLOG_POSTS, BLOG_SLUGS } = await import("./blog_posts");
   const blogUrlsXml = BLOG_SLUGS.map((slug) => {
     const p = BLOG_POSTS[slug];
     const lastmod = p?.date || new Date().toISOString().slice(0, 10);
