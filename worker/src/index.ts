@@ -254,6 +254,38 @@ app.get("/agent-ready/saas", async (c) => {
   });
 });
 
+// /vs/* comparison pages — SEO target: "<competitor> alternative",
+// "wmcp.sh vs <competitor>". High CTR, branded-search capture.
+app.get("/vs/composio", async (c) => {
+  const { vsComposioHtml } = await import("./vs_composio");
+  return new Response(vsComposioHtml(new URL(c.req.url).origin), {
+    headers: {
+      "content-type": "text/html; charset=utf-8",
+      "cache-control": "public, max-age=900, s-maxage=900",
+    },
+  });
+});
+
+app.get("/vs/pipedream", async (c) => {
+  const { vsPipedreamHtml } = await import("./vs_pipedream");
+  return new Response(vsPipedreamHtml(new URL(c.req.url).origin), {
+    headers: {
+      "content-type": "text/html; charset=utf-8",
+      "cache-control": "public, max-age=900, s-maxage=900",
+    },
+  });
+});
+
+app.get("/vs/zapier", async (c) => {
+  const { vsZapierHtml } = await import("./vs_zapier");
+  return new Response(vsZapierHtml(new URL(c.req.url).origin), {
+    headers: {
+      "content-type": "text/html; charset=utf-8",
+      "cache-control": "public, max-age=900, s-maxage=900",
+    },
+  });
+});
+
 app.post("/api/v1/leads", async (c) => {
   const { captureLead } = await import("./lead_capture");
   return captureLead(c as any);
