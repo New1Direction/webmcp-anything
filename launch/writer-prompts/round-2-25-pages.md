@@ -14,6 +14,65 @@ Each page targets a long-tail query nobody in the MCP space owns yet. The headli
 
 ---
 
+## 🔴 PRIOR MISTAKES — read this BEFORE writing anything
+
+The 2026-05-28 audit on your previous SEO drop (11 files: `vs_make_com`, `vs_n8n`, `vs_smithery`, `alternatives_composio`, `alternatives_pipedream`, `integration_{airtable,anthropic,discord,openai}`, `use_case_{agent_commerce,yield_watcher}`) caught 12 specific mistakes. **Every single one of these will get the new page rejected and re-queued.**
+
+1. **PII in code examples.** `integration_airtable.ts:50` used `Name='Alex Hearts'` — recognizably derived from the repo owner's username. **Forbidden tokens anywhere in any file:** `Alex Hearts`, `alexhearts`, `connordochuk99`, `/Users/alexhearts/`. Use `Acme Corp`, `Sample User`, `support@example.com`, `<repo>` instead.
+
+2. **Libel.** `alternatives_composio.ts:126` claimed Composio stores tokens "in plain-text" — false + defamatory. **Forbidden comparative claims:** "X is broken / insecure / dying / dead / steals data / charges hidden fees." Use neutral factual phrasing: "X is a curated catalog with platform-managed OAuth; wmcp.sh extracts dynamically at runtime."
+
+3. **Fabricated URLs.** `integration_airtable.ts:37` cited `Airtable/airtable-openapi` (does not exist). `integration_anthropic.ts:36` cited `anthropic/anthropic-openapi` (wrong org — correct is `anthropics/anthropic-sdk-python` with the S). **Before citing any third-party URL, WebFetch it.** If unverifiable, omit the link and reference the tool by name only.
+
+4. **Wrong PKCE terminology.** `integration_discord.ts:72` called the bot-token storage "our PKCE credentials proxy." PKCE is an OAuth 2.1 flow extension — it does NOT apply to static API keys or Discord bot tokens. **Use** "encrypted credentials vault" / "out-of-band proxy" for static keys; **reserve** "OAuth 2.1 PKCE proxy" for actual interactive OAuth flows (Google, GitHub, Slack, Notion, Linear, Discord OAuth — NOT Discord bot tokens).
+
+5. **`/managed` body CTA missing.** All 11 prior files mentioned `/managed` only in the footer or FAQ. The visible CTA section at the bottom (with the literal text `$499 one-time setup`) is REQUIRED — see the template I include below.
+
+6. **`/directory/submit` cross-link missing.** Every page footer must link to `/directory/submit`. The 11 prior files all missed this.
+
+7. **`VERTICAL_BY_PROVIDER` map gap.** When you write a new `/integration/<provider>` page that uses `integrationPageHtml(...)`, the `see-also` block is silently empty unless `worker/src/integration_template.ts § VERTICAL_BY_PROVIDER` ALSO gets an entry for the new provider. None of `airtable/anthropic/discord/openai` had entries — silently killed the `/managed ($499+)` upsell on every integration page. **For each integration page you write, output the recommended map update.**
+
+8. **Smithery latency framing.** `vs_smithery.ts:130` said "Local Docker starts (500ms - 1.5s)" — Smithery is a registry/installer, not a per-call runtime. Docker cold-start only happens once. **Either drop the per-call latency row or scope it: "cold-start 2-30s first launch, then warm."**
+
+9. **n8n latency.** `vs_n8n.ts:128` said "800ms - 2s" — n8n self-hosted warm execution is typically 50-300ms. Either cite a real benchmark or qualify: "cold-start can hit hundreds of ms to seconds."
+
+10. **Inconsistent listings.** `use_case_yield_watcher.ts` FAQ mentioned DexScreener but the capability table didn't include it. **Every named provider/tool must appear in EVERY relevant table on the same page.** Read your own draft top-to-bottom before submitting.
+
+11. **Caching claims missing TTL.** `use_case_yield_watcher.ts:126` said Pyth "cached" without a TTL — DeFi stale prices cause real losses. Always qualify: "(short TTL, ~1s)", "(24h cache)", "(per-request bypass option)."
+
+12. **Affiliation disclaimers.** `integration_anthropic.ts` was missing "not affiliated with Anthropic" — the page self-references Claude calling Anthropic's own API through wmcp.sh and a reasonable reader might assume official affiliation. **Every page that names Anthropic / OpenAI / Google / Apple / Microsoft / Vercel / Cloudflare / Stripe / Slack / Notion / Linear / Discord / GitHub / a major platform with its own org must include "wmcp.sh is not affiliated with <Org>"** in hero subtitle or FAQ.
+
+**Pricing constraint (LOCKED — listed again because it's the #1 rejection):**
+Only quote Starter $499 one-time / Pro $999/mo / Enterprise $4,999+/mo. **NEVER invent** `$9/mo`, `$19/mo`, `$29/mo`, `$49/mo`, `$99/mo`, free trial, "first month free", or any other tier. If you write any of these the page is rejected and re-queued.
+
+**Self-audit checklist — run these greps on your own output before submitting:**
+
+```bash
+# PII — must return empty
+grep -lEi "alex ?hearts|alexhearts|connordochuk99|/Users/alexhearts/" worker/src/<your-new-files>
+
+# Forbidden pricing — must return empty
+grep -nE '\$(9|19|29|49|99)/mo|\$(9|19|49) one-time|first month free|freemium' worker/src/<your-new-files>
+
+# Required body CTA — every file must match
+for f in worker/src/<your-new-files>; do grep -q 'Need this done for you' "$f" || echo "MISSING CTA: $f"; done
+
+# Required /directory/submit footer link
+for f in worker/src/<your-new-files>; do grep -q '/directory/submit' "$f" || echo "MISSING: $f"; done
+
+# Required canonical
+for f in worker/src/<your-new-files>; do grep -q '<link rel="canonical"' "$f" || echo "MISSING canonical: $f"; done
+
+# Required JSON-LD
+for f in worker/src/<your-new-files>; do grep -q 'application/ld+json' "$f" || echo "MISSING JSON-LD: $f"; done
+```
+
+Any non-empty output → fix the file before submitting. The auditor runs these same greps on receipt; failing pages are rejected.
+
+---
+
+---
+
 ## Files to create (exact paths, exact slugs)
 
 ### Industry vertical pages (7) — `/for/<vertical>`
