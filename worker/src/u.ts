@@ -139,8 +139,21 @@ export function uHtml(sourceUrl: string, entry: CacheEntry, origin: string): str
   ${p.tools && p.tools.length > 50 ? `<p class="muted" style="text-align:center;margin-top:14px">+ ${p.tools.length - 50} more — hit the API to see them all.</p>` : ""}
 </section>
 
+<section style="margin-top:36px;background:linear-gradient(135deg,#16161f,rgba(124,92,255,0.08));border:1px solid #26263a;border-radius:16px;padding:22px 24px">
+  <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between">
+    <div style="flex:1;min-width:240px">
+      <h2 style="margin:0 0 6px;font-size:1.05rem;color:var(--text)">Own this site?</h2>
+      <p class="muted" style="margin:0;font-size:.9rem">Claim the listing — get a <strong style="color:var(--accent2)">verified badge</strong>, featured placement, and an MCP server you control. Or just submit a new URL for free.</p>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <a href="/managed" style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#7c5cff,#00e5ff);color:#0c0c14;padding:9px 16px;border-radius:8px;text-decoration:none;font-weight:700;font-size:.88rem">Claim → /managed</a>
+      <a href="/directory/submit" style="display:inline-flex;align-items:center;gap:6px;background:#11111c;border:1px solid #26263a;color:var(--text);padding:9px 16px;border-radius:8px;text-decoration:none;font-weight:600;font-size:.88rem">Submit (free)</a>
+    </div>
+  </div>
+</section>
+
 <footer>
-  <a href="/">wmcp.sh</a> · <a href="/directory">Directory</a> · <a href="/dashboard">Get a key</a> · <a href="https://github.com/New1Direction/webmcp-anything">GitHub</a>
+  <a href="/">wmcp.sh</a> · <a href="/directory">Directory</a> · <a href="/directory/submit">Submit</a> · <a href="/managed">Get verified</a> · <a href="/dashboard">Get a key</a> · <a href="https://github.com/New1Direction/webmcp-anything">GitHub</a>
 </footer>
 </div>
 </body>
@@ -419,6 +432,11 @@ export async function sitemapXml(env: any, origin: string): Promise<string> {
     <loc>${origin}/directory</loc>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>${origin}/directory/submit</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
   </url>
   <url>
     <loc>${origin}/agent-ready</loc>

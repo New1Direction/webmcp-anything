@@ -137,16 +137,54 @@ app.get("/api/v1/stats/public", async (c) => {
 
 app.get("/api/v1/directory", async (c) => {
   const limit = Math.min(500, parseInt(c.req.query("limit") || "200", 10));
-  const list = await c.env.CACHE.list({ prefix: "seen:", limit });
+  const { slugFromUrl } = await import("./slug");
+
+  // Parallel: directory entries + verified set + featured ranks.
+  const [list, vList, fList] = await Promise.all([
+    c.env.CACHE.list({ prefix: "seen:", limit }),
+    c.env.KEYS.list({ prefix: "verified:", limit: 1000 }),
+    c.env.KEYS.list({ prefix: "featured:", limit: 1000 }),
+  ]);
+
+  const verifiedSet = new Set<string>(
+    vList.keys.map((k: any) => k.name.slice("verified:".length))
+  );
+  const featuredKeys = fList.keys.map((k: any) => k.name.slice("featured:".length));
+  // Featured ranks need values (KV.list doesn't include the value, only metadata).
+  // For ≤1000 featured entries this is one batched fetch per slug. Featured
+  // listings will be a small handful in practice — under 50.
+  const featuredRanks: Record<string, number> = {};
+  await Promise.all(
+    featuredKeys.map(async (slug) => {
+      const v = await c.env.KEYS.get(`featured:${slug}`);
+      if (v) featuredRanks[slug] = parseInt(v, 10);
+    })
+  );
+
   const entries = list.keys
     .map((k: any) => k.metadata)
     .filter((m: any) => m && m.url)
-    .map((m: any) => ({
-      url: m.url,
-      adapter: m.adapter || "other",
-      ts: m.ts || 0,
-      title: m.title || null,
-    }));
+    .map((m: any) => {
+      const slug = slugFromUrl(m.url);
+      return {
+        url: m.url,
+        adapter: m.adapter || "other",
+        ts: m.ts || 0,
+        title: m.title || null,
+        slug,
+        verified: verifiedSet.has(slug),
+        featured_rank: featuredRanks[slug] ?? null,
+      };
+    });
+
+  // Sort: featured first (asc by rank), then by ts desc.
+  entries.sort((a: any, b: any) => {
+    const ar = a.featured_rank ?? Number.POSITIVE_INFINITY;
+    const br = b.featured_rank ?? Number.POSITIVE_INFINITY;
+    if (ar !== br) return ar - br;
+    return b.ts - a.ts;
+  });
+
   return c.json({ entries, list_complete: list.list_complete });
 });
 
@@ -289,6 +327,65 @@ app.get("/vs/zapier", async (c) => {
 app.post("/api/v1/leads", async (c) => {
   const { captureLead } = await import("./lead_capture");
   return captureLead(c as any);
+});
+
+// ---------- directory monetization: submit form + verified badge ----------
+// /directory/submit  — free listing form. Cross-files to /managed lead vault
+//                      if managed_interest box ticked.
+// /api/v1/directory/submit — JSON POST endpoint. Rate-limited, honeypot.
+// /badge/:slug.svg   — embeddable SVG badge. KV `verified:<slug>=1` controls
+//                      whether the verified variant is served.
+app.get("/directory/submit", async (c) => {
+  const { directorySubmitHtml } = await import("./directory_submit");
+  return new Response(directorySubmitHtml(new URL(c.req.url).origin), {
+    headers: {
+      "content-type": "text/html; charset=utf-8",
+      "cache-control": "public, max-age=900, s-maxage=900",
+    },
+  });
+});
+
+app.post("/api/v1/directory/submit", async (c) => {
+  const { captureDirectorySubmission } = await import("./directory_capture");
+  return captureDirectorySubmission(c as any);
+});
+
+app.get("/badge/:slug", async (c) => {
+  const { badgeHandler } = await import("./badge");
+  return badgeHandler(c as any);
+});
+
+// /verify/<slug> — embed-snippet page. Renders preview + copy-paste blocks.
+app.get("/verify/:slug", async (c) => {
+  const { verifyEmbedHandler } = await import("./verify_embed");
+  return verifyEmbedHandler(c as any);
+});
+
+// Admin: directory verification + featuring + submissions inbox.
+// All gated by x-admin-token. Match existing /api/v1/keys pattern.
+app.post("/api/v1/admin/directory/verify", async (c) => {
+  const m = await import("./directory_admin");
+  return m.verifyListing(c as any);
+});
+app.post("/api/v1/admin/directory/unverify", async (c) => {
+  const m = await import("./directory_admin");
+  return m.unverifyListing(c as any);
+});
+app.post("/api/v1/admin/directory/feature", async (c) => {
+  const m = await import("./directory_admin");
+  return m.featureListing(c as any);
+});
+app.post("/api/v1/admin/directory/unfeature", async (c) => {
+  const m = await import("./directory_admin");
+  return m.unfeatureListing(c as any);
+});
+app.get("/api/v1/admin/directory/submissions", async (c) => {
+  const m = await import("./directory_admin");
+  return m.listSubmissions(c as any);
+});
+app.get("/api/v1/admin/directory/state", async (c) => {
+  const m = await import("./directory_admin");
+  return m.getDirectoryState(c as any);
 });
 
 // Category landing — groups all 5 oracle / price-data adapters under one URL.
@@ -879,6 +976,14 @@ app.post("/api/v1/keys/recover", async (c) => recoverByEmail(c as any));
 // --------------------- dashboard ---------------------
 
 app.get("/dashboard", (c) => c.html(dashboardHtml(new URL(c.req.url).origin)));
+
+// /dashboard/submissions — admin inbox for directory submissions.
+// Page itself is public (noindex); actions gated by x-admin-token entered
+// in the UI + persisted to localStorage.
+app.get("/dashboard/submissions", async (c) => {
+  const { submissionsInboxHtml } = await import("./submissions_inbox");
+  return c.html(submissionsInboxHtml(new URL(c.req.url).origin));
+});
 
 // --------------------- oauth (Phase A: sign-in) ---------------------
 

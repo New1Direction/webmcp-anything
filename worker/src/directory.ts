@@ -72,10 +72,11 @@ export function directoryHtml(origin: string): string {
     border-radius: 12px; margin-bottom: 10px; overflow: hidden;
   }
   .store-head {
-    display: grid; grid-template-columns: auto 1fr auto auto; gap: 14px;
+    display: flex; flex-wrap: wrap; gap: 10px;
     align-items: center; padding: 14px 18px; cursor: pointer;
     transition: background .15s;
   }
+  .store-head .name { flex: 1; min-width: 0; }
   .store-head:hover { background: var(--bg2); }
   .store-head .icon {
     width: 32px; height: 32px; border-radius: 8px;
@@ -97,6 +98,32 @@ export function directoryHtml(origin: string): string {
     border-top: 1px solid var(--border);
   }
   .store-group.open .store-products { display: block; }
+  .store-group.featured {
+    border-color: rgba(124,92,255,.55);
+    background: linear-gradient(135deg, var(--card), rgba(124,92,255,.06));
+    box-shadow: 0 0 0 1px rgba(124,92,255,.18);
+  }
+  .store-head .verified-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: linear-gradient(135deg, rgba(124,92,255,.18), rgba(0,229,255,.18));
+    border: 1px solid rgba(124,92,255,.45); color: var(--accent2);
+    font-size: .62rem; font-weight: 700; letter-spacing: .08em;
+    padding: 2px 7px; border-radius: 999px; text-transform: uppercase;
+  }
+  .store-head .featured-chip {
+    background: rgba(251,191,36,.15); color: #fbbf24;
+    border: 1px solid rgba(251,191,36,.35);
+    font-size: .62rem; font-weight: 700; letter-spacing: .08em;
+    padding: 2px 7px; border-radius: 999px; text-transform: uppercase;
+  }
+  .product-row .verified-tick { color: var(--accent2); font-size: .8rem; }
+  .flat-row .verified-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: linear-gradient(135deg, rgba(124,92,255,.18), rgba(0,229,255,.18));
+    border: 1px solid rgba(124,92,255,.45); color: var(--accent2);
+    font-size: .62rem; font-weight: 700; letter-spacing: .08em;
+    padding: 2px 7px; border-radius: 999px; text-transform: uppercase;
+  }
   .product-row {
     display: grid; grid-template-columns: auto 1fr auto auto; gap: 12px;
     align-items: center; padding: 10px 0;
@@ -193,6 +220,10 @@ export function directoryHtml(origin: string): string {
 <header>
   <h1>Directory</h1>
   <p class="muted">Every URL the community has turned into agent-callable MCP tools. Click any store to expand its products. <a href="/integration/openapi">OpenAPI</a> · <a href="/integration/shopify">Shopify</a> · <a href="/integration/stripe">Stripe</a></p>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">
+    <a href="/directory/submit" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#7c5cff,#00e5ff);color:#0c0c14;padding:9px 16px;border-radius:8px;text-decoration:none;font-weight:700;font-size:.9rem">+ Submit your site (free)</a>
+    <a href="/managed" style="display:inline-flex;align-items:center;gap:8px;background:#16161f;border:1px solid #26263a;color:#ececf5;padding:9px 16px;border-radius:8px;text-decoration:none;font-weight:600;font-size:.9rem">Get verified badge → /managed</a>
+  </div>
 </header>
 
 <div class="stats">
@@ -222,7 +253,7 @@ export function directoryHtml(origin: string): string {
 <div id="list"></div>
 
 <footer>
-  WebMCP Anything · <a href="/">Home</a> · <a href="/dashboard">Dashboard</a> · <a href="https://github.com/New1Direction/webmcp-anything">GitHub</a>
+  WebMCP Anything · <a href="/">Home</a> · <a href="/directory/submit">Submit your site</a> · <a href="/managed">Get verified</a> · <a href="/dashboard">Dashboard</a> · <a href="https://github.com/New1Direction/webmcp-anything">GitHub</a>
 </footer>
 </div>
 
@@ -302,13 +333,19 @@ function renderGrouped(filtered) {
   const html = shown.map(([host, products]) => {
     const initial = host[0]?.toUpperCase() || "·";
     const sample = products.slice(0, 15);
+    // Aggregate store-level flags: any verified/featured product wins.
+    const anyVerified = products.some(p => p.verified);
+    const featuredRank = products.reduce((acc, p) => (
+      p.featured_rank != null && (acc == null || p.featured_rank < acc) ? p.featured_rank : acc
+    ), null);
     const productRows = sample.map(e => {
       const cls = ["shopify","jsonld","openapi","llm"].includes(e.adapter) ? e.adapter : "other";
       const title = e.title || hostnameOf(e.url);
+      const tick = e.verified ? '<span class="verified-tick" title="Agent-ready Verified">●</span>' : '';
       return \`<div class="product-row">
         <span class="badge \${cls}">\${e.adapter}</span>
         <div class="ptitle">
-          <a href="/u/\${b64url(e.url)}">\${escapeHtml(title)}</a>
+          <a href="/u/\${b64url(e.url)}">\${tick}\${escapeHtml(title)}</a>
           <span class="purl">\${escapeHtml(e.url)}</span>
         </div>
         <span class="age">\${relTime(e.ts)}</span>
@@ -318,11 +355,16 @@ function renderGrouped(filtered) {
     const overflow = products.length > 15
       ? \`<div style="text-align:center;padding:10px 0;color:var(--muted);font-size:.82rem">+ \${products.length - 15} more products</div>\`
       : "";
+    const verifiedChip = anyVerified ? '<span class="verified-chip">✓ Verified</span>' : '';
+    const featuredChip = featuredRank != null ? '<span class="featured-chip">★ Featured</span>' : '';
+    const groupCls = featuredRank != null ? 'store-group featured' : 'store-group';
 
-    return \`<div class="store-group">
+    return \`<div class="\${groupCls}">
       <div class="store-head" onclick="this.parentElement.classList.toggle('open')">
         <div class="icon">\${initial}</div>
         <div class="name">\${escapeHtml(host)}</div>
+        \${featuredChip}
+        \${verifiedChip}
         <span class="count">\${products.length}</span>
         <span class="chev">›</span>
       </div>
@@ -340,10 +382,11 @@ function renderFlat(filtered) {
   const html = shown.map(e => {
     const cls = ["shopify","jsonld","openapi","llm"].includes(e.adapter) ? e.adapter : "other";
     const title = e.title || hostnameOf(e.url);
+    const vChip = e.verified ? '<span class="verified-chip">✓ Verified</span>' : '';
     return \`<div class="flat-row">
       <span class="badge \${cls}">\${e.adapter}</span>
       <a href="/u/\${b64url(e.url)}" style="text-decoration:none;min-width:0;color:inherit;display:block">
-        <div class="title">\${escapeHtml(title)}</div>
+        <div class="title">\${escapeHtml(title)} \${vChip}</div>
         <div class="url">\${escapeHtml(e.url)}</div>
       </a>
       <span class="age">\${relTime(e.ts)}</span>
