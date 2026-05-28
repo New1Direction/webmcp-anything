@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>wmcp.sh — codex demo</title>
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --panel: #131316;
+    --panel2: #1a1a1e;
+    --border: #25252c;
+    --text: #ececf0;
+    --muted: #a0a0ac;
+    --dim: #6a6a78;
+    --accent: #10a37f;     /* OpenAI green */
+    --accent2: #7adba8;
+    --gold: #fbbf24;
+    --pink: #f0abfc;
+    --blue: #5bc0eb;
+    --red: #f87171;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    width: 100%; height: 100vh;
+    background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Söhne", "Inter", sans-serif;
+    font-size: 14px;
+    overflow: hidden;
+  }
+  .app {
+    display: grid; grid-template-columns: 220px 1fr 360px;
+    height: 100vh;
+  }
+
+  /* Sidebar (Codex tasks list) */
+  .sidebar {
+    background: var(--panel);
+    border-right: 1px solid var(--border);
+    padding: 16px 12px;
+    display: flex; flex-direction: column;
+  }
+  .sidebar .brand {
+    display: flex; align-items: center; gap: 8px;
+    font-weight: 700; font-size: 14px; padding: 4px 8px 16px;
+    letter-spacing: -0.01em;
+  }
+  .sidebar .brand .logo {
+    width: 22px; height: 22px; border-radius: 6px;
+    background: linear-gradient(135deg, var(--accent), #14b89b);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; color: #022;
+  }
+  .sidebar .section {
+    font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--dim); padding: 12px 8px 6px;
+  }
+  .sidebar .task {
+    padding: 7px 10px; border-radius: 8px; font-size: 13px;
+    color: var(--muted); display: flex; gap: 8px; align-items: center;
+    margin-bottom: 2px;
+  }
+  .sidebar .task.active { background: var(--panel2); color: var(--text); }
+  .sidebar .task .dot {
+    width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+    background: var(--dim);
+  }
+  .sidebar .task.active .dot { background: var(--accent); animation: pulse 1.6s infinite ease-in-out; }
+  @keyframes pulse {
+    0%, 100% { opacity: 0.5; transform: scale(0.85); }
+    50% { opacity: 1; transform: scale(1.1); }
+  }
+
+  /* Main editor area */
+  .main { display: flex; flex-direction: column; min-width: 0; }
+  .file-tabs {
+    display: flex; border-bottom: 1px solid var(--border);
+    background: var(--panel); height: 36px;
+  }
+  .file-tabs .tab {
+    padding: 0 14px; display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; color: var(--muted); border-right: 1px solid var(--border);
+    cursor: pointer;
+  }
+  .file-tabs .tab.active { background: var(--bg); color: var(--text); }
+  .file-tabs .tab .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--gold); }
+  .file-tabs .tab.active .dot { background: var(--accent); }
+
+  .editor {
+    flex: 1; overflow: hidden; background: var(--bg);
+    padding: 16px 0 16px 16px;
+    font-family: "SF Mono", "JetBrains Mono", Menlo, monospace;
+    font-size: 13px; line-height: 1.55;
+    display: flex; flex-direction: column;
+  }
+  .editor .code {
+    flex: 1; overflow-y: auto; white-space: pre; color: var(--text);
+    padding-right: 16px;
+  }
+  .editor .code .ln { color: var(--dim); display: inline-block; width: 30px; text-align: right; margin-right: 12px; user-select: none; }
+  .editor .code .kw { color: #ff7ab2; }   /* keyword */
+  .editor .code .st { color: var(--accent2); } /* string */
+  .editor .code .fn { color: #93c5fd; }   /* function */
+  .editor .code .cm { color: var(--dim); font-style: italic; } /* comment */
+  .editor .code .nm { color: #fbbf24; }   /* number */
+  .editor .code .bn { color: var(--pink); } /* builtin */
+
+  /* Terminal at bottom */
+  .term {
+    height: 200px; border-top: 1px solid var(--border);
+    background: #08080b;
+    padding: 10px 16px;
+    font-family: "SF Mono", Menlo, monospace; font-size: 12px;
+    color: var(--text);
+    overflow-y: auto;
+  }
+  .term .prompt { color: var(--accent2); margin-right: 6px; }
+  .term .ok { color: var(--accent); }
+  .term .err { color: var(--red); }
+  .term .dim { color: var(--dim); }
+  .term .em { color: var(--gold); }
+
+  /* Right chat panel */
+  .chat {
+    background: var(--panel); border-left: 1px solid var(--border);
+    display: flex; flex-direction: column; min-width: 0;
+  }
+  .chat-header {
+    padding: 12px 16px; border-bottom: 1px solid var(--border);
+    font-size: 12px; color: var(--muted);
+  }
+  .chat-header strong { color: var(--text); }
+  .chat-body { flex: 1; overflow-y: auto; padding: 18px 18px; }
+  .msg { margin-bottom: 18px; opacity: 0; transform: translateY(6px); transition: opacity .3s, transform .3s; }
+  .msg.in { opacity: 1; transform: translateY(0); }
+  .msg .who { font-size: 10.5px; color: var(--dim); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; }
+  .msg.user .who { color: var(--blue); }
+  .msg.assistant .who { color: var(--accent); }
+  .msg .body { font-size: 13.5px; line-height: 1.55; color: var(--text); white-space: pre-wrap; }
+  .msg .body code { background: #1c1c25; padding: 1px 6px; border-radius: 3px; color: var(--pink); font-family: "SF Mono", monospace; font-size: 12.5px; }
+
+  .tool-mini {
+    background: rgba(16,163,127,0.07); border-left: 2px solid var(--accent);
+    padding: 8px 12px; margin-top: 6px; border-radius: 0 6px 6px 0;
+    font-size: 12px; color: var(--muted);
+  }
+  .tool-mini .head {
+    font-size: 10.5px; color: var(--accent); font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .tool-mini .head.ok::before {
+    content: "✓ "; color: var(--accent2);
+  }
+  .tool-mini code { color: var(--accent2); }
+
+  .input-bar {
+    padding: 12px 16px 16px; border-top: 1px solid var(--border);
+    display: flex; gap: 8px;
+  }
+  .input-bar .field {
+    flex: 1; padding: 10px 14px; background: var(--panel2);
+    border: 1px solid var(--border); border-radius: 8px;
+    font-size: 13px; color: var(--muted);
+  }
+
+  .blink-cursor { display: inline-block; width: 0.5em; animation: __blink .9s infinite step-end; }
+  @keyframes __blink { 50% { opacity: 0; } }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand"><div class="logo">⌘</div>codex</div>
+    <div class="section">Tasks</div>
+    <div class="task active"><div class="dot"></div>Yield watcher · running</div>
+    <div class="task"><div class="dot"></div>Refactor billing.ts</div>
+    <div class="task"><div class="dot"></div>Add Stripe webhook test</div>
+    <div class="task"><div class="dot"></div>OpenAPI sync</div>
+    <div class="section">Repos</div>
+    <div class="task"><div class="dot"></div>yield-watcher</div>
+    <div class="task"><div class="dot"></div>backend-api</div>
+    <div class="task"><div class="dot"></div>frontend-app</div>
+  </aside>
+
+  <main class="main">
+    <div class="file-tabs">
+      <div class="tab active"><div class="dot"></div>watcher.py</div>
+      <div class="tab"><div class="dot"></div>requirements.txt</div>
+      <div class="tab"><div class="dot"></div>README.md</div>
+    </div>
+    <div class="editor">
+      <div class="code" id="code" data-scroller></div>
+    </div>
+    <div class="term" id="term" data-scroller></div>
+  </main>
+
+  <aside class="chat">
+    <div class="chat-header">codex · agent · <strong>yield-watcher</strong></div>
+    <div class="chat-body" id="chat" data-scroller></div>
+    <div class="input-bar">
+      <div class="field">Ask Codex…</div>
+    </div>
+  </aside>
+</div>
+
+<script src="anim.js"></script>
+<script>
+const code = document.getElementById("code");
+const term = document.getElementById("term");
+const chat = document.getElementById("chat");
+const { sleep, typeInto, highlightJson } = window.anim;
+
+function addChatMsg(role, html = "") {
+  const m = document.createElement("div");
+  m.className = `msg ${role}`;
+  m.innerHTML = `<div class="who">${role === "user" ? "you" : "codex"}</div><div class="body">${html}</div>`;
+  chat.appendChild(m);
+  chat.scrollTop = chat.scrollHeight;
+  requestAnimationFrame(() => m.classList.add("in"));
+  return m;
+}
+
+function addToolMini(html, done = false) {
+  const el = document.createElement("div");
+  el.className = "tool-mini";
+  el.innerHTML = `<div class="head ${done ? "ok" : ""}">${done ? "tool result" : "calling tool"}</div>${html}`;
+  chat.appendChild(el);
+  chat.scrollTop = chat.scrollHeight;
+  requestAnimationFrame(() => el.classList.add("in"));
+  return el;
+}
+
+function addTermLine(html) {
+  const el = document.createElement("div");
+  el.innerHTML = html;
+  term.appendChild(el);
+  term.scrollTop = term.scrollHeight;
+}
+
+// Color a python code block
+function pythonize(src) {
+  return src
+    .replace(/(#[^\n]*)/g, '<span class="cm">$1</span>')
+    .replace(/\b(import|from|def|return|if|else|for|while|in|as|class|with|try|except|async|await|True|False|None)\b/g, '<span class="kw">$1</span>')
+    .replace(/("[^"\n]*"|'[^'\n]*')/g, '<span class="st">$1</span>')
+    .replace(/\b(\d+(?:\.\d+)?)\b/g, '<span class="nm">$1</span>')
+    .replace(/\b(print|len|str|int|float|list|dict|sorted|filter|range|sum)\b/g, '<span class="bn">$1</span>');
+}
+
+async function appendCode(src, charDelay = 4) {
+  const lines = src.split("\n");
+  for (let i = 0; i < lines.length; i++) {
+    const ln = String(code.querySelectorAll(".line").length + 1).padStart(3, " ");
+    const lineEl = document.createElement("div");
+    lineEl.className = "line";
+    lineEl.innerHTML = `<span class="ln">${ln}</span><span></span>`;
+    code.appendChild(lineEl);
+    const span = lineEl.querySelector("span:nth-child(2)");
+    // Type the line character by character
+    for (const ch of lines[i]) {
+      span.textContent += ch;
+      code.scrollTop = code.scrollHeight;
+      await sleep(charDelay);
+    }
+    // Apply syntax highlighting once the line is complete
+    span.innerHTML = pythonize(span.textContent);
+  }
+}
+
+window.__demo = async function () {
+  // Scene 1: User asks Codex to scaffold a yield watcher
+  const u = addChatMsg("user");
+  await sleep(400);
+  await typeInto(
+    u.querySelector(".body"),
+    "Build a Python script that watches DefiLlama via wmcp.sh — alert me when any stablecoin pool's APY jumps over 8%.",
+    16
+  );
+  await sleep(400);
+
+  // Scene 2: Codex acknowledges + starts writing
+  const a1 = addChatMsg("assistant");
+  await typeInto(
+    a1.querySelector(".body"),
+    "On it. I'll use the wmcp.sh DefiLlama adapter — get_yield_pools polled every minute. Writing watcher.py.",
+    16
+  );
+  await sleep(300);
+
+  // Scene 3: Code appears in the editor (streamed)
+  const src = `# watcher.py — alert when any stablecoin pool APY exceeds threshold
+import os, time, requests
+from datetime import datetime
+
+WMCP_URL = "https://wmcp.sh/api/v1/tools/execute"
+WMCP_KEY = os.environ["WMCP_API_KEY"]
+THRESHOLD_APY = 8.0  # alert above this
+POLL_SECONDS = 60
+
+def fetch_yield_pools():
+    res = requests.post(WMCP_URL, headers={
+        "authorization": f"Bearer {WMCP_KEY}",
+        "content-type": "application/json",
+    }, json={
+        "url": "https://yields.llama.fi/",
+        "tool": "list_yield_pools",
+        "args": {},
+    })
+    return res.json()["value"]["data"]
+
+def alert(pool):
+    print(f"[{datetime.now()}] ALERT  {pool['project']}  {pool['symbol']}  "
+          f"apy={pool['apy']:.2f}%  tvl=\${pool['tvlUsd']:,.0f}")
+
+def watch():
+    seen = set()
+    while True:
+        pools = fetch_yield_pools()
+        stables = [p for p in pools if p.get("stablecoin")]
+        hot = sorted([p for p in stables if p["apy"] > THRESHOLD_APY],
+                     key=lambda p: p["apy"], reverse=True)
+        for p in hot[:5]:
+            key = (p["project"], p["symbol"])
+            if key not in seen:
+                alert(p)
+                seen.add(key)
+        time.sleep(POLL_SECONDS)
+
+if __name__ == "__main__":
+    watch()`;
+
+  await appendCode(src, 3.5);
+  await sleep(700);
+
+  // Scene 4: Tool call card in the chat
+  addToolMini(
+    `Running <code>watcher.py</code> in sandbox · checking wmcp.sh connection…`,
+    false
+  );
+  await sleep(900);
+
+  // Scene 5: Terminal shows the script running with real-looking output
+  addTermLine('<span class="prompt">$</span> python watcher.py');
+  await sleep(400);
+  addTermLine('<span class="dim">[2026-05-27 06:42:01] Polling DefiLlama via wmcp.sh…</span>');
+  await sleep(700);
+  addTermLine('<span class="dim">[2026-05-27 06:42:02] 1,847 pools fetched · 312 stablecoin · 18 above threshold</span>');
+  await sleep(500);
+  addTermLine('<span class="em">[2026-05-27 06:42:02] ALERT  Pendle  sUSDe-27SEP26  apy=14.32%  tvl=$142,820,113</span>');
+  await sleep(400);
+  addTermLine('<span class="em">[2026-05-27 06:42:02] ALERT  Spark    USDS-USDC      apy=11.84%  tvl=$98,201,447</span>');
+  await sleep(400);
+  addTermLine('<span class="em">[2026-05-27 06:42:02] ALERT  Aerodrome  USDC-DAI    apy=9.71%   tvl=$41,109,820</span>');
+  await sleep(700);
+
+  // Update the tool mini to done
+  const mini = chat.querySelector(".tool-mini:last-of-type");
+  mini.querySelector(".head").className = "head ok";
+  mini.querySelector(".head").textContent = "tool result";
+  mini.innerHTML += `<div style="color:var(--text);margin-top:6px"><strong>3 alerts</strong> · top: Pendle sUSDe @ <span style="color:var(--accent2)">14.32%</span> APY</div>`;
+  await sleep(900);
+
+  // Scene 6: Codex final answer
+  const a2 = addChatMsg("assistant");
+  await typeInto(
+    a2.querySelector(".body"),
+    "Live. 3 alerts on first poll. Pendle sUSDe-27SEP26 is the leader at 14.32% APY ($142M TVL). I'll keep watcher.py running; you'll see new alerts in this terminal.",
+    14
+  );
+  await sleep(1600);
+};
+</script>
+</body>
+</html>

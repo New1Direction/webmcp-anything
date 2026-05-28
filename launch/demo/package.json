@@ -1,0 +1,19 @@
+{
+  "name": "wmcp-demo-recorder",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "record": "node record.mjs",
+    "record:agent": "node record_agent.mjs",
+    "record:all": "node record_all.mjs",
+    "encode": "ffmpeg -y -i out/wmcp-demo.webm -c:v libx264 -preset slow -crf 22 -pix_fmt yuv420p -movflags +faststart out/wmcp-demo.mp4",
+    "encode:agent": "ffmpeg -y -i out/wmcp-agent-demo.webm -c:v libx264 -preset slow -crf 22 -pix_fmt yuv420p -movflags +faststart out/wmcp-agent-demo.mp4",
+    "encode:all": "for f in out/wmcp-*.webm; do ffmpeg -y -i \"$f\" -c:v libx264 -preset slow -crf 22 -pix_fmt yuv420p -movflags +faststart \"${f%.webm}.mp4\"; done",
+    "all": "npm run record && npm run encode",
+    "all:agent": "npm run record:agent && npm run encode:agent",
+    "all:all": "npm run record:all && npm run encode:all"
+  },
+  "dependencies": {
+    "playwright": "^1.50.0"
+  }
+}

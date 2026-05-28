@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>wmcp.sh — claude code demo</title>
+<style>
+  :root {
+    --bg: #0a0a0d;
+    --panel: #14141a;
+    --border: #222230;
+    --text: #ececf5;
+    --muted: #8a8aa8;
+    --dim: #5b5b6e;
+    --accent: #cc785c;  /* Claude orange */
+    --accent2: #00e5ff;
+    --green: #4ade80;
+    --pink: #f0abfc;
+    --blue: #7ec0ff;
+    --red:  #f87171;
+    --gold: #fbbf24;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    width: 100%; height: 100vh;
+    background: var(--bg); color: var(--text);
+    font-family: "SF Mono", "JetBrains Mono", Menlo, ui-monospace, monospace;
+    font-size: 13.5px; line-height: 1.55;
+    overflow: hidden;
+  }
+
+  /* Terminal chrome */
+  .term {
+    height: 100vh;
+    display: grid;
+    grid-template-rows: 28px 1fr 24px;
+    background: var(--bg);
+  }
+  .titlebar {
+    background: linear-gradient(180deg, #18181f, #11111a);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 6px;
+    padding: 0 12px;
+    font-family: -apple-system, sans-serif; font-size: 11px;
+    color: var(--muted);
+  }
+  .titlebar .dots { display: flex; gap: 6px; margin-right: 14px; }
+  .titlebar .dots span { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+  .titlebar .dots .red    { background: #ff5f56; }
+  .titlebar .dots .yellow { background: #ffbd2e; }
+  .titlebar .dots .green  { background: #27c93f; }
+  .titlebar .path { color: var(--muted); }
+  .titlebar .path strong { color: var(--text); }
+
+  .body { overflow-y: auto; padding: 14px 22px 14px 22px; }
+  .body[data-scroller] { }
+
+  .statusline {
+    background: linear-gradient(90deg, #100f17, #181621);
+    border-top: 1px solid var(--border);
+    display: flex; align-items: center;
+    padding: 0 14px; gap: 18px;
+    font-family: -apple-system, sans-serif; font-size: 10.5px;
+    color: var(--muted);
+    overflow: hidden;
+  }
+  .statusline .pill {
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .statusline .pill::before {
+    content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--green);
+  }
+  .statusline .pill.accent::before { background: var(--accent); }
+  .statusline .pill.cyan::before { background: var(--accent2); }
+  .statusline .spacer { flex: 1; }
+  .statusline strong { color: var(--text); font-weight: 600; }
+
+  /* Prompt line */
+  .prompt {
+    color: var(--accent); font-weight: 700;
+    user-select: none; margin-right: 8px;
+  }
+  .input-line {
+    display: flex; align-items: flex-start;
+    margin-top: 8px; min-height: 22px;
+  }
+  .input-line .text { color: var(--text); }
+  .input-line .text .blink-cursor { color: var(--accent); }
+
+  /* Output blocks */
+  .out { margin: 6px 0 0; color: var(--text); white-space: pre-wrap; }
+  .out.dim { color: var(--muted); }
+  .out.ok { color: var(--green); }
+  .out.err { color: var(--red); }
+
+  /* Tool-use block */
+  .tool {
+    margin: 10px 0;
+    padding: 9px 12px;
+    background: rgba(124,92,255,0.06);
+    border-left: 2px solid #7c5cff;
+    border-radius: 0 6px 6px 0;
+  }
+  .tool .head {
+    font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: #b094ff; font-weight: 600; margin-bottom: 6px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .tool .head .badge {
+    font-family: -apple-system, sans-serif; font-weight: 700; font-size: 9.5px;
+    padding: 1px 7px; border-radius: 4px;
+    background: rgba(124,92,255,0.16); color: #b094ff;
+  }
+  .tool .head .badge.ok { background: rgba(74,222,128,0.18); color: var(--green); }
+  .tool .head .label { color: var(--text); font-weight: 500; text-transform: none; letter-spacing: 0; }
+  .tool .head .label code { color: var(--accent2); }
+  .tool pre {
+    margin: 4px 0 0;
+    font-size: 12px;
+    color: var(--muted);
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-height: 300px;
+    overflow: hidden;
+  }
+  .tool .args { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+  .tool .args code { color: var(--blue); }
+
+  /* Markdown-like output */
+  .md { color: var(--text); }
+  .md .h { color: var(--accent2); font-weight: 700; }
+  .md code { background: #1c1c25; color: var(--pink); padding: 1px 5px; border-radius: 3px; }
+  .md .ok { color: var(--green); }
+  .md .em { color: var(--gold); font-weight: 600; }
+
+  /* Cursor styles */
+  .blink-cursor { animation: __blink .9s infinite step-end; }
+  @keyframes __blink { 50% { opacity: 0; } }
+</style>
+</head>
+<body>
+
+<div class="term">
+  <div class="titlebar">
+    <div class="dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+    <div class="path">~ / <strong>store-snipe</strong> &nbsp;·&nbsp; claude code</div>
+  </div>
+
+  <div class="body" id="body" data-scroller></div>
+
+  <div class="statusline">
+    <span class="pill accent">claude-opus-4-7</span>
+    <span class="pill cyan">2 mcp servers</span>
+    <span class="pill">14k / 200k</span>
+    <span class="spacer"></span>
+    <span>auto-accept <strong>off</strong> · plan mode · ?for shortcuts</span>
+  </div>
+</div>
+
+<script src="anim.js"></script>
+<script>
+const body = document.getElementById("body");
+const { sleep, typeInto, safe, highlightJson } = window.anim;
+
+// Add a prompt input line and return the inner text element.
+function addPrompt() {
+  const row = document.createElement("div");
+  row.className = "input-line";
+  row.innerHTML = `<span class="prompt">&gt;</span><span class="text"></span>`;
+  body.appendChild(row);
+  body.scrollTop = body.scrollHeight;
+  return row.querySelector(".text");
+}
+
+// Add a plain output block (mimics Claude Code stdout)
+function addOut(html, cls = "") {
+  const el = document.createElement("div");
+  el.className = "out " + cls;
+  el.innerHTML = html;
+  body.appendChild(el);
+  body.scrollTop = body.scrollHeight;
+  return el;
+}
+
+// Add a tool-call block
+function addTool(label, argsHtml = "", pending = true) {
+  const el = document.createElement("div");
+  el.className = "tool";
+  el.innerHTML = `
+    <div class="head">
+      <span class="badge ${pending ? "" : "ok"}">${pending ? "tool" : "✓ result"}</span>
+      <span class="label">${label}</span>
+    </div>
+    ${argsHtml ? `<div class="args">${argsHtml}</div>` : ""}
+    <pre></pre>
+  `;
+  body.appendChild(el);
+  body.scrollTop = body.scrollHeight;
+  return el;
+}
+
+function setToolResult(el, label, result) {
+  el.querySelector(".badge").className = "badge ok";
+  el.querySelector(".badge").textContent = "✓ result";
+  el.querySelector(".label").innerHTML = label;
+  el.querySelector("pre").innerHTML = highlightJson(result);
+}
+
+// ─────────────────────────────────────────────────────────────────────
+window.__demo = async function () {
+  // Initial setup output (looks like opening a session)
+  addOut('<span class="md"><span class="h">Claude Code</span> · <span style="color:var(--muted)">opus 4.7 · ~/store-snipe</span></span>');
+  addOut('<span class="out dim">Type your prompt — or run /mcp to manage servers.</span>');
+  await sleep(800);
+
+  // Scene 1: user installs the wmcp.sh MCP via slash command
+  const p1 = addPrompt();
+  await sleep(400);
+  await typeInto(p1, "/mcp add wmcp http https://wmcp.sh/mcp/defillama", 18);
+  await sleep(500);
+
+  // Output: success
+  addOut('<span class="ok">✓</span> Added MCP server <code style="color:var(--pink)">wmcp</code> · transport: <strong>http</strong>');
+  addOut('<span class="dim">  OAuth flow opened in browser → completed</span>');
+  addOut('<span class="dim">  Discovered 23 tools</span>');
+  await sleep(900);
+
+  // Scene 2: user asks a question that requires the MCP
+  const p2 = addPrompt();
+  await sleep(300);
+  await typeInto(
+    p2,
+    "Which DeFi protocol had the biggest TVL move in the last 7 days?",
+    18
+  );
+  await sleep(500);
+
+  // Scene 3: assistant calls list_protocols via wmcp
+  const tool1 = addTool(
+    `wmcp.<code>list_protocols</code>`,
+    `<code>sort_by="tvl_7d_pct_change" desc · limit=5</code>`
+  );
+  await sleep(800);
+
+  // Real fetch — list a few protocols from DefiLlama
+  let live;
+  try {
+    const r = await fetch("https://wmcp.sh/api/v1/tools?url=https://api.llama.fi/protocols");
+    live = await r.json();
+  } catch {}
+  // The full /protocols payload is huge — synthesize a top-5 with real-looking numbers
+  const top5 = [
+    { protocol: "Spark",        tvl_base: 8420391021, tvl_7d_pct_change:  0.187, category: "Lending" },
+    { protocol: "Pendle",       tvl_base: 7102448310, tvl_7d_pct_change:  0.142, category: "Yield" },
+    { protocol: "Aave V3",      tvl_base: 32104821100, tvl_7d_pct_change: 0.064, category: "Lending" },
+    { protocol: "EtherFi",      tvl_base: 9831029401, tvl_7d_pct_change:  0.051, category: "Liquid Staking" },
+    { protocol: "Sky (ex-Maker)", tvl_base: 11421038402, tvl_7d_pct_change: -0.022, category: "CDP" },
+  ];
+  setToolResult(tool1, `wmcp.<code>list_protocols</code>`, top5);
+  await sleep(1700);
+
+  // Scene 4: agent reasons with markdown output
+  addOut(`<span class="md">
+<span class="em">Spark</span> took the biggest jump — <span class="ok">+18.7%</span> over 7 days, now <span class="ok">$8.42B</span> TVL.
+
+The move was driven by their <code>USDS</code> stablecoin launch + the DAI → USDS migration finishing. Pendle pulled <span class="ok">+14.2%</span> ($7.10B) on a points-program rotation. Aave V3 is still the giant at <span class="ok">$32.1B</span> but only moved <span class="ok">+6.4%</span> — slower because it's already saturated.
+</span>`);
+  await sleep(2200);
+
+  // Scene 5: user follows up
+  const p3 = addPrompt();
+  await sleep(300);
+  await typeInto(p3, "Pull Spark's full income statement", 18);
+  await sleep(450);
+
+  const tool2 = addTool(
+    `wmcp.<code>get_income_statement</code>`,
+    `<code>protocol="spark"</code>`
+  );
+  await sleep(700);
+  setToolResult(tool2, `wmcp.<code>get_income_statement</code>`, {
+    protocol: "spark",
+    period: "trailing_30d",
+    revenue_usd: 18420391,
+    fees_usd: 31207221,
+    supply_apy_avg: 0.0721,
+    borrow_apy_avg: 0.0894,
+    p_to_s: 14.3,
+    p_to_f: 8.7,
+  });
+  await sleep(2000);
+
+  // Final hold
+  const p4 = addPrompt();
+  await sleep(200);
+  const cursor = document.createElement("span");
+  cursor.className = "blink-cursor";
+  cursor.textContent = "▎";
+  p4.appendChild(cursor);
+  await sleep(1500);
+};
+</script>
+</body>
+</html>

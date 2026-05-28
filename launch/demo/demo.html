@@ -1,0 +1,453 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>wmcp.sh — agent demo</title>
+<style>
+  :root {
+    --bg: #18181b;
+    --panel: #1f1f23;
+    --panel2: #27272d;
+    --border: #303036;
+    --text: #ececf5;
+    --muted: #9b9bab;
+    --dim: #6b6b78;
+    --accent: #cc785c;       /* claude-ish warm orange */
+    --accent2: #7c5cff;
+    --green: #4ade80;
+    --pink: #f0abfc;
+    --blue: #5bc0eb;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    width: 100%; height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+    overflow: hidden;
+  }
+
+  .app {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    height: 100%;
+  }
+
+  /* Sidebar (Claude.ai-ish) */
+  .sidebar {
+    background: var(--panel);
+    border-right: 1px solid var(--border);
+    padding: 20px 14px;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .sidebar .brand {
+    font-weight: 700; font-size: 14px; letter-spacing: -0.01em;
+    color: var(--accent); margin-bottom: 16px; padding: 0 8px;
+  }
+  .sidebar .item {
+    padding: 8px 10px; border-radius: 8px; font-size: 13px;
+    color: var(--muted); cursor: pointer; display: flex; align-items: center; gap: 8px;
+  }
+  .sidebar .item.active { background: var(--panel2); color: var(--text); }
+  .sidebar .item .ico { width: 14px; height: 14px; border-radius: 4px; background: var(--dim); flex-shrink: 0; }
+  .sidebar .item.active .ico { background: var(--accent); }
+  .sidebar .section { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dim); padding: 12px 10px 4px; }
+
+  /* Main chat area */
+  .chat {
+    display: flex; flex-direction: column;
+    height: 100%; overflow: hidden;
+  }
+  .chat-header {
+    padding: 14px 22px; border-bottom: 1px solid var(--border);
+    font-size: 13px; color: var(--muted);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .chat-header .title { font-weight: 600; color: var(--text); }
+  .chat-header .model { font-size: 11px; color: var(--dim); }
+
+  .chat-body {
+    flex: 1; overflow-y: auto;
+    padding: 28px 64px 24px;
+    display: flex; flex-direction: column; gap: 22px;
+  }
+
+  .msg { opacity: 0; transform: translateY(8px); transition: opacity .35s ease, transform .35s ease; }
+  .msg.in { opacity: 1; transform: translateY(0); }
+
+  .msg .who {
+    font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--dim); margin-bottom: 6px; font-weight: 700;
+  }
+  .msg.user .who { color: var(--blue); }
+  .msg.assistant .who { color: var(--accent); }
+
+  .msg .body {
+    font-size: 16px; line-height: 1.62; color: var(--text);
+    white-space: pre-wrap; word-wrap: break-word;
+  }
+  .msg .body .cursor {
+    display: inline-block; width: 8px; height: 18px; background: var(--text);
+    vertical-align: middle; margin-left: 2px;
+    animation: blink .9s infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* Tool call card */
+  .tool {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px 16px;
+    font-family: "SF Mono", Menlo, monospace; font-size: 12.5px;
+    color: var(--muted);
+    margin-top: 6px;
+  }
+  .tool .head {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 8px;
+    color: var(--accent2); font-weight: 600; font-size: 11px;
+    letter-spacing: 0.06em; text-transform: uppercase;
+  }
+  .tool .head::before {
+    content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--accent2);
+    box-shadow: 0 0 8px var(--accent2);
+  }
+  .tool .head.done::before { background: var(--green); box-shadow: 0 0 8px var(--green); }
+  .tool .head.done { color: var(--green); }
+  .tool pre { margin: 0; white-space: pre-wrap; word-break: break-word; max-height: 280px; overflow-y: auto; }
+  .tool .json-key { color: var(--pink); }
+  .tool .json-str { color: var(--green); }
+  .tool .json-num { color: var(--blue); }
+  .tool .json-bool { color: var(--accent); }
+
+  /* Thinking indicator */
+  .thinking {
+    display: inline-flex; gap: 4px; align-items: center;
+  }
+  .thinking span {
+    width: 6px; height: 6px; border-radius: 50%; background: var(--muted);
+    animation: pulse 1.2s infinite ease-in-out;
+  }
+  .thinking span:nth-child(2) { animation-delay: 0.15s; }
+  .thinking span:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes pulse {
+    0%, 80%, 100% { opacity: 0.25; transform: scale(0.85); }
+    40% { opacity: 1; transform: scale(1); }
+  }
+
+  /* Input bar (decorative) */
+  .input-bar {
+    padding: 16px 64px 24px;
+    border-top: 1px solid var(--border);
+  }
+  .input-bar .field {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px 18px;
+    font-size: 14px; color: var(--muted);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .input-bar .field::after {
+    content: ""; margin-left: auto; width: 28px; height: 28px;
+    border-radius: 8px; background: var(--accent);
+    display: inline-block;
+  }
+
+  /* Time-skip indicator — when the agent polls in the background */
+  .time-skip {
+    align-self: center;
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 6px 14px;
+    background: rgba(124,92,255,0.08);
+    border: 1px dashed rgba(124,92,255,0.4);
+    border-radius: 999px;
+    color: var(--accent2); font-size: 12px; font-weight: 600;
+    letter-spacing: 0.04em;
+    opacity: 0;
+    transition: opacity .35s ease;
+  }
+  .time-skip.in { opacity: 1; }
+  .time-skip::before {
+    content: ""; width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent2);
+    animation: pulse 1.2s infinite ease-in-out;
+  }
+
+  /* Stock state pills inside tool results */
+  .stock-pill {
+    display: inline-block; padding: 2px 10px; border-radius: 6px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.05em;
+    text-transform: uppercase; vertical-align: middle;
+    margin-left: 6px;
+  }
+  .stock-pill.out { background: rgba(248,113,113,0.18); color: #f87171; border: 1px solid rgba(248,113,113,0.4); }
+  .stock-pill.in  { background: rgba(74,222,128,0.18); color: var(--green); border: 1px solid rgba(74,222,128,0.4); }
+
+  /* MCP server badge */
+  .mcp-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 2px 8px; border-radius: 6px;
+    background: rgba(124,92,255,0.15); border: 1px solid rgba(124,92,255,0.35);
+    color: var(--accent2); font-size: 10.5px; font-weight: 600;
+    letter-spacing: 0.05em; text-transform: uppercase;
+    margin-left: 8px; font-family: -apple-system, sans-serif;
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <aside class="sidebar">
+    <div class="brand">claude</div>
+    <div class="section">Recent</div>
+    <div class="item active"><div class="ico"></div>Ascended Heroes ETB watch</div>
+    <div class="item"><div class="ico"></div>ALD × NB 860v2 size 9.5 drop</div>
+    <div class="item"><div class="ico"></div>Compare DEX prices for $PEPE</div>
+    <div class="item"><div class="ico"></div>Aave TVL last 7 days</div>
+    <div class="section">Connectors</div>
+    <div class="item"><div class="ico" style="background:#cc785c"></div>wmcp.sh <span class="mcp-badge" style="margin-left:auto">MCP</span></div>
+    <div class="item"><div class="ico" style="background:#7c5cff"></div>DefiLlama <span class="mcp-badge" style="margin-left:auto">MCP</span></div>
+    <div class="item"><div class="ico" style="background:#5bc0eb"></div>Linear</div>
+  </aside>
+
+  <main class="chat">
+    <div class="chat-header">
+      <div class="title">Ascended Heroes ETB restock watch</div>
+      <div class="model">claude-opus-4-7 · connector: wmcp.sh</div>
+    </div>
+
+    <div class="chat-body" id="chat-body"></div>
+
+    <div class="input-bar">
+      <div class="field">Ask Claude…</div>
+    </div>
+  </main>
+
+</div>
+
+<script>
+// ──────────────────────────────────────────────────────────────────
+// Animation driver — exposed on window so Playwright can step through
+// the scenes deterministically.
+// ──────────────────────────────────────────────────────────────────
+
+const body = document.getElementById("chat-body");
+
+const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+function addMsg(role, html = "") {
+  const m = document.createElement("div");
+  m.className = `msg ${role}`;
+  m.innerHTML = `
+    <div class="who">${role === "user" ? "you" : "claude"}</div>
+    <div class="body">${html}</div>
+  `;
+  body.appendChild(m);
+  body.scrollTop = body.scrollHeight;
+  requestAnimationFrame(() => m.classList.add("in"));
+  return m;
+}
+
+async function typeInto(msgEl, text, charDelayMs = 28) {
+  const target = msgEl.querySelector(".body");
+  target.innerHTML = "";
+  const cursor = document.createElement("span");
+  cursor.className = "cursor";
+  target.appendChild(cursor);
+  for (const ch of text) {
+    const node = document.createTextNode(ch);
+    target.insertBefore(node, cursor);
+    body.scrollTop = body.scrollHeight;
+    await sleep(charDelayMs);
+  }
+  cursor.remove();
+}
+
+function setThinking(msgEl) {
+  msgEl.querySelector(".body").innerHTML = `
+    <span class="thinking"><span></span><span></span><span></span></span>
+  `;
+}
+
+// Pretty-print JSON with simple syntax highlighting.
+function highlightJson(obj) {
+  const json = JSON.stringify(obj, null, 2);
+  return json
+    .replace(/("([^"\\]|\\.)*")\s*:/g, '<span class="json-key">$1</span>:')
+    .replace(/:\s*("([^"\\]|\\.)*")/g, ': <span class="json-str">$1</span>')
+    .replace(/:\s*(-?\d+(?:\.\d+)?)/g, ': <span class="json-num">$1</span>')
+    .replace(/:\s*(true|false)/g, ': <span class="json-bool">$1</span>');
+}
+
+function setToolCall(msgEl, label, payload = null, done = false) {
+  msgEl.querySelector(".body").innerHTML = `
+    <div class="tool">
+      <div class="head ${done ? "done" : ""}">${done ? "✓ tool result" : "calling tool"}</div>
+      <div style="color:var(--text);font-size:13.5px;margin-bottom:8px">
+        <span style="color:var(--accent2);font-weight:600">${label}</span>
+      </div>
+      ${payload ? `<pre>${highlightJson(payload)}</pre>` : ""}
+    </div>
+  `;
+}
+
+// Time-skip element helper.
+function addTimeSkip(label) {
+  const el = document.createElement("div");
+  el.className = "time-skip";
+  el.textContent = label;
+  body.appendChild(el);
+  body.scrollTop = body.scrollHeight;
+  requestAnimationFrame(() => el.classList.add("in"));
+  return el;
+}
+
+// Single source of truth — the demo flow.
+//
+// Narrative: Pokémon Mega Evolution Ascended Heroes ETB restock watch.
+// Pokemon Center sells out instantly; this one sets up Claude to poll
+// every authorized reseller wmcp.sh can reach. When CardVault restocks,
+// Claude auto-purchases. The agentic loop is the wow moment.
+//
+// REAL DATA: fetched live from
+//   https://thecardvault.com/products/pokemon-me02-5-ascended-heroes-etb
+// — exact product name, vendor, price ($189.95), shopify adapter shape.
+// SCRIPTED: the sold_out→restocked transition, multi-retailer rollup.
+window.__demo = async function runDemo() {
+  let live = null;
+  try {
+    const r = await fetch(
+      "https://wmcp.sh/api/v1/tools?url=https://thecardvault.com/products/pokemon-me02-5-ascended-heroes-etb"
+    );
+    live = await r.json();
+  } catch {}
+  const product = (live?.product) || {
+    title: "Pokémon: Mega Evolution Ascended Heroes ETB",
+    vendor: "CardVault",
+    price: "189.95",
+  };
+  const variantId = live?.variants?.[0]?.id || "49207854481213";
+  const price = product.price || "189.95";
+
+  // ─── Scene 1: User asks (fast, urgent)
+  const u = addMsg("user");
+  await sleep(300);
+  await typeInto(
+    u,
+    "Watch Mega Evolution Ascended Heroes ETB — buy one the second any reseller restocks.",
+    16
+  );
+  await sleep(350);
+
+  // ─── Scene 2: Claude acknowledges
+  const a1 = addMsg("assistant");
+  setThinking(a1);
+  await sleep(500);
+  await typeInto(
+    a1,
+    "Pokemon Center is bot-locked. I'll watch verified resellers via wmcp.sh.",
+    18
+  );
+  await sleep(250);
+
+  // ─── Scene 3: Multi-retailer check — all sold out
+  const tool1 = addMsg("assistant");
+  setToolCall(
+    tool1,
+    'wmcp.sh / check_stock_multi(product="Ascended Heroes ETB", retailers=[pokemoncenter, thecardvault, daveandadams, trollandtoad])'
+  );
+  await sleep(900);
+  setToolCall(
+    tool1,
+    'wmcp.sh / check_stock_multi(product="Ascended Heroes ETB", retailers=[pokemoncenter, thecardvault, daveandadams, trollandtoad])',
+    {
+      product: "Pokémon: Mega Evolution Ascended Heroes ETB",
+      msrp: `$${price}`,
+      results: [
+        { retailer: "pokemoncenter.com", status: "sold_out", price: `$59.99 MSRP` },
+        { retailer: "thecardvault.com",  status: "sold_out", price: `$${price}` },
+        { retailer: "daveandadams.com",  status: "sold_out", price: "$179.95" },
+        { retailer: "trollandtoad.com",  status: "sold_out", price: "$199.99" },
+      ],
+      next_poll_in: "30s",
+    },
+    true
+  );
+  await sleep(1200);
+
+  // ─── Scene 4: Time skip — the agentic loop magic
+  addTimeSkip("polling 4 retailers · 22 minutes later");
+  await sleep(1500);
+
+  // ─── Scene 5: Restock hit
+  const tool2 = addMsg("assistant");
+  setToolCall(
+    tool2,
+    'wmcp.sh / check_stock_multi(product="Ascended Heroes ETB", ...)'
+  );
+  await sleep(600);
+  setToolCall(
+    tool2,
+    'wmcp.sh / check_stock_multi(product="Ascended Heroes ETB", ...)',
+    {
+      product: "Pokémon: Mega Evolution Ascended Heroes ETB",
+      results: [
+        { retailer: "pokemoncenter.com", status: "sold_out" },
+        { retailer: "thecardvault.com",  status: "in_stock", price: `$${price}`, stock: 8 },
+        { retailer: "daveandadams.com",  status: "sold_out" },
+        { retailer: "trollandtoad.com",  status: "sold_out" },
+      ],
+      action_recommended: "buy_from_thecardvault",
+    },
+    true
+  );
+  await sleep(900);
+
+  // ─── Scene 6: Claude auto-acts
+  const a2 = addMsg("assistant");
+  await typeInto(
+    a2,
+    "Card Vault just dropped 8 units at $189.95. Grabbing one now.",
+    18
+  );
+  await sleep(250);
+
+  // ─── Scene 7: add_to_cart
+  const tool3 = addMsg("assistant");
+  setToolCall(
+    tool3,
+    `wmcp.sh / add_to_cart(retailer="thecardvault.com", variant_id="${variantId}", quantity=1)`
+  );
+  await sleep(700);
+  setToolCall(
+    tool3,
+    `wmcp.sh / add_to_cart(retailer="thecardvault.com", variant_id="${variantId}", quantity=1)`,
+    {
+      ok: true,
+      cart_token: "Z2NwLXVz9NCQv4xJk...",
+      item: {
+        product: product.title,
+        retailer: "thecardvault.com",
+        price: `$${price}`,
+        qty: 1,
+      },
+      cart_subtotal: `$${price}`,
+      checkout_url: "https://thecardvault.com/checkout/c/Z2NwLXVz9NCQv4xJk",
+    },
+    true
+  );
+  await sleep(1100);
+
+  // ─── Scene 8: Final
+  const a3 = addMsg("assistant");
+  await typeInto(
+    a3,
+    `Cart loaded — 1 ETB at $${price}, ready to check out. They'll sell out again in minutes.`,
+    18
+  );
+  await sleep(1400);
+};
+
+</script>
+</body>
+</html>
