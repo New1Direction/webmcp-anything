@@ -74,7 +74,7 @@ export function mcpServerSentryHtml(origin: string): string {
       "name": "Pricing?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Free 100 reads/day anonymous. Managed Starter $499 one-time, Pro $999/mo, Enterprise $4,999+/mo. See /managed."
+        "text": "Free 100 reads/day anonymous. Managed Starter $499 one-time, Managed Retainer $999/mo, Enterprise $4,999+/mo. See /managed."
       }
     }
   ]
@@ -236,14 +236,14 @@ asyncio.run(triage())</code></pre>
   <details><summary>What is cross-project issue search?</summary><div class="answer">Most Sentry queries are scoped to one project. wmcp.sh exposes <code>search_issues</code> that fans out across every project visible to the token and merges results. Useful for cross-cutting regressions.</div></details>
   <details><summary>Can agents resolve issues?</summary><div class="answer">Yes — assign / resolve / ignore / comment are exposed but opt-in per connection. Default is read-only. All writes recorded in the wmcp.sh audit log and in Sentry's own audit log.</div></details>
   <details><summary>Self-hosted Sentry?</summary><div class="answer">Yes. Pass your Sentry API base URL and an internal-integration token. All tools work the same way; ACL enforcement happens server-side on Sentry.</div></details>
-  <details><summary>Pricing?</summary><div class="answer">Free 100 reads/day anonymous. Managed Starter $499 one-time, Pro $999/mo, Enterprise $4,999+/mo. See <a href="/managed" style="color:var(--accent2)">/managed</a>.</div></details>
+  <details><summary>Pricing?</summary><div class="answer">Free 100 reads/day anonymous. Managed Starter $499 one-time, Managed Retainer $999/mo, Enterprise $4,999+/mo. See <a href="/managed" style="color:var(--accent2)">/managed</a>.</div></details>
 </section>
 
 <!-- ========== UPGRADE ========== -->
 <section id="upgrade" style="margin-top:36px;background:linear-gradient(135deg,var(--card),rgba(124,92,255,0.08));border:1px solid rgba(124,92,255,0.35);border-radius:16px;padding:22px 26px">
   <div class="section-label">For production</div>
   <h2 style="margin-top:0">Need this in production?</h2>
-  <p style="color:var(--muted);max-width:640px">Production setup: scoped internal-integration token with project-level ACLs, audit retention, optional SSO, and webhook for agent-resolved issue notifications. Starter $499 one-time, Pro $999/mo, Enterprise $4,999+/mo.</p>
+  <p style="color:var(--muted);max-width:640px">Production setup: scoped internal-integration token with project-level ACLs, audit retention, optional SSO, and webhook for agent-resolved issue notifications. Starter $499 one-time, Managed Retainer $999/mo, Enterprise $4,999+/mo.</p>
   <p style="margin-top:16px">
     <a href="/managed" style="display:inline-block;background:var(--accent);color:#fff;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:700;margin-right:10px">→ Managed setup ($499)</a>
     <a href="/directory/submit" style="display:inline-block;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:600">Submit your MCP server (free)</a>

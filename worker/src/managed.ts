@@ -4,7 +4,7 @@
 // "make my site work with claude", "schema markup service",
 // "openapi development", "shopify ai agent setup".
 //
-// Three packages: Starter ($499 one-time), Pro ($999/mo), Enterprise
+// Three packages: Starter ($499 one-time), Managed Retainer ($999/mo), Enterprise
 // ($4999/mo+setup). Form posts to /api/v1/leads (POST, KV-backed).
 
 export function managedHtml(origin: string): string {
@@ -17,7 +17,7 @@ export function managedHtml(origin: string): string {
 <meta name="description" content="We make your website agent-ready so Claude, ChatGPT, Cursor, and the agent economy can find and transact with you. JSON-LD audit, WebMCP markup, custom MCP server, monitoring. From $499 setup." />
 <link rel="canonical" href="${origin}/managed" />
 <meta property="og:title" content="Done-for-you AI-readiness — wmcp.sh managed" />
-<meta property="og:description" content="3 packages: Starter $499 setup, Pro $999/mo, Enterprise white-label. We ship the markup, the MCP server, and the monitoring." />
+<meta property="og:description" content="3 packages: Starter $499 setup, Managed Retainer $999/mo, Enterprise white-label. We ship the markup, the MCP server, and the monitoring." />
 <meta property="og:url" content="${origin}/managed" />
 <meta property="og:image" content="${origin}/og.png" />
 <meta property="og:image:width" content="1200" />
@@ -36,7 +36,7 @@ export function managedHtml(origin: string): string {
     "name": "WebMCP Anything",
     "url": "https://wmcp.sh"
   },
-  "description": "Make your website agent-ready: JSON-LD markup, OpenAPI spec, hosted MCP server, monitoring. Starter $499 setup, Pro $999/mo, Enterprise white-label MCP from $4,999/mo.",
+  "description": "Make your website agent-ready: JSON-LD markup, OpenAPI spec, hosted MCP server, monitoring. Starter $499 setup, Managed Retainer $999/mo, Enterprise white-label MCP from $4,999/mo.",
   "areaServed": "Worldwide",
   "hasOfferCatalog": {
     "@type": "OfferCatalog",
@@ -51,7 +51,7 @@ export function managedHtml(origin: string): string {
       },
       {
         "@type": "Offer",
-        "name": "Pro",
+        "name": "Managed Retainer",
         "price": "999",
         "priceCurrency": "USD",
         "description": "Monthly retainer. Everything in Starter + custom adapter + traffic monitoring + quarterly review."
@@ -101,7 +101,7 @@ export function managedHtml(origin: string): string {
       "name": "Can you sign an NDA?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Yes for Pro and Enterprise engagements. Starter is a fixed-scope one-time engagement and we use a standard mutual confidentiality clause in the contract."
+        "text": "Yes for Managed Retainer and Enterprise engagements. Starter is a fixed-scope one-time engagement and we use a standard mutual confidentiality clause in the contract."
       }
     },
     {
@@ -216,7 +216,7 @@ export function managedHtml(origin: string): string {
 <section id="packages">
   <div class="section-label">Packages</div>
   <h2>Three tiers. Fixed scope. Real outcomes.</h2>
-  <p class="section-sub">All three include the wmcp.sh Pro plan ($29/mo value) and a 30-day satisfaction guarantee on the deliverables. Pay via Stripe invoice or card.</p>
+  <p class="section-sub">All three include a wmcp.sh Pro API subscription (normally $29/mo) and a 30-day satisfaction guarantee on the deliverables. Pay via Stripe invoice or card.</p>
 
   <div class="tier-grid">
     <div class="tier">
@@ -230,13 +230,13 @@ export function managedHtml(origin: string): string {
         <li>OpenAPI spec ingestion + tool generation if you have an API</li>
         <li>Listing in the <a href="/directory" style="color:var(--accent2);text-decoration:none">/directory</a> for agent discovery</li>
         <li>30-day support window</li>
-        <li>wmcp.sh Pro plan included for 3 months</li>
+        <li>wmcp.sh Pro API plan included for 3 months</li>
       </ul>
       <a class="cta" href="#contact">Get started →</a>
     </div>
 
     <div class="tier featured">
-      <h3>Pro</h3>
+      <h3>Managed Retainer</h3>
       <div class="price">$999 <small>/ month</small></div>
       <p class="tagline">Continuous AI-readability + custom adapter + agent traffic analytics. For brands actively investing in the agent economy.</p>
       <ul>
@@ -246,7 +246,7 @@ export function managedHtml(origin: string): string {
         <li>Schema markup maintained across new product pages automatically</li>
         <li>Quarterly review + new MCP capabilities as the standard evolves</li>
         <li>Priority Slack support (response within 4 business hours)</li>
-        <li>wmcp.sh Pro plan + 10k reads/day included</li>
+        <li>wmcp.sh Pro API plan + 10k reads/day included</li>
       </ul>
       <a class="cta" href="#contact">Talk to us →</a>
     </div>
@@ -256,7 +256,7 @@ export function managedHtml(origin: string): string {
       <div class="price">$4,999<small>+ /mo &amp; setup</small></div>
       <p class="tagline">White-label MCP server on your own subdomain. For platforms exposing their own customers' data as an agent surface.</p>
       <ul>
-        <li>Everything in Pro</li>
+        <li>Everything in Managed Retainer</li>
         <li>White-label MCP server at <code>mcp.yourbrand.com</code></li>
         <li>Custom OAuth flow under your branding</li>
         <li>SLA: 99.9% uptime, 1-hour incident response</li>
@@ -279,7 +279,7 @@ export function managedHtml(origin: string): string {
       <tr>
         <th>Capability</th>
         <th>Starter</th>
-        <th>Pro</th>
+        <th>Managed Retainer</th>
         <th>Enterprise</th>
       </tr>
     </thead>
@@ -353,7 +353,7 @@ export function managedHtml(origin: string): string {
           <select id="package" name="package">
             <option value="audit_only">Free audit only</option>
             <option value="starter">Starter ($499 one-time)</option>
-            <option value="pro">Pro ($999/mo)</option>
+            <option value="pro">Managed Retainer ($999/mo)</option>
             <option value="enterprise">Enterprise ($4,999+/mo)</option>
             <option value="unsure">Not sure yet</option>
           </select>
@@ -386,11 +386,11 @@ export function managedHtml(origin: string): string {
   </details>
 
   <details><summary>Can you sign an NDA?</summary>
-  <div class="answer">Yes for Pro and Enterprise engagements. Starter is a fixed-scope one-time engagement and we use a standard mutual confidentiality clause in the contract.</div>
+  <div class="answer">Yes for Managed Retainer and Enterprise engagements. Starter is a fixed-scope one-time engagement and we use a standard mutual confidentiality clause in the contract.</div>
   </details>
 
   <details><summary>What if my site is behind Cloudflare or another bot-protection layer?</summary>
-  <div class="answer">Part of the Pro and Enterprise engagement is configuring your WAF to allow verified AI agent traffic (<code>Claude-User</code>, <code>ChatGPT-User</code>) while still blocking real bots. We have the rule templates for Cloudflare, Akamai, and AWS WAF.</div>
+  <div class="answer">Part of the Managed Retainer and Enterprise engagement is configuring your WAF to allow verified AI agent traffic (<code>Claude-User</code>, <code>ChatGPT-User</code>) while still blocking real bots. We have the rule templates for Cloudflare, Akamai, and AWS WAF.</div>
   </details>
 
   <details><summary>Do you offer hourly / one-off engagements?</summary>
@@ -402,7 +402,7 @@ export function managedHtml(origin: string): string {
   </details>
 
   <details><summary>Refunds?</summary>
-  <div class="answer">30-day satisfaction guarantee on Starter and Pro &mdash; if the deliverables don't meet the scope as agreed, we refund pro-rata. Enterprise refunds are governed by the SLA terms in the contract (typically pro-rata for missed SLA, no refund for cancellation without cause).</div>
+  <div class="answer">30-day satisfaction guarantee on Starter and Managed Retainer &mdash; if the deliverables don't meet the scope as agreed, we refund pro-rata. Enterprise refunds are governed by the SLA terms in the contract (typically pro-rata for missed SLA, no refund for cancellation without cause).</div>
   </details>
 </section>
 

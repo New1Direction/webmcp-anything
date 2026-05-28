@@ -346,7 +346,7 @@ export function vsMcpToolkitHtml(origin: string): string {
   </details>
 
   <details><summary>Pricing?</summary>
-  <div class="answer">Docker Desktop's licensing applies for Docker MCP Toolkit (see Docker's site for current terms). wmcp.sh: 100 reads/day free anonymous; managed setup from $499 one-time, Pro $999/mo, Enterprise $4,999+/mo.</div>
+  <div class="answer">Docker Desktop's licensing applies for Docker MCP Toolkit (see Docker's site for current terms). wmcp.sh: 100 reads/day free anonymous; managed setup from $499 one-time, Managed Retainer $999/mo, Enterprise $4,999+/mo.</div>
   </details>
 
   <details><summary>Is wmcp.sh affiliated with Docker?</summary>
@@ -360,7 +360,7 @@ export function vsMcpToolkitHtml(origin: string): string {
     <div style="flex:1;min-width:240px">
       <div style="font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent2);font-weight:700;margin-bottom:6px">Need this picked / built for you?</div>
       <h3 style="margin:0 0 4px;font-size:1.05rem;color:var(--text)">Skip the wiring — we host your MCP at the edge.</h3>
-      <p style="color:var(--muted);margin:0;font-size:.92rem">Custom MCP adapter + hosted endpoint at <code>mcp.yourbrand.com</code> + verified badge. From <strong style="color:var(--text)">$499 one-time setup</strong>; Pro retainer <strong style="color:var(--text)">$999/mo</strong>; Enterprise <strong style="color:var(--text)">$4,999+/mo</strong>.</p>
+      <p style="color:var(--muted);margin:0;font-size:.92rem">Custom MCP adapter + hosted endpoint at <code>mcp.yourbrand.com</code> + verified badge. From <strong style="color:var(--text)">$499 one-time setup</strong>; Managed Retainer <strong style="color:var(--text)">$999/mo</strong>; Enterprise <strong style="color:var(--text)">$4,999+/mo</strong>.</p>
     </div>
     <div style="display:flex;gap:10px;flex-wrap:wrap">
       <a href="/managed" style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#7c5cff,#00e5ff);color:#0c0c14;padding:10px 18px;border-radius:9px;text-decoration:none;font-weight:700;font-size:.9rem">See /managed →</a>

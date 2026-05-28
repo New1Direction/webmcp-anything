@@ -1,24 +1,9 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
+// shopify + jsonld are still used directly by /api/v1/debug; the full adapter
+// cascade + CRYPTO_ADAPTERS now live in ./engine (shared with the MCP server).
 import * as shopify from "../../adapters/shopify.js";
 import * as jsonld from "../../adapters/jsonld.js";
-import * as openapi from "../../adapters/openapi.js";
-import * as llm from "../../adapters/llm.js";
-import * as coingecko from "../../adapters/coingecko.js";
-import * as defillama from "../../adapters/defillama.js";
-import * as dexscreener from "../../adapters/dexscreener.js";
-import * as pyth from "../../adapters/pyth.js";
-import * as chainlink from "../../adapters/chainlink.js";
-
-// Crypto/data adapters share the same structure: detect → extract → action.
-// They sit after openapi and before the HTML fetch in the /api/v1/tools chain.
-const CRYPTO_ADAPTERS = [
-  { name: "coingecko", mod: coingecko, ttl: 60 },        // prices change fast
-  { name: "dexscreener", mod: dexscreener, ttl: 60 },    // pair data changes fast
-  { name: "pyth", mod: pyth, ttl: 60 },                  // oracle prices
-  { name: "defillama", mod: defillama, ttl: 600 },       // TVL changes slowly
-  { name: "chainlink", mod: chainlink, ttl: 86400 },     // catalog only — daily cache fine
-];
 import { fetchAndParse } from "./html";
 import { landingHtml } from "./landing";
 import { dashboardHtml } from "./dashboard";
@@ -42,7 +27,11 @@ import {
   createCheckout,
   keyByCheckout,
   recoverByEmail,
+  createDirectoryVerifiedCheckout,
+  createFixCheckout,
 } from "./stripe";
+import { track } from "./metrics";
+import { resolveTools, executeTool, cacheKey, normalizeUrl, writeCache } from "./engine";
 
 type Bindings = {
   CACHE: KVNamespace;
@@ -56,70 +45,26 @@ type Bindings = {
   ANTHROPIC_API_KEY?: string;
   GITHUB_CLIENT_ID?: string;
   GITHUB_CLIENT_SECRET?: string;
+  LEAD_ALERT_WEBHOOK?: string;
 };
 
 type Variables = { auth: AuthCtx };
 
 const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
-app.use("*", cors({ origin: "*", allowMethods: ["GET", "POST", "OPTIONS"] }));
+// Scoped first so MCP clients' preflight (Authorization / MCP-Protocol-Version /
+// Mcp-Session-Id) is allowed; the global rule below covers everything else.
+app.use("*", cors({
+  origin: "*",
+  allowMethods: ["GET", "POST", "OPTIONS"],
+  allowHeaders: ["Content-Type", "Authorization", "Accept", "Mcp-Session-Id", "MCP-Protocol-Version", "Last-Event-ID"],
+  exposeHeaders: ["Mcp-Session-Id", "MCP-Protocol-Version"],
+  maxAge: 86400,
+}));
 
 // --------------------- helpers ---------------------
-
-const cacheKey = (url: string) => `v1:${normalizeUrl(url)}`;
-
-function normalizeUrl(u: string): string {
-  try {
-    const x = new URL(u);
-    // Drop common tracking params
-    for (const p of [...x.searchParams.keys()]) {
-      if (/^(utm_|gclid|fbclid|mc_|ref|source)/i.test(p)) x.searchParams.delete(p);
-    }
-    return x.toString().replace(/\/$/, "");
-  } catch {
-    return u;
-  }
-}
-
-async function readCache(env: Bindings, url: string, maxAgeSec: number) {
-  const raw = await env.CACHE.get(cacheKey(url));
-  if (!raw) return null;
-  try {
-    const entry = JSON.parse(raw);
-    if (Date.now() - entry.ts > maxAgeSec * 1000) return null;
-    return entry;
-  } catch {
-    return null;
-  }
-}
-
-async function writeCache(env: Bindings, url: string, payload: any, ttlSec: number) {
-  await env.CACHE.put(
-    cacheKey(url),
-    JSON.stringify({ payload, ts: Date.now() }),
-    { expirationTtl: ttlSec }
-  );
-  // First-time-only directory entry + counter.
-  // KV metadata is returned by list(), so the /directory endpoint can render
-  // without one get-per-entry.
-  const normalized = normalizeUrl(url);
-  const seenKey = `seen:${normalized}`;
-  const already = await env.CACHE.get(seenKey);
-  const adapter = payload?.adapter || "other";
-  const title =
-    payload?.product?.title ||
-    payload?.product?.name ||
-    undefined;
-  // Always refresh metadata — KV consistency / earlier schema versions can
-  // leave entries without metadata, which would hide them from /directory.
-  await env.CACHE.put(seenKey, normalized, {
-    metadata: { url: normalized, adapter, ts: Date.now(), title },
-  });
-  if (!already) {
-    const raw = await env.CACHE.get("stats:total_cached");
-    const n = raw ? parseInt(raw, 10) || 0 : 0;
-    await env.CACHE.put("stats:total_cached", String(n + 1));
-  }
-}
+// cacheKey / normalizeUrl / writeCache (and the extraction/execution cascade
+// resolveTools/executeTool) are imported from ./engine — one source of truth
+// shared by the REST API and the MCP server.
 
 // --------------------- routes ---------------------
 
@@ -188,7 +133,10 @@ app.get("/api/v1/directory", async (c) => {
   return c.json({ entries, list_complete: list.list_complete });
 });
 
-app.get("/directory", (c) => c.html(directoryHtml(new URL(c.req.url).origin)));
+app.get("/directory", (c) => {
+  track(c.env, c.executionCtx, "directory_view");
+  return c.html(directoryHtml(new URL(c.req.url).origin));
+});
 
 app.get("/connect/anthropic", async (c) => {
   const { connectAnthropicHtml } = await import("./connect_anthropic");
@@ -212,9 +160,50 @@ app.get("/integration/openapi", async (c) => {
 // Agents point at /mcp/<provider>; wmcp.sh injects the user's stored OAuth
 // bearer token transparently, refreshing as needed.
 app.get("/mcp", async (c) => {
-  const { listMcpProxies } = await import("./mcp_proxy");
-  return listMcpProxies(c as any);
+  const m = await import("./mcp_proxy");
+  // Crawlers/browsers get an indexable HTML catalog (GEO); agents get JSON.
+  const accept = c.req.header("accept") || "";
+  if (c.req.query("format") !== "json" && accept.includes("text/html")) {
+    return new Response(m.mcpIndexHtml(new URL(c.req.url).origin), {
+      headers: {
+        "content-type": "text/html; charset=utf-8",
+        "cache-control": "public, max-age=900, s-maxage=900",
+      },
+    });
+  }
+  return m.listMcpProxies(c as any);
 });
+
+// Real MCP server for wmcp.sh's OWN extracted tools (distinct from the
+// /mcp/:provider OAuth proxy below). Registered BEFORE :provider so the static
+// "u"/"url" segments win; POST does JSON-RPC, GET → 405 (no SSE). The 'u'/'url'
+// words are not provider ids, so there is no collision with the proxy.
+app.post("/mcp/url", async (c) => {
+  const { mcpHandler } = await import("./mcp_server");
+  return mcpHandler(c as any);
+});
+app.get("/mcp/url", async (c) => {
+  const { mcpMethodNotAllowed } = await import("./mcp_server");
+  return mcpMethodNotAllowed(c as any);
+});
+app.post("/mcp/u/:encoded", async (c) => {
+  const { mcpHandler } = await import("./mcp_server");
+  return mcpHandler(c as any);
+});
+app.get("/mcp/u/:encoded", async (c) => {
+  const { mcpMethodNotAllowed } = await import("./mcp_server");
+  return mcpMethodNotAllowed(c as any);
+});
+// Saved toolset → one composed MCP server. Resolves its stored URL bundle.
+app.post("/mcp/set/:id", async (c) => {
+  const { mcpHandler } = await import("./mcp_server");
+  return mcpHandler(c as any);
+});
+app.get("/mcp/set/:id", async (c) => {
+  const { mcpMethodNotAllowed } = await import("./mcp_server");
+  return mcpMethodNotAllowed(c as any);
+});
+
 app.all("/mcp/:provider", gate("execute"), async (c) => {
   const { mcpProxyHandler } = await import("./mcp_proxy");
   return mcpProxyHandler(c as any);
@@ -737,6 +726,11 @@ app.get("/api/v1/admin/directory/state", async (c) => {
   const m = await import("./directory_admin");
   return m.getDirectoryState(c as any);
 });
+// Funnel analytics rollup (x-admin-token gated) — totals + per-day + conversion.
+app.get("/api/v1/admin/metrics", async (c) => {
+  const m = await import("./metrics");
+  return m.getMetrics(c as any);
+});
 
 // Category landing — groups all 5 oracle / price-data adapters under one URL.
 // Distinct from /integration/* (single-provider pages) — this is a category.
@@ -808,6 +802,7 @@ app.get("/integration/linear", async (c) => {
 // --------------------- SEO pages ---------------------
 
 app.get("/u/:encoded", async (c) => {
+  track(c.env, c.executionCtx, "u_view");
   const { uHtml, notFoundHtml, base64urlDecode } = await import("./u");
   const enc = c.req.param("encoded");
   let sourceUrl: string;
@@ -1024,164 +1019,19 @@ app.get("/api/v1/debug", async (c) => {
 app.get("/api/v1/tools", gate("read"), async (c) => {
   const url = c.req.query("url");
   if (!url) return c.json({ error: "url query param required" }, 400);
+  track(c.env, c.executionCtx, "probe_run");
   const fresh = c.req.query("fresh") === "1";
 
-  // 1) cache
-  if (!fresh) {
-    const hit = await readCache(c.env, url, 60);
-    if (hit) {
-      return c.json({ ...hit.payload, from: "cache", cached_at: hit.ts });
-    }
-  }
-
-  // 2) shopify direct
-  const shopCtx = shopify.detect({ url, html: "" });
-  if (shopCtx) {
-    try {
-      const data = await shopify.extract(shopCtx);
-      const payload = {
-        adapter: "shopify",
-        tools: data.tools,
-        product: data.product,
-        variants: data.variants,
-      };
-      // 1h TTL — Shopify product data is stable enough; longer also gives /u/
-      // SEO pages cached content to render server-side.
-      c.executionCtx.waitUntil(writeCache(c.env, url, payload, 3600));
-      return c.json({ ...payload, from: "live" });
-    } catch (err: any) {
-      // fall through
-    }
-  }
-
-  // 2b) openapi — URL pattern: openapi.json, swagger.json, /api-docs, etc.
-  const openapiCtx = openapi.detect({ url });
-  if (openapiCtx) {
-    try {
-      const data = await openapi.extract(openapiCtx);
-      const payload = {
-        adapter: "openapi",
-        tools: data.tools,
-        product: data.product,
-      };
-      // 24h — OpenAPI specs rarely change between versions
-      c.executionCtx.waitUntil(writeCache(c.env, url, payload, 24 * 3600));
-      return c.json({ ...payload, from: "live" });
-    } catch (err: any) {
-      // fall through to jsonld
-    }
-  }
-
-  // 2c) crypto / data adapters — hand-curated tool catalogs for CoinGecko,
-  // DefiLlama, DexScreener, Pyth, Chainlink. extract() is synchronous on
-  // these (no spec fetch), so this loop is cheap.
-  for (const { name, mod, ttl } of CRYPTO_ADAPTERS) {
-    const ctx = (mod as any).detect({ url });
-    if (!ctx) continue;
-    try {
-      const data = await (mod as any).extract(ctx);
-      const payload = {
-        adapter: name,
-        tools: data.tools,
-        product: data.product,
-      };
-      c.executionCtx.waitUntil(writeCache(c.env, url, payload, ttl));
-      return c.json({ ...payload, from: "live" });
-    } catch (err: any) {
-      // fall through to next adapter (extract() may throw on unsupported nested paths)
-    }
-  }
-
-  // 3) html + jsonld
-  let page;
-  try {
-    page = await fetchAndParse(url);
-  } catch (err: any) {
-    return c.json(
-      {
-        error: "fetch_failed",
-        hint: "Site likely blocks server-side fetches (Incapsula/Akamai). Install the Chrome extension to extract tools client-side.",
-        url,
-        message: String(err?.message || err),
-      },
-      502
-    );
-  }
-
-  const jsonldCtx = jsonld.detect({
-    jsonld: page.jsonld,
-    meta: page.meta,
-    url: page.finalUrl || url,
-    title: page.title,
+  const r = await resolveTools(c.env, c.executionCtx, url, {
+    fresh,
+    authUserId: c.var.auth?.user_id,
   });
-  if (jsonldCtx) {
-    try {
-      const data = await jsonld.extract(jsonldCtx);
-      const payload = {
-        adapter: "jsonld",
-        tools: data.tools,
-        product: data.product,
-        variants: data.variants,
-      };
-      // 6h — JSON-LD product data is fairly stable
-      c.executionCtx.waitUntil(writeCache(c.env, url, payload, 6 * 3600));
-      return c.json({ ...payload, from: "live" });
-    } catch (err: any) {
-      // fall through to LLM fallback
-    }
-  }
-
-  // 4) LLM fallback — last resort. Sends already-extracted signals to Haiku.
-  // Prefer the calling user's own Claude Max / Anthropic Console OAuth token
-  // if they've connected one. This shifts inference cost to their account.
-  let userOauthToken: string | undefined;
-  const auth_user = c.var.auth?.user_id;
-  if (auth_user && !auth_user.startsWith("anon:")) {
-    for (const pid of ["claude_max", "anthropic"]) {
-      try {
-        const tok = await loadProviderToken(c.env, auth_user, pid);
-        if (tok) {
-          userOauthToken = tok.access_token;
-          break;
-        }
-      } catch {}
-    }
-  }
-
-  const llmCtx = llm.detect({
-    url: page.finalUrl || url,
-    title: page.title,
-    meta: page.meta,
-    jsonld: page.jsonld,
-    llmKey: userOauthToken ? undefined : c.env.ANTHROPIC_API_KEY,
-    oauthToken: userOauthToken,
+  if (!r.ok) return c.json(r.body, r.status as any);
+  return c.json({
+    ...r.payload,
+    from: r.from,
+    ...(r.cached_at !== undefined ? { cached_at: r.cached_at } : {}),
   });
-  if (llmCtx) {
-    try {
-      const data = await llm.extract(llmCtx);
-      if (data.tools?.length) {
-        const payload = {
-          adapter: "llm",
-          tools: data.tools,
-          product: data.product,
-        };
-        // 30-day cache: LLM calls are expensive, amortize aggressively.
-        c.executionCtx.waitUntil(writeCache(c.env, url, payload, 30 * 86400));
-        return c.json({ ...payload, from: "llm" });
-      }
-    } catch (err: any) {
-      // fall through to no_tools
-    }
-  }
-
-  return c.json(
-    {
-      error: "no_tools_extracted",
-      hint: "No matching adapter and LLM fallback couldn't extract tools. Install the Chrome extension for client-side extraction.",
-      url,
-    },
-    404
-  );
 });
 
 /**
@@ -1194,91 +1044,13 @@ app.post("/api/v1/tools/execute", gate("execute"), async (c) => {
   if (!body?.url || !body.tool)
     return c.json({ error: "url and tool required" }, 400);
 
-  const ctx = shopify.detect({ url: body.url, html: "" });
-  if (ctx) {
-    try {
-      const data = await shopify.extract(ctx);
-      const tool = data.tools.find((t: any) => t.name === body.tool);
-      if (!tool) return c.json({ error: `tool ${body.tool} not found` }, 404);
-      if (tool.result !== undefined) return c.json({ ok: true, value: tool.result });
-      const kind = tool.action?.kind;
-      if (!kind) return c.json({ error: "static result tool — no action to execute" }, 400);
-      const handler = (shopify.actions as any)[kind];
-      if (!handler) return c.json({ error: "no action handler" }, 500);
-      const value = await handler({ ...tool.action, args: body.args || {} });
-      return c.json({ ok: true, value });
-    } catch (err: any) {
-      return c.json({ ok: false, error: String(err?.message || err) }, 500);
-    }
-  }
-
-  // Crypto/data adapter execute. Each adapter has a single action kind that
-  // dispatches based on path/params carried in the tool definition.
-  for (const { name, mod } of CRYPTO_ADAPTERS) {
-    const cctx = (mod as any).detect({ url: body.url });
-    if (!cctx) continue;
-    try {
-      const data = await (mod as any).extract(cctx);
-      const tool = data.tools.find((t: any) => t.name === body.tool);
-      if (!tool) return c.json({ error: `tool ${body.tool} not found` }, 404);
-      if (tool.result !== undefined) return c.json({ ok: true, value: tool.result });
-      const kind = tool.action?.kind;
-      if (!kind) return c.json({ error: "static result tool — no action to execute" }, 400);
-      const handler = (mod as any).actions?.[kind];
-      if (!handler) return c.json({ error: `no action handler for ${kind}` }, 500);
-      const value = await handler({ ...tool.action, args: body.args || {} });
-      return c.json({ ok: true, value });
-    } catch (err: any) {
-      return c.json({ ok: false, error: String(err?.message || err), adapter: name }, 500);
-    }
-  }
-
-  const oaCtx = openapi.detect({ url: body.url });
-  if (oaCtx) {
-    try {
-      const data = await openapi.extract(oaCtx);
-      const tool = data.tools.find((t: any) => t.name === body.tool);
-      if (!tool) return c.json({ error: `tool ${body.tool} not found` }, 404);
-      const kind = tool.action?.kind;
-      const handler = (openapi.actions as any)[kind];
-      if (!handler) return c.json({ error: "no action handler" }, 500);
-      // Inject a token resolver bound to (env, user_id) so the openapi action
-      // can auto-authenticate against the calling user's connected providers.
-      const user_id = c.var.auth?.user_id;
-      const resolveToken = async (host: string) => {
-        // Build a dummy URL from the host so we can reuse the resolver.
-        const target = `https://${host}`;
-        const r = await resolveTokenForUrl(c.env, user_id, target);
-        return r?.access_token || null;
-      };
-      const value = await handler({
-        ...tool.action,
-        args: body.args || {},
-        resolveToken,
-      });
-      return c.json({ ok: true, value });
-    } catch (err: any) {
-      return c.json({ ok: false, error: String(err?.message || err) }, 500);
-    }
-  }
-
-  // JSON-LD path: re-fetch, find tool, return static result
-  try {
-    const page = await fetchAndParse(body.url);
-    const jc = jsonld.detect({
-      jsonld: page.jsonld,
-      meta: page.meta,
-      url: body.url,
-      title: page.title,
-    });
-    if (!jc) return c.json({ error: "no tools for url" }, 404);
-    const data = await jsonld.extract(jc);
-    const tool = data.tools.find((t: any) => t.name === body.tool);
-    if (!tool) return c.json({ error: `tool ${body.tool} not found` }, 404);
-    return c.json({ ok: true, value: tool.result });
-  } catch (err: any) {
-    return c.json({ ok: false, error: String(err?.message || err) }, 502);
-  }
+  const r = await executeTool(
+    c.env,
+    { url: body.url, tool: body.tool, args: body.args },
+    { userId: c.var.auth?.user_id }
+  );
+  if (r.ok) return c.json({ ok: true, value: r.value });
+  return c.json(r.body, r.status as any);
 });
 
 /**
@@ -1332,6 +1104,54 @@ app.post("/api/v1/stripe/webhook", async (c) => stripeWebhook(c as any));
 app.post("/api/v1/stripe/checkout", async (c) => createCheckout(c as any));
 app.get("/api/v1/keys/by-checkout", async (c) => keyByCheckout(c as any));
 app.post("/api/v1/keys/recover", async (c) => recoverByEmail(c as any));
+
+// --------------------- self-serve directory Verified + Agent-Ready Fix ------
+// Ownership claim (meta-tag) gates the Verified purchase; both SKUs are
+// fulfilled by the fail-closed webhook branch — they never mint an API key.
+app.get("/api/v1/directory/claim/start", async (c) => {
+  const m = await import("./directory_claim");
+  return m.claimStart(c as any);
+});
+app.post("/api/v1/directory/claim/verify", async (c) => {
+  const m = await import("./directory_claim");
+  return m.claimVerify(c as any);
+});
+app.post("/api/v1/directory/verified/checkout", async (c) => createDirectoryVerifiedCheckout(c as any));
+app.post("/api/v1/agent-ready/fix/checkout", async (c) => createFixCheckout(c as any));
+
+// Saved toolsets (composable MCP servers). Creating one is a paid feature;
+// served at /mcp/set/<id>. CRUD here, the MCP endpoint is wired above.
+app.post("/api/v1/toolsets", async (c) => {
+  const m = await import("./toolsets");
+  return m.createToolset(c as any);
+});
+app.get("/api/v1/toolsets", async (c) => {
+  const m = await import("./toolsets");
+  return m.listToolsets(c as any);
+});
+app.delete("/api/v1/toolsets/:id", async (c) => {
+  const m = await import("./toolsets");
+  return m.deleteToolset(c as any);
+});
+
+// Customer-facing UIs for the two self-serve SKUs + the operator metrics view.
+app.get("/directory/claim", async (c) => {
+  const { claimPageHtml } = await import("./claim_page");
+  return c.html(claimPageHtml(new URL(c.req.url).origin));
+});
+app.get("/agent-ready/fix", async (c) => {
+  const { fixPageHtml } = await import("./fix_page");
+  return new Response(fixPageHtml(new URL(c.req.url).origin), {
+    headers: {
+      "content-type": "text/html; charset=utf-8",
+      "cache-control": "public, max-age=900, s-maxage=900",
+    },
+  });
+});
+app.get("/dashboard/metrics", async (c) => {
+  const { metricsPageHtml } = await import("./metrics_page");
+  return c.html(metricsPageHtml(new URL(c.req.url).origin));
+});
 
 // --------------------- dashboard ---------------------
 

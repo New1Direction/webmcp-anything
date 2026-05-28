@@ -74,7 +74,7 @@ export function mcpServerSnowflakeHtml(origin: string): string {
       "name": "Pricing?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "wmcp.sh: free 100 reads/day anonymous, Managed Starter $499 one-time, Pro $999/mo, Enterprise $4,999+/mo. Snowflake credits are billed by Snowflake directly — wmcp.sh helps you avoid surprises, but does not bill credits."
+        "text": "wmcp.sh: free 100 reads/day anonymous, Managed Starter $499 one-time, Managed Retainer $999/mo, Enterprise $4,999+/mo. Snowflake credits are billed by Snowflake directly — wmcp.sh helps you avoid surprises, but does not bill credits."
       }
     }
   ]
@@ -238,14 +238,14 @@ asyncio.run(run())</code></pre>
   <details><summary>What's the query cost preview?</summary><div class="answer">Before any query runs, wmcp.sh runs EXPLAIN, derives bytes-scanned and estimated warehouse-credit consumption, and surfaces it to the agent. You can configure a threshold — queries above N credits get blocked unless the agent confirms. Closes the loop on the most common Snowflake agent-billing trap.</div></details>
   <details><summary>Key-pair auth?</summary><div class="answer">Yes and recommended over password. Private key lives encrypted in the per-user vault, decrypted in memory at the edge per request, never logged. PAT auth also supported.</div></details>
   <details><summary>Can the agent switch warehouses?</summary><div class="answer">Yes — list_warehouses returns size/state, the query tool accepts an explicit warehouse parameter. You can pin a default per connection and require explicit override.</div></details>
-  <details><summary>Pricing?</summary><div class="answer">wmcp.sh: free 100 reads/day anonymous, Managed Starter $499 one-time, Pro $999/mo, Enterprise $4,999+/mo. Snowflake credits billed by Snowflake. See <a href="/managed" style="color:var(--accent2)">/managed</a>.</div></details>
+  <details><summary>Pricing?</summary><div class="answer">wmcp.sh: free 100 reads/day anonymous, Managed Starter $499 one-time, Managed Retainer $999/mo, Enterprise $4,999+/mo. Snowflake credits billed by Snowflake. See <a href="/managed" style="color:var(--accent2)">/managed</a>.</div></details>
 </section>
 
 <!-- ========== UPGRADE ========== -->
 <section id="upgrade" style="margin-top:36px;background:linear-gradient(135deg,var(--card),rgba(124,92,255,0.08));border:1px solid rgba(124,92,255,0.35);border-radius:16px;padding:22px 26px">
   <div class="section-label">For production</div>
   <h2 style="margin-top:0">Need this in production?</h2>
-  <p style="color:var(--muted);max-width:640px">Production Snowflake MCP includes a read-only role with row-access policies, cost-threshold tuning, audit retention, SSO, and PrivateLink for Enterprise. Starter $499 one-time, Pro $999/mo, Enterprise $4,999+/mo.</p>
+  <p style="color:var(--muted);max-width:640px">Production Snowflake MCP includes a read-only role with row-access policies, cost-threshold tuning, audit retention, SSO, and PrivateLink for Enterprise. Starter $499 one-time, Managed Retainer $999/mo, Enterprise $4,999+/mo.</p>
   <p style="margin-top:16px">
     <a href="/managed" style="display:inline-block;background:var(--accent);color:#fff;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:700;margin-right:10px">→ Managed setup ($499)</a>
     <a href="/directory/submit" style="display:inline-block;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:600">Submit your MCP server (free)</a>

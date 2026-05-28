@@ -150,7 +150,7 @@ export function uHtml(sourceUrl: string, entry: CacheEntry, origin: string): str
       <p class="muted" style="margin:0;font-size:.9rem">Claim the listing — get a <strong style="color:var(--accent2)">verified badge</strong>, featured placement, and an MCP server you control. Or just submit a new URL for free.</p>
     </div>
     <div style="display:flex;gap:10px;flex-wrap:wrap">
-      <a href="/managed" style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#7c5cff,#00e5ff);color:#0c0c14;padding:9px 16px;border-radius:8px;text-decoration:none;font-weight:700;font-size:.88rem">Claim → /managed</a>
+      <a href="/directory/claim" style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#7c5cff,#00e5ff);color:#0c0c14;padding:9px 16px;border-radius:8px;text-decoration:none;font-weight:700;font-size:.88rem">Claim this listing →</a>
       <a href="/directory/submit" style="display:inline-flex;align-items:center;gap:6px;background:#11111c;border:1px solid #26263a;color:var(--text);padding:9px 16px;border-radius:8px;text-decoration:none;font-weight:600;font-size:.88rem">Submit (free)</a>
     </div>
   </div>
@@ -432,7 +432,7 @@ ${blogLines}
 
 ## Paid services + verified listings
 
-- [Managed agent-readiness](${origin}/managed): Starter $499 one-time / Pro $999/mo / Enterprise $4,999+/mo white-label MCP
+- [Managed agent-readiness](${origin}/managed): Starter $499 one-time / Managed Retainer $999/mo / Enterprise $4,999+/mo white-label MCP
 - [Verified directory badge](${origin}/directory/submit): comes with /managed — embeddable SVG at /badge/&lt;slug&gt;.svg
 
 ## What NOT to use
@@ -584,6 +584,11 @@ export async function sitemapXml(env: any, origin: string): Promise<string> {
     <loc>${origin}/agent-ready</loc>
     <changefreq>weekly</changefreq>
     <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>${origin}/agent-ready/fix</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
   </url>
   <url>
     <loc>${origin}/managed</loc>
@@ -781,10 +786,6 @@ export async function sitemapXml(env: any, origin: string): Promise<string> {
     <loc>${origin}/integration/linear</loc>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>${origin}/dashboard</loc>
-    <priority>0.5</priority>
   </url>
 ${blogUrlsXml}
 ${urlsXml}

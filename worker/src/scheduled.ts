@@ -48,6 +48,46 @@ const PRODUCTS_PER_STORE = 20;
 const FETCH_TIMEOUT_MS = 8000;
 const SHOPIFY_TTL_SEC = 3600; // matches index.ts shopify cache TTL
 
+// IndexNow — fast-index freshly cached /u pages with Bing/Yandex/Seznam/etc.
+// The key file is already served as a static asset at /<key>.txt (see
+// launch/registry/SUBMISSION_PLAYBOOK.md). Cron has no request origin, so the
+// production host is hardcoded; dev runs are skipped (guarded on ENVIRONMENT).
+const INDEXNOW_KEY = "210a4c52878584d7ea9f50b95f8f58cd";
+const SITE_HOST = "wmcp.sh";
+const SITE_ORIGIN = "https://wmcp.sh";
+
+// Mirror u.ts base64urlEncode + the /u route: encode the NORMALIZED source URL
+// (the sitemap does the same), so the submitted URL resolves to a real page.
+function uUrlFor(srcUrl: string): string {
+  const b64 = btoa(normalizeUrl(srcUrl))
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/, "");
+  return `${SITE_ORIGIN}/u/${b64}`;
+}
+
+async function pingIndexNow(urls: string[]): Promise<number> {
+  if (!urls.length) return 0;
+  const urlList = urls.slice(0, 10000);
+  try {
+    const res = await fetch("https://api.indexnow.org/IndexNow", {
+      method: "POST",
+      headers: { "content-type": "application/json; charset=utf-8" },
+      body: JSON.stringify({
+        host: SITE_HOST,
+        key: INDEXNOW_KEY,
+        keyLocation: `${SITE_ORIGIN}/${INDEXNOW_KEY}.txt`,
+        urlList,
+      }),
+      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+    });
+    console.log(`[indexnow] submitted ${urlList.length} urls → ${res.status}`);
+  } catch (e: any) {
+    console.log(`[indexnow] failed: ${e?.message || e}`);
+  }
+  return urlList.length;
+}
+
 const UA =
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 " +
   "(KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36";
@@ -120,6 +160,7 @@ interface StoreReport {
   new_cached: number;
   skipped_existing: number;
   errors: string[];
+  new_urls: string[];
 }
 
 async function seedStore(env: Env, store: string): Promise<StoreReport> {
@@ -129,6 +170,7 @@ async function seedStore(env: Env, store: string): Promise<StoreReport> {
     new_cached: 0,
     skipped_existing: 0,
     errors: [],
+    new_urls: [],
   };
   let products: any[] = [];
   try {
@@ -173,6 +215,7 @@ async function seedStore(env: Env, store: string): Promise<StoreReport> {
       };
       await writeCache(env, url, payload, SHOPIFY_TTL_SEC);
       report.new_cached++;
+      report.new_urls.push(url);
     } catch (e: any) {
       report.errors.push(`${p.handle}: ${(e?.message || e).slice(0, 60)}`);
     }
@@ -211,6 +254,13 @@ export async function scheduledHandler(
   console.log(
     `[cron] done: ${total_new} new urls cached, ${total_skip} skipped, ${elapsed_ms}ms`
   );
+
+  // Fast-index the freshly cached pages. Production only (cron has no request
+  // origin); best-effort via waitUntil so it never eats the worker budget.
+  if (env.ENVIRONMENT === "production") {
+    const freshUrls = reports.flatMap((r) => r.new_urls).map(uUrlFor);
+    if (freshUrls.length) ctx.waitUntil(pingIndexNow(freshUrls));
+  }
 }
 
 const STORE_HOSTNAME_RE = /^[a-z0-9]([a-z0-9.-]*[a-z0-9])?\.[a-z]{2,}$/i;
@@ -277,5 +327,12 @@ export async function runSeedNow(c: any): Promise<Response> {
   const stores = await pickStores(env);
   const reports = await Promise.all(stores.map((s) => seedStore(env, s)));
   const total_new = reports.reduce((s, r) => s + r.new_cached, 0);
-  return c.json({ ok: true, total_new, stores: reports });
+
+  let indexnow_submitted = 0;
+  if (env.ENVIRONMENT === "production") {
+    const freshUrls = reports.flatMap((r) => r.new_urls).map(uUrlFor);
+    indexnow_submitted = freshUrls.length;
+    if (freshUrls.length) c.executionCtx.waitUntil(pingIndexNow(freshUrls));
+  }
+  return c.json({ ok: true, total_new, indexnow_submitted, stores: reports });
 }

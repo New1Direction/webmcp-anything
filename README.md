@@ -59,28 +59,48 @@ curl 'https://wmcp.sh/api/v1/tools?url=https://raw.githubusercontent.com/stripe/
 curl 'https://wmcp.sh/api/v1/directory?limit=10'
 ```
 
-### 2. Use it from Claude Desktop / Cursor / Codex
+### 2. Use it from Claude Desktop / Cursor / Codex (native MCP)
 
-Add to your client's MCP config:
+wmcp.sh is a real MCP server (JSON-RPC 2.0 over Streamable HTTP). Point any MCP client at a **per-URL** endpoint — `/mcp/u/<base64url-of-your-url>` — and it exposes that page's extracted tools natively (`tools/list` + `tools/call`):
 
 ```json
 {
   "mcpServers": {
-    "wmcp": {
-      "type": "streamable-http",
-      "url": "https://wmcp.sh/api/v1/tools"
+    "allbirds": {
+      "type": "http",
+      "url": "https://wmcp.sh/mcp/u/aHR0cHM6Ly93d3cuYWxsYmlyZHMuY29tL3Byb2R1Y3RzL21lbnMtd29vbC1ydW5uZXJz"
     }
   }
 }
 ```
 
-Or use a specific provider (auth handled by the wmcp.sh credential vault):
+That base64url string decodes to `https://www.allbirds.com/products/mens-wool-runners`. Encode your own:
+
+```bash
+node -e "process.stdout.write(Buffer.from('https://your-url.example').toString('base64url'))"
+```
+
+**Compose multiple sites into one MCP server** — repeat the `url` param; tool names are namespaced per host (`site_a__add_to_cart`):
+
+```json
+{ "mcpServers": { "wmcp": { "type": "http", "url": "https://wmcp.sh/mcp/url?url=https://site-a.example&url=https://site-b.example" } } }
+```
+
+`tools/list` (discovery) is free; `tools/call` (live execution) needs a paid key, passed as a header:
+
+```json
+{ "mcpServers": { "wmcp": { "type": "http", "url": "https://wmcp.sh/mcp/u/<base64url>", "headers": { "Authorization": "Bearer webmcp_live_…" } } } }
+```
+
+`type` may be `"http"` or `"streamable-http"` (same transport). For Claude Desktop builds without remote-MCP support, bridge with `npx mcp-remote <url>`.
+
+Or proxy a specific OAuth-protected provider (upstream auth handled by the wmcp.sh credential vault):
 
 ```json
 {
   "mcpServers": {
     "stripe-via-wmcp": {
-      "type": "streamable-http",
+      "type": "http",
       "url": "https://wmcp.sh/mcp/stripe"
     }
   }
@@ -181,12 +201,16 @@ node adapters/_test/run.mjs
 ## Featured pages
 
 - **For developers:** [/agent-ready/api](https://wmcp.sh/agent-ready/api) · [/agent-ready/docs](https://wmcp.sh/agent-ready/docs) · [/agent-ready/saas](https://wmcp.sh/agent-ready/saas)
-- **Vertical guides:** [/for/healthcare](https://wmcp.sh/for/healthcare) · [/for/fintech](https://wmcp.sh/for/fintech) · [/for/marketing](https://wmcp.sh/for/marketing)
-- **Comparisons:** [/vs/composio](https://wmcp.sh/vs/composio) · [/vs/zapier](https://wmcp.sh/vs/zapier) · [/vs/langchain-tools](https://wmcp.sh/vs/langchain-tools) · [/vs/anthropic-skills](https://wmcp.sh/vs/anthropic-skills)
-- **Roundups:** [/roundup/mcp-servers-2026](https://wmcp.sh/roundup/mcp-servers-2026) · [/roundup/agent-frameworks](https://wmcp.sh/roundup/agent-frameworks)
+- **Vertical guides:** [/for/healthcare](https://wmcp.sh/for/healthcare) · [/for/fintech](https://wmcp.sh/for/fintech) · [/for/legal](https://wmcp.sh/for/legal) · [/for/real-estate](https://wmcp.sh/for/real-estate) · [/for/media](https://wmcp.sh/for/media) · [/for/marketing](https://wmcp.sh/for/marketing) · [/for/hr](https://wmcp.sh/for/hr)
+- **How-to tutorials:** [/how-to/install-claude-desktop-mcp](https://wmcp.sh/how-to/install-claude-desktop-mcp) · [/how-to/expose-shopify-as-mcp](https://wmcp.sh/how-to/expose-shopify-as-mcp) · [/how-to/build-stripe-mcp-agent](https://wmcp.sh/how-to/build-stripe-mcp-agent) · [/how-to/secure-mcp-oauth](https://wmcp.sh/how-to/secure-mcp-oauth)
+- **Glossary:** [/glossary/mcp](https://wmcp.sh/glossary/mcp) · [/glossary/tool-use](https://wmcp.sh/glossary/tool-use) · [/glossary/function-calling](https://wmcp.sh/glossary/function-calling) · [/glossary/oauth-pkce](https://wmcp.sh/glossary/oauth-pkce)
+- **Framework integrations:** [/integration/nextjs](https://wmcp.sh/integration/nextjs) · [/integration/django](https://wmcp.sh/integration/django) · [/integration/fastapi](https://wmcp.sh/integration/fastapi) · [/integration/laravel](https://wmcp.sh/integration/laravel) · [/integration/spring-boot](https://wmcp.sh/integration/spring-boot) · [/integration/hono](https://wmcp.sh/integration/hono)
+- **Tool-specific MCP servers:** [/mcp-server/postgres](https://wmcp.sh/mcp-server/postgres) · [/mcp-server/redis](https://wmcp.sh/mcp-server/redis) · [/mcp-server/snowflake](https://wmcp.sh/mcp-server/snowflake) · [/mcp-server/cloudflare](https://wmcp.sh/mcp-server/cloudflare) · [/mcp-server/vercel](https://wmcp.sh/mcp-server/vercel)
+- **Comparisons:** [/vs/composio](https://wmcp.sh/vs/composio) · [/vs/zapier](https://wmcp.sh/vs/zapier) · [/vs/langchain-tools](https://wmcp.sh/vs/langchain-tools) · [/vs/anthropic-skills](https://wmcp.sh/vs/anthropic-skills) · [/vs/mcp-toolkit](https://wmcp.sh/vs/mcp-toolkit)
+- **Roundups:** [/roundup/mcp-servers-2026](https://wmcp.sh/roundup/mcp-servers-2026) · [/roundup/agent-frameworks](https://wmcp.sh/roundup/agent-frameworks) · [/roundup/oauth-providers-mcp](https://wmcp.sh/roundup/oauth-providers-mcp)
 - **Long-form:** [/blog](https://wmcp.sh/blog) (24 engineering posts) · [/llms-full.txt](https://wmcp.sh/llms-full.txt) (full corpus, ~190KB)
 
-74 SEO surfaces total. Site map: [/sitemap.xml](https://wmcp.sh/sitemap.xml). AI-readable index: [/llms.txt](https://wmcp.sh/llms.txt).
+**99 SEO surfaces total.** Site map: [/sitemap.xml](https://wmcp.sh/sitemap.xml). AI-readable index: [/llms.txt](https://wmcp.sh/llms.txt) + [/llms-full.txt](https://wmcp.sh/llms-full.txt).
 
 ---
 
@@ -202,7 +226,7 @@ MIT. See [LICENSE](./LICENSE).
 - ✅ 5 oracle / price-data adapters (CoinGecko, DefiLlama, DexScreener, Pyth, Chainlink)
 - ✅ OAuth proxy for 8+ providers (Google, GitHub, Slack, Notion, Linear, Discord, Stripe, Anthropic)
 - ✅ Directory monetization (submit, badge, verified/featured, admin inbox)
-- ✅ 74 SEO pages live
+- ✅ 99 SEO pages live (8 verticals, 8 how-tos, 6 glossary entries, 12 framework integrations, 8 tool-specific MCP servers, 7 vs/alternatives competitor pages, 3 roundups, 24 blog posts, /llms.txt + /llms-full.txt)
 - 🟡 Stripe billing wired but not yet self-serve in dashboard
 - 🟡 Registry submissions in progress — see [`launch/registry/SUBMISSION_PLAYBOOK.md`](./launch/registry/SUBMISSION_PLAYBOOK.md)
 

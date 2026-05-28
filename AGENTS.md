@@ -84,6 +84,11 @@ NOTION_CLIENT_ID, NOTION_CLIENT_SECRET,
 LINEAR_CLIENT_ID, LINEAR_CLIENT_SECRET,
 STRIPE_CONNECT_CLIENT_ID, SHOPIFY_API_KEY, SHOPIFY_API_SECRET
 ANTHROPIC_CLIENT_ID, ANTHROPIC_CLIENT_SECRET, CLAUDE_MAX_CLIENT_ID, CLAUDE_MAX_CLIENT_SECRET
+
+# Optional, added 2026-05-28. Unset = the feature 503s (SKUs) or no-ops (alerts):
+STRIPE_PRICE_VERIFIED   # price_… for the self-serve directory Verified subscription
+STRIPE_PRICE_FIX        # price_… for the one-time Agent-Ready Fix (mode=payment)
+LEAD_ALERT_WEBHOOK      # Slack-compatible incoming webhook for lead/submission alerts
 ```
 
 The `TOKEN_ENC_KEY` is *load-bearing* — losing it makes every encrypted provider token in KV unreadable.
@@ -101,7 +106,7 @@ Match existing style in the file you're touching. The codebase has no monolithic
 These pages are public + indexed. They have legal/SEO/credibility surface area and have to clear all of these. Mistakes from the 2026-05-28 audit are catalogued here so they don't recur:
 
 1. **Zero PII.** Never use "Alex Hearts", "alexhearts", "connordochuk99", any real person's name, real email, or absolute path containing `/Users/alexhearts/`. Use only `Acme Corp`, `support@example.com`, `<repo>`, etc.
-2. **Pricing tiers are LOCKED.** Only quote Starter $499 one-time / Pro $999/mo / Enterprise $4,999+/mo. **NEVER invent** $9/mo, $19/mo, $29/mo, $49/mo, $99/mo, free trials, "first month free." This includes integration/use-case/comparison pages.
+2. **Pricing tiers are LOCKED — and there are TWO separate ladders; never conflate them.** (a) **Done-for-you service** (`/managed`): Starter $499 one-time / **Managed Retainer** $999/mo / Enterprise $4,999+/mo. The $999 tier was renamed from "Pro" → "Managed Retainer" on 2026-05-28 because "Pro" collided with the API plan — **never call the $999 tier "Pro" again.** (b) **Self-serve API plans** (`/dashboard`): Free / Pro $29/mo / Reseller $99/mo. So `$29/mo Pro` and `$99/mo Reseller` are CORRECT for the API plans; **NEVER invent** other numbers ($9/mo, $19/mo, $49/mo, free trials, "first month free"). This includes integration/use-case/comparison pages.
 3. **No fabricated URLs.** Before citing any third-party GitHub repo, docs URL, or OpenAPI spec URL, WebFetch and confirm 200. Wrong orgs caught in prior audit: `anthropic/anthropic-openapi` (correct: `anthropics/anthropic-sdk-python`), `Airtable/airtable-openapi` (does not exist).
 4. **No libel.** Don't claim competitors are "broken", "insecure", "dying", or store data "in plain-text." Comparative claims must be factual + neutral. Prior audit flagged a "plain-text" claim about Composio's token storage — that was reverted.
 5. **Affiliation disclaimers.** Any page naming Anthropic/OpenAI/Google/Apple/Microsoft/Vercel/Cloudflare/Stripe/Slack/Notion/Linear/Discord/GitHub must include "wmcp.sh is not affiliated with `<Org>`" in hero subtitle or FAQ.

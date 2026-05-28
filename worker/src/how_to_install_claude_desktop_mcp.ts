@@ -97,20 +97,29 @@ export function howToInstallClaudeDesktopMcpHtml(origin: string): string {
 <section id="config-code">
   <div class="section-label">Configuration</div>
   <h2>The exact JSON config.</h2>
-  <p class="section-sub">Copy this JSON block into your <code>claude_desktop_config.json</code> file. This configuration uses a node script to proxy the remote streamable HTTP server from wmcp.sh into the local stdio transport Claude expects.</p>
+  <p class="section-sub">wmcp.sh exposes a real MCP server (JSON-RPC over Streamable HTTP) per URL at <code>${origin}/mcp/u/&lt;base64url-of-your-url&gt;</code>. Clients with native remote-MCP support (Claude Code, Cursor, Codex, VS Code) connect directly:</p>
   <pre><code>{
   "mcpServers": {
-    "wmcp-sh-public": {
+    "allbirds": {
+      "type": "http",
+      "url": "${origin}/mcp/u/aHR0cHM6Ly93d3cuYWxsYmlyZHMuY29tL3Byb2R1Y3RzL21lbnMtd29vbC1ydW5uZXJz"
+    }
+  }
+}</code></pre>
+  <p style="color:var(--muted);font-size:.9rem;line-height:1.6;margin-top:16px;">That base64url string decodes to <code>https://www.allbirds.com/products/mens-wool-runners</code>. Encode your own with <code>node -e "process.stdout.write(Buffer.from('https://your-url').toString('base64url'))"</code>.</p>
+  <p class="section-sub" style="margin-top:20px;">Claude Desktop builds that only support local (stdio) servers can bridge to the same endpoint with <code>mcp-remote</code>:</p>
+  <pre><code>{
+  "mcpServers": {
+    "allbirds": {
       "command": "npx",
       "args": [
-        "-y",
-        "@modelcontextprotocol/server-sse-client",
-        "${origin}/api/v1/mcp/sse"
+        "mcp-remote",
+        "${origin}/mcp/u/aHR0cHM6Ly93d3cuYWxsYmlyZHMuY29tL3Byb2R1Y3RzL21lbnMtd29vbC1ydW5uZXJz"
       ]
     }
   }
 }</code></pre>
-  <p style="color:var(--muted);font-size:.9rem;line-height:1.6;margin-top:16px;">Once you restart Claude Desktop, you will see a new "hammer" icon or tool indicator showing that the <code>wmcp-sh-public</code> server is active. You can then ask Claude things like: <em>"Use wmcp to fetch the OpenAPI spec for https://api.stripe.com/openapi.yaml and summarize the tools."</em></p>
+  <p style="color:var(--muted);font-size:.9rem;line-height:1.6;margin-top:16px;">Compose several sites into one server with <code>${origin}/mcp/url?url=site-a&amp;url=site-b</code>, or save a reusable bundle (Pro) and connect to <code>${origin}/mcp/set/&lt;id&gt;</code>. <code>tools/list</code> is free; live <code>tools/call</code> needs a paid key passed as an <code>Authorization: Bearer</code> header. After restarting, you'll see the tools indicator; then ask Claude e.g. <em>"List the variants and price for this product."</em></p>
 </section>
 
 <section id="troubleshooting">

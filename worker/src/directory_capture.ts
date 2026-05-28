@@ -10,10 +10,12 @@
 
 import type { Context } from "hono";
 import { slugFromUrl } from "./slug";
+import { fireAlert } from "./alerts";
 
 type Env = {
   KEYS: KVNamespace;
   USAGE: KVNamespace;
+  LEAD_ALERT_WEBHOOK?: string;
 };
 
 interface SubmitBody {
@@ -145,6 +147,13 @@ export async function captureDirectorySubmission(c: Context<{ Bindings: Env }>) 
   // Increment rate limit
   c.executionCtx.waitUntil(
     c.env.USAGE.put(rlKey, String(cur + 1), { expirationTtl: 3600 })
+  );
+
+  // Best-effort alert — managed-interest submissions are the high-intent signal.
+  fireAlert(
+    c.env,
+    c.executionCtx,
+    `🟢 New directory submission: ${name} <${email}> · ${site_url}${category ? ` · ${category}` : ""}${managed_interest ? " · ⭐ MANAGED INTEREST" : ""}`
   );
 
   // Best-effort: kick off an async probe of /api/v1/tools to pre-warm the cache

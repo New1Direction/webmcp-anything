@@ -195,6 +195,7 @@ export function agentReadyHtml(origin: string): string {
   <h1>Make your website AI-ready.</h1>
   <p class="sub">Your site ranks on Google. Does it show up when someone asks Claude where to buy something? In 2026 a growing share of buying, booking, and researching is done by agents acting for humans. If agents can't read, query, or call your site, you don't exist in that funnel. Here's the diagnosis &mdash; and the fix.</p>
   <p class="hint">Concrete checklist, no fluff. Use the free tier of wmcp.sh to ship most of it in 10 minutes. Or have us do it for you &mdash; see <a href="/managed" style="color:var(--accent2);text-decoration:none">/managed</a>.</p>
+  <p style="margin-top:18px"><a class="cta" href="/agent-ready/fix">Run the free probe on your site &rarr;</a></p>
 </header>
 
 <!-- ========== WHY NOW ========== -->

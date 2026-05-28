@@ -74,7 +74,7 @@ export function mcpServerCloudflareHtml(origin: string): string {
       "name": "Pricing?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Free 100 reads/day anonymous. Managed Starter $499 one-time, Pro $999/mo, Enterprise $4,999+/mo. See /managed. Cloudflare billing is handled by Cloudflare."
+        "text": "Free 100 reads/day anonymous. Managed Starter $499 one-time, Managed Retainer $999/mo, Enterprise $4,999+/mo. See /managed. Cloudflare billing is handled by Cloudflare."
       }
     }
   ]
@@ -236,14 +236,14 @@ export function mcpServerCloudflareHtml(origin: string): string {
   <details><summary>What's cross-account routing?</summary><div class="answer">Register multiple Cloudflare accounts in one wmcp.sh connection profile. Tools take an <code>account_id</code> parameter, and wmcp.sh routes to the right scoped API token. One endpoint, many client accounts.</div></details>
   <details><summary>Where are tokens stored?</summary><div class="answer">Encrypted per-user vault, namespaced per account id. Decrypted in memory per request, never logged.</div></details>
   <details><summary>Can the agent deploy Workers?</summary><div class="answer">Write tools (deploy Worker, edit DNS, create R2, purge cache) are opt-in per connection. Default is read-only.</div></details>
-  <details><summary>Pricing?</summary><div class="answer">Free 100 reads/day anonymous. Managed Starter $499 one-time, Pro $999/mo, Enterprise $4,999+/mo. See <a href="/managed" style="color:var(--accent2)">/managed</a>.</div></details>
+  <details><summary>Pricing?</summary><div class="answer">Free 100 reads/day anonymous. Managed Starter $499 one-time, Managed Retainer $999/mo, Enterprise $4,999+/mo. See <a href="/managed" style="color:var(--accent2)">/managed</a>.</div></details>
 </section>
 
 <!-- ========== UPGRADE ========== -->
 <section id="upgrade" style="margin-top:36px;background:linear-gradient(135deg,var(--card),rgba(124,92,255,0.08));border:1px solid rgba(124,92,255,0.35);border-radius:16px;padding:22px 26px">
   <div class="section-label">For production</div>
   <h2 style="margin-top:0">Need this in production?</h2>
-  <p style="color:var(--muted);max-width:640px">Production multi-account Cloudflare MCP: scoped API tokens per client with read-only or fine-grained write perms, audit retention, SSO, per-account billing tagging in your dashboard. Starter $499 one-time, Pro $999/mo, Enterprise $4,999+/mo.</p>
+  <p style="color:var(--muted);max-width:640px">Production multi-account Cloudflare MCP: scoped API tokens per client with read-only or fine-grained write perms, audit retention, SSO, per-account billing tagging in your dashboard. Starter $499 one-time, Managed Retainer $999/mo, Enterprise $4,999+/mo.</p>
   <p style="margin-top:16px">
     <a href="/managed" style="display:inline-block;background:var(--accent);color:#fff;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:700;margin-right:10px">→ Managed setup ($499)</a>
     <a href="/directory/submit" style="display:inline-block;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:600">Submit your MCP server (free)</a>
