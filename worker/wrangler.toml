@@ -26,6 +26,16 @@ preview_id = "db7705f4cdd24d0282d4d33af9b5f194"
 [vars]
 ENVIRONMENT = "production"
 
+# Static assets — demo videos, OG images, etc.
+# Files in ./public/ are served at the URL matching their path
+# (e.g. public/demo/hero.mp4 → /demo/hero.mp4).
+# `not_found_handling = "single-page-application"` would serve index.html
+# on misses — we want misses to fall through to the worker handler, which
+# is the default behavior.
+[assets]
+directory = "./public"
+binding = "ASSETS"
+
 # Auto-seed the /directory + /u/<hash> SEO pages every 6h.
 # Worker code in src/scheduled.ts iterates a curated store list, fetches
 # each store's /products.json, and caches new product handles. Adds ~30-80
