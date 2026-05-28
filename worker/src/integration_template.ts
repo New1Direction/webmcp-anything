@@ -67,6 +67,26 @@ const VERTICAL_BY_PROVIDER: Record<string, { slug: string; label: string; hook: 
     label: "API agent-readiness",
     hook: "Linear's GraphQL + OAuth is a model for shipping an API agents can drive. See the API-side checklist.",
   },
+  airtable: {
+    slug: "saas",
+    label: "SaaS agent-readiness",
+    hook: "Airtable's hybrid spreadsheet/database is a SaaS-shaped surface — base/table semantics map cleanly onto MCP tools. See the SaaS founder checklist.",
+  },
+  anthropic: {
+    slug: "api",
+    label: "API agent-readiness",
+    hook: "Anthropic's Messages API is the canonical agentic-loop endpoint. If you're shipping your own API for agents to call, see the API-side checklist.",
+  },
+  discord: {
+    slug: "saas",
+    label: "SaaS agent-readiness",
+    hook: "Discord's bot-token + OAuth split is the messaging-SaaS pattern. If you're a SaaS founder thinking about agent traffic, see the founder checklist.",
+  },
+  openai: {
+    slug: "api",
+    label: "API agent-readiness",
+    hook: "OpenAI's chat completions is the multi-model orchestration target. If you're shipping your own model/API surface, see the API-side checklist.",
+  },
 };
 
 export function integrationPageHtml(c: IntegrationPageConfig): string {
@@ -239,7 +259,7 @@ ${vertical ? `<section id="see-also">
 </section>` : ""}
 
 <footer>
-  <a href="/">Home</a> · <a href="/agent-ready">Agent-ready</a> · <a href="/managed">Done for you</a> · <a href="/price-data">Price data</a> · <a href="/integration/openapi">OpenAPI</a> · <a href="/integration/shopify">Shopify</a> · <a href="/integration/stripe">Stripe</a> · <a href="/integration/github">GitHub</a> · <a href="/integration/google">Google</a> · <a href="/integration/slack">Slack</a> · <a href="/integration/notion">Notion</a> · <a href="/integration/linear">Linear</a> · <a href="/directory">Directory</a>
+  <a href="/">Home</a> · <a href="/agent-ready">Agent-ready</a> · <a href="/managed">Done for you</a> · <a href="/price-data">Price data</a> · <a href="/integration/openapi">OpenAPI</a> · <a href="/integration/shopify">Shopify</a> · <a href="/integration/stripe">Stripe</a> · <a href="/integration/github">GitHub</a> · <a href="/integration/google">Google</a> · <a href="/integration/slack">Slack</a> · <a href="/integration/notion">Notion</a> · <a href="/integration/linear">Linear</a> · <a href="/directory">Directory</a> · <a href="/directory/submit">Submit</a>
 </footer>
 
 </div>

@@ -324,6 +324,79 @@ app.get("/vs/zapier", async (c) => {
   });
 });
 
+// /vs/* (round 2) and /alternatives/* — competitor comparison surface,
+// expanded from 3 to 8 pages for broader SERP capture.
+app.get("/vs/make-com", async (c) => {
+  const { vsMakeComHtml } = await import("./vs_make_com");
+  return new Response(vsMakeComHtml(new URL(c.req.url).origin), {
+    headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=900, s-maxage=900" },
+  });
+});
+app.get("/vs/n8n", async (c) => {
+  const { vsN8nHtml } = await import("./vs_n8n");
+  return new Response(vsN8nHtml(new URL(c.req.url).origin), {
+    headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=900, s-maxage=900" },
+  });
+});
+app.get("/vs/smithery", async (c) => {
+  const { vsSmitheryHtml } = await import("./vs_smithery");
+  return new Response(vsSmitheryHtml(new URL(c.req.url).origin), {
+    headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=900, s-maxage=900" },
+  });
+});
+app.get("/alternatives/composio", async (c) => {
+  const { alternativesComposioHtml } = await import("./alternatives_composio");
+  return new Response(alternativesComposioHtml(new URL(c.req.url).origin), {
+    headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=900, s-maxage=900" },
+  });
+});
+app.get("/alternatives/pipedream", async (c) => {
+  const { alternativesPipedreamHtml } = await import("./alternatives_pipedream");
+  return new Response(alternativesPipedreamHtml(new URL(c.req.url).origin), {
+    headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=900, s-maxage=900" },
+  });
+});
+
+// /integration/* — 4 new provider pages, all using integration_template.
+app.get("/integration/airtable", async (c) => {
+  const { integrationAirtableHtml } = await import("./integration_airtable");
+  return new Response(integrationAirtableHtml(new URL(c.req.url).origin), {
+    headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=900, s-maxage=900" },
+  });
+});
+app.get("/integration/anthropic", async (c) => {
+  const { integrationAnthropicHtml } = await import("./integration_anthropic");
+  return new Response(integrationAnthropicHtml(new URL(c.req.url).origin), {
+    headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=900, s-maxage=900" },
+  });
+});
+app.get("/integration/discord", async (c) => {
+  const { integrationDiscordHtml } = await import("./integration_discord");
+  return new Response(integrationDiscordHtml(new URL(c.req.url).origin), {
+    headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=900, s-maxage=900" },
+  });
+});
+app.get("/integration/openai", async (c) => {
+  const { integrationOpenaiHtml } = await import("./integration_openai");
+  return new Response(integrationOpenaiHtml(new URL(c.req.url).origin), {
+    headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=900, s-maxage=900" },
+  });
+});
+
+// /use-case/* — narrative pages targeting buyer-intent queries.
+app.get("/use-case/agent-commerce", async (c) => {
+  const { useCaseAgentCommerceHtml } = await import("./use_case_agent_commerce");
+  return new Response(useCaseAgentCommerceHtml(new URL(c.req.url).origin), {
+    headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=900, s-maxage=900" },
+  });
+});
+app.get("/use-case/yield-watcher", async (c) => {
+  const { useCaseYieldWatcherHtml } = await import("./use_case_yield_watcher");
+  return new Response(useCaseYieldWatcherHtml(new URL(c.req.url).origin), {
+    headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=900, s-maxage=900" },
+  });
+});
+
 app.post("/api/v1/leads", async (c) => {
   const { captureLead } = await import("./lead_capture");
   return captureLead(c as any);
