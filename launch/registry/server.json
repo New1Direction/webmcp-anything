@@ -1,0 +1,17 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-09-29/server.schema.json",
+  "name": "io.github.New1Direction/webmcp-anything",
+  "description": "Turn any URL into agent-callable MCP tools. Extracts callable tools from Shopify storefronts, OpenAPI specs, JSON-LD-tagged pages, and arbitrary URLs via LLM-fallback. Free public tier; verified directory listings + custom adapters via /managed.",
+  "repository": {
+    "url": "https://github.com/New1Direction/webmcp-anything",
+    "source": "github"
+  },
+  "version": "1.0.0",
+  "websiteUrl": "https://wmcp.sh",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://wmcp.sh/api/v1/tools"
+    }
+  ]
+}
