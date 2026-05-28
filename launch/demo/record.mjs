@@ -1,7 +1,7 @@
 // record.mjs — produces a ~25s WebM walkthrough of wmcp.sh's
 // agent-ready / price-data / managed surface.
 //
-// Run from /Users/alexhearts/webmcp-anything/launch/demo:
+// Run from <repo>/launch/demo:
 //   npm install playwright
 //   node record.mjs
 //

@@ -18,7 +18,7 @@ The encryption key for stored tokens is set once for the whole vault:
 ```bash
 # generate locally — SAVE IT IN 1PASSWORD BEFORE PASTING
 node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
-cd /Users/alexhearts/webmcp-anything/worker
+cd <repo>/worker
 ./node_modules/.bin/wrangler secret put TOKEN_ENC_KEY
 ```
 
