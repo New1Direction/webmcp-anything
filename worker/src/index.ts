@@ -397,6 +397,35 @@ app.get("/use-case/yield-watcher", async (c) => {
   });
 });
 
+// /blog (index) + /blog/<slug> + /blog/rss.xml — long-form content surface,
+// 24 posts seeded from the Gemini-daemon substack pipeline. Re-run
+// `node scripts/build_blog_posts.mjs` after new drafts land, then redeploy.
+app.get("/blog", async (c) => {
+  const { blogIndexHtml } = await import("./blog");
+  return new Response(blogIndexHtml(new URL(c.req.url).origin), {
+    headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=600, s-maxage=600" },
+  });
+});
+
+app.get("/blog/rss.xml", async (c) => {
+  const { blogRssXml } = await import("./blog");
+  return new Response(blogRssXml(new URL(c.req.url).origin), {
+    headers: { "content-type": "application/rss+xml; charset=utf-8", "cache-control": "public, max-age=600, s-maxage=600" },
+  });
+});
+
+app.get("/blog/:slug", async (c) => {
+  const slug = (c.req.param("slug") || "").toLowerCase();
+  if (!/^[a-z0-9-]{1,120}$/.test(slug)) return c.text("Not found", 404);
+  const { BLOG_POSTS } = await import("./blog_posts");
+  const post = BLOG_POSTS[slug];
+  if (!post) return c.text("Not found", 404);
+  const { blogPostHtml } = await import("./blog");
+  return new Response(blogPostHtml(new URL(c.req.url).origin, post), {
+    headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=900, s-maxage=900" },
+  });
+});
+
 app.post("/api/v1/leads", async (c) => {
   const { captureLead } = await import("./lead_capture");
   return captureLead(c as any);

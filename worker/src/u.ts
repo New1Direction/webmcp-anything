@@ -409,6 +409,19 @@ export async function sitemapXml(env: any, origin: string): Promise<string> {
     .filter((m: any) => m && m.url)
     .map((m: any) => ({ url: m.url, ts: m.ts || 0 }));
 
+  // Blog posts (auto-generated; 24 at time of writing).
+  const { BLOG_POSTS, BLOG_SLUGS } = await import("./blog_posts");
+  const blogUrlsXml = BLOG_SLUGS.map((slug) => {
+    const p = BLOG_POSTS[slug];
+    const lastmod = p?.date || new Date().toISOString().slice(0, 10);
+    return `  <url>
+    <loc>${origin}/blog/${slug}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>`;
+  }).join("\n");
+
   const urlsXml = entries
     .map((e) => {
       const lastmod = new Date(e.ts || Date.now()).toISOString().slice(0, 10);
@@ -437,6 +450,11 @@ export async function sitemapXml(env: any, origin: string): Promise<string> {
     <loc>${origin}/directory/submit</loc>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>${origin}/blog</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
   </url>
   <url>
     <loc>${origin}/agent-ready</loc>
@@ -587,6 +605,7 @@ export async function sitemapXml(env: any, origin: string): Promise<string> {
     <loc>${origin}/dashboard</loc>
     <priority>0.5</priority>
   </url>
+${blogUrlsXml}
 ${urlsXml}
 </urlset>
 `;
