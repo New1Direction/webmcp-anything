@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="wmcp.sh">
+  <defs>
+    <linearGradient id="g" x1="2" y1="2" x2="30" y2="30" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7c5cff"/><stop offset="1" stop-color="#00e5ff"/>
+    </linearGradient>
+  </defs>
+  <rect width="32" height="32" rx="7" fill="#0a0a12"/>
+  <rect x="1" y="1" width="30" height="30" rx="6" fill="none" stroke="url(#g)" stroke-opacity=".55"/>
+  <path d="M8 11l5 5-5 5" fill="none" stroke="url(#g)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="15.5" y="20.4" width="9" height="2.6" rx="1.3" fill="url(#g)"/>
+</svg>

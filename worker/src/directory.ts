@@ -4,6 +4,7 @@ export function directoryHtml(origin: string): string {
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <title>Directory · WebMCP Anything</title>
 <meta name="description" content="Every URL the community has turned into agent-callable MCP tools. Searchable, grouped by store, with live counts." />
 <style>

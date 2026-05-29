@@ -4,6 +4,7 @@ export function landingHtml(origin: string): string {
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <title>WebMCP Anything — Hosted MCP Server for any URL + Shopify storefronts</title>
 <meta name="description" content="Hosted shopper-side MCP server. Turn any product URL or OpenAPI spec into agent-callable tools — Shopify storefronts, JSON-LD retailers, Claude Code, LangChain, OpenAI." />
 <script type="application/ld+json">
