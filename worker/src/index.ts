@@ -1181,6 +1181,35 @@ app.get("/api/v1/connections", async (c) => listManagedConnections(c as any));
 app.post("/api/v1/mcp/deep-audit/checkout", async (c) => createDeepAuditCheckout(c as any));
 app.post("/api/v1/mcp/monitor/checkout", async (c) => createMonitorCheckout(c as any));
 
+// ===== WebMCP↔MCP dual-emit bridge — one extraction, BOTH protocols =====
+// Free distribution wedge: every emitted shim routes its live tool-calls through
+// the graded/metered /api/v1/tools/execute path. The "close the gap" deliverable.
+app.get("/api/v1/webmcp", async (c) => {
+  const url = c.req.query("url");
+  if (!url) return c.json({ error: "url_required" }, 400);
+  const { resolveTools } = await import("./engine");
+  const r = await resolveTools(c.env as any, c.executionCtx as any, url, {});
+  if (!r.ok) return c.json({ error: "extract_failed", url }, 502);
+  const { bridgeDescriptor } = await import("./webmcp_bridge");
+  return c.json(bridgeDescriptor(url, r.payload.tools || [], new URL(c.req.url).origin));
+});
+// Hosted WebMCP shim: <script src="/webmcp/<b64url>.js"> → navigator.modelContext.
+app.get("/webmcp/:enc", async (c) => {
+  const raw = c.req.param("enc");
+  const enc = raw.endsWith(".js") ? raw.slice(0, -3) : raw;
+  const { base64urlDecode } = await import("./u");
+  let url: string;
+  try { url = base64urlDecode(enc); new URL(url); } catch { return c.body("/* wmcp.sh: invalid url */", 400, { "content-type": "application/javascript; charset=utf-8" }); }
+  const { resolveTools } = await import("./engine");
+  const r = await resolveTools(c.env as any, c.executionCtx as any, url, {});
+  const tools = r.ok ? (r.payload.tools || []) : [];
+  const { webmcpShimJs } = await import("./webmcp_bridge");
+  return c.body(webmcpShimJs(url, tools, new URL(c.req.url).origin), 200, {
+    "content-type": "application/javascript; charset=utf-8",
+    "cache-control": "public, max-age=1800",
+  });
+});
+
 // Paid B2B reputation feed — agent-native pay-per-call via x402 (USDC on Base).
 // The headline grade stays free (the oracle); THIS full record is metered.
 // Config-gated: if X402_PAY_TO is unset, the feed is open (non-breaking); once
