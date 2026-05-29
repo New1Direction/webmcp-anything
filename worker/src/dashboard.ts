@@ -9,7 +9,7 @@ export function dashboardHtml(origin: string): string {
   :root {
     --bg: #07070d; --card: #16161f; --bg2: #11111c; --border: #26263a;
     --text: #ececf5; --muted: #8a8aa8;
-    --accent: #7c5cff; --accent2: #00e5ff; --green: #4ade80;
+    --accent: #ff9e2c; --accent2: #ffcf7a; --green: #4ade80;
     --yellow: #fbbf24; --red: #f87171;
   }
   * { box-sizing: border-box; }
@@ -18,8 +18,8 @@ export function dashboardHtml(origin: string): string {
     font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
     line-height: 1.6;
     background-image:
-      radial-gradient(ellipse 800px 600px at 0% 0%, rgba(124,92,255,.15), transparent),
-      radial-gradient(ellipse 600px 500px at 100% 30%, rgba(0,229,255,.08), transparent);
+      radial-gradient(ellipse 800px 600px at 0% 0%, rgba(255,158,44,.15), transparent),
+      radial-gradient(ellipse 600px 500px at 100% 30%, rgba(255,176,0,.08), transparent);
   }
   .wrap { max-width: 900px; margin: 0 auto; padding: 50px 24px; }
   header { margin-bottom: 32px; }
@@ -63,8 +63,8 @@ export function dashboardHtml(origin: string): string {
     letter-spacing: .06em; text-transform: uppercase;
   }
   .pill.free { background: rgba(138,138,168,.18); color: var(--muted); }
-  .pill.pro { background: rgba(0,229,255,.15); color: var(--accent2); }
-  .pill.reseller { background: linear-gradient(90deg, rgba(124,92,255,.3), rgba(255,77,141,.3)); color: white; }
+  .pill.pro { background: rgba(255,176,0,.15); color: var(--accent2); }
+  .pill.reseller { background: linear-gradient(90deg, rgba(255,158,44,.3), rgba(255,77,141,.3)); color: white; }
   .usage-grid {
     display: grid; gap: 12px;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -91,7 +91,7 @@ export function dashboardHtml(origin: string): string {
   }
   .plan:hover { border-color: var(--accent); transform: translateY(-2px); }
   .plan.featured {
-    background: linear-gradient(135deg, var(--card), rgba(124,92,255,.1));
+    background: linear-gradient(135deg, var(--card), rgba(255,158,44,.1));
     border-color: var(--accent);
   }
   .plan h3 { margin: 0; font-size: 1.1rem; }
@@ -116,7 +116,7 @@ export function dashboardHtml(origin: string): string {
     font-size: .82rem; color: var(--green); margin: 12px 0;
     font-family: "SF Mono", Menlo, monospace;
   }
-  pre .k { color: var(--accent2); } pre .s { color: #f0abfc; }
+  pre .k { color: var(--accent2); } pre .s { color: #ffb86b; }
   .note { color: var(--muted); font-size: .85rem; }
   hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
   a { color: var(--accent2); text-decoration: none; }
@@ -240,7 +240,7 @@ export function dashboardHtml(origin: string): string {
   <div id="checkout-error" class="muted" style="margin-top:10px;color:var(--red);font-size:.85rem"></div>
 </div>
 
-<div id="success-banner" style="display:none;margin-top:20px;background:linear-gradient(135deg,rgba(74,222,128,.12),rgba(0,229,255,.08));border:1px solid var(--green);border-radius:16px;padding:24px">
+<div id="success-banner" style="display:none;margin-top:20px;background:linear-gradient(135deg,rgba(74,222,128,.12),rgba(255,176,0,.08));border:1px solid var(--green);border-radius:16px;padding:24px">
   <strong style="color:var(--green)">Payment received — your key is ready</strong>
   <p class="muted" style="margin:6px 0 12px;font-size:.88rem">Save this somewhere safe. You can also recover it via email below.</p>
   <div class="key-row">

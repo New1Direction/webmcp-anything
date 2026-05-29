@@ -20,7 +20,7 @@ export function claimPageHtml(origin: string): string {
 <meta name="robots" content="noindex" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <style>
-  :root{--bg:#0a0a0f;--card:#16161f;--border:#26263a;--text:#e8e8f0;--muted:#9a9ab0;--accent:#7c5cff;--accent2:#00e5ff;--green:#4ade80;--red:#ff5c7c}
+  :root{--bg:#0a0a0f;--card:#16161f;--border:#26263a;--text:#e8e8f0;--muted:#9a9ab0;--accent:#ff9e2c;--accent2:#ffcf7a;--green:#4ade80;--red:#ff5c7c}
   *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif}
   .wrap{max-width:680px;margin:0 auto;padding:48px 22px}
   a{color:var(--accent2);text-decoration:none}a:hover{text-decoration:underline}

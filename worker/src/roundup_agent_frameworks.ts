@@ -89,10 +89,10 @@ export function roundupAgentFrameworksHtml(origin: string): string {
 }
 </script>
 <style>
-  :root { --bg:#07070d;--card:#16161f;--bg2:#11111c;--border:#26263a;--text:#ececf5;--muted:#8a8aa8;--dim:#6a6a88;--accent:#7c5cff;--accent2:#00e5ff;--green:#4ade80;--red:#f87171;--pink:#f0abfc;--gold:#fbbf24; }
+  :root { --bg:#07070d;--card:#16161f;--bg2:#11111c;--border:#26263a;--text:#ececf5;--muted:#8a8aa8;--dim:#6a6a88;--accent:#ff9e2c;--accent2:#ffcf7a;--green:#4ade80;--red:#f87171;--pink:#ffb86b;--gold:#fbbf24; }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
-  body { margin:0;min-height:100vh;color:var(--text);background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif;line-height:1.6;background-image:radial-gradient(ellipse 900px 600px at 10% -5%,rgba(124,92,255,.18),transparent 60%),radial-gradient(ellipse 700px 500px at 95% 10%,rgba(0,229,255,.10),transparent 60%); }
+  body { margin:0;min-height:100vh;color:var(--text);background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif;line-height:1.6;background-image:radial-gradient(ellipse 900px 600px at 10% -5%,rgba(255,158,44,.18),transparent 60%),radial-gradient(ellipse 700px 500px at 95% 10%,rgba(255,176,0,.10),transparent 60%); }
   .wrap { max-width: 980px; margin: 0 auto; padding: 0 24px; }
   nav { display:flex;justify-content:space-between;align-items:center;padding:22px 24px;max-width:1120px;margin:0 auto; }
   nav .brand { font-weight: 800; letter-spacing: -.02em; font-size: 1.05rem; }
@@ -102,7 +102,7 @@ export function roundupAgentFrameworksHtml(origin: string): string {
   nav .links a:hover { color: var(--text); }
   nav .cta { background: var(--bg2); border: 1px solid var(--border); padding: 7px 14px; border-radius: 8px; font-size: .85rem; color: var(--text); text-decoration: none; font-weight: 600; }
   header.hero { padding: 50px 0 30px; }
-  .badge { display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:999px;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;font-weight:700;background:linear-gradient(90deg,rgba(124,92,255,.18),rgba(0,229,255,.18));border:1px solid rgba(124,92,255,.35);margin-bottom:18px; }
+  .badge { display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:999px;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;font-weight:700;background:linear-gradient(90deg,rgba(255,158,44,.18),rgba(255,176,0,.18));border:1px solid rgba(255,158,44,.35);margin-bottom:18px; }
   .dot { width:6px;height:6px;background:var(--accent2);border-radius:50%;box-shadow:0 0 8px var(--accent2); }
   h1 { font-size:clamp(2.1rem,4.8vw,3.2rem);margin:0 0 18px;background:linear-gradient(135deg,#fff 30%,var(--accent2) 100%);-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1.05;font-weight:800;letter-spacing:-.025em; }
   .sub { color: var(--muted); font-size: 1.05rem; max-width: 720px; margin: 0 0 24px; }
@@ -122,7 +122,7 @@ export function roundupAgentFrameworksHtml(origin: string): string {
   td strong { color: var(--text); }
   .grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:18px; }
   .card { background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px 20px; }
-  .card.us { border-color:var(--accent);background:linear-gradient(135deg,var(--card),rgba(124,92,255,0.06)); }
+  .card.us { border-color:var(--accent);background:linear-gradient(135deg,var(--card),rgba(255,158,44,0.06)); }
   .card h3 { color: var(--text); margin: 0 0 6px; font-size: 1rem; }
   .card .tag { display:inline-block;font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent2);font-weight:700;margin-bottom:8px; }
   .card p { color:var(--muted);font-size:.88rem;margin:0 0 8px;line-height:1.55; }
@@ -346,7 +346,7 @@ client = MultiServerMCPClient({
 </section>
 
 <!-- ========== UPGRADE CTA ========== -->
-<section id="upgrade" style="margin-top:36px;background:linear-gradient(135deg,var(--card),rgba(124,92,255,0.08));border:1px solid rgba(124,92,255,0.35);border-radius:16px;padding:22px 26px">
+<section id="upgrade" style="margin-top:36px;background:linear-gradient(135deg,var(--card),rgba(255,158,44,0.08));border:1px solid rgba(255,158,44,0.35);border-radius:16px;padding:22px 26px">
   <div style="display:flex;align-items:center;gap:18px;flex-wrap:wrap;justify-content:space-between">
     <div style="flex:1;min-width:240px">
       <div style="font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent2);font-weight:700;margin-bottom:6px">Need this picked / built for you?</div>
@@ -354,7 +354,7 @@ client = MultiServerMCPClient({
       <p style="color:var(--muted);margin:0;font-size:.92rem">Custom MCP adapter + hosted endpoint + framework integration tested end-to-end. From <strong style="color:var(--text)">$499 one-time setup</strong>; Managed Retainer <strong style="color:var(--text)">$999/mo</strong>; Enterprise <strong style="color:var(--text)">$4,999+/mo</strong>.</p>
     </div>
     <div style="display:flex;gap:10px;flex-wrap:wrap">
-      <a href="/managed" style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#7c5cff,#00e5ff);color:#0c0c14;padding:10px 18px;border-radius:9px;text-decoration:none;font-weight:700;font-size:.9rem">See /managed →</a>
+      <a href="/managed" style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#ff9e2c,#ffcf7a);color:#0c0c14;padding:10px 18px;border-radius:9px;text-decoration:none;font-weight:700;font-size:.9rem">See /managed →</a>
       <a href="/directory/submit" style="display:inline-flex;align-items:center;gap:6px;background:#11111c;border:1px solid #26263a;color:var(--text);padding:10px 18px;border-radius:9px;text-decoration:none;font-weight:600;font-size:.9rem">Submit (free)</a>
     </div>
   </div>

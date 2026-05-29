@@ -13,7 +13,7 @@ export function connectAnthropicHtml(): string {
   :root {
     --bg: #07070d; --card: #16161f; --bg2: #11111c; --border: #26263a;
     --text: #ececf5; --muted: #8a8aa8;
-    --accent: #7c5cff; --accent2: #00e5ff; --green: #4ade80; --red: #f87171;
+    --accent: #ff9e2c; --accent2: #ffcf7a; --green: #4ade80; --red: #f87171;
   }
   * { box-sizing: border-box; }
   body {
@@ -21,8 +21,8 @@ export function connectAnthropicHtml(): string {
     font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
     line-height: 1.6;
     background-image:
-      radial-gradient(ellipse 800px 600px at 0% 0%, rgba(124,92,255,.15), transparent),
-      radial-gradient(ellipse 600px 500px at 100% 30%, rgba(0,229,255,.08), transparent);
+      radial-gradient(ellipse 800px 600px at 0% 0%, rgba(255,158,44,.15), transparent),
+      radial-gradient(ellipse 600px 500px at 100% 30%, rgba(255,176,0,.08), transparent);
   }
   .wrap { max-width: 720px; margin: 0 auto; padding: 50px 24px; }
   h1 {
@@ -59,7 +59,7 @@ export function connectAnthropicHtml(): string {
     transition: transform .1s, box-shadow .2s;
     font-size: .95rem;
   }
-  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(124,92,255,.3); }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(255,158,44,.3); }
   .btn-secondary {
     background: var(--bg2); color: var(--text);
     border: 1px solid var(--border); padding: 11px 18px; border-radius: 8px;

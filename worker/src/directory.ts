@@ -11,14 +11,14 @@ export function directoryHtml(origin: string): string {
   :root {
     --bg: #07070d; --card: #16161f; --bg2: #11111c; --border: #26263a;
     --text: #ececf5; --muted: #8a8aa8; --dim: #6a6a88;
-    --accent: #7c5cff; --accent2: #00e5ff; --green: #4ade80; --pink: #f0abfc;
+    --accent: #ff9e2c; --accent2: #ffcf7a; --green: #4ade80; --pink: #ffb86b;
   }
   * { box-sizing: border-box; }
   body {
     margin: 0; min-height: 100vh; color: var(--text); background: var(--bg);
     font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
     line-height: 1.6;
-    background-image: radial-gradient(ellipse 800px 500px at 20% 0%, rgba(124,92,255,.12), transparent);
+    background-image: radial-gradient(ellipse 800px 500px at 20% 0%, rgba(255,158,44,.12), transparent);
   }
   .wrap { max-width: 1080px; margin: 0 auto; padding: 50px 24px; }
   header { margin-bottom: 28px; }
@@ -100,14 +100,14 @@ export function directoryHtml(origin: string): string {
   }
   .store-group.open .store-products { display: block; }
   .store-group.featured {
-    border-color: rgba(124,92,255,.55);
-    background: linear-gradient(135deg, var(--card), rgba(124,92,255,.06));
-    box-shadow: 0 0 0 1px rgba(124,92,255,.18);
+    border-color: rgba(255,158,44,.55);
+    background: linear-gradient(135deg, var(--card), rgba(255,158,44,.06));
+    box-shadow: 0 0 0 1px rgba(255,158,44,.18);
   }
   .store-head .verified-chip {
     display: inline-flex; align-items: center; gap: 4px;
-    background: linear-gradient(135deg, rgba(124,92,255,.18), rgba(0,229,255,.18));
-    border: 1px solid rgba(124,92,255,.45); color: var(--accent2);
+    background: linear-gradient(135deg, rgba(255,158,44,.18), rgba(255,176,0,.18));
+    border: 1px solid rgba(255,158,44,.45); color: var(--accent2);
     font-size: .62rem; font-weight: 700; letter-spacing: .08em;
     padding: 2px 7px; border-radius: 999px; text-transform: uppercase;
   }
@@ -120,8 +120,8 @@ export function directoryHtml(origin: string): string {
   .product-row .verified-tick { color: var(--accent2); font-size: .8rem; }
   .flat-row .verified-chip {
     display: inline-flex; align-items: center; gap: 4px;
-    background: linear-gradient(135deg, rgba(124,92,255,.18), rgba(0,229,255,.18));
-    border: 1px solid rgba(124,92,255,.45); color: var(--accent2);
+    background: linear-gradient(135deg, rgba(255,158,44,.18), rgba(255,176,0,.18));
+    border: 1px solid rgba(255,158,44,.45); color: var(--accent2);
     font-size: .62rem; font-weight: 700; letter-spacing: .08em;
     padding: 2px 7px; border-radius: 999px; text-transform: uppercase;
   }
@@ -137,8 +137,8 @@ export function directoryHtml(origin: string): string {
     text-transform: uppercase; padding: 2px 7px; border-radius: 999px;
   }
   .product-row .badge.shopify { background: rgba(74,222,128,.15); color: var(--green); }
-  .product-row .badge.jsonld { background: rgba(0,229,255,.15); color: var(--accent2); }
-  .product-row .badge.openapi { background: rgba(240,171,252,.15); color: var(--pink); }
+  .product-row .badge.jsonld { background: rgba(255,176,0,.15); color: var(--accent2); }
+  .product-row .badge.openapi { background: rgba(255,184,107,.15); color: var(--pink); }
   .product-row .badge.llm { background: rgba(251,191,36,.15); color: #fbbf24; }
   .product-row .badge.other { background: rgba(138,138,168,.15); color: var(--muted); }
   .product-row .ptitle {
@@ -171,8 +171,8 @@ export function directoryHtml(origin: string): string {
     text-transform: uppercase; padding: 3px 9px; border-radius: 999px;
   }
   .flat-row .badge.shopify { background: rgba(74,222,128,.15); color: var(--green); }
-  .flat-row .badge.jsonld { background: rgba(0,229,255,.15); color: var(--accent2); }
-  .flat-row .badge.openapi { background: rgba(240,171,252,.15); color: var(--pink); }
+  .flat-row .badge.jsonld { background: rgba(255,176,0,.15); color: var(--accent2); }
+  .flat-row .badge.openapi { background: rgba(255,184,107,.15); color: var(--pink); }
   .flat-row .badge.llm { background: rgba(251,191,36,.15); color: #fbbf24; }
   .flat-row .badge.other { background: rgba(138,138,168,.15); color: var(--muted); }
   .flat-row .title {
@@ -222,7 +222,7 @@ export function directoryHtml(origin: string): string {
   <h1>Directory</h1>
   <p class="muted">Every URL the community has turned into agent-callable MCP tools. Click any store to expand its products. <a href="/integration/openapi">OpenAPI</a> · <a href="/integration/shopify">Shopify</a> · <a href="/integration/stripe">Stripe</a></p>
   <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">
-    <a href="/directory/submit" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#7c5cff,#00e5ff);color:#0c0c14;padding:9px 16px;border-radius:8px;text-decoration:none;font-weight:700;font-size:.9rem">+ Submit your site (free)</a>
+    <a href="/directory/submit" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#ff9e2c,#ffcf7a);color:#0c0c14;padding:9px 16px;border-radius:8px;text-decoration:none;font-weight:700;font-size:.9rem">+ Submit your site (free)</a>
     <a href="/directory/claim" style="display:inline-flex;align-items:center;gap:8px;background:#16161f;border:1px solid #26263a;color:#ececf5;padding:9px 16px;border-radius:8px;text-decoration:none;font-weight:600;font-size:.9rem">Get the Verified badge →</a>
   </div>
 </header>

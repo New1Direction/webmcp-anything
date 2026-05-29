@@ -286,7 +286,7 @@ export function mcpIndexHtml(origin: string): string {
 <meta property="og:image" content="${esc(origin)}/og.svg" />
 <script type="application/ld+json">${JSON.stringify(ld)}</script>
 <style>
-  :root{--bg:#0a0a0f;--card:#16161f;--border:#26263a;--text:#e8e8f0;--muted:#9a9ab0;--accent:#7c5cff;--accent2:#00e5ff}
+  :root{--bg:#0a0a0f;--card:#16161f;--border:#26263a;--text:#e8e8f0;--muted:#9a9ab0;--accent:#ff9e2c;--accent2:#ffcf7a}
   *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif}
   .wrap{max-width:880px;margin:0 auto;padding:48px 22px}
   a{color:var(--accent2);text-decoration:none}a:hover{text-decoration:underline}
