@@ -433,6 +433,21 @@ export async function regradeWatched(
   return { checked: batch.length, drifted, dropped };
 }
 
+/**
+ * The full machine-readable reputation record — the B2B feed payload (grade +
+ * all sub-scores + findings + per-tool sigs + drift history). The free oracle
+ * returns a summary; THIS is the paid feed (x402-gated when configured).
+ */
+export async function reputationFeed(env: Env, url: string) {
+  let host = url;
+  try { host = new URL(url).host.toLowerCase(); } catch {}
+  let g = await readGrade(env, host);
+  if (!g) { g = await scoreMcpServer(url); await recordGrade(env, g); }
+  let history: any[] = [];
+  try { const h = await env.CACHE.get(`gradehist:${host}`); history = h ? JSON.parse(h) : []; } catch {}
+  return { ...g, history, source: "wmcp.sh", methodology: "https://wmcp.sh/mcp/grade" };
+}
+
 // ---- embeddable SVG badge: "Audited: <grade> · wmcp.sh" (separate from the
 //      owner-claimed Verified badge — this one is a measured fact) ----
 export function gradeBadgeSvg(r: GradeResult): string {

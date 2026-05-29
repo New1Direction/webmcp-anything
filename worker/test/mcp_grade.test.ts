@@ -179,3 +179,16 @@ describe("regradeWatched — the cron rug-pull alarm", () => {
     expect(fired[0]).toMatch(/rug-pull watch/);
   });
 });
+
+describe("reputationFeed — the paid B2B record", () => {
+  it("returns the full grade record + history + source", async () => {
+    const env: any = { CACHE: kvMock() };
+    await recordGrade(env, mkGrade("x.com", { tool_sigs: { t1: "a" }, checked_at: 1000 }));
+    await env.CACHE.put("gradehist:x.com", JSON.stringify([{ ts: 1000, grade: "A-" }]));
+    const { reputationFeed } = await import("../src/mcp_grade");
+    const f = await reputationFeed(env, "https://x.com/mcp");
+    expect(f.grade).toBeTruthy();
+    expect(Array.isArray(f.history)).toBe(true);
+    expect(f.source).toBe("wmcp.sh");
+  });
+});
