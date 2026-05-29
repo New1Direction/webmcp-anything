@@ -30,6 +30,8 @@ import {
   createDirectoryVerifiedCheckout,
   createFixCheckout,
   createManagedConnectionCheckout,
+  createDeepAuditCheckout,
+  createMonitorCheckout,
 } from "./stripe";
 import { listManagedConnections } from "./connections";
 import { track } from "./metrics";
@@ -1175,6 +1177,9 @@ app.post("/api/v1/agent-ready/fix/checkout", async (c) => createFixCheckout(c as
 // Per-connection managed OAuth-proxy subscription (the moat's revenue model).
 app.post("/api/v1/connections/checkout", async (c) => createManagedConnectionCheckout(c as any));
 app.get("/api/v1/connections", async (c) => listManagedConnections(c as any));
+// MCP trust-authority monetization SKUs (sold off the grade page).
+app.post("/api/v1/mcp/deep-audit/checkout", async (c) => createDeepAuditCheckout(c as any));
+app.post("/api/v1/mcp/monitor/checkout", async (c) => createMonitorCheckout(c as any));
 
 // Saved toolsets (composable MCP servers). Creating one is a paid feature;
 // served at /mcp/set/<id>. CRUD here, the MCP endpoint is wired above.

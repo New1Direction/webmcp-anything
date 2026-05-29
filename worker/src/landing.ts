@@ -450,6 +450,7 @@ export function landingHtml(origin: string): string {
     <a href="#pricing">Pricing</a>
     <a href="#faq">FAQ</a>
     <a href="/directory">Directory</a>
+    <a href="/mcp/grade">Trust grades</a>
     <a href="https://github.com/New1Direction/webmcp-anything">GitHub</a>
   </div>
   <a class="cta" href="/dashboard">Dashboard →</a>

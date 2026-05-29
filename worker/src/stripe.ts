@@ -28,6 +28,9 @@ type Env = {
   STRIPE_PRICE_VERIFIED?: string;
   STRIPE_PRICE_FIX?: string;
   STRIPE_PRICE_CONNECTION?: string;
+  // MCP trust-authority SKUs: one-time deep audit; recurring drift monitoring.
+  STRIPE_PRICE_DEEP_AUDIT?: string;
+  STRIPE_PRICE_MONITOR?: string;
 };
 
 const STRIPE_API = "https://api.stripe.com/v1";
@@ -329,6 +332,11 @@ export async function stripeWebhook(c: Context<{ Bindings: Env }>) {
         if (provider && user_id) await c.env.KEYS.delete(connKey(user_id, provider));
         return c.json({ ok: true, action: "connection_removed", provider, user_id });
       }
+      if (kind === "grade_monitor") {
+        const host = sub.metadata?.host as string | undefined;
+        if (host) await c.env.KEYS.delete(`monitorsub:${host}:${sub.id}`);
+        return c.json({ ok: true, action: "monitor_removed", host });
+      }
       const user_id = `cust:${sub.customer}`;
       await revokeUserKeys(c.env, user_id);
       return c.json({ ok: true, action: "revoked", user_id });
@@ -422,6 +430,44 @@ async function handleNonPlanCheckout(
       );
     }
     return c.json({ ok: true, action: "connection_active", provider, user_id });
+  }
+
+  if (kind === "deep_audit") {
+    // One-time mode=payment → only checkout.session.completed fires. Record the
+    // audit job for the operator; the human deliverable follows. NEVER a key.
+    if (eventType === "checkout.session.completed") {
+      const now = Date.now();
+      const reverseTs = (Number.MAX_SAFE_INTEGER - now).toString().padStart(16, "0");
+      const rand = Array.from(crypto.getRandomValues(new Uint8Array(4))).map((b) => b.toString(16).padStart(2, "0")).join("");
+      await c.env.KEYS.put(
+        `deepaudit:${reverseTs}:${rand}`,
+        JSON.stringify({
+          received_at: now, received_at_iso: new Date(now).toISOString(),
+          host: obj.metadata?.host, target_url: obj.metadata?.target_url,
+          email: obj.customer_email || obj.customer_details?.email || obj.metadata?.email,
+          amount_total: obj.amount_total, currency: obj.currency, status: "paid_pending_fulfillment",
+        }),
+        { expirationTtl: 365 * 86400, metadata: { host: obj.metadata?.host, status: "paid_pending_fulfillment" } }
+      );
+    }
+    return c.json({ ok: true, action: "deep_audit_recorded", host: obj.metadata?.host });
+  }
+
+  if (kind === "grade_monitor") {
+    // Recurring. Subscriber pays to be alerted when a specific MCP server's
+    // grade drops or its tools change (rug-pull). Store the subscription so the
+    // cron's drift detector fans out to their webhook. NEVER a key.
+    const host = obj.metadata?.host as string | undefined;
+    const subId = (obj.id as string) || (obj.subscription as string) || "sub";
+    const alertUrl = obj.metadata?.alert_url as string | undefined;
+    if (host) {
+      await c.env.KEYS.put(
+        `monitorsub:${host}:${subId}`,
+        JSON.stringify({ host, alert_url: alertUrl || "", since: Date.now(), email: obj.customer_email || obj.metadata?.email }),
+        { expirationTtl: 400 * 86400 }
+      );
+    }
+    return c.json({ ok: true, action: "monitor_active", host });
   }
 
   // Unknown kind → fail-closed: acknowledge the webhook but provision NOTHING.
@@ -553,6 +599,60 @@ export async function createManagedConnectionCheckout(c: Context<{ Bindings: Env
   form.set("subscription_data[metadata][user_id]", auth.user_id);
   form.set("success_url", `${origin}/dashboard?connection=${encodeURIComponent(providerId)}`);
   form.set("cancel_url", `${origin}/dashboard?canceled=1`);
+  return await createSessionResponse(c, form);
+}
+
+// POST /api/v1/mcp/deep-audit/checkout  { url, email }
+// One-time deep audit report, sold off the grade page. mode=payment. No key.
+export async function createDeepAuditCheckout(c: Context<{ Bindings: Env }>) {
+  const body = await c.req.json<{ url?: string; email?: string }>().catch(() => null);
+  if (!body?.url || !body?.email) return c.json({ error: "url_and_email_required" }, 400);
+  let host: string;
+  try { const u = new URL(body.url); if (u.protocol !== "https:" && u.protocol !== "http:") throw 0; host = u.host.toLowerCase(); } catch { return c.json({ error: "invalid_url" }, 400); }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email)) return c.json({ error: "invalid_email" }, 400);
+  if (!c.env.STRIPE_SECRET_KEY || !c.env.STRIPE_PRICE_DEEP_AUDIT) return c.json({ error: "deep_audit_sku_not_configured" }, 503);
+
+  const origin = new URL(c.req.url).origin;
+  const form = new URLSearchParams();
+  form.set("mode", "payment");
+  form.set("line_items[0][price]", c.env.STRIPE_PRICE_DEEP_AUDIT);
+  form.set("line_items[0][quantity]", "1");
+  form.set("customer_email", body.email);
+  form.set("metadata[kind]", "deep_audit");
+  form.set("metadata[host]", host);
+  form.set("metadata[target_url]", body.url);
+  form.set("metadata[email]", body.email);
+  form.set("success_url", `${origin}/mcp/grade/${encodeURIComponent(host)}?audit=ok`);
+  form.set("cancel_url", `${origin}/mcp/grade/${encodeURIComponent(host)}?canceled=1`);
+  return await createSessionResponse(c, form);
+}
+
+// POST /api/v1/mcp/monitor/checkout  { url, alert_url?, email? }
+// Recurring continuous-monitoring: alert this buyer when the server's grade
+// drops or its tools change (rug-pull). Drift fan-out happens in the cron. No key.
+export async function createMonitorCheckout(c: Context<{ Bindings: Env }>) {
+  const body = await c.req.json<{ url?: string; alert_url?: string; email?: string }>().catch(() => null);
+  if (!body?.url) return c.json({ error: "url_required" }, 400);
+  let host: string;
+  try { host = new URL(body.url).host.toLowerCase(); } catch { return c.json({ error: "invalid_url" }, 400); }
+  if (body.alert_url) { try { const a = new URL(body.alert_url); if (a.protocol !== "https:") throw 0; } catch { return c.json({ error: "invalid_alert_url", hint: "alert_url must be an https webhook (Slack-compatible)." }, 400); } }
+  if (!c.env.STRIPE_SECRET_KEY || !c.env.STRIPE_PRICE_MONITOR) return c.json({ error: "monitor_sku_not_configured" }, 503);
+
+  const origin = new URL(c.req.url).origin;
+  const form = new URLSearchParams();
+  form.set("mode", "subscription");
+  form.set("line_items[0][price]", c.env.STRIPE_PRICE_MONITOR);
+  form.set("line_items[0][quantity]", "1");
+  if (body.email) form.set("customer_email", body.email);
+  form.set("allow_promotion_codes", "true");
+  form.set("metadata[kind]", "grade_monitor");
+  form.set("metadata[host]", host);
+  if (body.alert_url) form.set("metadata[alert_url]", body.alert_url);
+  form.set("subscription_data[metadata][kind]", "grade_monitor");
+  form.set("subscription_data[metadata][host]", host);
+  if (body.alert_url) form.set("subscription_data[metadata][alert_url]", body.alert_url);
+  form.set("success_url", `${origin}/mcp/grade/${encodeURIComponent(host)}?monitor=ok`);
+  form.set("cancel_url", `${origin}/mcp/grade/${encodeURIComponent(host)}?canceled=1`);
   return await createSessionResponse(c, form);
 }
 
