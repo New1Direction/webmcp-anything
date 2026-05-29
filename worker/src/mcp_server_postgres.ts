@@ -69,7 +69,7 @@ export function mcpServerPostgresHtml(origin: string): string {
       "name": "How does pricing work?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Free tier covers 100 reads/day anonymously. For production usage, Starter is $499 one-time for setup + audit (see /managed), Pro is $999/mo, Enterprise starts at $4,999/mo. No per-query metering surprises."
+        "text": "Free tier covers 100 reads/day anonymously. For production usage, Starter is $499 one-time for setup + audit (see /managed), Managed Retainer is $999/mo, Enterprise starts at $4,999/mo. No per-query metering surprises."
       }
     },
     {
@@ -243,14 +243,14 @@ TOKEN = os.environ[<span class="s">"WMCP_TOKEN"</span>]  <span class="c"># grab 
   <details><summary>Can agents write to my database?</summary><div class="answer">Default is read-only. <code>postgres.query</code> rejects DDL and DML at the parser before any traffic reaches your DB. Write access is opt-in per connection and recommended only for service-role connections.</div></details>
   <details><summary>What about pgvector / pgvector queries?</summary><div class="answer">Yes — the query tool runs any valid read SQL, including vector similarity (<code>&lt;-&gt;</code>, <code>&lt;=&gt;</code>) operators. <code>postgres.list_extensions</code> reports whether pgvector is installed so your agent can plan accordingly.</div></details>
   <details><summary>Does the audit log capture parameter values?</summary><div class="answer">Yes — timestamp, client identity, statement, parameter values, row count, execution time. Retention is 30 days on Pro, 1 year on Enterprise.</div></details>
-  <details><summary>Pricing?</summary><div class="answer">Free 100 reads/day anonymous. Managed Starter $499 one-time for setup + audit, Pro $999/mo, Enterprise $4,999+/mo. See <a href="/managed" style="color:var(--accent2)">/managed</a>.</div></details>
+  <details><summary>Pricing?</summary><div class="answer">Free 100 reads/day anonymous. Managed Starter $499 one-time for setup + audit, Managed Retainer $999/mo, Enterprise $4,999+/mo. See <a href="/managed" style="color:var(--accent2)">/managed</a>.</div></details>
 </section>
 
 <!-- ========== UPGRADE CTA ========== -->
 <section id="upgrade" style="margin-top:36px;background:linear-gradient(135deg,var(--card),rgba(124,92,255,0.08));border:1px solid rgba(124,92,255,0.35);border-radius:16px;padding:22px 26px">
   <div class="section-label">For production</div>
   <h2 style="margin-top:0">Need this in production?</h2>
-  <p style="color:var(--muted);max-width:640px">If you're past the prototype stage and want a routed Postgres MCP endpoint with audit logs, SSO, and a configured read-only role on your DB, we'll set it up end-to-end. $499 one-time for Starter (setup + audit + one connection), Pro $999/mo for ongoing, Enterprise $4,999+/mo for VPC peering + dedicated support.</p>
+  <p style="color:var(--muted);max-width:640px">If you're past the prototype stage and want a routed Postgres MCP endpoint with audit logs, SSO, and a configured read-only role on your DB, we'll set it up end-to-end. $499 one-time for Starter (setup + audit + one connection), Managed Retainer $999/mo for ongoing, Enterprise $4,999+/mo for VPC peering + dedicated support.</p>
   <p style="margin-top:16px">
     <a href="/managed" style="display:inline-block;background:var(--accent);color:#fff;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:700;margin-right:10px">→ Managed setup ($499)</a>
     <a href="/directory/submit" style="display:inline-block;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:600">Submit your MCP server (free)</a>

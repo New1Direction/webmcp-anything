@@ -9,7 +9,9 @@
 //   STRIPE_PRICE_TO_PLAN    JSON, e.g. {"price_1ABC":"pro","price_1XYZ":"reseller"}
 
 import type { Context } from "hono";
-import { issueKey, revokeKey, type Plan } from "./auth";
+import { issueKey, revokeKey, resolveAuth, type Plan } from "./auth";
+import { track } from "./metrics";
+import { slugFromUrl } from "./slug";
 
 type Env = {
   KEYS: KVNamespace;
@@ -18,6 +20,10 @@ type Env = {
   STRIPE_SECRET_KEY?: string;
   STRIPE_WEBHOOK_SECRET?: string;
   STRIPE_PRICE_TO_PLAN?: string;
+  // Non-plan SKUs (directory Verified subscription; one-time Agent-Ready Fix).
+  // Stripe price IDs; if unset the corresponding self-serve checkout 503s.
+  STRIPE_PRICE_VERIFIED?: string;
+  STRIPE_PRICE_FIX?: string;
 };
 
 const STRIPE_API = "https://api.stripe.com/v1";
@@ -49,10 +55,16 @@ export async function createCheckout(c: Context<{ Bindings: Env }>) {
   form.set("customer_email", body.email);
   form.set("client_reference_id", body.email);
   form.set("metadata[plan]", body.plan);
+  // kind=plan lets the webhook tell API-plan checkouts apart from the non-plan
+  // SKUs (directory Verified, Agent-Ready Fix) that must NOT mint an API key.
+  form.set("metadata[kind]", "plan");
   form.set("subscription_data[metadata][plan]", body.plan);
+  form.set("subscription_data[metadata][kind]", "plan");
   form.set("allow_promotion_codes", "true");
   form.set("success_url", `${origin}/dashboard?session_id={CHECKOUT_SESSION_ID}`);
   form.set("cancel_url", `${origin}/dashboard?canceled=1`);
+
+  track(c.env, c.executionCtx, "checkout_started");
 
   const res = await fetch(`${STRIPE_API}/checkout/sessions`, {
     method: "POST",
@@ -97,6 +109,13 @@ export async function keyByCheckout(c: Context<{ Bindings: Env }>) {
   }
   if (session.payment_status !== "paid") {
     return c.json({ pending: true, status: session.payment_status });
+  }
+
+  // Fail-closed: non-plan SKUs (directory Verified, Agent-Ready Fix) never mint
+  // an API key here, even if their session_id is polled at this endpoint.
+  const sessKind = session.metadata?.kind as string | undefined;
+  if (sessKind && sessKind !== "plan") {
+    return c.json({ ok: true, kind: sessKind, key: null });
   }
 
   const customer_id: string | undefined = session.customer;
@@ -178,6 +197,12 @@ export async function stripeWebhook(c: Context<{ Bindings: Env }>) {
   const raw = await c.req.text();
 
   if (!secret) {
+    // In production, refuse unsigned webhooks outright — without the signing
+    // secret a forged checkout.session.completed could mint a paid API key
+    // (see the issueKey path below). Only the dev env tolerates it.
+    if (c.env.ENVIRONMENT === "production") {
+      return c.json({ error: "webhook_not_configured" }, 503);
+    }
     console.warn(
       "STRIPE_WEBHOOK_SECRET unset — accepting unsigned webhook (dev only)"
     );
@@ -203,6 +228,17 @@ export async function stripeWebhook(c: Context<{ Bindings: Env }>) {
       const obj = event.data.object;
       // Session vs Subscription discriminator.
       const isSession = event.type === "checkout.session.completed";
+      if (isSession) track(c.env, c.executionCtx, "paid");
+
+      // FAIL-CLOSED SKU GUARD. Any checkout whose metadata.kind is set and is
+      // NOT "plan" (directory Verified, Agent-Ready Fix, or any future SKU) is
+      // handled here and MUST return before the issueKey path below — otherwise
+      // a $129 badge or one-time fix would silently mint a free Pro API key via
+      // the plan="pro" fallthrough.
+      const kind = obj.metadata?.kind as string | undefined;
+      if (kind && kind !== "plan") {
+        return await handleNonPlanCheckout(c, event.type, kind, obj);
+      }
       const customer_id: string | undefined = obj.customer;
       const sub_id: string | undefined = isSession
         ? obj.subscription
@@ -270,6 +306,17 @@ export async function stripeWebhook(c: Context<{ Bindings: Env }>) {
 
     case "customer.subscription.deleted": {
       const sub = event.data.object;
+      // A cancelled directory Verified subscription removes the badge — it must
+      // NOT touch API keys (those belong to plan subscriptions).
+      const kind = sub.metadata?.kind as string | undefined;
+      if (kind === "directory_verified") {
+        const slug = sub.metadata?.slug as string | undefined;
+        if (slug) {
+          await c.env.KEYS.delete(`verified:${slug}`);
+          await c.env.KEYS.delete(`featured:${slug}`);
+        }
+        return c.json({ ok: true, action: "verified_removed", slug });
+      }
       const user_id = `cust:${sub.customer}`;
       await revokeUserKeys(c.env, user_id);
       return c.json({ ok: true, action: "revoked", user_id });
@@ -285,6 +332,188 @@ async function revokeUserKeys(env: Env, user_id: string) {
   if (!userRaw) return;
   const u = JSON.parse(userRaw);
   for (const k of u.keys || []) await revokeKey(env as any, k);
+}
+
+// =================== non-plan SKU fulfillment (webhook) ===================
+//
+// Directory Verified (recurring) and Agent-Ready Fix (one-time). These write
+// directory state / fulfillment records and NEVER issue an API key.
+
+async function handleNonPlanCheckout(
+  c: Context<{ Bindings: Env }>,
+  eventType: string,
+  kind: string,
+  obj: any
+): Promise<Response> {
+  const slug = (obj.metadata?.slug as string | undefined) || "";
+
+  if (kind === "directory_verified") {
+    // Fires on checkout.session.completed + customer.subscription.created/updated.
+    // Idempotent: presence of verified:<slug> = verified.
+    if (slug) {
+      await c.env.KEYS.put(`verified:${slug}`, "1", {
+        metadata: { ts: Date.now(), via: "stripe_self_serve" },
+      });
+    }
+    return c.json({ ok: true, action: "verified_set", slug });
+  }
+
+  if (kind === "agent_ready_fix") {
+    // One-time mode=payment → only checkout.session.completed fires. Record the
+    // fulfillment job for the operator and flip the badge to Verified now; the
+    // human deliverable follows. NEVER issue an API key.
+    if (eventType === "checkout.session.completed") {
+      const now = Date.now();
+      const reverseTs = (Number.MAX_SAFE_INTEGER - now).toString().padStart(16, "0");
+      const rand = Array.from(crypto.getRandomValues(new Uint8Array(4)))
+        .map((b) => b.toString(16).padStart(2, "0"))
+        .join("");
+      const email =
+        obj.customer_email ||
+        obj.customer_details?.email ||
+        (obj.metadata?.email as string | undefined);
+      await c.env.KEYS.put(
+        `fix:${reverseTs}:${rand}`,
+        JSON.stringify({
+          received_at: now,
+          received_at_iso: new Date(now).toISOString(),
+          slug,
+          site_url: obj.metadata?.site_url,
+          email,
+          amount_total: obj.amount_total,
+          currency: obj.currency,
+          status: "paid_pending_fulfillment",
+        }),
+        { expirationTtl: 365 * 86400, metadata: { slug, email, status: "paid_pending_fulfillment" } }
+      );
+      if (slug) {
+        await c.env.KEYS.put(`verified:${slug}`, "1", {
+          metadata: { ts: now, via: "agent_ready_fix" },
+        });
+      }
+    }
+    return c.json({ ok: true, action: "fix_recorded", slug });
+  }
+
+  // Unknown kind → fail-closed: acknowledge the webhook but provision NOTHING.
+  return c.json({ ok: true, ignored_kind: kind });
+}
+
+// =================== self-serve SKU checkout creators ===================
+
+// POST /api/v1/directory/verified/checkout  { url }
+// Recurring "Agent-Ready Verified" badge. Gated on proven host ownership
+// (owner:host:<hostname>, written by the claim flow in directory_claim.ts).
+export async function createDirectoryVerifiedCheckout(c: Context<{ Bindings: Env }>) {
+  const auth = await resolveAuth(c as any);
+  if (auth.anonymous) {
+    return c.json({ error: "sign_in_required", hint: "Sign in, then claim your site." }, 401);
+  }
+  const body = await c.req.json<{ url?: string }>().catch(() => null);
+  if (!body?.url) return c.json({ error: "url_required" }, 400);
+  let hostname: string;
+  try {
+    hostname = new URL(body.url).hostname.toLowerCase();
+  } catch {
+    return c.json({ error: "invalid_url" }, 400);
+  }
+  if (!c.env.STRIPE_SECRET_KEY || !c.env.STRIPE_PRICE_VERIFIED) {
+    return c.json({ error: "verified_sku_not_configured" }, 503);
+  }
+
+  // Ownership gate — only a proven owner may buy a badge for their host.
+  const ownerRaw = await c.env.KEYS.get(`owner:host:${hostname}`);
+  const owner = ownerRaw ? safeJson(ownerRaw) : null;
+  if (!owner || owner.user_id !== auth.user_id) {
+    return c.json(
+      {
+        error: "ownership_required",
+        hint: `Prove you control ${hostname} first: POST /api/v1/directory/claim/start, add the meta tag, then /claim/verify.`,
+      },
+      403
+    );
+  }
+
+  const slug = slugFromUrl(body.url);
+  const origin = new URL(c.req.url).origin;
+  const form = new URLSearchParams();
+  form.set("mode", "subscription");
+  form.set("line_items[0][price]", c.env.STRIPE_PRICE_VERIFIED);
+  form.set("line_items[0][quantity]", "1");
+  form.set("client_reference_id", auth.user_id);
+  form.set("allow_promotion_codes", "true");
+  form.set("metadata[kind]", "directory_verified");
+  form.set("metadata[slug]", slug);
+  form.set("metadata[hostname]", hostname);
+  form.set("subscription_data[metadata][kind]", "directory_verified");
+  form.set("subscription_data[metadata][slug]", slug);
+  form.set("success_url", `${origin}/u/${slug}?verified=ok`);
+  form.set("cancel_url", `${origin}/directory?canceled=1`);
+  return await createSessionResponse(c, form);
+}
+
+// POST /api/v1/agent-ready/fix/checkout  { url, email }
+// One-time, mode=payment. Sold off the free probe. No ownership gate (you're
+// buying a fix for your own site); fulfillment is recorded by the webhook.
+export async function createFixCheckout(c: Context<{ Bindings: Env }>) {
+  const body = await c.req.json<{ url?: string; email?: string }>().catch(() => null);
+  if (!body?.url || !body?.email) return c.json({ error: "url_and_email_required" }, 400);
+  let site_url: string;
+  try {
+    const u = new URL(body.url);
+    if (u.protocol !== "http:" && u.protocol !== "https:") throw 0;
+    site_url = u.toString();
+  } catch {
+    return c.json({ error: "invalid_url" }, 400);
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email)) {
+    return c.json({ error: "invalid_email" }, 400);
+  }
+  if (!c.env.STRIPE_SECRET_KEY || !c.env.STRIPE_PRICE_FIX) {
+    return c.json({ error: "fix_sku_not_configured" }, 503);
+  }
+
+  const slug = slugFromUrl(site_url);
+  const origin = new URL(c.req.url).origin;
+  const form = new URLSearchParams();
+  form.set("mode", "payment");
+  form.set("line_items[0][price]", c.env.STRIPE_PRICE_FIX);
+  form.set("line_items[0][quantity]", "1");
+  form.set("customer_email", body.email);
+  form.set("metadata[kind]", "agent_ready_fix");
+  form.set("metadata[slug]", slug);
+  form.set("metadata[site_url]", site_url);
+  form.set("metadata[email]", body.email);
+  form.set("success_url", `${origin}/managed?fix=ok`);
+  form.set("cancel_url", `${origin}/managed?canceled=1`);
+  return await createSessionResponse(c, form);
+}
+
+async function createSessionResponse(
+  c: Context<{ Bindings: Env }>,
+  form: URLSearchParams
+) {
+  const res = await fetch(`${STRIPE_API}/checkout/sessions`, {
+    method: "POST",
+    headers: {
+      authorization: `Bearer ${c.env.STRIPE_SECRET_KEY}`,
+      "content-type": "application/x-www-form-urlencoded",
+    },
+    body: form.toString(),
+  });
+  const j: any = await res.json();
+  if (!res.ok) {
+    return c.json({ error: "stripe_error", detail: j?.error?.message || j }, 502);
+  }
+  return c.json({ url: j.url, id: j.id });
+}
+
+function safeJson(s: string): any {
+  try {
+    return JSON.parse(s);
+  } catch {
+    return null;
+  }
 }
 
 // =================== helpers ===================

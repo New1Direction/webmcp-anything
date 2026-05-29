@@ -193,17 +193,16 @@ export function directorySubmitHtml(origin: string): string {
 
     <div class="tier featured">
       <h3>Verified listing</h3>
-      <div class="price">via /managed · from $499 setup</div>
+      <div class="price">self-serve — prove ownership, then subscribe</div>
       <ul>
         <li>Everything in Free</li>
         <li><strong style="color:var(--text)">"Agent-ready Verified" badge</strong> — embed on your site as an SVG</li>
-        <li>Featured placement at top of category pages</li>
+        <li><strong style="color:var(--text)">Self-serve:</strong> prove you control the domain (a one-line <code>&lt;meta&gt;</code> tag), then subscribe — no sales call</li>
+        <li>Re-tested on a cadence — reverts to "Indexed" if your tools stop resolving</li>
         <li>Priority directory rank</li>
-        <li>Custom adapter built if your stack is non-standard</li>
-        <li>Optional: white-label MCP at <code>mcp.yourbrand.com</code></li>
-        <li>Full <a href="/managed">/managed</a> package — see all tiers</li>
+        <li>Want it done for you (custom adapter, white-label MCP at <code>mcp.yourbrand.com</code>)? See <a href="/managed">/managed</a></li>
       </ul>
-      <a class="upgrade-cta" href="/managed#contact">Get verified → /managed</a>
+      <a class="upgrade-cta" href="/directory/claim">Get verified → claim your site</a>
     </div>
   </div>
 </section>

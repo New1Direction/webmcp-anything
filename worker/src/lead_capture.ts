@@ -15,10 +15,12 @@
 // nothing depends on external config to ship.
 
 import type { Context } from "hono";
+import { fireAlert } from "./alerts";
 
 type Env = {
   KEYS: KVNamespace;
   USAGE: KVNamespace;
+  LEAD_ALERT_WEBHOOK?: string;
 };
 
 interface LeadBody {
@@ -131,6 +133,13 @@ export async function captureLead(c: Context<{ Bindings: Env }>) {
   // Increment rate-limit bucket (1h TTL).
   c.executionCtx.waitUntil(
     c.env.USAGE.put(rlKey, String(current + 1), { expirationTtl: 3600 })
+  );
+
+  // Best-effort alert so high-ACV leads don't expire unread in KV.
+  fireAlert(
+    c.env,
+    c.executionCtx,
+    `🟣 New /managed lead: ${name} <${email}> · ${site_url}${pkg ? ` · ${pkg}` : ""}${use_case ? `\n${use_case.slice(0, 280)}` : ""}`
   );
 
   return c.json({ ok: true, lead_id: leadId, message: "received" });

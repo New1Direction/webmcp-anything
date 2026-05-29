@@ -168,7 +168,7 @@ Top-level surfaces:
 | `/badge/<slug>.svg` | Embeddable verified badge |
 | `/verify/<slug>` | Copy-paste embed snippet page for site owners |
 | `/dashboard`, `/dashboard/submissions` | Authed UI (signed-in users + admin) |
-| `/agent-ready[/*]`, `/managed`, `/vs/*`, `/alternatives/*`, `/integration/*`, `/use-case/*`, `/mcp-server/*`, `/for/*`, `/how-to/*`, `/glossary/*`, `/roundup/*` | Long-tail SEO landing pages (74 surfaces as of 2026-05-28) |
+| `/agent-ready[/*]`, `/managed`, `/vs/*`, `/alternatives/*`, `/integration/*`, `/use-case/*`, `/mcp-server/*`, `/for/*`, `/how-to/*`, `/glossary/*`, `/roundup/*` | Long-tail SEO landing pages (99 surfaces as of 2026-05-28) |
 
 ---
 

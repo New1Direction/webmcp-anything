@@ -225,7 +225,7 @@ messages = [{<span class="s">"role"</span>: <span class="s">"user"</span>, <span
     <div style="flex:1;min-width:240px">
       <div style="font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent2);font-weight:700;margin-bottom:6px">Need this built for you?</div>
       <h3 style="margin:0 0 4px;font-size:1.05rem;color:var(--text)">Hosted research loop with verifier + citations.</h3>
-      <p style="color:var(--muted);margin:0;font-size:.92rem">Custom corpus adapter + hosted MCP at <code>mcp.yourbrand.com</code> + verified badge. <strong style="color:var(--text)">Starter $499 one-time</strong> · Pro $999/mo · Enterprise $4,999+/mo.</p>
+      <p style="color:var(--muted);margin:0;font-size:.92rem">Custom corpus adapter + hosted MCP at <code>mcp.yourbrand.com</code> + verified badge. <strong style="color:var(--text)">Starter $499 one-time</strong> · Managed Retainer $999/mo · Enterprise $4,999+/mo.</p>
     </div>
     <div style="display:flex;gap:10px;flex-wrap:wrap">
       <a href="/managed" style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#7c5cff,#00e5ff);color:#0c0c14;padding:10px 18px;border-radius:9px;text-decoration:none;font-weight:700;font-size:.9rem">See /managed →</a>

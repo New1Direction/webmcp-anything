@@ -74,7 +74,7 @@ export function mcpServerRedisHtml(origin: string): string {
       "name": "Pricing?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Free tier covers 100 reads/day anonymously. Managed Starter is $499 one-time for setup, Pro is $999/mo, Enterprise $4,999+/mo. No per-command metering."
+        "text": "Free tier covers 100 reads/day anonymously. Managed Starter is $499 one-time for setup, Managed Retainer is $999/mo, Enterprise $4,999+/mo. No per-command metering."
       }
     }
   ]
@@ -235,14 +235,14 @@ export function mcpServerRedisHtml(origin: string): string {
   <details><summary>What about Sentinel?</summary><div class="answer">Sentinel addresses are accepted in the connection string. wmcp.sh discovers the current primary, routes to it, and retries once against the new primary on failover.</div></details>
   <details><summary>Can agents write keys?</summary><div class="answer">Write tools (SET, EXPIRE, etc.) are opt-in per connection. Destructive commands (FLUSHALL / FLUSHDB / CONFIG SET / DEBUG / SHUTDOWN) are blocked at the wmcp.sh layer regardless of opt-in.</div></details>
   <details><summary>Does it work with Upstash / Redis Cloud?</summary><div class="answer">Yes. Any Redis-protocol endpoint reachable on the public internet works, including Upstash, Redis Cloud, AWS ElastiCache (via public endpoint), and self-hosted.</div></details>
-  <details><summary>Pricing?</summary><div class="answer">Free 100 reads/day anonymous. Managed Starter $499 one-time, Pro $999/mo, Enterprise $4,999+/mo. See <a href="/managed" style="color:var(--accent2)">/managed</a>.</div></details>
+  <details><summary>Pricing?</summary><div class="answer">Free 100 reads/day anonymous. Managed Starter $499 one-time, Managed Retainer $999/mo, Enterprise $4,999+/mo. See <a href="/managed" style="color:var(--accent2)">/managed</a>.</div></details>
 </section>
 
 <!-- ========== UPGRADE ========== -->
 <section id="upgrade" style="margin-top:36px;background:linear-gradient(135deg,var(--card),rgba(124,92,255,0.08));border:1px solid rgba(124,92,255,0.35);border-radius:16px;padding:22px 26px">
   <div class="section-label">For production</div>
   <h2 style="margin-top:0">Need this in production?</h2>
-  <p style="color:var(--muted);max-width:640px">For production Redis MCP — read-only ACL on your DB, audit retention, SSO, and dashboards across multiple connections — we'll set it up end-to-end. Starter $499 one-time, Pro $999/mo, Enterprise $4,999+/mo for VPC peering and dedicated support.</p>
+  <p style="color:var(--muted);max-width:640px">For production Redis MCP — read-only ACL on your DB, audit retention, SSO, and dashboards across multiple connections — we'll set it up end-to-end. Starter $499 one-time, Managed Retainer $999/mo, Enterprise $4,999+/mo for VPC peering and dedicated support.</p>
   <p style="margin-top:16px">
     <a href="/managed" style="display:inline-block;background:var(--accent);color:#fff;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:700;margin-right:10px">→ Managed setup ($499)</a>
     <a href="/directory/submit" style="display:inline-block;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:600">Submit your MCP server (free)</a>

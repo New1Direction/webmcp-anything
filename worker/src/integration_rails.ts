@@ -234,7 +234,7 @@ RSpec.describe <span class="s">'Orders API'</span>, type: :request <span class="
     <div style="flex:1;min-width:240px">
       <div style="font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent2);font-weight:700;margin-bottom:6px">Need this done for you?</div>
       <h3 style="margin:0 0 4px;font-size:1.05rem;color:var(--text)">Skip the wiring — we ship the OpenAPI + MCP for your Rails app.</h3>
-      <p style="color:var(--muted);margin:0;font-size:.92rem">Audit your controllers, wire up rswag, deploy MCP at <code>mcp.yourbrand.com</code>. <strong style="color:var(--text)">Starter $499 one-time setup</strong>; Pro $999/mo for ongoing maintenance; Enterprise $4,999+/mo for SLA + private deploy.</p>
+      <p style="color:var(--muted);margin:0;font-size:.92rem">Audit your controllers, wire up rswag, deploy MCP at <code>mcp.yourbrand.com</code>. <strong style="color:var(--text)">Starter $499 one-time setup</strong>; Managed Retainer $999/mo for ongoing maintenance; Enterprise $4,999+/mo for SLA + private deploy.</p>
     </div>
     <div style="display:flex;gap:10px;flex-wrap:wrap">
       <a href="/managed" style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#7c5cff,#00e5ff);color:#0c0c14;padding:10px 18px;border-radius:9px;text-decoration:none;font-weight:700;font-size:.9rem">See /managed →</a>

@@ -4,12 +4,17 @@
 //   ptok:<user_id>:<provider_id> = ProviderToken (JSON, with encrypted access/refresh fields)
 //   conn:<user_id>               = JSON array of provider ids the user has connected
 //
-// Encryption: AES-GCM-256, key = SHA-256(TOKEN_ENC_KEY env). Random 12-byte IV per blob.
-//   On-disk format: base64(iv ‖ ciphertext+tag).
+// Encryption: AES-GCM-256, random 12-byte IV per blob.
+//   Legacy format:  base64(iv ‖ ct)          key = SHA-256(TOKEN_ENC_KEY)
+//   v2 format:      "2:" + base64(iv ‖ ct)   key = SHA-256(TOKEN_ENC_KEY ‖ ":" ‖ user_id)
 //
-// This isn't crypto-perfect — a worker secret compromise leaks all tokens — but
-// it's strictly better than plaintext in KV, and matches the standard SaaS
-// posture for token vaults of this scale.
+// Per-user key derivation (v2) shrinks the blast radius: leaking one user's
+// derived key does not unlock others', and there is no single key whose
+// rotation bricks every token. The change is BACKWARD-COMPATIBLE — blobs
+// written before v2 (no prefix) still decrypt with the global key, and get
+// rewritten as v2 on the next save/refresh. A worker-secret compromise is still
+// bad (the secret derives every per-user key), but blob-level isolation is now
+// in place for when key rotation / HSM-backed material lands.
 
 export interface ProviderToken {
   access_token_enc: string;
@@ -33,14 +38,18 @@ type Env = {
 
 // ---------- AES-GCM helpers ----------
 
-async function deriveKey(env: Env): Promise<CryptoKey> {
+const V2_PREFIX = "2:";
+
+async function deriveKey(env: Env, userId?: string): Promise<CryptoKey> {
   const secret = env.TOKEN_ENC_KEY;
   if (!secret) {
     throw new Error("TOKEN_ENC_KEY not configured — cannot encrypt/decrypt provider tokens.");
   }
+  // Per-user material when userId is provided (v2); global otherwise (legacy).
+  const material = userId ? `${secret}:${userId}` : secret;
   const raw = await crypto.subtle.digest(
     "SHA-256",
-    new TextEncoder().encode(secret)
+    new TextEncoder().encode(material)
   );
   return crypto.subtle.importKey(
     "raw",
@@ -64,8 +73,13 @@ function b64decode(s: string): Uint8Array {
   return out;
 }
 
-export async function encryptString(env: Env, plaintext: string): Promise<string> {
-  const key = await deriveKey(env);
+// userId present → v2 (per-user key, "2:" prefix); absent → legacy global key.
+export async function encryptString(
+  env: Env,
+  plaintext: string,
+  userId?: string
+): Promise<string> {
+  const key = await deriveKey(env, userId);
   const iv = crypto.getRandomValues(new Uint8Array(12));
   const ct = new Uint8Array(
     await crypto.subtle.encrypt(
@@ -77,12 +91,20 @@ export async function encryptString(env: Env, plaintext: string): Promise<string
   const combined = new Uint8Array(iv.length + ct.length);
   combined.set(iv, 0);
   combined.set(ct, iv.length);
-  return b64encode(combined);
+  const b64 = b64encode(combined);
+  return userId ? V2_PREFIX + b64 : b64;
 }
 
-export async function decryptString(env: Env, b64: string): Promise<string> {
-  const key = await deriveKey(env);
-  const combined = b64decode(b64);
+export async function decryptString(
+  env: Env,
+  blob: string,
+  userId?: string
+): Promise<string> {
+  // v2 blobs ("2:") use the per-user key; legacy blobs use the global key.
+  const isV2 = blob.startsWith(V2_PREFIX);
+  const payload = isV2 ? blob.slice(V2_PREFIX.length) : blob;
+  const key = await deriveKey(env, isV2 ? userId : undefined);
+  const combined = b64decode(payload);
   const iv = combined.slice(0, 12);
   const ct = combined.slice(12);
   const pt = await crypto.subtle.decrypt(
@@ -112,9 +134,9 @@ export async function saveProviderToken(
 ): Promise<void> {
   const now = Date.now();
   const rec: ProviderToken = {
-    access_token_enc: await encryptString(env, input.access_token),
+    access_token_enc: await encryptString(env, input.access_token, user_id),
     refresh_token_enc: input.refresh_token
-      ? await encryptString(env, input.refresh_token)
+      ? await encryptString(env, input.refresh_token, user_id)
       : undefined,
     token_type: input.token_type,
     scope: input.scope,
@@ -144,9 +166,9 @@ export async function loadProviderToken(
   } catch {
     return null;
   }
-  const access_token = await decryptString(env, rec.access_token_enc);
+  const access_token = await decryptString(env, rec.access_token_enc, user_id);
   const refresh_token = rec.refresh_token_enc
-    ? await decryptString(env, rec.refresh_token_enc)
+    ? await decryptString(env, rec.refresh_token_enc, user_id)
     : undefined;
   return { access_token, refresh_token, record: rec };
 }

@@ -244,6 +244,74 @@ export async function mcpProxyHandler(
   });
 }
 
+// Crawlable HTML index of the OAuth-vault MCP proxy catalog — the one surface
+// with real switching cost, previously only emitted as JSON (invisible to AI
+// search). Served to browsers/crawlers; agents still get JSON (see the /mcp
+// route's content negotiation in index.ts).
+export function mcpIndexHtml(origin: string): string {
+  const esc = (s: string) =>
+    String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const proxied = Object.values(PROVIDERS).filter((p) => p.mcpProxy && p.mcpUrl);
+  const rows = proxied
+    .map(
+      (p) => `<article class="card">
+  <h2>${esc(p.name)}</h2>
+  <p class="desc">${esc(p.description || "")}</p>
+  <code class="url">${esc(origin)}/mcp/${esc(p.id)}</code>
+  ${p.scopeNotice ? `<p class="notice">${esc(p.scopeNotice)}</p>` : ""}
+  <a class="connect" href="${esc(origin)}/api/v1/providers/${esc(p.id)}/start">Connect ${esc(p.name)} →</a>
+</article>`
+    )
+    .join("\n");
+  const ld = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "wmcp.sh hosted MCP proxies",
+    itemListElement: proxied.map((p, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: p.name,
+      url: `${origin}/mcp/${p.id}`,
+    })),
+  };
+  return `<!doctype html><html lang="en"><head>
+<meta charset="utf-8" />
+<title>Hosted MCP proxies — connect once, any agent calls them | wmcp.sh</title>
+<meta name="description" content="wmcp.sh hosts OAuth-authenticated MCP servers: connect a provider once, and any agent (Claude, Cursor, Codex) calls it at ${esc(origin)}/mcp/<provider> with credentials injected and refreshed automatically — no token pasting." />
+<link rel="canonical" href="${esc(origin)}/mcp" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta property="og:title" content="Hosted MCP proxies | wmcp.sh" />
+<meta property="og:description" content="Connect once, any agent calls the MCP server with auth handled for you." />
+<meta property="og:url" content="${esc(origin)}/mcp" />
+<meta property="og:image" content="${esc(origin)}/og.svg" />
+<script type="application/ld+json">${JSON.stringify(ld)}</script>
+<style>
+  :root{--bg:#0a0a0f;--card:#16161f;--border:#26263a;--text:#e8e8f0;--muted:#9a9ab0;--accent:#7c5cff;--accent2:#00e5ff}
+  *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif}
+  .wrap{max-width:880px;margin:0 auto;padding:48px 22px}
+  a{color:var(--accent2);text-decoration:none}a:hover{text-decoration:underline}
+  h1{font-size:2rem;letter-spacing:-.02em;margin:0 0 8px}
+  .lede{color:var(--muted);max-width:680px;margin:0 0 28px}
+  .grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px}
+  .card h2{margin:0 0 6px;font-size:1.15rem}
+  .desc{color:var(--muted);font-size:.92rem;margin:0 0 10px}
+  .url{display:block;font-family:ui-monospace,Menlo,monospace;font-size:.82rem;background:#0f0f18;border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--accent2);word-break:break-all}
+  .notice{color:#ffb84d;font-size:.8rem;margin:8px 0 0}
+  .connect{display:inline-block;margin-top:12px;font-weight:600;font-size:.9rem}
+  .back{color:var(--muted);font-size:.85rem}
+  footer{margin-top:36px;color:var(--muted);font-size:.85rem}
+</style></head><body><div class="wrap">
+<a class="back" href="/">← wmcp.sh</a>
+<h1>Hosted MCP proxies</h1>
+<p class="lede">Connect a provider once in your <a href="/dashboard">dashboard</a>; then any MCP-aware agent calls it at <code>${esc(origin)}/mcp/&lt;provider&gt;</code>. wmcp.sh injects the OAuth bearer token and refreshes it transparently — the agent never sees a credential. <a href="/mcp?format=json">JSON</a> · <a href="/managed">white-label / managed</a>.</p>
+<div class="grid">
+${rows || '<p class="desc">No proxies published yet.</p>'}
+</div>
+<footer>Add yours: <a href="/managed">/managed</a> · Submit a site: <a href="/directory/submit">/directory/submit</a></footer>
+</div></body></html>`;
+}
+
 /**
  * GET /mcp — list available proxied MCP servers.
  * Lets agents introspect what proxies wmcp.sh exposes.

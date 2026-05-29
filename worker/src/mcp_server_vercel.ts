@@ -74,7 +74,7 @@ export function mcpServerVercelHtml(origin: string): string {
       "name": "Pricing?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Free 100 reads/day anonymous. Managed Starter $499 one-time, Pro $999/mo, Enterprise $4,999+/mo. See /managed. Vercel billing is handled by Vercel directly."
+        "text": "Free 100 reads/day anonymous. Managed Starter $499 one-time, Managed Retainer $999/mo, Enterprise $4,999+/mo. See /managed. Vercel billing is handled by Vercel directly."
       }
     }
   ]
@@ -237,14 +237,14 @@ asyncio.run(investigate())</code></pre>
   <details><summary>What's env-var write protection?</summary><div class="answer">Writes to environment variables (create / update / delete) are blocked at the wmcp.sh layer regardless of token scope. Reads return names and target environments but redact values unless you explicitly opt in. Closes the common "agent overwrote prod env" failure mode.</div></details>
   <details><summary>Can the agent trigger deployments?</summary><div class="answer">Trigger / promote / rollback / alias are exposed as opt-in write tools. Default is read-only. All writes audit-logged.</div></details>
   <details><summary>Team accounts?</summary><div class="answer">Yes — multiple Vercel teams can be registered under one wmcp.sh connection with a team_id parameter per call.</div></details>
-  <details><summary>Pricing?</summary><div class="answer">Free 100 reads/day anonymous. Managed Starter $499 one-time, Pro $999/mo, Enterprise $4,999+/mo. See <a href="/managed" style="color:var(--accent2)">/managed</a>.</div></details>
+  <details><summary>Pricing?</summary><div class="answer">Free 100 reads/day anonymous. Managed Starter $499 one-time, Managed Retainer $999/mo, Enterprise $4,999+/mo. See <a href="/managed" style="color:var(--accent2)">/managed</a>.</div></details>
 </section>
 
 <!-- ========== UPGRADE ========== -->
 <section id="upgrade" style="margin-top:36px;background:linear-gradient(135deg,var(--card),rgba(124,92,255,0.08));border:1px solid rgba(124,92,255,0.35);border-radius:16px;padding:22px 26px">
   <div class="section-label">For production</div>
   <h2 style="margin-top:0">Need this in production?</h2>
-  <p style="color:var(--muted);max-width:640px">Production Vercel MCP: scoped tokens per team with read-only or fine-grained write perms, env-write allowlists, audit retention, SSO, optional deployment-promotion approval flow. Starter $499 one-time, Pro $999/mo, Enterprise $4,999+/mo.</p>
+  <p style="color:var(--muted);max-width:640px">Production Vercel MCP: scoped tokens per team with read-only or fine-grained write perms, env-write allowlists, audit retention, SSO, optional deployment-promotion approval flow. Starter $499 one-time, Managed Retainer $999/mo, Enterprise $4,999+/mo.</p>
   <p style="margin-top:16px">
     <a href="/managed" style="display:inline-block;background:var(--accent);color:#fff;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:700;margin-right:10px">→ Managed setup ($499)</a>
     <a href="/directory/submit" style="display:inline-block;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:600">Submit your MCP server (free)</a>

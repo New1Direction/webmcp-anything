@@ -74,7 +74,7 @@ export function mcpServerDatadogHtml(origin: string): string {
       "name": "Pricing?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "wmcp.sh: free 100 reads/day anonymous, Managed Starter $499 one-time, Pro $999/mo, Enterprise $4,999+/mo. Datadog billing is handled by Datadog directly."
+        "text": "wmcp.sh: free 100 reads/day anonymous, Managed Starter $499 one-time, Managed Retainer $999/mo, Enterprise $4,999+/mo. Datadog billing is handled by Datadog directly."
       }
     }
   ]
@@ -236,14 +236,14 @@ asyncio.run(ask())</code></pre>
   <details><summary>NL → DQL — how good is it?</summary><div class="answer">The translator handles the common patterns (rate, average, percentile, by-tag grouping, time windows, arithmetic across metrics) reliably. Edge cases get returned verbatim with a "couldn't translate, falling back to raw query" flag so the agent can decide. Both the rendered DQL and the result are returned, so the agent learns by example.</div></details>
   <details><summary>Where are my API/APP keys stored?</summary><div class="answer">Encrypted per-user vault. Decrypted in memory per request, never logged. Rotate from /dashboard.</div></details>
   <details><summary>Can agents mute monitors or create incidents?</summary><div class="answer">Yes — mute / unmute / incident-create exist as write tools, opt-in per connection. Default is read-only.</div></details>
-  <details><summary>Pricing?</summary><div class="answer">Free 100 reads/day anonymous. Managed Starter $499 one-time, Pro $999/mo, Enterprise $4,999+/mo. See <a href="/managed" style="color:var(--accent2)">/managed</a>.</div></details>
+  <details><summary>Pricing?</summary><div class="answer">Free 100 reads/day anonymous. Managed Starter $499 one-time, Managed Retainer $999/mo, Enterprise $4,999+/mo. See <a href="/managed" style="color:var(--accent2)">/managed</a>.</div></details>
 </section>
 
 <!-- ========== UPGRADE ========== -->
 <section id="upgrade" style="margin-top:36px;background:linear-gradient(135deg,var(--card),rgba(124,92,255,0.08));border:1px solid rgba(124,92,255,0.35);border-radius:16px;padding:22px 26px">
   <div class="section-label">For production</div>
   <h2 style="margin-top:0">Need this in production?</h2>
-  <p style="color:var(--muted);max-width:640px">Production Datadog MCP: scoped APP key with metric/log read perms only, NL-DQL tuning for your service taxonomy, audit retention, SSO, on-call escalation suppression flags. Starter $499 one-time, Pro $999/mo, Enterprise $4,999+/mo.</p>
+  <p style="color:var(--muted);max-width:640px">Production Datadog MCP: scoped APP key with metric/log read perms only, NL-DQL tuning for your service taxonomy, audit retention, SSO, on-call escalation suppression flags. Starter $499 one-time, Managed Retainer $999/mo, Enterprise $4,999+/mo.</p>
   <p style="margin-top:16px">
     <a href="/managed" style="display:inline-block;background:var(--accent);color:#fff;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:700;margin-right:10px">→ Managed setup ($499)</a>
     <a href="/directory/submit" style="display:inline-block;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:600">Submit your MCP server (free)</a>

@@ -432,9 +432,9 @@ export function landingHtml(origin: string): string {
 <!-- ========== HERO ========== -->
 <section class="hero">
   <div class="hero-text">
-    <div class="badge"><span class="dot"></span> live · MCP-compatible</div>
+    <div class="badge"><span class="dot"></span> live · real MCP server</div>
     <h1>Turn any URL into<br/><span class="accent">agent-callable tools.</span></h1>
-    <p class="sub">A hosted MCP server. Paste a product URL, get a tool list every AI agent can call — Shopify, JSON-LD sites, and growing. Open-source adapters.</p>
+    <p class="sub">A real, hosted MCP server. Paste any URL to get agent-callable tools — or connect it to <strong style="color:var(--text)">Claude, Cursor, and Codex in one line</strong>. Shopify, OpenAPI, JSON-LD, and growing. Open-source adapters.</p>
     <div class="hero-ctas">
       <a class="btn-primary" href="#demo">⚡ Try the demo</a>
       <a class="btn-secondary" href="https://github.com/New1Direction/webmcp-anything" target="_blank">★ GitHub</a>
@@ -568,19 +568,31 @@ export function landingHtml(origin: string): string {
 <!-- ========== CODE SNIPPETS ========== -->
 <section id="code">
   <div class="section-label">Integrate</div>
-  <h2 class="section-h2">Three lines into your stack.</h2>
-  <p class="section-sub">Pick your framework. Copy. Done.</p>
+  <h2 class="section-h2">One line of config — or three lines of code.</h2>
+  <p class="section-sub">Connect wmcp.sh as a native MCP server, or call the REST API from any framework. Copy. Done.</p>
 
   <div class="tabs-wrap">
     <div class="tabs">
-      <button class="tab on" data-tab="curl">cURL</button>
+      <button class="tab on" data-tab="mcp">MCP · Claude/Cursor</button>
+      <button class="tab" data-tab="curl">cURL</button>
       <button class="tab" data-tab="js">JavaScript</button>
       <button class="tab" data-tab="claude">Claude tool_use</button>
       <button class="tab" data-tab="langchain">LangChain</button>
       <button class="tab" data-tab="openai">OpenAI</button>
     </div>
     <div class="tab-body">
-      <pre data-body="curl"><span class="k">curl</span> <span class="s">'${origin}/api/v1/tools?url=https://www.allbirds.com/products/mens-wool-runners'</span></pre>
+      <pre data-body="mcp"><span class="c">// wmcp.sh is a real MCP server — add it to Claude Code / Cursor / Codex / VS Code.</span>
+{
+  <span class="s">"mcpServers"</span>: {
+    <span class="s">"wmcp"</span>: {
+      <span class="s">"type"</span>: <span class="s">"http"</span>,
+      <span class="s">"url"</span>: <span class="s">"${origin}/mcp/u/&lt;base64url-of-your-url&gt;"</span>
+    }
+  }
+}
+<span class="c">// One site → /mcp/u/&lt;b64url&gt;   ·   compose many → /mcp/url?url=a&amp;url=b</span>
+<span class="c">// tools/list is free; live tools/call uses your Bearer key.</span></pre>
+      <pre data-body="curl" style="display:none"><span class="k">curl</span> <span class="s">'${origin}/api/v1/tools?url=https://www.allbirds.com/products/mens-wool-runners'</span></pre>
       <pre data-body="js" style="display:none"><span class="c">// Plain fetch — works everywhere.</span>
 <span class="k">const</span> r = <span class="k">await</span> fetch(
   <span class="s">\`${origin}/api/v1/tools?url=\${encodeURIComponent(url)}\`</span>,
@@ -590,7 +602,7 @@ export function landingHtml(origin: string): string {
       <pre data-body="claude" style="display:none"><span class="c">// Pass wmcp tools straight into Anthropic SDK.</span>
 <span class="k">const</span> tools = (<span class="k">await</span> fetch(<span class="s">\`${origin}/api/v1/tools?url=\${url}\`</span>).then(r =&gt; r.json())).tools;
 <span class="k">const</span> msg = <span class="k">await</span> anthropic.messages.create({
-  model: <span class="s">"claude-opus-4-7"</span>,
+  model: <span class="s">"claude-opus-4-8"</span>,
   tools: tools.map(t =&gt; ({
     name: t.name,
     description: t.description,
