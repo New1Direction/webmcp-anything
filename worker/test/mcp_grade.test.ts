@@ -1,6 +1,7 @@
 // test/mcp_grade.test.ts — the independent MCP grading engine.
 import { describe, it, expect, vi, afterEach } from "vitest";
-import { scoreMcpServer, letter } from "../src/mcp_grade";
+import { scoreMcpServer, letter, recordGrade, diffTools, readGrade, type GradeResult } from "../src/mcp_grade";
+import { kvMock } from "./helpers";
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -105,5 +106,76 @@ describe("letter()", () => {
     expect(letter(65)).toBe("D");
     expect(letter(40)).toBe("F");
     expect(letter(99, "plaintext_http")).toBe("F");
+  });
+});
+
+function mkGrade(host: string, opts: Partial<GradeResult> = {}): GradeResult {
+  return {
+    url: `https://${host}/mcp`, host, checked_at: 1000, reachable: true, auth_required: false,
+    grade: "A-", score: 90, sub: {}, findings: [], tools_count: opts.tool_sigs ? Object.keys(opts.tool_sigs).length : 0,
+    tools_hash: "h", ...opts,
+  } as GradeResult;
+}
+
+describe("drift monitor — the continuous-re-verification wedge", () => {
+  it("diffTools detects added / removed / changed tools", () => {
+    expect(diffTools({ a: "1", b: "2" }, { a: "1", c: "3" })).toEqual({ added: ["c"], removed: ["b"], changed: [] });
+    expect(diffTools({ a: "1" }, { a: "9" })).toEqual({ added: [], removed: [], changed: ["a"] });
+  });
+
+  it("first grade sets tools_hash_since, no drift, registers the watch + history", async () => {
+    const env: any = { CACHE: kvMock() };
+    const out = await recordGrade(env, mkGrade("x.com", { tool_sigs: { t1: "a" }, checked_at: 1000 }));
+    expect(out.drifted).toBe(false);
+    const g = (await readGrade(env, "x.com"))!;
+    expect(g.tools_hash_since).toBe(1000);
+    expect(g.drift_count).toBe(0);
+    expect(await env.CACHE.get("gradewatch:x.com")).toBe("https://x.com/mcp");
+    expect(JSON.parse(await env.CACHE.get("gradehist:x.com")).length).toBe(1);
+  });
+
+  it("an unchanged surface carries tools_hash_since forward (no drift)", async () => {
+    const env: any = { CACHE: kvMock() };
+    await recordGrade(env, mkGrade("x.com", { tool_sigs: { t1: "a" }, checked_at: 1000 }));
+    const out = await recordGrade(env, mkGrade("x.com", { tool_sigs: { t1: "a" }, checked_at: 5000 }));
+    expect(out.drifted).toBe(false);
+    expect((await readGrade(env, "x.com"))!.tools_hash_since).toBe(1000);
+  });
+
+  it("a changed tool surface is a rug-pull: summary + reset + count++", async () => {
+    const env: any = { CACHE: kvMock() };
+    await recordGrade(env, mkGrade("x.com", { tool_sigs: { t1: "a", t2: "b" }, checked_at: 1000 }));
+    const out = await recordGrade(env, mkGrade("x.com", { tool_sigs: { t1: "ZZZ", t3: "c" }, checked_at: 9000 }));
+    expect(out.drifted).toBe(true);
+    expect(out.summary).toEqual({ added: ["t3"], removed: ["t2"], changed: ["t1"] });
+    const g = (await readGrade(env, "x.com"))!;
+    expect(g.tools_hash_since).toBe(9000);
+    expect(g.drift_count).toBe(1);
+    expect(g.last_drift!.added).toEqual(["t3"]);
+    expect(JSON.parse(await env.CACHE.get("gradehist:x.com")).length).toBe(2);
+  });
+
+  it("a worse grade on re-check flags gradeDropped", async () => {
+    const env: any = { CACHE: kvMock() };
+    await recordGrade(env, mkGrade("x.com", { tool_sigs: { t1: "a" }, grade: "A", checked_at: 1000 }));
+    const out = await recordGrade(env, mkGrade("x.com", { tool_sigs: { t1: "a" }, grade: "B", checked_at: 2000 }));
+    expect(out.gradeDropped).toBe(true);
+    expect(out.prevGrade).toBe("A");
+  });
+});
+
+describe("regradeWatched — the cron rug-pull alarm", () => {
+  it("re-checks watched servers and fires an alert when the tool surface drifts", async () => {
+    const env: any = { CACHE: kvMock() };
+    // prior grade with an OLD tool surface + a watch entry
+    await env.CACHE.put("grade:w.com", JSON.stringify(mkGrade("w.com", { tool_sigs: { old_tool: "x" }, checked_at: 1 })));
+    await env.CACHE.put("gradewatch:w.com", "https://w.com/mcp");
+    mockMcp({ tools: [goodTool] }); // fresh surface differs → drift
+    const fired: string[] = [];
+    const { regradeWatched } = await import("../src/mcp_grade");
+    const res = await regradeWatched(env, { waitUntil() {} }, (_e, _c, t) => fired.push(t));
+    expect(res.checked).toBe(1);
+    expect(res.drifted).toBe(1);
+    expect(fired[0]).toMatch(/rug-pull watch/);
   });
 });

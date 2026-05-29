@@ -17,6 +17,8 @@
 // Skips stores that 4xx/5xx/timeout. Logs results to CF Tail.
 
 import * as shopify from "../../adapters/shopify.js";
+import { regradeWatched } from "./mcp_grade";
+import { fireAlert } from "./alerts";
 
 type Env = {
   CACHE: KVNamespace;
@@ -24,6 +26,7 @@ type Env = {
   USAGE: KVNamespace;
   ENVIRONMENT: string;
   ADMIN_TOKEN?: string;
+  LEAD_ALERT_WEBHOOK?: string;
 };
 
 // Diverse, single-domain (no country-TLD duplicates) well-known Shopify
@@ -279,6 +282,15 @@ export async function scheduledHandler(
     const freshUrls = reports.flatMap((r) => r.new_urls).map(uUrlFor);
     if (freshUrls.length) ctx.waitUntil(pingIndexNow(freshUrls));
   }
+
+  // Re-verify watched MCP servers: rug-pull / schema-drift / grade-drop +
+  // alerts. This continuously-re-verified attestation is the trust-authority
+  // wedge a one-shot static scanner can't produce.
+  ctx.waitUntil(
+    regradeWatched(env as any, ctx, fireAlert)
+      .then((d) => console.log(`[cron] regrade: checked=${d.checked} drifted=${d.drifted} dropped=${d.dropped}`))
+      .catch((e) => console.log("[cron] regrade error", String(e)))
+  );
 }
 
 const STORE_HOSTNAME_RE = /^[a-z0-9]([a-z0-9.-]*[a-z0-9])?\.[a-z]{2,}$/i;

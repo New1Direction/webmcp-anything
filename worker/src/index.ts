@@ -219,10 +219,10 @@ app.get("/mcp/grade", async (c) => {
 app.get("/api/v1/mcp/grade", async (c) => {
   const url = c.req.query("url");
   if (!url) return c.json({ error: "url_required" }, 400);
-  const { scoreMcpServer, persistGrade } = await import("./mcp_grade");
+  const { scoreMcpServer, recordGrade } = await import("./mcp_grade");
   try {
     const r = await scoreMcpServer(url);
-    await persistGrade(c.env as any, r);
+    await recordGrade(c.env as any, r); // drift-aware persist + registers the watch
     return c.json(r);
   } catch (e) {
     return c.json({ error: "grade_failed", detail: String(e).slice(0, 200) }, 502);
@@ -240,12 +240,12 @@ app.get("/mcp/grade/:host/badge.svg", async (c) => {
 app.get("/mcp/grade/:host", async (c) => {
   const host = c.req.param("host");
   const origin = new URL(c.req.url).origin;
-  const { readGrade, scoreMcpServer, persistGrade, gradePageHtml } = await import("./mcp_grade");
+  const { readGrade, scoreMcpServer, recordGrade, gradePageHtml } = await import("./mcp_grade");
   let r = await readGrade(c.env as any, host);
   if (!r) {
     // Not cached — grade the conventional endpoint (or an explicit ?url=).
     const url = c.req.query("url") || `https://${host}/mcp`;
-    try { r = await scoreMcpServer(url); await persistGrade(c.env as any, r); } catch {}
+    try { r = await scoreMcpServer(url); await recordGrade(c.env as any, r); } catch {}
   }
   if (!r) return c.html(gradePageHtml({ url: `https://${host}`, host, checked_at: Date.now(), reachable: false, auth_required: false, grade: "F", score: 0, sub: {}, findings: [{ id: "reachable", severity: "fail", detail: "Could not reach an MCP server at this host." }], tools_count: 0 } as any, origin), 200);
   return c.html(gradePageHtml(r, origin));
