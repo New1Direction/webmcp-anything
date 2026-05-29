@@ -251,6 +251,13 @@ app.get("/mcp/grade/:host", async (c) => {
   return c.html(gradePageHtml(r, origin));
 });
 
+// Agent-callable MCP trust oracle (grade_mcp_server / check_mcp_drift). Free
+// read-tier so agents can gate connections on our grade. BEFORE /mcp/:provider.
+app.all("/mcp/trust", gate("read"), async (c) => {
+  const { oracleHandler } = await import("./mcp_oracle");
+  return oracleHandler(c as any);
+});
+
 app.all("/mcp/:provider", gate("execute"), async (c) => {
   const { mcpProxyHandler } = await import("./mcp_proxy");
   return mcpProxyHandler(c as any);

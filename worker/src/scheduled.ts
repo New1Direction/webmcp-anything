@@ -17,7 +17,7 @@
 // Skips stores that 4xx/5xx/timeout. Logs results to CF Tail.
 
 import * as shopify from "../../adapters/shopify.js";
-import { regradeWatched } from "./mcp_grade";
+import { regradeWatched, seedRegistryGrades } from "./mcp_grade";
 import { fireAlert } from "./alerts";
 
 type Env = {
@@ -290,6 +290,15 @@ export async function scheduledHandler(
     regradeWatched(env as any, ctx, fireAlert)
       .then((d) => console.log(`[cron] regrade: checked=${d.checked} drifted=${d.drifted} dropped=${d.dropped}`))
       .catch((e) => console.log("[cron] regrade error", String(e)))
+  );
+
+  // Coverage land-grab: auto-grade a slice of the official MCP Registry each
+  // run (cursor advances → whole-ecosystem coverage over time). Every graded
+  // server enters the drift watch set above.
+  ctx.waitUntil(
+    seedRegistryGrades(env as any)
+      .then((d) => console.log(`[cron] registry-seed: seeded=${d.seeded} nextCursor=${d.nextCursor || "(start)"}`))
+      .catch((e) => console.log("[cron] registry-seed error", String(e)))
   );
 }
 
