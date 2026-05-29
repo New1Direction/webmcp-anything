@@ -367,6 +367,22 @@ export function landingHtml(origin: string): string {
   .flywheel-text ol li::marker { color: var(--accent2); font-weight: 700; }
   .flywheel-text strong { color: var(--text); }
 
+  /* ---- ascii constellation globe (network-effect viz) ---- */
+  .globe-scope {
+    position: relative; max-width: 440px; width: 100%; margin: 0 auto;
+    background: linear-gradient(180deg, #0d0d18, #090911);
+    border: 1px solid var(--border); border-radius: 14px; overflow: hidden;
+    box-shadow: 0 24px 60px -28px rgba(0,229,255,.35), inset 0 1px 0 rgba(255,255,255,.04);
+  }
+  .globe-bar { display: flex; align-items: center; gap: 7px; padding: 10px 13px;
+    border-bottom: 1px solid var(--border); background: rgba(255,255,255,.02); }
+  .globe-bar .gd { width: 10px; height: 10px; border-radius: 50%; }
+  .globe-bar .r { background: #ff5f57; } .globe-bar .y { background: #febc2e; } .globe-bar .g { background: #28c840; }
+  .globe-bar .gt { margin-left: 8px; color: var(--dim); font-size: .72rem; font-family: "SF Mono", Menlo, monospace; }
+  #globe { margin: 0; padding: 14px 8px 16px; font-family: "SF Mono", Menlo, monospace;
+    font-size: 10px; line-height: 10px; color: var(--accent2);
+    text-shadow: 0 0 6px rgba(0,229,255,.4); white-space: pre; text-align: center; min-height: 330px; }
+
   /* ---- about ---- */
   .about {
     background: var(--card); border: 1px solid var(--border);
@@ -678,12 +694,9 @@ tools = [
 <section id="flywheel">
   <div class="section-label">Network effect</div>
   <div class="flywheel">
-    <div class="flywheel-3d">
-      <div class="rings">
-        <div class="ring r1"></div>
-        <div class="ring r2"></div>
-        <div class="ring r3"></div>
-      </div>
+    <div class="globe-scope">
+      <div class="globe-bar"><span class="gd r"></span><span class="gd y"></span><span class="gd g"></span><span class="gt">mcp://constellation — live</span></div>
+      <pre id="globe" aria-hidden="true"></pre>
     </div>
     <div class="flywheel-text">
       <h2 class="section-h2">It gets faster the more people use it.</h2>
@@ -858,6 +871,43 @@ function renderChat() {
   setTimeout(renderChat, delay + 3500);
 }
 renderChat();
+</script>
+<script>
+(function(){
+  var el = document.getElementById('globe'); if (!el) return;
+  var COLS = 58, ROWS = 30, N = 170, RAMP = " .·:-=+*oO#@";
+  var pts = [];
+  for (var i = 0; i < N; i++){ var y = 1-(i/(N-1))*2; var r = Math.sqrt(Math.max(0,1-y*y)); var th = i*2.399963229; pts.push([Math.cos(th)*r, y, Math.sin(th)*r]); }
+  var edges = []; for (var k = 0; k < 12; k++){ var a = (k*13+5)%N; var b = (a+7+((k*5)%9))%N; edges.push([a,b]); }
+  var ang = 0, raf, reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function inb(x,y){ return x>=0 && x<COLS && y>=0 && y<ROWS; }
+  function proj(p,cosA,sinA,cosT,sinT){
+    var x = p[0]*cosA - p[2]*sinA, z = p[0]*sinA + p[2]*cosA, yy = p[1];
+    var y2 = yy*cosT - z*sinT, z2 = yy*sinT + z*cosT, f = 1.6/(3.4 - z2);
+    return { sx: Math.round(COLS/2 + x*f*COLS*0.50), sy: Math.round(ROWS/2 - y2*f*ROWS*0.52), depth: z2 };
+  }
+  function frame(){
+    ang += 0.011;
+    var cosA = Math.cos(ang), sinA = Math.sin(ang), cosT = Math.cos(0.5), sinT = Math.sin(0.5);
+    var grid = [], zb = [];
+    for (var y = 0; y < ROWS; y++){ grid.push(new Array(COLS).fill(' ')); zb.push(new Array(COLS).fill(-1e9)); }
+    var pulse = (Math.sin(ang*1.7)+1)/2;
+    for (var e = 0; e < edges.length; e++){
+      var pa = pts[edges[e][0]], pb = pts[edges[e][1]], S = 16, bright = (e%4===0) && pulse>0.6;
+      for (var s = 0; s <= S; s++){ var t = s/S; var m = [pa[0]+(pb[0]-pa[0])*t, pa[1]+(pb[1]-pa[1])*t, pa[2]+(pb[2]-pa[2])*t];
+        var P = proj(m,cosA,sinA,cosT,sinT);
+        if (inb(P.sx,P.sy) && P.depth>zb[P.sy][P.sx]){ grid[P.sy][P.sx] = bright?'+':'·'; zb[P.sy][P.sx] = P.depth-0.002; } }
+    }
+    for (var n = 0; n < pts.length; n++){ var Q = proj(pts[n],cosA,sinA,cosT,sinT); if (!inb(Q.sx,Q.sy)) continue;
+      if (Q.depth>zb[Q.sy][Q.sx]){ var bb = (Q.depth+1)/2; var idx = Math.max(0,Math.min(RAMP.length-1,Math.round(bb*(RAMP.length-1)))); grid[Q.sy][Q.sx] = RAMP[idx]; zb[Q.sy][Q.sx] = Q.depth; } }
+    var out = ''; for (var ry = 0; ry < ROWS; ry++){ out += grid[ry].join('') + '\\n'; }
+    el.textContent = out;
+    if (!reduce) raf = requestAnimationFrame(frame);
+  }
+  // Lazy: only animate once the section scrolls into view.
+  if ('IntersectionObserver' in window){ var io = new IntersectionObserver(function(es){ es.forEach(function(en){ if (en.isIntersecting){ frame(); io.disconnect(); } }); }); io.observe(el); }
+  else { frame(); }
+})();
 </script>
 </body>
 </html>`;
