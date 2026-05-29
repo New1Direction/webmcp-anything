@@ -9,7 +9,7 @@
 //
 // Positioning: "static scanners read the label; wmcp.sh tasted the food."
 
-type Env = { CACHE: KVNamespace };
+type Env = { CACHE: KVNamespace; KEYS?: KVNamespace };
 
 const SUPPORTED_VERSIONS = ["2024-11-05", "2025-03-26", "2025-06-18"];
 const TIMEOUT_MS = 12000;
@@ -365,6 +365,24 @@ export async function recordGrade(env: Env, r: GradeResult): Promise<DriftOutcom
 }
 
 /**
+ * Fan out a drift/grade-drop notice to paying continuous-monitoring subscribers
+ * for a host (monitorsub:<host>:<sub> in KEYS, written by the Stripe webhook).
+ * Each subscriber gets a POST to their Slack-compatible alert_url.
+ */
+async function notifyMonitorSubscribers(env: Env, host: string, text: string): Promise<void> {
+  if (!env.KEYS) return;
+  let keys: { name: string }[] = [];
+  try { keys = (await env.KEYS.list({ prefix: `monitorsub:${host}:` })).keys; } catch { return; }
+  await Promise.all(keys.map(async (k) => {
+    try {
+      const raw = await env.KEYS!.get(k.name);
+      const sub = raw ? JSON.parse(raw) : null;
+      if (sub?.alert_url) await fetch(sub.alert_url, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ text }) }).catch(() => {});
+    } catch {}
+  }));
+}
+
+/**
  * Cron step: re-grade watched servers, detect rug-pulls / grade drops, and
  * alert. Capped + rotated (oldest-checked first) to stay within budget.
  */
@@ -393,15 +411,19 @@ export async function regradeWatched(
         if (out.drifted) {
           drifted++;
           const s = out.summary!;
-          fireAlertFn(env, ctx,
+          const msg =
             `🔻 MCP rug-pull watch: ${h} tool surface changed` +
             (s.added.length ? ` +${s.added.length} added` : "") +
             (s.removed.length ? ` −${s.removed.length} removed` : "") +
             (s.changed.length ? ` ~${s.changed.length} changed` : "") +
-            ` · grade ${out.prevGrade}→${fresh.grade} · ${url}`);
+            ` · grade ${out.prevGrade}→${fresh.grade} · ${url}`;
+          fireAlertFn(env, ctx, msg);
+          ctx.waitUntil(notifyMonitorSubscribers(env, h, msg)); // paid subscribers
         } else if (out.gradeDropped) {
           dropped++;
-          fireAlertFn(env, ctx, `⚠ MCP grade drop: ${h} ${out.prevGrade}→${fresh.grade} · ${url}`);
+          const msg = `⚠ MCP grade drop: ${h} ${out.prevGrade}→${fresh.grade} · ${url}`;
+          fireAlertFn(env, ctx, msg);
+          ctx.waitUntil(notifyMonitorSubscribers(env, h, msg)); // paid subscribers
         }
       } catch {
         /* unreachable this round — skip, keep prior grade */
@@ -430,6 +452,9 @@ export function gradeBadgeSvg(r: GradeResult): string {
 export function gradePageHtml(r: GradeResult, origin: string): string {
   const c = GRADE_COLOR[r.grade] || "#8a8aa8";
   const esc = (s: string) => String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const eh = encodeURIComponent(r.host);
+  const badgeUrl = `${origin}/mcp/grade/${eh}/badge.svg`;
+  const reportUrl = `${origin}/mcp/grade/${eh}`;
   const subRow = (key: string, label: string) => {
     const s = r.sub[key]; if (!s) return "";
     return `<div class="sub">
@@ -486,6 +511,11 @@ export function gradePageHtml(r: GradeResult, origin: string): string {
   .btn-s{background:var(--bg2);color:var(--text);border:1px solid var(--border)}
   .method{margin-top:30px;font-size:.85rem;color:var(--muted);border-top:1px solid var(--border);padding-top:16px}
   code{background:var(--bg2);padding:1px 6px;border-radius:5px;font-size:.85em}
+  button.btn{border:none;cursor:pointer;font-family:inherit;font-size:.92rem}
+  .embed,.oracle{margin-top:26px;border-top:1px solid var(--border);padding-top:16px}
+  .embed h3,.oracle h3{margin:0 0 6px;font-size:1rem}
+  label{display:block;font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);margin:10px 0 4px}
+  .snip{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-family:"SF Mono",Menlo,monospace;font-size:.78rem;overflow-x:auto;white-space:pre-wrap;word-break:break-all;margin:0;color:var(--text)}
 </style></head><body>
 <div class="wrap">
   <div class="top">
@@ -504,13 +534,45 @@ export function gradePageHtml(r: GradeResult, origin: string): string {
   ${subRow("transparency", "Transparency / provenance")}
   ${findingsHtml}
   <div class="cta">
-    <a class="btn btn-p" href="/agent-ready/fix">Get the issues fixed →</a>
+    <button class="btn btn-p" id="deepAudit">Get the full audit report →</button>
+    <button class="btn btn-s" id="monitor">Monitor for rug-pulls →</button>
     <a class="btn btn-s" href="/mcp/grade">Grade another server</a>
-    <a class="btn btn-s" href="${origin}/mcp/grade/${encodeURIComponent(r.host)}/badge.svg">Embed the badge</a>
   </div>
+
+  <div class="embed">
+    <h3>Embed this grade</h3>
+    <p class="muted" style="font-size:.85rem">A <b>live</b> badge — it re-verifies itself and shows current stability. Static scorecards can't.</p>
+    <div style="margin:10px 0"><img src="${badgeUrl}" alt="MCP Trust Grade ${r.grade} · wmcp.sh" height="44"/></div>
+    <label>Markdown</label>
+    <pre class="snip">[![MCP Trust Grade ${r.grade}](${badgeUrl})](${reportUrl})</pre>
+    <label>HTML</label>
+    <pre class="snip">${esc(`<a href="${reportUrl}"><img src="${badgeUrl}" alt="MCP Trust Grade ${r.grade} · wmcp.sh"></a>`)}</pre>
+  </div>
+
+  <div class="oracle">
+    <h3>Agents: check this before connecting</h3>
+    <p class="muted" style="font-size:.85rem">Add the wmcp.sh trust oracle as an MCP server and call <code>grade_mcp_server</code> / <code>check_mcp_drift</code> in your agent's pre-connection gate:</p>
+    <pre class="snip">${origin}/mcp/trust</pre>
+  </div>
+
   <div class="method">
     <strong>How this grade is computed.</strong> An open, independent rubric — Spec conformance (20%), Security mapped to the OWASP MCP Top&nbsp;10 (30%), Reliability (20%), Tool hygiene (15%), Transparency (15%) — run by connecting to the server and inspecting its real MCP surface. The grade is free and identical whether or not the operator pays. <span class="dim">v1 uses static + spec signals from a single connection; continuous uptime, real latency, and annotation-truthing (declared <code>readOnly</code> vs observed behavior) layer on via the wmcp.sh proxy.</span>
   </div>
+  <script>
+  (function(){
+    var url=${JSON.stringify(r.url)};
+    function go(ep, extra){
+      var email=prompt("Email for the receipt / report:"); if(!email)return;
+      var body=Object.assign({url:url,email:email},extra||{});
+      fetch(ep,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(body)})
+        .then(function(res){return res.json().catch(function(){return{};}).then(function(d){return{s:res.status,d:d};});})
+        .then(function(x){ if(x.d&&x.d.url){location.href=x.d.url;return;} if(x.s===503){alert("Not switched on yet — check back soon.");} else {alert("Could not start checkout: "+((x.d&&x.d.error)||x.s));} })
+        .catch(function(){alert("Network error.");});
+    }
+    var da=document.getElementById("deepAudit"); if(da)da.onclick=function(){go("/api/v1/mcp/deep-audit/checkout");};
+    var mo=document.getElementById("monitor"); if(mo)mo.onclick=function(){var w=(prompt("Optional https Slack-compatible webhook for drift alerts (blank to skip):")||"").trim();go("/api/v1/mcp/monitor/checkout", w?{alert_url:w}:{});};
+  })();
+  </script>
 </div>
 </body></html>`;
 }
