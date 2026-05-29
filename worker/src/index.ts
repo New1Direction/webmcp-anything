@@ -74,6 +74,10 @@ app.get("/api/v1/health", (c) =>
   c.json({ ok: true, version: "0.1.0", env: c.env.ENVIRONMENT })
 );
 
+// Browsers request /favicon.ico by default on every page → redirect to the SVG
+// (served from public/) so it's never a 404.
+app.get("/favicon.ico", (c) => c.redirect("/favicon.svg", 302));
+
 app.get("/api/v1/stats/public", async (c) => {
   const raw = await c.env.CACHE.get("stats:total_cached");
   const cached_urls = raw ? parseInt(raw, 10) || 0 : 0;
