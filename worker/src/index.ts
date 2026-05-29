@@ -1207,6 +1207,35 @@ app.get("/api/v1/mcp/reputation", async (c) => {
   return served ?? c.json({ error: "x402_internal" }, 500);
 });
 
+// Pay-per-execute via x402 — agents execute ANY tool with a micro-USDC payment,
+// no account/API key. The agent-native sibling of the plan-gated /api/v1/execute.
+// Only exists when x402 is configured (X402_PAY_TO); otherwise use the plan path.
+app.post("/api/v1/x402/execute", async (c) => {
+  const env = c.env as any;
+  if (!env.X402_PAY_TO) {
+    return c.json({ error: "x402_not_configured", hint: "Pay-per-call execute needs X402_PAY_TO. Or use /api/v1/execute with a paid plan/API key." }, 503);
+  }
+  const body = await c.req.json<{ url?: string; tool?: string; args?: any }>().catch(() => null);
+  if (!body?.url || !body?.tool) return c.json({ error: "url_and_tool_required" }, 400);
+
+  const { executeTool } = await import("./engine");
+  const serve = async () => {
+    const r = await executeTool(env, { url: body.url!, tool: body.tool!, args: body.args }, { userId: "x402" });
+    return r.ok ? c.json({ ok: true, value: r.value }) : c.json(r.body ?? { ok: false }, (r.status as any) || 500);
+  };
+
+  const { paymentMiddleware } = await import("x402-hono");
+  const mw = paymentMiddleware(
+    env.X402_PAY_TO,
+    { "/api/v1/x402/execute": { price: env.X402_EXECUTE_PRICE || env.X402_PRICE || "$0.02", network: (env.X402_NETWORK || "base-sepolia") as any } },
+    { url: env.X402_FACILITATOR || "https://x402.org/facilitator" }
+  );
+  let served: Response | undefined;
+  const gateRes = await mw(c as any, async () => { served = await serve(); });
+  if (gateRes instanceof Response) return gateRes; // 402 payment required
+  return served ?? c.json({ error: "x402_internal" }, 500);
+});
+
 // Saved toolsets (composable MCP servers). Creating one is a paid feature;
 // served at /mcp/set/<id>. CRUD here, the MCP endpoint is wired above.
 app.post("/api/v1/toolsets", async (c) => {
