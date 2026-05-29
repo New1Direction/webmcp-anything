@@ -95,6 +95,8 @@ export function makeCtx(opts: CtxOpts) {
       arrayBuffer: async () => new TextEncoder().encode(bodyStr()).buffer,
     },
     json: (obj: any, status = 200) => ({ status, body: obj }),
+    body: (content: any, status = 200, _headers?: any) => ({ status, body: content }),
+    html: (content: any, status = 200) => ({ status, body: content }),
     header: (_k: string, _v?: string) => {},
     set: (k: string, v: any) => {
       vars[k] = v;

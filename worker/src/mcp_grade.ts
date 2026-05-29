@@ -255,6 +255,47 @@ const GRADE_COLOR: Record<string, string> = {
   "C+": "#ff9e2c", C: "#ff9e2c", "C-": "#ff8c2c", D: "#ff6a3c", F: "#f87171",
 };
 
+/**
+ * Cron step: walk the OFFICIAL MCP Registry (cursor-paginated) and auto-grade
+ * remote servers — instant ecosystem coverage + a permanent /mcp/grade/<host>
+ * page per server (own the "is <server> safe?" search intent), and each graded
+ * server enters the drift watch set. The cursor advances each run (wraps at the
+ * end) so the whole registry gets covered over time.
+ */
+export async function seedRegistryGrades(
+  env: Env,
+  max = 10
+): Promise<{ seeded: number; nextCursor: string }> {
+  const CURSOR = "gradeseed:cursor";
+  const cursor = (await env.CACHE.get(CURSOR)) || "";
+  const api =
+    `https://registry.modelcontextprotocol.io/v0/servers?limit=${max}` +
+    (cursor ? `&cursor=${encodeURIComponent(cursor)}` : "");
+  let page: any;
+  try {
+    page = await fetch(api, { headers: { "user-agent": "wmcp.sh-grader/1.0 (+https://wmcp.sh/mcp/grade)" } }).then((r) => r.json());
+  } catch {
+    return { seeded: 0, nextCursor: cursor };
+  }
+  const servers: any[] = page?.servers || [];
+  let seeded = 0;
+  await Promise.all(
+    servers.map(async (s) => {
+      const remotes: any[] = s?.remotes || [];
+      const remote = remotes.find((r) => r.type === "streamable-http") || remotes.find((r) => r.type === "sse") || remotes[0];
+      if (!remote?.url) return; // skip local/package-only servers
+      try {
+        const r = await scoreMcpServer(remote.url);
+        await recordGrade(env, r);
+        seeded++;
+      } catch { /* unreachable / non-MCP — skip */ }
+    })
+  );
+  const nextCursor = page?.metadata?.nextCursor || ""; // empty wraps to the registry start next run
+  await env.CACHE.put(CURSOR, nextCursor, { expirationTtl: 60 * 86400 });
+  return { seeded, nextCursor };
+}
+
 // ---- KV persistence (grade:<host>) ----
 export async function persistGrade(env: Env, r: GradeResult): Promise<void> {
   await env.CACHE.put(`grade:${r.host}`, JSON.stringify(r), { expirationTtl: 30 * 86400 });
