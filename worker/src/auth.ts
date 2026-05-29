@@ -13,7 +13,7 @@
 import type { Context, MiddlewareHandler, Next } from "hono";
 import { readSessionCookie } from "./session";
 
-export type Plan = "free" | "pro" | "reseller";
+export type Plan = "free" | "builder" | "pro" | "reseller";
 
 export interface KeyRecord {
   user_id: string;
@@ -30,6 +30,7 @@ export const PLAN_LIMITS: Record<Plan, {
   can_execute_paid: boolean;
 }> = {
   free:     { reads_per_day: 100,   executes_per_day: 0,     push_per_day: 50,    can_execute_paid: false },
+  builder:  { reads_per_day: 2000,  executes_per_day: 200,   push_per_day: 1000,  can_execute_paid: true  },
   pro:      { reads_per_day: 10000, executes_per_day: 1000,  push_per_day: 5000,  can_execute_paid: true  },
   reseller: { reads_per_day: 100000, executes_per_day: 50000, push_per_day: 100000, can_execute_paid: true },
 };

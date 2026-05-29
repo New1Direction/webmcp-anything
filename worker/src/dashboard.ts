@@ -205,8 +205,20 @@ export function dashboardHtml(origin: string): string {
     <a class="upgrade muted-btn" href="#">Current</a>
   </div>
   <div class="plan featured">
+    <h3>Builder</h3>
+    <div class="price">$39<small>/mo</small></div>
+    <ul>
+      <li>2,000 reads/day</li>
+      <li>200 live executes/day</li>
+      <li>1,000 cache pushes/day</li>
+      <li>Shopify add_to_cart</li>
+      <li>Live execute — the jump from free</li>
+    </ul>
+    <button class="upgrade" data-plan="builder">Upgrade</button>
+  </div>
+  <div class="plan">
     <h3>Pro</h3>
-    <div class="price">$29<small>/mo</small></div>
+    <div class="price">$99<small>/mo</small></div>
     <ul>
       <li>10,000 reads/day</li>
       <li>5,000 cache pushes/day</li>
@@ -218,7 +230,7 @@ export function dashboardHtml(origin: string): string {
   </div>
   <div class="plan">
     <h3>Reseller</h3>
-    <div class="price">$99<small>/mo</small></div>
+    <div class="price">$299<small>/mo</small></div>
     <ul>
       <li>100,000 reads/day</li>
       <li>50,000 executes/day</li>

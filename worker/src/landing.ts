@@ -690,8 +690,20 @@ tools = [
       <a class="pick muted-btn" href="/dashboard">Use anonymously →</a>
     </div>
     <div class="plan featured">
+      <h3>Builder</h3>
+      <div class="price">$39<small>/mo</small></div>
+      <ul>
+        <li>2,000 reads / day</li>
+        <li>200 live executes / day</li>
+        <li>1,000 cache pushes / day</li>
+        <li>Shopify <code style="color:var(--accent2)">add_to_cart</code></li>
+        <li>Live execute — the jump from free</li>
+      </ul>
+      <a class="pick" href="/dashboard#pricing">Start building →</a>
+    </div>
+    <div class="plan">
       <h3>Pro</h3>
-      <div class="price">$29<small>/mo</small></div>
+      <div class="price">$99<small>/mo</small></div>
       <ul>
         <li>10,000 reads / day</li>
         <li>5,000 cache pushes / day</li>
@@ -703,7 +715,7 @@ tools = [
     </div>
     <div class="plan">
       <h3>Reseller</h3>
-      <div class="price">$99<small>/mo</small></div>
+      <div class="price">$299<small>/mo</small></div>
       <ul>
         <li>100,000 reads / day</li>
         <li>50,000 executes / day</li>

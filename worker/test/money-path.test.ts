@@ -272,3 +272,61 @@ describe("auth — key issuance, plan gating, dev-key safety", () => {
     expect(nexted).toBe(false);
   });
 });
+
+// ───────────────────────── Builder mid-tier ($39) ──────────────────────────
+describe("Builder tier — $39 conversion bridge enables live execute", () => {
+  it("PLAN_LIMITS.builder sits strictly between free and pro and CAN execute", () => {
+    expect(PLAN_LIMITS.builder).toEqual({
+      reads_per_day: 2000,
+      executes_per_day: 200,
+      push_per_day: 1000,
+      can_execute_paid: true,
+    });
+    expect(PLAN_LIMITS.free.executes_per_day).toBe(0);
+    expect(PLAN_LIMITS.builder.executes_per_day).toBeGreaterThan(PLAN_LIMITS.free.executes_per_day);
+    expect(PLAN_LIMITS.builder.executes_per_day).toBeLessThan(PLAN_LIMITS.pro.executes_per_day);
+    expect(PLAN_LIMITS.builder.reads_per_day).toBeGreaterThan(PLAN_LIMITS.free.reads_per_day);
+    expect(PLAN_LIMITS.builder.reads_per_day).toBeLessThan(PLAN_LIMITS.pro.reads_per_day);
+  });
+
+  it("gate('execute') ALLOWS a builder caller (where free gets 402)", async () => {
+    const env = envMock();
+    const key = await issueKey(env, "u_builder", "builder");
+    const c = makeCtx({ env, headers: { authorization: `Bearer ${key}` }, ip: "5.5.5.5" });
+    let nexted = false;
+    const res: any = await gate("execute")(c as any, async () => {
+      nexted = true;
+    });
+    expect(nexted).toBe(true);
+    expect(res).toBeUndefined();
+  });
+
+  it("consume: builder allows executes up to 200/day", async () => {
+    const env = envMock();
+    const auth: AuthCtx = { key: "k_b", plan: "builder", user_id: "u_b", anonymous: false };
+    const c = makeCtx({ env });
+    const exec = await consume(c, auth, "executes");
+    expect(exec.allowed).toBe(true);
+    expect(exec.limit).toBe(200);
+  });
+
+  it("createCheckout maps a builder price from STRIPE_PRICE_TO_PLAN", async () => {
+    const env = envMock({
+      STRIPE_SECRET_KEY: "sk_test_x",
+      STRIPE_PRICE_TO_PLAN: JSON.stringify({ price_builder123: "builder" }),
+    });
+    let sentBody = "";
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (_url: string, init: any) => {
+        sentBody = init.body;
+        return { ok: true, json: async () => ({ url: "https://stripe/checkout", id: "cs_b" }) };
+      })
+    );
+    const c = makeCtx({ env, body: { email: "a@b.com", plan: "builder" } });
+    const res = await createCheckout(c);
+    expect(res.body.url).toContain("stripe");
+    expect(decodeURIComponent(sentBody)).toContain("price_builder123");
+    expect(decodeURIComponent(sentBody)).toContain("metadata[plan]=builder");
+  });
+});
