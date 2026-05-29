@@ -12,6 +12,8 @@ import type { Context } from "hono";
 import { issueKey, revokeKey, resolveAuth, type Plan } from "./auth";
 import { track } from "./metrics";
 import { slugFromUrl } from "./slug";
+import { PROVIDERS } from "./providers";
+import { connKey, MANAGED_CONNECTION_KIND } from "./connections";
 
 type Env = {
   KEYS: KVNamespace;
@@ -20,10 +22,12 @@ type Env = {
   STRIPE_SECRET_KEY?: string;
   STRIPE_WEBHOOK_SECRET?: string;
   STRIPE_PRICE_TO_PLAN?: string;
-  // Non-plan SKUs (directory Verified subscription; one-time Agent-Ready Fix).
+  // Non-plan SKUs (directory Verified subscription; one-time Agent-Ready Fix;
+  // per-connection managed OAuth-proxy subscription).
   // Stripe price IDs; if unset the corresponding self-serve checkout 503s.
   STRIPE_PRICE_VERIFIED?: string;
   STRIPE_PRICE_FIX?: string;
+  STRIPE_PRICE_CONNECTION?: string;
 };
 
 const STRIPE_API = "https://api.stripe.com/v1";
@@ -317,6 +321,14 @@ export async function stripeWebhook(c: Context<{ Bindings: Env }>) {
         }
         return c.json({ ok: true, action: "verified_removed", slug });
       }
+      if (kind === MANAGED_CONNECTION_KIND) {
+        // Cancelled managed connection → revoke the proxy entitlement only.
+        // Must NOT touch API keys.
+        const provider = sub.metadata?.provider as string | undefined;
+        const user_id = sub.metadata?.user_id as string | undefined;
+        if (provider && user_id) await c.env.KEYS.delete(connKey(user_id, provider));
+        return c.json({ ok: true, action: "connection_removed", provider, user_id });
+      }
       const user_id = `cust:${sub.customer}`;
       await revokeUserKeys(c.env, user_id);
       return c.json({ ok: true, action: "revoked", user_id });
@@ -393,6 +405,23 @@ async function handleNonPlanCheckout(
       }
     }
     return c.json({ ok: true, action: "fix_recorded", slug });
+  }
+
+  if (kind === MANAGED_CONNECTION_KIND) {
+    // Per-connection managed OAuth-proxy subscription. Fires on
+    // checkout.session.completed + customer.subscription.created/updated.
+    // Idempotent: entitlement conn:<user_id>:<provider> = active. NEVER a key.
+    const provider = obj.metadata?.provider as string | undefined;
+    const user_id =
+      (obj.metadata?.user_id as string | undefined) ||
+      (obj.client_reference_id as string | undefined);
+    if (provider && user_id) {
+      await c.env.KEYS.put(
+        connKey(user_id, provider),
+        JSON.stringify({ status: "active", provider, since: Date.now(), via: "stripe" })
+      );
+    }
+    return c.json({ ok: true, action: "connection_active", provider, user_id });
   }
 
   // Unknown kind → fail-closed: acknowledge the webhook but provision NOTHING.
@@ -486,6 +515,44 @@ export async function createFixCheckout(c: Context<{ Bindings: Env }>) {
   form.set("metadata[email]", body.email);
   form.set("success_url", `${origin}/managed?fix=ok`);
   form.set("cancel_url", `${origin}/managed?canceled=1`);
+  return await createSessionResponse(c, form);
+}
+
+// POST /api/v1/connections/checkout  { provider }
+// Recurring per-connection subscription for a managed OAuth-proxy connection
+// (the moat's revenue model). Sign-in required; NEVER mints an API key — the
+// webhook just writes the conn:<user>:<provider> entitlement.
+export async function createManagedConnectionCheckout(c: Context<{ Bindings: Env }>) {
+  const auth = await resolveAuth(c as any);
+  if (auth.anonymous) {
+    return c.json({ error: "sign_in_required", hint: "Sign in, then subscribe to a managed connection." }, 401);
+  }
+  const body = await c.req.json<{ provider?: string }>().catch(() => null);
+  const providerId = body?.provider;
+  if (!providerId) return c.json({ error: "provider_required" }, 400);
+  const provider = PROVIDERS[providerId];
+  if (!provider || !provider.mcpProxy) {
+    return c.json({ error: "unknown_or_unproxied_provider", provider: providerId }, 404);
+  }
+  if (!c.env.STRIPE_SECRET_KEY || !c.env.STRIPE_PRICE_CONNECTION) {
+    return c.json({ error: "connection_sku_not_configured" }, 503);
+  }
+
+  const origin = new URL(c.req.url).origin;
+  const form = new URLSearchParams();
+  form.set("mode", "subscription");
+  form.set("line_items[0][price]", c.env.STRIPE_PRICE_CONNECTION);
+  form.set("line_items[0][quantity]", "1");
+  form.set("client_reference_id", auth.user_id);
+  form.set("allow_promotion_codes", "true");
+  form.set("metadata[kind]", MANAGED_CONNECTION_KIND);
+  form.set("metadata[provider]", providerId);
+  form.set("metadata[user_id]", auth.user_id);
+  form.set("subscription_data[metadata][kind]", MANAGED_CONNECTION_KIND);
+  form.set("subscription_data[metadata][provider]", providerId);
+  form.set("subscription_data[metadata][user_id]", auth.user_id);
+  form.set("success_url", `${origin}/dashboard?connection=${encodeURIComponent(providerId)}`);
+  form.set("cancel_url", `${origin}/dashboard?canceled=1`);
   return await createSessionResponse(c, form);
 }
 

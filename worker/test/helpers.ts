@@ -55,6 +55,9 @@ interface CtxOpts {
   query?: Record<string, string>;
   url?: string;
   ip?: string;
+  params?: Record<string, string>; // route params, e.g. { provider: "sentry" }
+  method?: string;
+  auth?: any; // pre-populate c.var.auth (for handlers that read it directly)
 }
 
 /** Minimal Hono Context supporting only what the money-path handlers touch. */
@@ -63,12 +66,17 @@ export function makeCtx(opts: CtxOpts) {
   for (const [k, v] of Object.entries(opts.headers ?? {})) h[k.toLowerCase()] = v;
   if (opts.ip) h["cf-connecting-ip"] = opts.ip;
   const query = opts.query ?? {};
+  const params = opts.params ?? {};
   const url = opts.url ?? "https://wmcp.sh/api/v1/webhook";
   const vars: Record<string, any> = {};
+  if (opts.auth) vars.auth = opts.auth;
   const waited: Promise<any>[] = [];
+  const bodyStr = () =>
+    typeof opts.body === "string" ? opts.body : JSON.stringify(opts.body ?? {});
 
   const ctx: any = {
     env: opts.env,
+    var: vars,
     executionCtx: {
       waitUntil: (p: Promise<any>) => {
         waited.push(Promise.resolve(p));
@@ -77,12 +85,14 @@ export function makeCtx(opts: CtxOpts) {
     },
     req: {
       url,
+      method: opts.method ?? "POST",
+      raw: { headers: new Headers(h) },
+      param: (name: string) => params[name],
       header: (name?: string) => (name === undefined ? h : h[name.toLowerCase()]),
       query: (name: string) => query[name],
-      text: async () =>
-        typeof opts.body === "string" ? opts.body : JSON.stringify(opts.body ?? {}),
-      json: async () =>
-        typeof opts.body === "string" ? JSON.parse(opts.body) : opts.body,
+      text: async () => bodyStr(),
+      json: async () => (typeof opts.body === "string" ? JSON.parse(opts.body) : opts.body),
+      arrayBuffer: async () => new TextEncoder().encode(bodyStr()).buffer,
     },
     json: (obj: any, status = 200) => ({ status, body: obj }),
     header: (_k: string, _v?: string) => {},
