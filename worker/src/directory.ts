@@ -222,7 +222,7 @@ export function directoryHtml(origin: string): string {
   <p class="muted">Every URL the community has turned into agent-callable MCP tools. Click any store to expand its products. <a href="/integration/openapi">OpenAPI</a> · <a href="/integration/shopify">Shopify</a> · <a href="/integration/stripe">Stripe</a></p>
   <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">
     <a href="/directory/submit" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#7c5cff,#00e5ff);color:#0c0c14;padding:9px 16px;border-radius:8px;text-decoration:none;font-weight:700;font-size:.9rem">+ Submit your site (free)</a>
-    <a href="/managed" style="display:inline-flex;align-items:center;gap:8px;background:#16161f;border:1px solid #26263a;color:#ececf5;padding:9px 16px;border-radius:8px;text-decoration:none;font-weight:600;font-size:.9rem">Get verified badge → /managed</a>
+    <a href="/directory/claim" style="display:inline-flex;align-items:center;gap:8px;background:#16161f;border:1px solid #26263a;color:#ececf5;padding:9px 16px;border-radius:8px;text-decoration:none;font-weight:600;font-size:.9rem">Get the Verified badge →</a>
   </div>
 </header>
 
@@ -253,7 +253,7 @@ export function directoryHtml(origin: string): string {
 <div id="list"></div>
 
 <footer>
-  WebMCP Anything · <a href="/">Home</a> · <a href="/directory/submit">Submit your site</a> · <a href="/managed">Get verified</a> · <a href="/dashboard">Dashboard</a> · <a href="https://github.com/New1Direction/webmcp-anything">GitHub</a>
+  WebMCP Anything · <a href="/">Home</a> · <a href="/directory/submit">Submit your site</a> · <a href="/directory/claim">Get verified</a> · <a href="/dashboard">Dashboard</a> · <a href="https://github.com/New1Direction/webmcp-anything">GitHub</a>
 </footer>
 </div>
 
@@ -428,10 +428,18 @@ function render() {
       try { hosts.add(new URL(e.url).hostname); } catch {}
     });
     document.getElementById("stat-stores").textContent = hosts.size.toLocaleString();
-    document.getElementById("stat-shopify").textContent = shop.toLocaleString();
-    document.getElementById("stat-jsonld").textContent = jl.toLocaleString();
-    document.getElementById("stat-openapi").textContent = oa.toLocaleString();
-    document.getElementById("stat-llm").textContent = llm.toLocaleString();
+    // Adapter tiles: show only non-zero categories so the row never reads as a
+    // wall of zeros.
+    const setStat = (id, n) => {
+      const el = document.getElementById(id);
+      el.textContent = n.toLocaleString();
+      const tile = el.closest(".stat");
+      if (tile) tile.style.display = n === 0 ? "none" : "";
+    };
+    setStat("stat-shopify", shop);
+    setStat("stat-jsonld", jl);
+    setStat("stat-openapi", oa);
+    setStat("stat-llm", llm);
 
     render();
   } catch (e) {

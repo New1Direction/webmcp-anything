@@ -66,7 +66,6 @@ export function landingHtml(origin: string): string {
 <meta name="twitter:title" content="WebMCP Anything — Hosted MCP Server for any URL" />
 <meta name="twitter:description" content="Shopper-side MCP server. Turn any product URL or OpenAPI spec into agent-callable tools. Works with Claude, OpenAI, LangChain." />
 <meta name="twitter:image" content="https://wmcp.sh/og.png" />
-<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
 <style>
   :root {
     --bg: #07070d; --card: #16161f; --bg2: #11111c; --border: #26263a;
@@ -149,49 +148,38 @@ export function landingHtml(origin: string): string {
   .hero-stat { color: var(--dim); font-size: .82rem; margin-top: 4px; }
   .hero-stat #cache-stat { color: var(--accent2); font-weight: 700; }
 
-  /* ---- hero 3D / model slot ---- */
-  .hero-3d {
-    position: relative; aspect-ratio: 1; max-width: 480px; margin: 0 auto;
-    display: flex; align-items: center; justify-content: center;
+  /* ---- hero terminal ---- */
+  .hero-3d { position: relative; max-width: 500px; margin: 0 auto; width: 100%; }
+  .hero-3d::before {
+    content: ""; position: absolute; inset: -16% -8%; z-index: -1; pointer-events: none;
+    background: radial-gradient(circle at 60% 40%, rgba(124,92,255,.28), transparent 62%);
+    filter: blur(46px);
   }
-  .hero-3d model-viewer {
-    width: 100%; height: 100%; background: transparent;
-    --poster-color: transparent;
+  .term {
+    position: relative; background: linear-gradient(180deg, #0d0d18, #090911);
+    border: 1px solid var(--border); border-radius: 14px; overflow: hidden;
+    font-family: "SF Mono", Menlo, monospace;
+    box-shadow: 0 32px 70px -24px rgba(124,92,255,.45), inset 0 1px 0 rgba(255,255,255,.05);
   }
-  /* CSS fallback that looks intentional until a real .glb is dropped in */
-  .hero-3d .placeholder {
-    width: 80%; height: 80%; position: relative;
-    perspective: 1200px;
+  .term-bar {
+    display: flex; align-items: center; gap: 7px; padding: 11px 14px;
+    border-bottom: 1px solid var(--border); background: rgba(255,255,255,.025);
   }
-  .hero-3d .cube {
-    width: 100%; height: 100%; position: relative;
-    transform-style: preserve-3d;
-    animation: spin 22s linear infinite;
+  .term-bar .d { width: 11px; height: 11px; border-radius: 50%; }
+  .term-bar .d.r { background: #ff5f57; } .term-bar .d.y { background: #febc2e; } .term-bar .d.g { background: #28c840; }
+  .term-bar .t { margin-left: 8px; color: var(--dim); font-size: .76rem; letter-spacing: .02em; }
+  .term-body {
+    padding: 18px; font-size: .8rem; line-height: 1.85;
+    white-space: pre; overflow-x: auto; color: var(--muted);
   }
-  @keyframes spin {
-    from { transform: rotateY(0) rotateX(-15deg); }
-    to   { transform: rotateY(360deg) rotateX(-15deg); }
-  }
-  .hero-3d .face {
-    position: absolute; inset: 0;
-    background: linear-gradient(135deg, rgba(124,92,255,.18), rgba(0,229,255,.08));
-    border: 1px solid rgba(124,92,255,.35);
-    border-radius: 24px;
-    backdrop-filter: blur(2px);
-    box-shadow: inset 0 0 60px rgba(0,229,255,.08);
-  }
-  .hero-3d .face.f1 { transform: translateZ(140px); }
-  .hero-3d .face.f2 { transform: rotateY(90deg) translateZ(140px); }
-  .hero-3d .face.f3 { transform: rotateY(180deg) translateZ(140px); }
-  .hero-3d .face.f4 { transform: rotateY(-90deg) translateZ(140px); }
-  .hero-3d .face.f5 { transform: rotateX(90deg) translateZ(140px); }
-  .hero-3d .face.f6 { transform: rotateX(-90deg) translateZ(140px); }
-  .hero-3d .glow {
-    position: absolute; inset: -10%; pointer-events: none;
-    background: radial-gradient(circle at center, rgba(124,92,255,.25), transparent 60%);
-    filter: blur(40px);
-    z-index: -1;
-  }
+  .term-body .pn { color: var(--dim); }
+  .term-body .cmd { color: var(--text); font-weight: 600; }
+  .term-body .ar { color: var(--accent2); }
+  .term-body .tn { color: var(--pink); }
+  .term-body .lv { color: var(--accent); font-weight: 700; }
+  .term-body .ok { color: var(--green); }
+  .term-cur { display: inline-block; width: 7px; height: .95em; background: var(--accent2);
+    vertical-align: -1px; margin-left: 2px; animation: pulse 1.1s steps(2) infinite; }
 
   /* ---- demo ---- */
   section { padding: 60px 0; }
@@ -348,19 +336,22 @@ export function landingHtml(origin: string): string {
     position: absolute; border-radius: 50%; border: 1px solid;
   }
   .flywheel-3d .ring.r1 {
-    inset: 0; border-color: rgba(124,92,255,.4);
+    inset: 0; border-color: rgba(124,92,255,.75);
     animation: rot 30s linear infinite;
-    background: radial-gradient(circle at 30% 30%, rgba(124,92,255,.08), transparent 60%);
+    background: radial-gradient(circle at 30% 30%, rgba(124,92,255,.18), transparent 60%);
+    box-shadow: 0 0 30px -6px rgba(124,92,255,.5);
   }
   .flywheel-3d .ring.r2 {
-    inset: 15%; border-color: rgba(0,229,255,.45);
+    inset: 15%; border-color: rgba(0,229,255,.8);
     animation: rot 18s linear infinite reverse;
-    background: radial-gradient(circle at 70% 40%, rgba(0,229,255,.10), transparent 60%);
+    background: radial-gradient(circle at 70% 40%, rgba(0,229,255,.2), transparent 60%);
+    box-shadow: 0 0 30px -6px rgba(0,229,255,.5);
   }
   .flywheel-3d .ring.r3 {
-    inset: 30%; border-color: rgba(240,171,252,.5);
+    inset: 30%; border-color: rgba(240,171,252,.8);
     animation: rot 10s linear infinite;
-    background: radial-gradient(circle at 50% 70%, rgba(240,171,252,.10), transparent 60%);
+    background: radial-gradient(circle at 50% 70%, rgba(240,171,252,.2), transparent 60%);
+    box-shadow: 0 0 30px -6px rgba(240,171,252,.5);
   }
   .flywheel-3d .ring::before {
     content: ""; position: absolute; width: 10px; height: 10px;
@@ -444,19 +435,16 @@ export function landingHtml(origin: string): string {
     </div>
   </div>
   <div class="hero-3d">
-    <!-- Drop a .glb here when ready:
-         <model-viewer src="/cube.glb" auto-rotate camera-controls disable-zoom interaction-prompt="none" exposure="1.1" environment-image="neutral"></model-viewer>
-    -->
-    <div class="placeholder">
-      <div class="glow"></div>
-      <div class="cube">
-        <div class="face f1"></div>
-        <div class="face f2"></div>
-        <div class="face f3"></div>
-        <div class="face f4"></div>
-        <div class="face f5"></div>
-        <div class="face f6"></div>
-      </div>
+    <div class="term">
+      <div class="term-bar"><span class="d r"></span><span class="d y"></span><span class="d g"></span><span class="t">claude · cursor · codex — mcp</span></div>
+      <div class="term-body"><span class="pn">$</span> <span class="cmd">connect</span> wmcp.sh/mcp/u/&lt;any-url&gt;
+<span class="ar">→ initialize</span>   <span class="pn">protocol 2025-06-18 ✓</span>
+<span class="ar">→ tools/list</span>
+   <span class="tn">get_price</span>       <span class="pn">static</span>
+   <span class="tn">list_variants</span>   <span class="pn">static</span>
+   <span class="tn">add_to_cart</span>     <span class="lv">live</span>
+<span class="ar">→ tools/call</span> add_to_cart <span class="pn">{ variant: 41 }</span>
+   <span class="ok">✓ added — cart total $98</span><span class="term-cur"></span></div>
     </div>
   </div>
 </section>

@@ -26,6 +26,10 @@ type Env = {
   ADMIN_TOKEN?: string;
 };
 
+// Diverse, single-domain (no country-TLD duplicates) well-known Shopify
+// storefronts. Non-Shopify / 4xx entries are skipped gracefully by seedStore,
+// so a few misses are harmless. Kept varied across categories so the directory
+// doesn't read as one brand cloned across TLDs.
 const DEFAULT_STORES = [
   "www.allbirds.com",
   "www.everlane.com",
@@ -34,9 +38,23 @@ const DEFAULT_STORES = [
   "www.huel.com",
   "www.tenthousand.cc",
   "www.partakefoods.com",
-  "us.naadam.co",
   "outdoorvoices.com",
-  "us.mejuri.com",
+  "www.ruggable.com",
+  "www.bombas.com",
+  "www.drsquatch.com",
+  "www.chubbiesshorts.com",
+  "www.deathwishcoffee.com",
+  "www.gymshark.com",
+  "www.aloyoga.com",
+  "www.vuoriclothing.com",
+  "www.rothys.com",
+  "magicspoon.com",
+  "www.carawayhome.com",
+  "thursdayboots.com",
+  "www.tentree.com",
+  "www.kith.com",
+  "drinkolipop.com",
+  "hellotushy.com",
 ];
 
 // Tuned for a ~2500-store registry harvested across the day.
