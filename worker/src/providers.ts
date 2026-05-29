@@ -319,5 +319,9 @@ export function listPublicProviders() {
     category: p.category,
     status: p.status,
     apiKeyDocsUrl: p.apiKeyDocsUrl,
+    // Proxied (OAuth-vault MCP-proxy) providers are billed per managed
+    // connection — the dashboard shows a Subscribe CTA for these.
+    mcpProxy: !!p.mcpProxy,
+    scopeNotice: p.scopeNotice,
   }));
 }
