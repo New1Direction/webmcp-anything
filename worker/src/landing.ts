@@ -128,11 +128,16 @@ export function landingHtml(origin: string): string {
     color: var(--muted); line-height: 1.4; font-weight: 500; letter-spacing: 0;
   }
   h1 .accent { color: var(--text); font-weight: 700; }
-  /* ASCII wordmark (cfonts 'block'): wmcp = amber, .sh = white */
-  .wordmark { display: flex; align-items: baseline; gap: 0; margin: 8px 0 2px; line-height: 0; overflow-x: auto; }
-  .wordmark pre { font-family: "SF Mono", Menlo, monospace; white-space: pre; font-size: 13px; line-height: 1.0; font-weight: 700; margin: 0; }
-  .wm-o { color: var(--accent); text-shadow: 0 0 16px rgba(255,158,44,.5); }
-  .wm-s { color: #f5f1e8; text-shadow: 0 0 14px rgba(245,241,232,.22); margin-left: -1.6ch; }
+  /* ASCII wordmark (cfonts 'block') — single gradient block. Explicitly resets
+     the global pre styling (border/bg/padding/min-height) so there's NO box. */
+  pre.wordmark {
+    display: block; font-family: "SF Mono", Menlo, monospace; white-space: pre;
+    font-weight: 700; font-size: clamp(.58rem, 1.35vw, .92rem); line-height: 1.06;
+    margin: 8px 0 16px; padding: 0; border: 0; border-radius: 0; min-height: 0;
+    background: linear-gradient(115deg, #ffd479, #ff9e2c 46%, #ff6a00);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    filter: drop-shadow(0 0 18px rgba(255,158,44,.30)); overflow-x: auto;
+  }
   .sub { color: var(--muted); font-size: 1.08rem; max-width: 460px; margin: 0 0 28px; }
   .hero-ctas { display: flex; gap: 12px; margin-bottom: 18px; }
   .btn-primary, .btn-secondary {
@@ -445,17 +450,12 @@ export function landingHtml(origin: string): string {
 <section class="hero">
   <div class="hero-text">
     <div class="badge"><span class="dot"></span> live · real MCP server</div>
-    <div class="wordmark" aria-label="wmcp.sh"><pre class="wm-o" aria-hidden="true"> ██╗    ██╗ ███╗   ███╗  ██████╗ ██████╗
- ██║    ██║ ████╗ ████║ ██╔════╝ ██╔══██╗
- ██║ █╗ ██║ ██╔████╔██║ ██║      ██████╔╝
- ██║███╗██║ ██║╚██╔╝██║ ██║      ██╔═══╝
- ╚███╔███╔╝ ██║ ╚═╝ ██║ ╚██████╗ ██║
-  ╚══╝╚══╝  ╚═╝     ╚═╝  ╚═════╝ ╚═╝     </pre><pre class="wm-s" aria-hidden="true">     ███████╗ ██╗  ██╗
-     ██╔════╝ ██║  ██║
-     ███████╗ ███████║
-     ╚════██║ ██╔══██║
- ██╗ ███████║ ██║  ██║
- ╚═╝ ╚══════╝ ╚═╝  ╚═╝</pre></div>
+    <pre class="wordmark" aria-label="wmcp.sh"> ██╗    ██╗ ███╗   ███╗  ██████╗ ██████╗      ███████╗ ██╗  ██╗
+ ██║    ██║ ████╗ ████║ ██╔════╝ ██╔══██╗     ██╔════╝ ██║  ██║
+ ██║ █╗ ██║ ██╔████╔██║ ██║      ██████╔╝     ███████╗ ███████║
+ ██║███╗██║ ██║╚██╔╝██║ ██║      ██╔═══╝      ╚════██║ ██╔══██║
+ ╚███╔███╔╝ ██║ ╚═╝ ██║ ╚██████╗ ██║      ██╗ ███████║ ██║  ██║
+  ╚══╝╚══╝  ╚═╝     ╚═╝  ╚═════╝ ╚═╝      ╚═╝ ╚══════╝ ╚═╝  ╚═╝</pre>
     <h1>Turn any URL into <span class="accent">agent-callable MCP tools.</span></h1>
     <p class="sub">A real, hosted MCP server. Paste any URL to get agent-callable tools — or connect it to <strong style="color:var(--text)">Claude, Cursor, and Codex in one line</strong>. Shopify, OpenAPI, JSON-LD, and growing. Open-source adapters.</p>
     <div class="hero-ctas">
