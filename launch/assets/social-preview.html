@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>wmcp.sh social preview</title>
+</head>
+<body style="margin:0;padding:0;background:#000;">
+  <!-- GitHub social-preview card: EXACTLY 1280x640 -->
+  <div style="
+      box-sizing:border-box;
+      position:relative;
+      width:1280px;
+      height:640px;
+      overflow:hidden;
+      background:#07070d;
+      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+      color:#ececf5;
+      -webkit-font-smoothing:antialiased;
+    ">
+
+    <!-- purple -> cyan radial glow -->
+    <div style="
+        position:absolute; top:-340px; left:-200px;
+        width:980px; height:980px;
+        background:radial-gradient(circle at center, rgba(124,92,255,0.42) 0%, rgba(124,92,255,0.16) 34%, rgba(124,92,255,0) 64%);
+        filter:blur(6px);
+      "></div>
+    <div style="
+        position:absolute; bottom:-420px; right:-260px;
+        width:980px; height:980px;
+        background:radial-gradient(circle at center, rgba(0,229,255,0.30) 0%, rgba(0,229,255,0.10) 36%, rgba(0,229,255,0) 64%);
+        filter:blur(6px);
+      "></div>
+    <!-- subtle pink accent bloom -->
+    <div style="
+        position:absolute; top:120px; right:160px;
+        width:520px; height:520px;
+        background:radial-gradient(circle at center, rgba(240,171,252,0.16) 0%, rgba(240,171,252,0) 60%);
+      "></div>
+
+    <!-- thin top hairline -->
+    <div style="
+        position:absolute; top:0; left:0; right:0; height:4px;
+        background:linear-gradient(90deg, #7c5cff 0%, #f0abfc 50%, #00e5ff 100%);
+      "></div>
+
+    <!-- content -->
+    <div style="
+        position:relative; z-index:2;
+        box-sizing:border-box;
+        width:100%; height:100%;
+        padding:76px 88px;
+        display:flex; flex-direction:column; justify-content:space-between;
+      ">
+
+      <!-- wordmark -->
+      <div style="display:flex; align-items:center; gap:14px;">
+        <span style="
+            display:inline-block; width:16px; height:16px; border-radius:50%;
+            background:#7c5cff;
+            box-shadow:0 0 18px 4px rgba(124,92,255,0.85);
+          "></span>
+        <span style="
+            font-size:30px; font-weight:700; letter-spacing:-0.01em; color:#ececf5;
+          ">wmcp.sh</span>
+        <span style="
+            margin-left:6px; padding:5px 12px; border-radius:999px;
+            border:1px solid #26263a; background:#16161f;
+            font-size:15px; font-weight:600; letter-spacing:0.04em;
+            color:#a9a9c4; text-transform:uppercase;
+          ">MCP server</span>
+      </div>
+
+      <!-- headline block -->
+      <div style="max-width:1010px;">
+        <h1 style="
+            margin:0;
+            font-size:74px; line-height:1.04; font-weight:800; letter-spacing:-0.025em;
+            color:#ffffff;
+          ">
+          Turn any URL into<br>
+          <span style="
+              background:linear-gradient(90deg,#7c5cff 0%, #f0abfc 48%, #00e5ff 100%);
+              -webkit-background-clip:text; background-clip:text;
+              -webkit-text-fill-color:transparent; color:#7c5cff;
+            ">agent-callable MCP tools</span>
+        </h1>
+        <p style="
+            margin:26px 0 0;
+            font-size:28px; line-height:1.4; font-weight:400;
+            color:#c2c2d6; max-width:940px;
+          ">
+          Connect Claude, Cursor, or Codex to any website in one line of config &mdash; no per-server build, no SDK.
+        </p>
+      </div>
+
+      <!-- connect snippet chip -->
+      <div style="
+          display:inline-flex; align-items:center; gap:16px;
+          align-self:flex-start;
+          padding:20px 26px; border-radius:14px;
+          background:#16161f; border:1px solid #26263a;
+          box-shadow:0 0 0 1px rgba(124,92,255,0.10), 0 18px 40px rgba(0,0,0,0.45);
+        ">
+        <span style="
+            font-size:15px; font-weight:700; letter-spacing:0.10em; text-transform:uppercase;
+            color:#00e5ff;
+          ">connect</span>
+        <span style="width:1px; height:26px; background:#26263a;"></span>
+        <code style="
+            font-family:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,'Liberation Mono',monospace;
+            font-size:27px; font-weight:500; letter-spacing:-0.005em;
+            color:#ececf5; white-space:nowrap;
+          ">https://wmcp.sh/mcp/u/<span style="color:#f0abfc;">&lt;url&gt;</span></code>
+      </div>
+
+    </div>
+  </div>
+</body>
+</html>
