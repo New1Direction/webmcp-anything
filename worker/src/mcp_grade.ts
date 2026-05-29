@@ -32,6 +32,18 @@ export interface GradeResult {
   tools_hash?: string;
   hard_fail?: string;
   latency_ms?: number;
+  // ---- drift / continuous re-verification (the wedge static scanners can't match) ----
+  tool_sigs?: Record<string, string>; // per-tool short hash, for added/removed/changed diffing
+  tools_hash_since?: number;           // when the CURRENT tool surface was first observed
+  drift_count?: number;                // how many times the tool surface has changed since first seen
+  last_drift?: { ts: number; added: string[]; removed: string[]; changed: string[] };
+}
+
+export interface DriftOutcome {
+  drifted: boolean;
+  gradeDropped: boolean;
+  prevGrade?: string;
+  summary?: { added: string[]; removed: string[]; changed: string[] };
 }
 
 // ---- low-level MCP call (handles JSON and SSE Streamable-HTTP responses) ----
@@ -149,6 +161,12 @@ export async function scoreMcpServer(rawUrl: string): Promise<GradeResult> {
   if (tools.length) {
     const norm = JSON.stringify(tools.map((t: any) => ({ n: t.name, d: t.description, s: t.inputSchema, a: t.annotations })));
     r.tools_hash = await sha256(norm);
+    // Per-tool signatures → lets the drift monitor report exactly what changed.
+    const sigs: Record<string, string> = {};
+    for (const t of tools) {
+      sigs[String(t.name)] = (await sha256(JSON.stringify({ d: t.description, s: t.inputSchema, a: t.annotations }))).slice(0, 16);
+    }
+    r.tool_sigs = sigs;
   }
 
   // Static security: tool-description prompt-injection / tool-poisoning markup.
@@ -247,6 +265,111 @@ export async function readGrade(env: Env, host: string): Promise<GradeResult | n
   try { return JSON.parse(raw); } catch { return null; }
 }
 
+// ---- drift / continuous re-verification ----
+const GRADE_ORDER = ["A+", "A", "A-", "B+", "B", "B-", "C+", "C", "C-", "D", "F"];
+function gradeRank(g: string): number { const i = GRADE_ORDER.indexOf(g); return i < 0 ? GRADE_ORDER.length : i; }
+
+export function diffTools(prev: Record<string, string>, next: Record<string, string>) {
+  const added = Object.keys(next).filter((k) => !(k in prev));
+  const removed = Object.keys(prev).filter((k) => !(k in next));
+  const changed = Object.keys(next).filter((k) => k in prev && prev[k] !== next[k]);
+  return { added, removed, changed };
+}
+
+/**
+ * Persist a fresh grade, drift-aware: compares the new tool surface to the
+ * stored one, maintains "tool definitions unchanged since <date>", counts
+ * rug-pulls, appends a capped history, and registers the host in the watch set
+ * so the cron keeps re-verifying it. Returns what changed so the caller can
+ * fire an alert. THIS is the wedge: a continuously re-verified attestation that
+ * a one-shot static scanner structurally cannot produce.
+ */
+export async function recordGrade(env: Env, r: GradeResult): Promise<DriftOutcome> {
+  const prev = await readGrade(env, r.host);
+  const now = r.checked_at;
+  const out: DriftOutcome = { drifted: false, gradeDropped: false, prevGrade: prev?.grade };
+
+  if (prev?.tool_sigs && r.tool_sigs) {
+    const d = diffTools(prev.tool_sigs, r.tool_sigs);
+    if (d.added.length || d.removed.length || d.changed.length) {
+      out.drifted = true;
+      out.summary = d;
+      r.drift_count = (prev.drift_count || 0) + 1;
+      r.tools_hash_since = now;
+      r.last_drift = { ts: now, ...d };
+    } else {
+      r.tools_hash_since = prev.tools_hash_since || now;
+      r.drift_count = prev.drift_count || 0;
+      r.last_drift = prev.last_drift;
+    }
+  } else {
+    r.tools_hash_since = prev?.tools_hash_since || now;
+    r.drift_count = prev?.drift_count || 0;
+    r.last_drift = prev?.last_drift;
+  }
+  if (prev && gradeRank(r.grade) > gradeRank(prev.grade)) out.gradeDropped = true;
+
+  await env.CACHE.put(`grade:${r.host}`, JSON.stringify(r), { expirationTtl: 60 * 86400 });
+  // Watch set: value = the exact URL so the cron can re-grade. Long TTL,
+  // refreshed on every check.
+  await env.CACHE.put(`gradewatch:${r.host}`, r.url, { expirationTtl: 90 * 86400 });
+  // Capped append-only history (the time series nobody else has).
+  let hist: any[] = [];
+  try { const h = await env.CACHE.get(`gradehist:${r.host}`); hist = h ? JSON.parse(h) : []; } catch {}
+  hist.push({ ts: now, grade: r.grade, score: r.score, tools_hash: r.tools_hash, drift: out.drifted ? out.summary : undefined });
+  if (hist.length > 30) hist = hist.slice(-30);
+  await env.CACHE.put(`gradehist:${r.host}`, JSON.stringify(hist), { expirationTtl: 120 * 86400 });
+
+  return out;
+}
+
+/**
+ * Cron step: re-grade watched servers, detect rug-pulls / grade drops, and
+ * alert. Capped + rotated (oldest-checked first) to stay within budget.
+ */
+export async function regradeWatched(
+  env: Env & { LEAD_ALERT_WEBHOOK?: string },
+  ctx: { waitUntil(p: Promise<unknown>): void },
+  fireAlertFn: (env: any, ctx: any, text: string) => void,
+  max = 20
+): Promise<{ checked: number; drifted: number; dropped: number }> {
+  const list = await env.CACHE.list({ prefix: "gradewatch:" });
+  // Load current grades to sort oldest-checked first (rotation).
+  const hosts = list.keys.map((k) => k.name.slice("gradewatch:".length));
+  const withTs = await Promise.all(
+    hosts.map(async (h) => ({ h, g: await readGrade(env, h) }))
+  );
+  withTs.sort((a, b) => (a.g?.checked_at || 0) - (b.g?.checked_at || 0));
+  const batch = withTs.slice(0, max);
+
+  let drifted = 0, dropped = 0;
+  await Promise.all(
+    batch.map(async ({ h, g }) => {
+      const url = g?.url || `https://${h}/mcp`;
+      try {
+        const fresh = await scoreMcpServer(url);
+        const out = await recordGrade(env, fresh);
+        if (out.drifted) {
+          drifted++;
+          const s = out.summary!;
+          fireAlertFn(env, ctx,
+            `🔻 MCP rug-pull watch: ${h} tool surface changed` +
+            (s.added.length ? ` +${s.added.length} added` : "") +
+            (s.removed.length ? ` −${s.removed.length} removed` : "") +
+            (s.changed.length ? ` ~${s.changed.length} changed` : "") +
+            ` · grade ${out.prevGrade}→${fresh.grade} · ${url}`);
+        } else if (out.gradeDropped) {
+          dropped++;
+          fireAlertFn(env, ctx, `⚠ MCP grade drop: ${h} ${out.prevGrade}→${fresh.grade} · ${url}`);
+        }
+      } catch {
+        /* unreachable this round — skip, keep prior grade */
+      }
+    })
+  );
+  return { checked: batch.length, drifted, dropped };
+}
+
 // ---- embeddable SVG badge: "Audited: <grade> · wmcp.sh" (separate from the
 //      owner-claimed Verified badge — this one is a measured fact) ----
 export function gradeBadgeSvg(r: GradeResult): string {
@@ -276,6 +399,12 @@ export function gradePageHtml(r: GradeResult, origin: string): string {
   const findingsHtml = r.findings.length
     ? `<div class="findings"><h3>Findings</h3>${r.findings.map((f) => `<div class="f f-${f.severity}"><span class="fb">${f.severity.toUpperCase()}</span>${f.owasp ? `<span class="owasp">${f.owasp}</span>` : ""} ${esc(f.detail)}</div>`).join("")}</div>`
     : `<div class="findings"><h3>Findings</h3><div class="f f-info">No blocking issues found in the static + spec checks.</div></div>`;
+  const driftDays = r.tools_hash_since ? Math.floor((r.checked_at - r.tools_hash_since) / 86400000) : 0;
+  const attest = r.drift_count
+    ? `<div class="attest drift">⚠ Tool definitions have changed <b>${r.drift_count}×</b> since first audit${r.last_drift ? ` — last ${new Date(r.last_drift.ts).toISOString().slice(0, 10)}` : ""}. Continuously rug-pull-monitored by wmcp.sh.</div>`
+    : r.tool_sigs
+      ? `<div class="attest stable">✓ Tool definitions <b>unchanged${driftDays > 0 ? ` for ${driftDays} day${driftDays === 1 ? "" : "s"}` : " since first audit"}</b> — continuously re-verified by wmcp.sh (rug-pull / schema-drift monitored).</div>`
+      : "";
   const jsonld = JSON.stringify({
     "@context": "https://schema.org", "@type": "Review",
     itemReviewed: { "@type": "SoftwareApplication", name: r.host, applicationCategory: "MCP server" },
@@ -298,6 +427,9 @@ export function gradePageHtml(r: GradeResult, origin: string): string {
   h1{font-size:1.5rem;margin:0 0 4px;word-break:break-all}
   .muted{color:var(--muted)}.dim{color:var(--dim);font-size:.85rem}
   .score{font-size:.95rem;color:var(--muted);margin-top:4px}
+  .attest{margin-top:18px;padding:11px 14px;border-radius:10px;font-size:.9rem}
+  .attest.stable{background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.35);color:#bdf0cd}
+  .attest.drift{background:rgba(255,158,44,.09);border:1px solid rgba(255,158,44,.45);color:#ffcf7a}
   .sub{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin:12px 0}
   .sub-head{display:flex;align-items:center;gap:10px;font-weight:700}.sub-head span:first-child{flex:1}.sub-w{color:var(--dim);font-size:.8rem;font-weight:500}.sub-head b{font-size:1.1rem}
   .sub ul{margin:8px 0 0;padding-left:18px;color:var(--muted);font-size:.85rem}
@@ -323,6 +455,7 @@ export function gradePageHtml(r: GradeResult, origin: string): string {
       <div class="score"><b style="color:${c}">${r.score}/100</b> · MCP Trust Grade · <span class="dim">audited ${new Date(r.checked_at).toISOString().slice(0, 10)}${r.protocol_version ? " · MCP " + r.protocol_version : ""}${r.auth_required ? " · OAuth-protected" : ""}</span></div>
     </div>
   </div>
+  ${attest}
   ${subRow("spec", "Spec conformance")}
   ${subRow("security", "Security (OWASP MCP)")}
   ${subRow("reliability", "Reliability / performance")}
