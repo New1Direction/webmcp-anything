@@ -31,10 +31,10 @@ export function directorySubmitHtml(origin: string): string {
 {"@context":"https://schema.org","@type":"Article","headline":"Submit your site to the wmcp.sh directory","description":"Free agent-discoverable listing for sites with structured data or OpenAPI. Verified badge available via /managed.","author":{"@type":"Organization","name":"WebMCP Anything"},"publisher":{"@type":"Organization","name":"WebMCP Anything","url":"https://wmcp.sh"},"datePublished":"2026-05-28","dateModified":"2026-05-28","mainEntityOfPage":"${origin}/directory/submit"}
 </script>
 <style>
-  :root { --bg:#07070d;--card:#16161f;--bg2:#11111c;--border:#26263a;--text:#ececf5;--muted:#8a8aa8;--dim:#6a6a88;--accent:#7c5cff;--accent2:#00e5ff;--green:#4ade80;--red:#f87171;--pink:#f0abfc;--gold:#fbbf24; }
+  :root { --bg:#07070d;--card:#16161f;--bg2:#11111c;--border:#26263a;--text:#ececf5;--muted:#8a8aa8;--dim:#6a6a88;--accent:#ff9e2c;--accent2:#ffcf7a;--green:#4ade80;--red:#f87171;--pink:#ffb86b;--gold:#fbbf24; }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
-  body { margin:0;min-height:100vh;color:var(--text);background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif;line-height:1.6;background-image:radial-gradient(ellipse 900px 600px at 10% -5%,rgba(124,92,255,.18),transparent 60%),radial-gradient(ellipse 700px 500px at 95% 10%,rgba(0,229,255,.10),transparent 60%); }
+  body { margin:0;min-height:100vh;color:var(--text);background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif;line-height:1.6;background-image:radial-gradient(ellipse 900px 600px at 10% -5%,rgba(255,158,44,.18),transparent 60%),radial-gradient(ellipse 700px 500px at 95% 10%,rgba(255,176,0,.10),transparent 60%); }
   .wrap { max-width: 820px; margin: 0 auto; padding: 0 24px; }
   nav { display:flex;justify-content:space-between;align-items:center;padding:22px 24px;max-width:1080px;margin:0 auto; }
   nav .brand { font-weight: 800; letter-spacing: -.02em; font-size: 1.05rem; }
@@ -43,7 +43,7 @@ export function directorySubmitHtml(origin: string): string {
   nav .links a { color: var(--muted); text-decoration: none; }
   nav .cta { background: var(--bg2); border: 1px solid var(--border); padding: 7px 14px; border-radius: 8px; font-size: .85rem; color: var(--text); text-decoration: none; font-weight: 600; }
   header.hero { padding: 50px 0 30px; }
-  .badge { display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:999px;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;font-weight:700;background:linear-gradient(90deg,rgba(124,92,255,.18),rgba(0,229,255,.18));border:1px solid rgba(124,92,255,.35);margin-bottom:18px; }
+  .badge { display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:999px;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;font-weight:700;background:linear-gradient(90deg,rgba(255,158,44,.18),rgba(255,176,0,.18));border:1px solid rgba(255,158,44,.35);margin-bottom:18px; }
   .dot { width:6px;height:6px;background:var(--accent2);border-radius:50%;box-shadow:0 0 8px var(--accent2); }
   h1 { font-size:clamp(2rem,4.5vw,3rem);margin:0 0 18px;background:linear-gradient(135deg,#fff 30%,var(--accent2) 100%);-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1.05;font-weight:800;letter-spacing:-.025em; }
   .sub { color: var(--muted); font-size: 1.05rem; max-width: 660px; margin: 0 0 24px; }
@@ -69,7 +69,7 @@ export function directorySubmitHtml(origin: string): string {
   .form-cta { display: block; background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%); color: white; padding: 14px 22px; border-radius: 10px; text-decoration: none; font-weight: 700; text-align: center; font-size: 1rem; border: none; cursor: pointer; width: 100%; margin-top: 8px; }
   .hp { position: absolute; left: -9999px; }
 
-  .success { display: none; background: linear-gradient(135deg, rgba(74,222,128,.15), rgba(0,229,255,.08)); border: 1px solid var(--green); border-radius: 12px; padding: 22px; }
+  .success { display: none; background: linear-gradient(135deg, rgba(74,222,128,.15), rgba(255,176,0,.08)); border: 1px solid var(--green); border-radius: 12px; padding: 22px; }
   .success.show { display: block; }
   .success h3 { color: var(--green); margin: 0 0 6px; }
   .success a { color: var(--accent2); }
@@ -80,7 +80,7 @@ export function directorySubmitHtml(origin: string): string {
   .tiers { display: grid; gap: 16px; grid-template-columns: 1fr 1fr; margin-top: 22px; }
   @media (max-width: 700px) { .tiers { grid-template-columns: 1fr; } }
   .tier { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 22px; }
-  .tier.featured { background: linear-gradient(135deg, var(--card), rgba(124,92,255,0.08)); border-color: var(--accent); }
+  .tier.featured { background: linear-gradient(135deg, var(--card), rgba(255,158,44,0.08)); border-color: var(--accent); }
   .tier h3 { color: var(--text); }
   .tier .price { color: var(--accent2); font-weight: 700; font-size: .95rem; margin: 6px 0 12px; }
   .tier ul { color: var(--muted); padding-left: 20px; font-size: .9rem; line-height: 1.7; margin: 0; }

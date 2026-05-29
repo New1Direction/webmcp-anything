@@ -97,10 +97,10 @@ export function integrationPriceDataHtml(origin: string): string {
 }
 </script>
 <style>
-  :root { --bg:#07070d;--card:#16161f;--bg2:#11111c;--border:#26263a;--text:#ececf5;--muted:#8a8aa8;--dim:#6a6a88;--accent:#7c5cff;--accent2:#00e5ff;--green:#4ade80;--red:#f87171;--pink:#f0abfc;--gold:#fbbf24; }
+  :root { --bg:#07070d;--card:#16161f;--bg2:#11111c;--border:#26263a;--text:#ececf5;--muted:#8a8aa8;--dim:#6a6a88;--accent:#ff9e2c;--accent2:#ffcf7a;--green:#4ade80;--red:#f87171;--pink:#ffb86b;--gold:#fbbf24; }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
-  body { margin:0;min-height:100vh;color:var(--text);background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif;line-height:1.6;background-image:radial-gradient(ellipse 900px 600px at 10% -5%,rgba(124,92,255,.18),transparent 60%),radial-gradient(ellipse 700px 500px at 95% 10%,rgba(0,229,255,.10),transparent 60%); }
+  body { margin:0;min-height:100vh;color:var(--text);background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif;line-height:1.6;background-image:radial-gradient(ellipse 900px 600px at 10% -5%,rgba(255,158,44,.18),transparent 60%),radial-gradient(ellipse 700px 500px at 95% 10%,rgba(255,176,0,.10),transparent 60%); }
   .wrap { max-width: 980px; margin: 0 auto; padding: 0 24px; }
   nav { display:flex;justify-content:space-between;align-items:center;padding:22px 24px;max-width:1080px;margin:0 auto; }
   nav .brand { font-weight: 800; letter-spacing: -.02em; font-size: 1.05rem; }
@@ -110,7 +110,7 @@ export function integrationPriceDataHtml(origin: string): string {
   nav .links a:hover { color: var(--text); }
   nav .cta { background: var(--bg2); border: 1px solid var(--border); padding: 7px 14px; border-radius: 8px; font-size: .85rem; color: var(--text); text-decoration: none; font-weight: 600; }
   header.hero { padding: 50px 0 30px; }
-  .badge { display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:999px;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;font-weight:700;background:linear-gradient(90deg,rgba(124,92,255,.18),rgba(0,229,255,.18));border:1px solid rgba(124,92,255,.35);margin-bottom:18px; }
+  .badge { display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:999px;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;font-weight:700;background:linear-gradient(90deg,rgba(255,158,44,.18),rgba(255,176,0,.18));border:1px solid rgba(255,158,44,.35);margin-bottom:18px; }
   .dot { width:6px;height:6px;background:var(--accent2);border-radius:50%;box-shadow:0 0 8px var(--accent2); }
   h1 { font-size:clamp(2rem,4.5vw,3rem);margin:0 0 18px;background:linear-gradient(135deg,#fff 30%,var(--accent2) 100%);-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1.05;font-weight:800;letter-spacing:-.02em; }
   .sub { color: var(--muted); font-size: 1.05rem; max-width: 720px; margin: 0 0 24px; }
@@ -128,8 +128,8 @@ export function integrationPriceDataHtml(origin: string): string {
   .src-card h3 { margin: 0 0 4px; font-size: 1.05rem; color: var(--text); }
   .src-card .tier { display:inline-block;font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:6px;margin-bottom:10px; }
   .tier.free { background: rgba(74,222,128,.15); color: var(--green); }
-  .tier.mixed { background: rgba(124,92,255,.15); color: var(--accent); }
-  .tier.catalog { background: rgba(240,171,252,.15); color: var(--pink); }
+  .tier.mixed { background: rgba(255,158,44,.15); color: var(--accent); }
+  .tier.catalog { background: rgba(255,184,107,.15); color: var(--pink); }
   .src-card .desc { color: var(--muted); font-size: .88rem; margin: 0 0 12px; }
   .src-card .tools { color: var(--dim); font-size: .78rem; margin: 0; font-family: "SF Mono", Menlo, monospace; }
   .src-card .url { color: var(--accent2); font-size: .78rem; word-break: break-all; margin-top: 12px; font-family: "SF Mono", Menlo, monospace; }
@@ -142,7 +142,7 @@ export function integrationPriceDataHtml(origin: string): string {
   details summary { font-weight: 700; font-size: 1rem; color: var(--text); cursor: pointer; list-style: none; }
   details[open] summary { margin-bottom: 12px; }
   details .answer { color: var(--muted); font-size: .92rem; line-height: 1.65; }
-  .verify { background: linear-gradient(135deg, rgba(74,222,128,.06), rgba(0,229,255,.04)); border: 1px solid rgba(74,222,128,.25); border-radius: 14px; padding: 22px; margin-top: 18px; }
+  .verify { background: linear-gradient(135deg, rgba(74,222,128,.06), rgba(255,176,0,.04)); border: 1px solid rgba(74,222,128,.25); border-radius: 14px; padding: 22px; margin-top: 18px; }
   .verify h3 { margin: 0 0 8px; color: var(--green); font-size: 1rem; }
   .verify .row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dashed var(--border); font-size: .88rem; font-family: "SF Mono", Menlo, monospace; }
   .verify .row:last-child { border-bottom: none; }

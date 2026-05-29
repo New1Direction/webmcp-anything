@@ -13,8 +13,8 @@ import { BLOG_POSTS, BLOG_SLUGS } from "./blog_posts";
 
 const PROVIDER_BADGE: Record<string, { color: string; label: string }> = {
   shopify: { color: "#4ade80", label: "Shopify" },
-  jsonld: { color: "#00e5ff", label: "JSON-LD" },
-  openapi: { color: "#f0abfc", label: "OpenAPI" },
+  jsonld: { color: "#ffcf7a", label: "JSON-LD" },
+  openapi: { color: "#ffb86b", label: "OpenAPI" },
   llm: { color: "#fbbf24", label: "LLM-extracted" },
 };
 
@@ -143,14 +143,14 @@ export function uHtml(sourceUrl: string, entry: CacheEntry, origin: string): str
   ${p.tools && p.tools.length > 50 ? `<p class="muted" style="text-align:center;margin-top:14px">+ ${p.tools.length - 50} more — hit the API to see them all.</p>` : ""}
 </section>
 
-<section style="margin-top:36px;background:linear-gradient(135deg,#16161f,rgba(124,92,255,0.08));border:1px solid #26263a;border-radius:16px;padding:22px 24px">
+<section style="margin-top:36px;background:linear-gradient(135deg,#16161f,rgba(255,158,44,0.08));border:1px solid #26263a;border-radius:16px;padding:22px 24px">
   <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between">
     <div style="flex:1;min-width:240px">
       <h2 style="margin:0 0 6px;font-size:1.05rem;color:var(--text)">Own this site?</h2>
       <p class="muted" style="margin:0;font-size:.9rem">Claim the listing — get a <strong style="color:var(--accent2)">verified badge</strong>, featured placement, and an MCP server you control. Or just submit a new URL for free.</p>
     </div>
     <div style="display:flex;gap:10px;flex-wrap:wrap">
-      <a href="/directory/claim" style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#7c5cff,#00e5ff);color:#0c0c14;padding:9px 16px;border-radius:8px;text-decoration:none;font-weight:700;font-size:.88rem">Claim this listing →</a>
+      <a href="/directory/claim" style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#ff9e2c,#ffcf7a);color:#0c0c14;padding:9px 16px;border-radius:8px;text-decoration:none;font-weight:700;font-size:.88rem">Claim this listing →</a>
       <a href="/directory/submit" style="display:inline-flex;align-items:center;gap:6px;background:#11111c;border:1px solid #26263a;color:var(--text);padding:9px 16px;border-radius:8px;text-decoration:none;font-weight:600;font-size:.88rem">Submit (free)</a>
     </div>
   </div>
@@ -168,14 +168,14 @@ function baseCss(): string {
   return `:root {
     --bg: #07070d; --card: #16161f; --bg2: #11111c; --border: #26263a;
     --text: #ececf5; --muted: #8a8aa8; --dim: #6a6a88;
-    --accent: #7c5cff; --accent2: #00e5ff; --green: #4ade80; --pink: #f0abfc;
+    --accent: #ff9e2c; --accent2: #ffcf7a; --green: #4ade80; --pink: #ffb86b;
   }
   * { box-sizing: border-box; }
   body {
     margin: 0; min-height: 100vh; color: var(--text); background: var(--bg);
     font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
     line-height: 1.6;
-    background-image: radial-gradient(ellipse 800px 500px at 20% 0%, rgba(124,92,255,.12), transparent);
+    background-image: radial-gradient(ellipse 800px 500px at 20% 0%, rgba(255,158,44,.12), transparent);
   }
   .wrap { max-width: 880px; margin: 0 auto; padding: 40px 24px; }
   a.back { color: var(--muted); text-decoration: none; font-size: .85rem; }

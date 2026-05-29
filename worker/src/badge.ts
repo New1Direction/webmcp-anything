@@ -17,8 +17,8 @@ const PILL_VERIFIED = (slug: string) => `<?xml version="1.0" encoding="UTF-8"?>
   <title>Agent-ready Verified · wmcp.sh — ${slug}</title>
   <defs>
     <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#7c5cff"/>
-      <stop offset="100%" stop-color="#00e5ff"/>
+      <stop offset="0%" stop-color="#ff9e2c"/>
+      <stop offset="100%" stop-color="#ffcf7a"/>
     </linearGradient>
     <linearGradient id="g2" x1="0%" y1="0%" x2="0%" y2="100%">
       <stop offset="0%" stop-color="#16161f"/>
@@ -50,8 +50,8 @@ const MINI_VERIFIED = `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 44 44" role="img" aria-label="Agent-ready Verified">
   <defs>
     <linearGradient id="m1" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#7c5cff"/>
-      <stop offset="100%" stop-color="#00e5ff"/>
+      <stop offset="0%" stop-color="#ff9e2c"/>
+      <stop offset="100%" stop-color="#ffcf7a"/>
     </linearGradient>
   </defs>
   <rect width="44" height="44" rx="10" fill="#0c0c14" stroke="url(#m1)" stroke-width="1.6"/>

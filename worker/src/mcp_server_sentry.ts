@@ -81,10 +81,10 @@ export function mcpServerSentryHtml(origin: string): string {
 }
 </script>
 <style>
-  :root { --bg:#07070d;--card:#16161f;--bg2:#11111c;--border:#26263a;--text:#ececf5;--muted:#8a8aa8;--dim:#6a6a88;--accent:#7c5cff;--accent2:#00e5ff;--green:#4ade80;--pink:#f0abfc;--gold:#fbbf24; }
+  :root { --bg:#07070d;--card:#16161f;--bg2:#11111c;--border:#26263a;--text:#ececf5;--muted:#8a8aa8;--dim:#6a6a88;--accent:#ff9e2c;--accent2:#ffcf7a;--green:#4ade80;--pink:#ffb86b;--gold:#fbbf24; }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
-  body { margin:0;min-height:100vh;color:var(--text);background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif;line-height:1.6;background-image:radial-gradient(ellipse 900px 600px at 10% -5%,rgba(124,92,255,.18),transparent 60%),radial-gradient(ellipse 700px 500px at 95% 10%,rgba(0,229,255,.10),transparent 60%); }
+  body { margin:0;min-height:100vh;color:var(--text);background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif;line-height:1.6;background-image:radial-gradient(ellipse 900px 600px at 10% -5%,rgba(255,158,44,.18),transparent 60%),radial-gradient(ellipse 700px 500px at 95% 10%,rgba(255,176,0,.10),transparent 60%); }
   .wrap { max-width: 920px; margin: 0 auto; padding: 0 24px; }
   nav { display:flex;justify-content:space-between;align-items:center;padding:22px 24px;max-width:1080px;margin:0 auto; }
   nav .brand { font-weight: 800; letter-spacing: -.02em; font-size: 1.05rem; }
@@ -94,7 +94,7 @@ export function mcpServerSentryHtml(origin: string): string {
   nav .links a:hover { color: var(--text); }
   nav .cta { background: var(--bg2); border: 1px solid var(--border); padding: 7px 14px; border-radius: 8px; font-size: .85rem; color: var(--text); text-decoration: none; font-weight: 600; }
   header.hero { padding: 50px 0 30px; }
-  .badge { display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:999px;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;font-weight:700;background:linear-gradient(90deg,rgba(124,92,255,.18),rgba(0,229,255,.18));border:1px solid rgba(124,92,255,.35);margin-bottom:18px; }
+  .badge { display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:999px;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;font-weight:700;background:linear-gradient(90deg,rgba(255,158,44,.18),rgba(255,176,0,.18));border:1px solid rgba(255,158,44,.35);margin-bottom:18px; }
   .dot { width:6px;height:6px;background:var(--accent2);border-radius:50%;box-shadow:0 0 8px var(--accent2); }
   h1 { font-size:clamp(2.1rem,4.8vw,3.2rem);margin:0 0 18px;background:linear-gradient(135deg,#fff 30%,var(--accent2) 100%);-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1.05;font-weight:800;letter-spacing:-.025em; }
   .sub { color: var(--muted); font-size: 1.05rem; max-width: 700px; margin: 0 0 24px; }
@@ -112,7 +112,7 @@ export function mcpServerSentryHtml(origin: string): string {
   th { background: var(--bg2); font-weight: 700; color: var(--accent2); }
   tr:last-child td { border-bottom: none; }
   td strong { color: var(--text); }
-  td.ours { background: rgba(124,92,255,0.05); }
+  td.ours { background: rgba(255,158,44,0.05); }
   details { background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:12px; }
   details summary { font-weight: 700; font-size: 1rem; color: var(--text); cursor: pointer; list-style: none; }
   details[open] summary { margin-bottom: 12px; }
@@ -240,7 +240,7 @@ asyncio.run(triage())</code></pre>
 </section>
 
 <!-- ========== UPGRADE ========== -->
-<section id="upgrade" style="margin-top:36px;background:linear-gradient(135deg,var(--card),rgba(124,92,255,0.08));border:1px solid rgba(124,92,255,0.35);border-radius:16px;padding:22px 26px">
+<section id="upgrade" style="margin-top:36px;background:linear-gradient(135deg,var(--card),rgba(255,158,44,0.08));border:1px solid rgba(255,158,44,0.35);border-radius:16px;padding:22px 26px">
   <div class="section-label">For production</div>
   <h2 style="margin-top:0">Need this in production?</h2>
   <p style="color:var(--muted);max-width:640px">Production setup: scoped internal-integration token with project-level ACLs, audit retention, optional SSO, and webhook for agent-resolved issue notifications. Starter $499 one-time, Managed Retainer $999/mo, Enterprise $4,999+/mo.</p>

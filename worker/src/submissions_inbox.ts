@@ -20,7 +20,7 @@ export function submissionsInboxHtml(origin: string): string {
 <title>Directory submissions — admin inbox | wmcp.sh</title>
 <meta name="robots" content="noindex,nofollow" />
 <style>
-  :root { --bg:#07070d;--card:#16161f;--bg2:#11111c;--border:#26263a;--text:#ececf5;--muted:#8a8aa8;--dim:#6a6a88;--accent:#7c5cff;--accent2:#00e5ff;--green:#4ade80;--red:#f87171;--gold:#fbbf24; }
+  :root { --bg:#07070d;--card:#16161f;--bg2:#11111c;--border:#26263a;--text:#ececf5;--muted:#8a8aa8;--dim:#6a6a88;--accent:#ff9e2c;--accent2:#ffcf7a;--green:#4ade80;--red:#f87171;--gold:#fbbf24; }
   * { box-sizing: border-box; }
   body { margin:0;color:var(--text);background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif;line-height:1.5; }
   nav { display:flex;justify-content:space-between;padding:18px 24px;font-size:.9rem }
@@ -38,14 +38,14 @@ export function submissionsInboxHtml(origin: string): string {
   .stat strong { color: var(--accent2); }
 
   .row { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; margin-bottom: 12px; }
-  .row.verified { border-color: rgba(124,92,255,.5); background: linear-gradient(135deg, var(--card), rgba(124,92,255,.05)); }
+  .row.verified { border-color: rgba(255,158,44,.5); background: linear-gradient(135deg, var(--card), rgba(255,158,44,.05)); }
   .row.managed { box-shadow: 0 0 0 1px rgba(251,191,36,.3); }
   .row-h { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
   .pill { font-size: .65rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; padding: 2px 8px; border-radius: 999px; }
-  .pill.verified { background: rgba(124,92,255,.18); color: var(--accent2); border:1px solid rgba(124,92,255,.45); }
+  .pill.verified { background: rgba(255,158,44,.18); color: var(--accent2); border:1px solid rgba(255,158,44,.45); }
   .pill.featured { background: rgba(251,191,36,.15); color: var(--gold); border:1px solid rgba(251,191,36,.35); }
   .pill.managed { background: rgba(251,191,36,.15); color: var(--gold); border:1px solid rgba(251,191,36,.35); }
-  .pill.category { background: rgba(0,229,255,.12); color: var(--accent2); }
+  .pill.category { background: rgba(255,176,0,.12); color: var(--accent2); }
   .pill.pending { background: rgba(138,138,168,.15); color: var(--muted); }
   .row .name { font-weight: 700; color: var(--text); }
   .row .email { color: var(--muted); font-size: .85rem; }
