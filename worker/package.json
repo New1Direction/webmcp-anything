@@ -2,7 +2,7 @@
   "name": "webmcp-anything-worker",
   "version": "0.1.0",
   "private": true,
-  "description": "Hosted API for WebMCP Anything \u2014 turn any URL into a WebMCP tool schema.",
+  "description": "Hosted API for WebMCP Anything — turn any URL into a WebMCP tool schema.",
   "type": "module",
   "scripts": {
     "dev": "wrangler dev",
@@ -13,7 +13,8 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "hono": "^4.6.0"
+    "hono": "^4.6.0",
+    "x402-hono": "^1.2.0"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250109.0",

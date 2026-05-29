@@ -1181,6 +1181,32 @@ app.get("/api/v1/connections", async (c) => listManagedConnections(c as any));
 app.post("/api/v1/mcp/deep-audit/checkout", async (c) => createDeepAuditCheckout(c as any));
 app.post("/api/v1/mcp/monitor/checkout", async (c) => createMonitorCheckout(c as any));
 
+// Paid B2B reputation feed — agent-native pay-per-call via x402 (USDC on Base).
+// The headline grade stays free (the oracle); THIS full record is metered.
+// Config-gated: if X402_PAY_TO is unset, the feed is open (non-breaking); once
+// set, each call requires an x402 USDC payment settled by the facilitator.
+app.get("/api/v1/mcp/reputation", async (c) => {
+  const url = c.req.query("url");
+  if (!url) return c.json({ error: "url_required" }, 400);
+  const env = c.env as any;
+  const { reputationFeed } = await import("./mcp_grade");
+  const serve = async () => c.json(await reputationFeed(env, url));
+
+  const payTo = env.X402_PAY_TO;
+  if (!payTo) return serve(); // x402 not configured → open, like the Stripe 503 pattern
+
+  const { paymentMiddleware } = await import("x402-hono");
+  const mw = paymentMiddleware(
+    payTo,
+    { "/api/v1/mcp/reputation": { price: env.X402_PRICE || "$0.01", network: (env.X402_NETWORK || "base-sepolia") as any } },
+    { url: env.X402_FACILITATOR || "https://x402.org/facilitator" }
+  );
+  let served: Response | undefined;
+  const gateRes = await mw(c as any, async () => { served = await serve(); });
+  if (gateRes instanceof Response) return gateRes; // 402 payment required
+  return served ?? c.json({ error: "x402_internal" }, 500);
+});
+
 // Saved toolsets (composable MCP servers). Creating one is a paid feature;
 // served at /mcp/set/<id>. CRUD here, the MCP endpoint is wired above.
 app.post("/api/v1/toolsets", async (c) => {
