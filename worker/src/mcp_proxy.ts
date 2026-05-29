@@ -21,10 +21,15 @@ import type { Context } from "hono";
 import { PROVIDERS, type Provider } from "./providers";
 import { loadProviderToken, saveProviderToken } from "./token_vault";
 import { ensureMcpClient, refreshPkceToken } from "./mcp_oauth";
+import { hasManagedConnection } from "./connections";
 
 type Env = {
   KEYS: KVNamespace;
   TOKEN_ENC_KEY?: string;
+  // Per-connection billing. When set, /mcp/:provider requires an active
+  // managed-connection subscription for that provider (see connections.ts).
+  // Unset (current state) → no per-connection gate; execute-only.
+  STRIPE_PRICE_CONNECTION?: string;
   // Shared-tenant override.
   //
   // When SHARED_USER_<PROVIDER_ID_UPPERCASE> is set, the proxy uses THAT
@@ -156,6 +161,29 @@ export async function mcpProxyHandler(
   }
 
   const origin = new URL(c.req.url).origin;
+
+  // Per-connection billing (the moat's revenue model): once managed-connection
+  // billing is configured (STRIPE_PRICE_CONNECTION set), proxying a provider
+  // requires an active managed-connection subscription for it. Before billing
+  // is configured we do NOT gate on it, preserving the execute-only model so
+  // existing users (e.g. defillama) aren't locked out before billing exists.
+  if (c.env.STRIPE_PRICE_CONNECTION) {
+    const entitled = await hasManagedConnection(c.env, auth.user_id, provider.id);
+    if (!entitled) {
+      return c.json(
+        {
+          error: "connection_subscription_required",
+          provider: provider.id,
+          hint:
+            `A managed ${provider.name} connection subscription is required. ` +
+            `Subscribe at ${origin}/dashboard#connections.`,
+          checkout_url: `${origin}/api/v1/connections/checkout`,
+        },
+        402
+      );
+    }
+  }
+
   const upstreamToken = await getFreshUpstreamToken(c.env, auth.user_id, provider, origin);
   if (!upstreamToken) {
     // If a shared tenant is configured for this provider but no token is

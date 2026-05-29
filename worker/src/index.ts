@@ -29,7 +29,9 @@ import {
   recoverByEmail,
   createDirectoryVerifiedCheckout,
   createFixCheckout,
+  createManagedConnectionCheckout,
 } from "./stripe";
+import { listManagedConnections } from "./connections";
 import { track } from "./metrics";
 import { resolveTools, executeTool, cacheKey, normalizeUrl, writeCache } from "./engine";
 
@@ -1122,6 +1124,9 @@ app.post("/api/v1/directory/claim/verify", async (c) => {
 });
 app.post("/api/v1/directory/verified/checkout", async (c) => createDirectoryVerifiedCheckout(c as any));
 app.post("/api/v1/agent-ready/fix/checkout", async (c) => createFixCheckout(c as any));
+// Per-connection managed OAuth-proxy subscription (the moat's revenue model).
+app.post("/api/v1/connections/checkout", async (c) => createManagedConnectionCheckout(c as any));
+app.get("/api/v1/connections", async (c) => listManagedConnections(c as any));
 
 // Saved toolsets (composable MCP servers). Creating one is a paid feature;
 // served at /mcp/set/<id>. CRUD here, the MCP endpoint is wired above.
