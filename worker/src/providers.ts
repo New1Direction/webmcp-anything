@@ -262,6 +262,33 @@ export const PROVIDERS: Record<string, Provider> = {
       "Agents connect to https://wmcp.sh/mcp/defillama instead of the upstream.",
   },
 
+  // Sentry's official remote MCP. Second DCR-based MCP-proxy reference (after
+  // defillama). Endpoints verified against mcp.sentry.dev RFC 8414 metadata
+  // (registration_endpoint present, S256); /mcp returns 401 + WWW-Authenticate.
+  sentry: {
+    id: "sentry",
+    name: "Sentry MCP",
+    description:
+      "Sentry's official OAuth-protected remote MCP server — query issues, errors, stack traces, releases, and project health across your Sentry organization (and triage with Seer). Connect once; your agent gets the live Sentry tools.",
+    authType: "oauth2",
+    authUrl: "https://mcp.sentry.dev/oauth/authorize",
+    tokenUrl: "https://mcp.sentry.dev/oauth/token",
+    scopes: "org:read project:write team:write event:write",
+    usePKCERedirect: true,
+    dcrRegistrationUrl: "https://mcp.sentry.dev/oauth/register",
+    mcpProxy: true,
+    mcpUrl: "https://mcp.sentry.dev/mcp",
+    apiHosts: ["mcp.sentry.dev"],
+    category: "dev",
+    status: "experimental",
+    scopeNotice:
+      "Authorizes against your Sentry organization via Sentry's official remote MCP (mcp.sentry.dev). wmcp.sh stores your token encrypted and proxies tool calls — same DCR + PKCE flow as DefiLlama.",
+    notes:
+      "MCP-spec compliant — RFC 7591 Dynamic Client Registration + PKCE (S256), verified against mcp.sentry.dev OAuth metadata. " +
+      "Agents connect to https://wmcp.sh/mcp/sentry instead of the upstream; wmcp.sh injects the user's bearer token. " +
+      "Scopes are what the server advertises (org:read + project/team/event:write) — narrow to \"org:read\" here for read-only.",
+  },
+
   // --- Shopify Admin (for Shopify reseller tier) ---
   shopify: {
     id: "shopify",
