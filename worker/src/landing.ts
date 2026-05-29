@@ -94,6 +94,7 @@ export function landingHtml(origin: string): string {
   }
   nav .brand { font-weight: 800; letter-spacing: -.02em; font-size: 1.05rem; }
   nav .brand span { color: var(--accent2); }
+  .brand-spark { width: .82em; height: .82em; color: var(--accent); vertical-align: -.1em; margin-right: 6px; }
   nav .links { display: flex; gap: 22px; font-size: .9rem; }
   nav .links a {
     color: var(--muted); text-decoration: none; transition: color .15s;
@@ -155,6 +156,9 @@ export function landingHtml(origin: string): string {
     background: var(--bg2); color: var(--text); border: 1px solid var(--border);
   }
   .btn-secondary:hover { border-color: var(--accent); }
+  /* ---- inline SVG icons (replace flat emoji glyphs) ---- */
+  .ico { width: 1em; height: 1em; flex: none; vertical-align: -.14em; }
+  .ico-sm { width: .9em; height: .9em; vertical-align: -.1em; }
   .hero-stat { color: var(--dim); font-size: .82rem; margin-top: 4px; }
   .hero-stat #cache-stat { color: var(--accent2); font-weight: 700; }
 
@@ -194,9 +198,16 @@ export function landingHtml(origin: string): string {
   /* ---- demo ---- */
   section { padding: 60px 0; }
   .section-label {
-    display: inline-block; font-size: .72rem; font-weight: 700;
+    display: inline-flex; align-items: center; font-size: .72rem; font-weight: 700;
     letter-spacing: .15em; text-transform: uppercase;
     color: var(--accent2); margin-bottom: 10px;
+  }
+  /* spike-mark accent (Anthropic-style 4-point spark) — the getdesign "claude" motif, in our amber */
+  .section-label::before {
+    content: ""; width: .82em; height: .82em; margin-right: 8px; flex: none;
+    background: currentColor;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Cpath%20d='M12%201Q12.6%2011.4%2023%2012Q12.6%2012.6%2012%2023Q11.4%2012.6%201%2012Q11.4%2011.4%2012%201Z'/%3E%3C/svg%3E") center/contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Cpath%20d='M12%201Q12.6%2011.4%2023%2012Q12.6%2012.6%2012%2023Q11.4%2012.6%201%2012Q11.4%2011.4%2012%201Z'/%3E%3C/svg%3E") center/contain no-repeat;
   }
   .section-h2 {
     font-size: clamp(1.6rem, 3vw, 2.2rem); margin: 0 0 14px; font-weight: 700;
@@ -219,7 +230,7 @@ export function landingHtml(origin: string): string {
     background: linear-gradient(135deg, #ff9120, #f25e00);
     color: #2a1500; border: none; border-radius: 10px;
     padding: 13px 22px; font-weight: 700; cursor: pointer; font-family: inherit;
-    transition: transform .1s;
+    transition: transform .1s; display: inline-flex; align-items: center; gap: 8px;
   }
   button.go:hover { transform: scale(1.02); }
   button.go:disabled { opacity: .5; cursor: wait; }
@@ -430,7 +441,7 @@ export function landingHtml(origin: string): string {
 <body>
 
 <nav>
-  <div class="brand">wmcp<span>.sh</span></div>
+  <div class="brand"><svg class="brand-spark" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 1Q12.6 11.4 23 12Q12.6 12.6 12 23Q11.4 12.6 1 12Q11.4 11.4 12 1Z"/></svg>wmcp<span>.sh</span></div>
   <div class="links">
     <a href="#demo">Demo</a>
     <a href="/integration/shopify">Shopify</a>
@@ -459,8 +470,8 @@ export function landingHtml(origin: string): string {
     <h1>Turn any URL into <span class="accent">agent-callable MCP tools.</span></h1>
     <p class="sub">A real, hosted MCP server. Paste any URL to get agent-callable tools — or connect it to <strong style="color:var(--text)">Claude, Cursor, and Codex in one line</strong>. Shopify, OpenAPI, JSON-LD, and growing. Open-source adapters.</p>
     <div class="hero-ctas">
-      <a class="btn-primary" href="#demo">⚡ Try the demo</a>
-      <a class="btn-secondary" href="https://github.com/New1Direction/webmcp-anything" target="_blank">★ GitHub</a>
+      <a class="btn-primary" href="#demo"><svg class="ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4v16l13-8z"/></svg>Try the demo</a>
+      <a class="btn-secondary" href="https://github.com/New1Direction/webmcp-anything" target="_blank"><svg class="ico" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.65 7.65 0 0 1 2-.27c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>GitHub</a>
     </div>
     <div class="hero-stat">
       <span id="cache-stat">·</span> <span>URLs cached by the community · grows with every install</span>
@@ -470,13 +481,13 @@ export function landingHtml(origin: string): string {
     <div class="term">
       <div class="term-bar"><span class="d r"></span><span class="d y"></span><span class="d g"></span><span class="t">claude · cursor · codex — mcp</span></div>
       <div class="term-body"><span class="pn">$</span> <span class="cmd">connect</span> wmcp.sh/mcp/u/&lt;any-url&gt;
-<span class="ar">→ initialize</span>   <span class="pn">protocol 2025-06-18 ✓</span>
+<span class="ar">→ initialize</span>   <span class="pn">protocol 2025-06-18 <svg class="ico ico-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color:var(--green)"><path d="M5 13l4 4L19 7"/></svg></span>
 <span class="ar">→ tools/list</span>
    <span class="tn">get_price</span>       <span class="pn">static</span>
    <span class="tn">list_variants</span>   <span class="pn">static</span>
    <span class="tn">add_to_cart</span>     <span class="lv">live</span>
 <span class="ar">→ tools/call</span> add_to_cart <span class="pn">{ variant: 41 }</span>
-   <span class="ok">✓ added — cart total $98</span><span class="term-cur"></span></div>
+   <span class="ok"><svg class="ico ico-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg> added — cart total $98</span><span class="term-cur"></span></div>
     </div>
   </div>
 </section>
@@ -489,7 +500,7 @@ export function landingHtml(origin: string): string {
   <div class="demo-box">
     <div class="row">
       <input id="u" type="url" placeholder="https://www.allbirds.com/products/mens-wool-runners" />
-      <button class="go" id="go">⚡ Get tools</button>
+      <button class="go" id="go"><svg class="ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Get tools</button>
     </div>
     <div class="chips">
       <span style="color:var(--muted);font-size:.78rem;align-self:center">try:</span>
@@ -550,9 +561,9 @@ export function landingHtml(origin: string): string {
         </tr>
         <tr>
           <td style="padding:14px 18px;border-bottom:1px solid var(--border)"><strong style="color:var(--text)">OpenAPI &rarr; tools</strong></td>
-          <td style="padding:14px 18px;border-bottom:1px solid var(--border);color:var(--red)">✗</td>
+          <td style="padding:14px 18px;border-bottom:1px solid var(--border);color:var(--red)"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg></td>
           <td style="padding:14px 18px;border-bottom:1px solid var(--border);color:var(--muted)">Partial</td>
-          <td style="padding:14px 18px;border-bottom:1px solid var(--border)"><strong style="color:var(--green)">✓ any 3.x / Swagger 2.0 spec</strong></td>
+          <td style="padding:14px 18px;border-bottom:1px solid var(--border)"><strong style="color:var(--green);display:inline-flex;align-items:center;gap:6px"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>any 3.x / Swagger 2.0 spec</strong></td>
         </tr>
         <tr>
           <td style="padding:14px 18px"><strong style="color:var(--text)">Cache</strong></td>
@@ -784,7 +795,7 @@ tools = [
 </div>
 
 <footer>
-  <a href="/">Home</a> · <a href="/directory">Directory</a> · <a href="/dashboard">Dashboard</a> · <a href="https://github.com/New1Direction/webmcp-anything">GitHub</a> · <a href="https://developer.chrome.com/docs/ai/webmcp">WebMCP spec ↗</a>
+  <a href="/">Home</a> · <a href="/directory">Directory</a> · <a href="/dashboard">Dashboard</a> · <a href="https://github.com/New1Direction/webmcp-anything">GitHub</a> · <a href="https://developer.chrome.com/docs/ai/webmcp">WebMCP spec <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:.92em;height:.92em;vertical-align:-.16em"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
 </footer>
 
 <script>
@@ -814,6 +825,7 @@ const ORIGIN = ${JSON.stringify(origin)};
 const out = document.getElementById("out");
 const inp = document.getElementById("u");
 const btn = document.getElementById("go");
+const BTN_LABEL = '<svg class="ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Get tools';
 
 document.querySelectorAll(".chip").forEach(c => {
   c.addEventListener("click", () => { inp.value = c.dataset.u; runDemo(); });
@@ -833,7 +845,7 @@ async function runDemo() {
   } catch (e) {
     out.innerHTML = '<span style="color:var(--red)">' + escapeHtml(String(e)) + '</span>';
   } finally {
-    btn.disabled = false; btn.textContent = "⚡ Get tools";
+    btn.disabled = false; btn.innerHTML = BTN_LABEL;
   }
 }
 
