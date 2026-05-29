@@ -376,14 +376,17 @@ let activeApiKeyProvider = null;
 // ----- connections (Phase B) -----
 async function loadConnections() {
   try {
-    const [provRes, connRes] = await Promise.all([
+    const [provRes, connRes, mgdRes] = await Promise.all([
       fetch(ORIGIN + "/api/v1/providers"),
       fetch(ORIGIN + "/api/v1/me/connections", { credentials: "include" }),
+      fetch(ORIGIN + "/api/v1/connections", { credentials: "include" }),
     ]);
     const provs = (await provRes.json()).providers || [];
     const conn = await connRes.json();
     if (conn.error) return; // not authenticated, skip
     const active = new Map((conn.connections || []).map(c => [c.provider_id, c]));
+    const mgd = await mgdRes.json().catch(() => ({}));
+    const managed = new Set((mgd.connections || []).map(c => c.provider));
     const catLabel = {
       auth: "Identity", comms: "Comms", billing: "Billing",
       dev: "Dev tools", ai: "AI providers", productivity: "Productivity",
@@ -407,6 +410,9 @@ async function loadConnections() {
             </div>
             <div class="muted" style="font-size:.82rem;margin-top:2px">\${p.description}</div>
             \${a ? \`<div style="color:var(--green);font-size:.76rem;margin-top:4px">✓ Connected\${a.account_name?\` as <strong>\${a.account_name}</strong>\`:""}</div>\`:""}
+            \${p.mcpProxy ? (managed.has(p.id)
+              ? \`<div style="color:var(--green);font-size:.76rem;margin-top:4px">✓ Managed connection active</div>\`
+              : \`<button class="input-btn" data-subscribe="\${p.id}" style="margin-top:6px;background:linear-gradient(135deg,#ff9120,#f25e00);color:#2a1500;border:none;font-weight:700;cursor:pointer">Subscribe — managed proxy</button>\`) : ""}
           </div>
           \${btn}
         </div>\`;
@@ -442,6 +448,25 @@ async function loadConnections() {
         document.getElementById("apikey-input").value = "";
         document.getElementById("apikey-result").textContent = "";
         document.getElementById("apikey-modal").style.display = "block";
+      });
+    });
+    // Managed-connection subscribe (per-connection OAuth-proxy billing)
+    connGrid.querySelectorAll("[data-subscribe]").forEach(b => {
+      b.addEventListener("click", async () => {
+        const pid = b.dataset.subscribe;
+        b.disabled = true; b.textContent = "…";
+        try {
+          const r = await fetch(ORIGIN + "/api/v1/connections/checkout", {
+            method: "POST", headers: { "content-type": "application/json" },
+            credentials: "include", body: JSON.stringify({ provider: pid }),
+          });
+          const d = await r.json().catch(() => ({}));
+          if (d.url) { window.location.href = d.url; return; }
+          if (r.status === 401) alert("Sign in first to subscribe to a managed connection.");
+          else if (r.status === 503) alert("Managed-connection billing isn't switched on yet.");
+          else alert("Could not start checkout: " + (d.error || r.status));
+        } catch (e) { alert("Network error starting checkout."); }
+        b.disabled = false; b.textContent = "Subscribe — managed proxy";
       });
     });
   } catch {}
