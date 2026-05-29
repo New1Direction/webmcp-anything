@@ -81,9 +81,9 @@ export function landingHtml(origin: string): string {
     font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
     line-height: 1.6;
     background-image:
-      radial-gradient(ellipse 900px 600px at 10% -5%, rgba(255,158,44,.16), transparent 60%),
-      radial-gradient(ellipse 700px 500px at 95% 10%, rgba(255,176,0,.08), transparent 60%),
-      radial-gradient(ellipse 600px 400px at 50% 110%, rgba(255,184,107,.05), transparent 60%);
+      radial-gradient(ellipse 900px 600px at 10% -5%, rgba(255,158,44,.10), transparent 62%),
+      radial-gradient(ellipse 700px 500px at 95% 10%, rgba(255,176,0,.055), transparent 62%),
+      radial-gradient(ellipse 600px 400px at 50% 110%, rgba(255,184,107,.04), transparent 62%);
   }
   .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
 
@@ -136,7 +136,7 @@ export function landingHtml(origin: string): string {
     margin: 8px 0 16px; padding: 0; border: 0; border-radius: 0; min-height: 0;
     background: linear-gradient(115deg, #ffd479, #ff9e2c 46%, #ff6a00);
     -webkit-background-clip: text; background-clip: text; color: transparent;
-    filter: drop-shadow(0 0 18px rgba(255,158,44,.30)); overflow-x: auto;
+    filter: drop-shadow(0 1px 10px rgba(255,140,0,.16)); overflow-x: auto;
   }
   .sub { color: var(--muted); font-size: 1.08rem; max-width: 460px; margin: 0 0 28px; }
   .hero-ctas { display: flex; gap: 12px; margin-bottom: 18px; }
@@ -147,10 +147,10 @@ export function landingHtml(origin: string): string {
     transition: transform .1s, box-shadow .2s; border: none;
   }
   .btn-primary {
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    color: white; box-shadow: 0 6px 24px rgba(255,158,44,.25);
+    background: linear-gradient(135deg, #ff9120, #f25e00);
+    color: #2a1500; box-shadow: 0 8px 22px -8px rgba(242,94,0,.40);
   }
-  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 10px 30px rgba(255,158,44,.35); }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 12px 26px -8px rgba(242,94,0,.55); }
   .btn-secondary {
     background: var(--bg2); color: var(--text); border: 1px solid var(--border);
   }
@@ -161,15 +161,15 @@ export function landingHtml(origin: string): string {
   /* ---- hero terminal ---- */
   .hero-3d { position: relative; max-width: 500px; margin: 0 auto; width: 100%; }
   .hero-3d::before {
-    content: ""; position: absolute; inset: -16% -8%; z-index: -1; pointer-events: none;
-    background: radial-gradient(circle at 60% 40%, rgba(255,158,44,.28), transparent 62%);
-    filter: blur(46px);
+    content: ""; position: absolute; inset: -22% -14%; z-index: -1; pointer-events: none;
+    background: radial-gradient(ellipse 78% 68% at 50% 48%, rgba(255,140,0,.13), transparent 70%);
+    filter: blur(58px);
   }
   .term {
     position: relative; background: linear-gradient(180deg, #0d0d18, #090911);
     border: 1px solid var(--border); border-radius: 14px; overflow: hidden;
     font-family: "SF Mono", Menlo, monospace;
-    box-shadow: 0 32px 70px -24px rgba(255,158,44,.45), inset 0 1px 0 rgba(255,255,255,.05);
+    box-shadow: 0 28px 60px -30px rgba(0,0,0,.8), 0 16px 40px -24px rgba(0,0,0,.5), 0 2px 24px -14px rgba(255,140,0,.20), inset 0 1px 0 rgba(255,255,255,.05);
   }
   .term-bar {
     display: flex; align-items: center; gap: 7px; padding: 11px 14px;
@@ -216,8 +216,8 @@ export function landingHtml(origin: string): string {
   }
   input:focus { outline: none; border-color: var(--accent); }
   button.go {
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    color: white; border: none; border-radius: 10px;
+    background: linear-gradient(135deg, #ff9120, #f25e00);
+    color: #2a1500; border: none; border-radius: 10px;
     padding: 13px 22px; font-weight: 700; cursor: pointer; font-family: inherit;
     transition: transform .1s;
   }
@@ -324,8 +324,8 @@ export function landingHtml(origin: string): string {
   .plan ul li::marker { color: var(--accent2); }
   .plan .pick {
     display: block; text-align: center; text-decoration: none;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    color: white; padding: 11px; border-radius: 10px; font-weight: 700;
+    background: linear-gradient(135deg, #ff9120, #f25e00);
+    color: #2a1500; padding: 11px; border-radius: 10px; font-weight: 700;
   }
   .plan .pick.muted-btn {
     background: var(--bg2); color: var(--muted); border: 1px solid var(--border);
@@ -381,7 +381,7 @@ export function landingHtml(origin: string): string {
     position: relative; max-width: 440px; width: 100%; margin: 0 auto;
     background: linear-gradient(180deg, #0d0d18, #090911);
     border: 1px solid var(--border); border-radius: 14px; overflow: hidden;
-    box-shadow: 0 24px 60px -28px rgba(255,176,0,.35), inset 0 1px 0 rgba(255,255,255,.04);
+    box-shadow: 0 28px 60px -30px rgba(0,0,0,.8), 0 16px 40px -24px rgba(0,0,0,.5), 0 2px 24px -14px rgba(255,140,0,.18), inset 0 1px 0 rgba(255,255,255,.04);
   }
   .globe-bar { display: flex; align-items: center; gap: 7px; padding: 10px 13px;
     border-bottom: 1px solid var(--border); background: rgba(255,255,255,.02); }
@@ -390,7 +390,7 @@ export function landingHtml(origin: string): string {
   .globe-bar .gt { margin-left: 8px; color: var(--dim); font-size: .72rem; font-family: "SF Mono", Menlo, monospace; }
   #globe { margin: 0; padding: 14px 8px 16px; font-family: "SF Mono", Menlo, monospace;
     font-size: 10px; line-height: 10px; color: var(--accent2);
-    text-shadow: 0 0 6px rgba(255,176,0,.4); white-space: pre; text-align: center; min-height: 330px; }
+    text-shadow: 0 0 5px rgba(255,176,0,.28); white-space: pre; text-align: center; min-height: 330px; }
 
   /* ---- about ---- */
   .about {
@@ -450,12 +450,12 @@ export function landingHtml(origin: string): string {
 <section class="hero">
   <div class="hero-text">
     <div class="badge"><span class="dot"></span> live · real MCP server</div>
-    <pre class="wordmark" aria-label="wmcp.sh"> ██╗    ██╗ ███╗   ███╗  ██████╗ ██████╗      ███████╗ ██╗  ██╗
- ██║    ██║ ████╗ ████║ ██╔════╝ ██╔══██╗     ██╔════╝ ██║  ██║
- ██║ █╗ ██║ ██╔████╔██║ ██║      ██████╔╝     ███████╗ ███████║
- ██║███╗██║ ██║╚██╔╝██║ ██║      ██╔═══╝      ╚════██║ ██╔══██║
- ╚███╔███╔╝ ██║ ╚═╝ ██║ ╚██████╗ ██║      ██╗ ███████║ ██║  ██║
-  ╚══╝╚══╝  ╚═╝     ╚═╝  ╚═════╝ ╚═╝      ╚═╝ ╚══════╝ ╚═╝  ╚═╝</pre>
+    <pre class="wordmark" aria-label="wmcp.sh">██╗    ██╗ ███╗   ███╗  ██████╗ ██████╗      ███████╗ ██╗  ██╗
+██║    ██║ ████╗ ████║ ██╔════╝ ██╔══██╗     ██╔════╝ ██║  ██║
+██║ █╗ ██║ ██╔████╔██║ ██║      ██████╔╝     ███████╗ ███████║
+██║███╗██║ ██║╚██╔╝██║ ██║      ██╔═══╝      ╚════██║ ██╔══██║
+╚███╔███╔╝ ██║ ╚═╝ ██║ ╚██████╗ ██║      ██╗ ███████║ ██║  ██║
+ ╚══╝╚══╝  ╚═╝     ╚═╝  ╚═════╝ ╚═╝      ╚═╝ ╚══════╝ ╚═╝  ╚═╝</pre>
     <h1>Turn any URL into <span class="accent">agent-callable MCP tools.</span></h1>
     <p class="sub">A real, hosted MCP server. Paste any URL to get agent-callable tools — or connect it to <strong style="color:var(--text)">Claude, Cursor, and Codex in one line</strong>. Shopify, OpenAPI, JSON-LD, and growing. Open-source adapters.</p>
     <div class="hero-ctas">
