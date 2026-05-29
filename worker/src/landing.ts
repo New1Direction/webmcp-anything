@@ -71,8 +71,8 @@ export function landingHtml(origin: string): string {
   :root {
     --bg: #07070d; --card: #16161f; --bg2: #11111c; --border: #26263a;
     --text: #ececf5; --muted: #8a8aa8; --dim: #6a6a88;
-    --accent: #7c5cff; --accent2: #00e5ff; --green: #4ade80; --red: #f87171;
-    --pink: #f0abfc;
+    --accent: #ff9e2c; --accent2: #ffcf7a; --green: #4ade80; --red: #f87171;
+    --pink: #ffb86b;
   }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
@@ -81,9 +81,9 @@ export function landingHtml(origin: string): string {
     font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
     line-height: 1.6;
     background-image:
-      radial-gradient(ellipse 900px 600px at 10% -5%, rgba(124,92,255,.20), transparent 60%),
-      radial-gradient(ellipse 700px 500px at 95% 10%, rgba(0,229,255,.12), transparent 60%),
-      radial-gradient(ellipse 600px 400px at 50% 110%, rgba(240,171,252,.06), transparent 60%);
+      radial-gradient(ellipse 900px 600px at 10% -5%, rgba(255,158,44,.16), transparent 60%),
+      radial-gradient(ellipse 700px 500px at 95% 10%, rgba(255,176,0,.08), transparent 60%),
+      radial-gradient(ellipse 600px 400px at 50% 110%, rgba(255,184,107,.05), transparent 60%);
   }
   .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
 
@@ -115,20 +115,24 @@ export function landingHtml(origin: string): string {
     display: inline-flex; align-items: center; gap: 8px;
     padding: 6px 14px; border-radius: 999px; font-size: .7rem;
     letter-spacing: .15em; text-transform: uppercase; font-weight: 700;
-    background: linear-gradient(90deg, rgba(124,92,255,.18), rgba(0,229,255,.18));
-    border: 1px solid rgba(124,92,255,.35); margin-bottom: 22px;
+    background: linear-gradient(90deg, rgba(255,158,44,.18), rgba(255,176,0,.18));
+    border: 1px solid rgba(255,158,44,.35); margin-bottom: 22px;
   }
   .dot { width: 6px; height: 6px; background: var(--accent2); border-radius: 50%;
     box-shadow: 0 0 8px var(--accent2); animation: pulse 2s infinite; }
   @keyframes pulse { 50% { opacity: .3 } }
+  /* H1 is now the secondary subheadline under the ASCII wordmark (keeps the
+     keyword text for SEO; wordmark is the visual hero). */
   h1 {
-    font-size: clamp(2.2rem, 5vw, 3.6rem); margin: 0 0 18px;
-    background: linear-gradient(135deg, #fff 25%, var(--accent2) 100%);
-    -webkit-background-clip: text; background-clip: text; color: transparent;
-    line-height: 1.04; font-weight: 800; letter-spacing: -.02em;
+    font-size: clamp(1.15rem, 2vw, 1.4rem); margin: 16px 0 14px; max-width: 440px;
+    color: var(--muted); line-height: 1.4; font-weight: 500; letter-spacing: 0;
   }
-  h1 .accent { background: linear-gradient(135deg, var(--accent), var(--pink));
-    -webkit-background-clip: text; background-clip: text; color: transparent; }
+  h1 .accent { color: var(--text); font-weight: 700; }
+  /* ASCII wordmark (cfonts 'block'): wmcp = amber, .sh = white */
+  .wordmark { display: flex; align-items: baseline; gap: 0; margin: 8px 0 2px; line-height: 0; overflow-x: auto; }
+  .wordmark pre { font-family: "SF Mono", Menlo, monospace; white-space: pre; font-size: 13px; line-height: 1.0; font-weight: 700; margin: 0; }
+  .wm-o { color: var(--accent); text-shadow: 0 0 16px rgba(255,158,44,.5); }
+  .wm-s { color: #f5f1e8; text-shadow: 0 0 14px rgba(245,241,232,.22); margin-left: -1.6ch; }
   .sub { color: var(--muted); font-size: 1.08rem; max-width: 460px; margin: 0 0 28px; }
   .hero-ctas { display: flex; gap: 12px; margin-bottom: 18px; }
   .btn-primary, .btn-secondary {
@@ -139,9 +143,9 @@ export function landingHtml(origin: string): string {
   }
   .btn-primary {
     background: linear-gradient(135deg, var(--accent), var(--accent2));
-    color: white; box-shadow: 0 6px 24px rgba(124,92,255,.25);
+    color: white; box-shadow: 0 6px 24px rgba(255,158,44,.25);
   }
-  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 10px 30px rgba(124,92,255,.35); }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 10px 30px rgba(255,158,44,.35); }
   .btn-secondary {
     background: var(--bg2); color: var(--text); border: 1px solid var(--border);
   }
@@ -153,14 +157,14 @@ export function landingHtml(origin: string): string {
   .hero-3d { position: relative; max-width: 500px; margin: 0 auto; width: 100%; }
   .hero-3d::before {
     content: ""; position: absolute; inset: -16% -8%; z-index: -1; pointer-events: none;
-    background: radial-gradient(circle at 60% 40%, rgba(124,92,255,.28), transparent 62%);
+    background: radial-gradient(circle at 60% 40%, rgba(255,158,44,.28), transparent 62%);
     filter: blur(46px);
   }
   .term {
     position: relative; background: linear-gradient(180deg, #0d0d18, #090911);
     border: 1px solid var(--border); border-radius: 14px; overflow: hidden;
     font-family: "SF Mono", Menlo, monospace;
-    box-shadow: 0 32px 70px -24px rgba(124,92,255,.45), inset 0 1px 0 rgba(255,255,255,.05);
+    box-shadow: 0 32px 70px -24px rgba(255,158,44,.45), inset 0 1px 0 rgba(255,255,255,.05);
   }
   .term-bar {
     display: flex; align-items: center; gap: 7px; padding: 11px 14px;
@@ -248,10 +252,10 @@ export function landingHtml(origin: string): string {
     animation: msgIn .4s forwards;
   }
   @keyframes msgIn { to { opacity: 1; transform: none; } }
-  .msg.user { align-self: flex-end; background: rgba(124,92,255,.18); border: 1px solid rgba(124,92,255,.35); }
+  .msg.user { align-self: flex-end; background: rgba(255,158,44,.18); border: 1px solid rgba(255,158,44,.35); }
   .msg.agent { align-self: flex-start; background: var(--bg); border: 1px solid var(--border); }
   .msg.tool {
-    align-self: flex-start; background: var(--bg); border: 1px dashed rgba(0,229,255,.35);
+    align-self: flex-start; background: var(--bg); border: 1px dashed rgba(255,176,0,.35);
     font-family: "SF Mono", Menlo, monospace; font-size: .78rem; color: var(--accent2);
   }
   .msg .tag {
@@ -298,7 +302,7 @@ export function landingHtml(origin: string): string {
   }
   .plan:hover { border-color: var(--accent); transform: translateY(-2px); }
   .plan.featured {
-    background: linear-gradient(135deg, var(--card), rgba(124,92,255,.08));
+    background: linear-gradient(135deg, var(--card), rgba(255,158,44,.08));
     border-color: var(--accent);
     position: relative;
   }
@@ -337,22 +341,22 @@ export function landingHtml(origin: string): string {
     position: absolute; border-radius: 50%; border: 1px solid;
   }
   .flywheel-3d .ring.r1 {
-    inset: 0; border-color: rgba(124,92,255,.75);
+    inset: 0; border-color: rgba(255,158,44,.75);
     animation: rot 30s linear infinite;
-    background: radial-gradient(circle at 30% 30%, rgba(124,92,255,.18), transparent 60%);
-    box-shadow: 0 0 30px -6px rgba(124,92,255,.5);
+    background: radial-gradient(circle at 30% 30%, rgba(255,158,44,.18), transparent 60%);
+    box-shadow: 0 0 30px -6px rgba(255,158,44,.5);
   }
   .flywheel-3d .ring.r2 {
-    inset: 15%; border-color: rgba(0,229,255,.8);
+    inset: 15%; border-color: rgba(255,176,0,.8);
     animation: rot 18s linear infinite reverse;
-    background: radial-gradient(circle at 70% 40%, rgba(0,229,255,.2), transparent 60%);
-    box-shadow: 0 0 30px -6px rgba(0,229,255,.5);
+    background: radial-gradient(circle at 70% 40%, rgba(255,176,0,.2), transparent 60%);
+    box-shadow: 0 0 30px -6px rgba(255,176,0,.5);
   }
   .flywheel-3d .ring.r3 {
-    inset: 30%; border-color: rgba(240,171,252,.8);
+    inset: 30%; border-color: rgba(255,184,107,.8);
     animation: rot 10s linear infinite;
-    background: radial-gradient(circle at 50% 70%, rgba(240,171,252,.2), transparent 60%);
-    box-shadow: 0 0 30px -6px rgba(240,171,252,.5);
+    background: radial-gradient(circle at 50% 70%, rgba(255,184,107,.2), transparent 60%);
+    box-shadow: 0 0 30px -6px rgba(255,184,107,.5);
   }
   .flywheel-3d .ring::before {
     content: ""; position: absolute; width: 10px; height: 10px;
@@ -372,7 +376,7 @@ export function landingHtml(origin: string): string {
     position: relative; max-width: 440px; width: 100%; margin: 0 auto;
     background: linear-gradient(180deg, #0d0d18, #090911);
     border: 1px solid var(--border); border-radius: 14px; overflow: hidden;
-    box-shadow: 0 24px 60px -28px rgba(0,229,255,.35), inset 0 1px 0 rgba(255,255,255,.04);
+    box-shadow: 0 24px 60px -28px rgba(255,176,0,.35), inset 0 1px 0 rgba(255,255,255,.04);
   }
   .globe-bar { display: flex; align-items: center; gap: 7px; padding: 10px 13px;
     border-bottom: 1px solid var(--border); background: rgba(255,255,255,.02); }
@@ -381,7 +385,7 @@ export function landingHtml(origin: string): string {
   .globe-bar .gt { margin-left: 8px; color: var(--dim); font-size: .72rem; font-family: "SF Mono", Menlo, monospace; }
   #globe { margin: 0; padding: 14px 8px 16px; font-family: "SF Mono", Menlo, monospace;
     font-size: 10px; line-height: 10px; color: var(--accent2);
-    text-shadow: 0 0 6px rgba(0,229,255,.4); white-space: pre; text-align: center; min-height: 330px; }
+    text-shadow: 0 0 6px rgba(255,176,0,.4); white-space: pre; text-align: center; min-height: 330px; }
 
   /* ---- about ---- */
   .about {
@@ -441,7 +445,18 @@ export function landingHtml(origin: string): string {
 <section class="hero">
   <div class="hero-text">
     <div class="badge"><span class="dot"></span> live · real MCP server</div>
-    <h1>Turn any URL into<br/><span class="accent">agent-callable tools.</span></h1>
+    <div class="wordmark" aria-label="wmcp.sh"><pre class="wm-o" aria-hidden="true"> ██╗    ██╗ ███╗   ███╗  ██████╗ ██████╗
+ ██║    ██║ ████╗ ████║ ██╔════╝ ██╔══██╗
+ ██║ █╗ ██║ ██╔████╔██║ ██║      ██████╔╝
+ ██║███╗██║ ██║╚██╔╝██║ ██║      ██╔═══╝
+ ╚███╔███╔╝ ██║ ╚═╝ ██║ ╚██████╗ ██║
+  ╚══╝╚══╝  ╚═╝     ╚═╝  ╚═════╝ ╚═╝     </pre><pre class="wm-s" aria-hidden="true">     ███████╗ ██╗  ██╗
+     ██╔════╝ ██║  ██║
+     ███████╗ ███████║
+     ╚════██║ ██╔══██║
+ ██╗ ███████║ ██║  ██║
+ ╚═╝ ╚══════╝ ╚═╝  ╚═╝</pre></div>
+    <h1>Turn any URL into <span class="accent">agent-callable MCP tools.</span></h1>
     <p class="sub">A real, hosted MCP server. Paste any URL to get agent-callable tools — or connect it to <strong style="color:var(--text)">Claude, Cursor, and Codex in one line</strong>. Shopify, OpenAPI, JSON-LD, and growing. Open-source adapters.</p>
     <div class="hero-ctas">
       <a class="btn-primary" href="#demo">⚡ Try the demo</a>
