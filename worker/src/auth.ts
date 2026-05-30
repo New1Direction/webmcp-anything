@@ -42,6 +42,11 @@ type Bindings = {
   KEYS: KVNamespace;
   USAGE: KVNamespace;
   ENVIRONMENT: string;
+  // Pricing flip (the funnel): when set to N>0, a FREE-plan caller gets N proxy
+  // tool calls PER AGENT (per API key) per day before the paywall — so a dev can
+  // run their whole fleet into the product before paying. Unset/0 → current
+  // behavior (free plan 402s immediately). Operator-gated, default-off.
+  PROXY_FREE_CALLS_PER_DAY?: string;
 };
 
 export type AuthCtx = {
@@ -169,6 +174,72 @@ export function gate(action: Action): MiddlewareHandler<{ Bindings: Bindings; Va
       }, 429);
     }
 
+    await next();
+  };
+}
+
+/**
+ * Proxy execute gate — the pricing flip. Replaces gate("execute") ONLY on the
+ * /mcp/:provider routes so free-plan agents can activate before the paywall.
+ *
+ * The repositioning is "pain that compounds with agent count," so the free tier
+ * is metered PER AGENT (per API key), not per account: a dev running five agents
+ * gets five free allowances and can run the fleet into the product before paying,
+ * instead of one agent burning the bucket and 402-ing the rest. (v1: API key =
+ * agent — the granularity we have today; sub-agent identity is a later refine.)
+ *
+ * Contract, by plan:
+ *   • paid (can_execute_paid)     → existing behavior exactly: executes/day quota
+ *   • free + PROXY_FREE_CALLS>0   → N free proxy calls per key/day, then 402
+ *   • free + env unset/0          → 402 immediately (today's behavior; default-off)
+ */
+export function proxyExecuteGate(): MiddlewareHandler<{ Bindings: Bindings; Variables: { auth: AuthCtx } }> {
+  return async (c, next: Next) => {
+    const auth = await resolveAuth(c as any);
+    c.set("auth", auth);
+
+    // Anonymous can't proxy (no vaulted token). The handler also checks, but
+    // fail fast here and skip any metering.
+    if (auth.anonymous) {
+      return c.json({ error: "authentication_required", hint: "Get an API key at /dashboard and pass it as Authorization: Bearer <key>." }, 401);
+    }
+
+    // Paid plans: preserve the exact current execute-quota path.
+    if (PLAN_LIMITS[auth.plan].can_execute_paid) {
+      const usage = await consume(c as any, auth, "executes");
+      c.header("x-webmcp-plan", auth.plan);
+      c.header("x-webmcp-limit", String(usage.limit));
+      c.header("x-webmcp-remaining", String(usage.remaining));
+      if (!usage.allowed) {
+        return c.json({ error: "quota_exceeded", hint: `Plan "${auth.plan}" allows ${usage.limit} executes/day. Upgrade at /dashboard.`, plan: auth.plan, limit: usage.limit, remaining: 0 }, 429);
+      }
+      await next();
+      return;
+    }
+
+    // Free plan: per-agent (per-key) free-tier meter, if the operator opened it.
+    const freePerDay = parseInt(c.env.PROXY_FREE_CALLS_PER_DAY || "0", 10) || 0;
+    if (freePerDay <= 0) {
+      // Default-off → today's behavior: free plan can't execute live.
+      return c.json({ error: "payment_required", hint: "Live tool calls require a paid plan. Visit /dashboard to upgrade.", plan: auth.plan }, 402);
+    }
+    const day = new Date().toISOString().slice(0, 10);
+    const fk = `freecall:${auth.key}:${day}`;
+    let used = 0;
+    try { used = parseInt((await c.env.USAGE.get(fk)) || "0", 10) || 0; } catch {}
+    if (used >= freePerDay) {
+      return c.json({
+        error: "free_tier_exhausted",
+        hint: `This agent used its ${freePerDay} free tool calls today. Upgrade for unlimited at /dashboard, or wait for the daily reset (UTC).`,
+        plan: auth.plan,
+        free_per_day: freePerDay,
+        used,
+      }, 402);
+    }
+    c.executionCtx.waitUntil(c.env.USAGE.put(fk, String(used + 1), { expirationTtl: 2 * 86400 }));
+    c.header("x-webmcp-plan", auth.plan);
+    c.header("x-webmcp-free-limit", String(freePerDay));
+    c.header("x-webmcp-free-remaining", String(freePerDay - used - 1));
     await next();
   };
 }
