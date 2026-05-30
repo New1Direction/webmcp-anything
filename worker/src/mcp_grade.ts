@@ -78,11 +78,17 @@ export function blockedTargetReason(rawUrl: string): string | null {
   if (host.includes(":")) {
     const h = host.replace(/^\[|\]$/g, "");
     if (h === "::1" || h === "::" || /^f[cd]/.test(h) || /^fe[89ab]/.test(h)) return "private_ip6";
-    const mapped = h.match(/(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
-    if (mapped) {
-      const a = Number(mapped[1]), b = Number(mapped[2]);
-      if (a === 10 || a === 127 || a === 0 || (a === 172 && b >= 16 && b <= 31) ||
-          (a === 192 && b === 168) || (a === 169 && b === 254)) return "private_ip6_mapped";
+    // IPv4-mapped (::ffff:a.b.c.d). new URL() may keep the dotted form OR
+    // normalize it to hex (::ffff:a00:1) — handle both and check the octets.
+    const isPriv4 = (a: number, b: number) =>
+      a === 10 || a === 127 || a === 0 || (a === 172 && b >= 16 && b <= 31) ||
+      (a === 192 && b === 168) || (a === 169 && b === 254);
+    const dotted = h.match(/(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
+    if (dotted && isPriv4(Number(dotted[1]), Number(dotted[2]))) return "private_ip6_mapped";
+    const hex = h.match(/^::ffff:([0-9a-f]{1,4}):([0-9a-f]{1,4})$/);
+    if (hex) {
+      const hi = parseInt(hex[1], 16);
+      if (isPriv4((hi >> 8) & 255, hi & 255)) return "private_ip6_mapped";
     }
   }
   return null;
@@ -503,9 +509,12 @@ export async function reputationFeed(env: Env, url: string) {
 //      owner-claimed Verified badge — this one is a measured fact) ----
 export function gradeBadgeSvg(r: GradeResult): string {
   const c = GRADE_COLOR[r.grade] || "#8a8aa8";
+  // host is URL-parsed so it can't contain <>&" — but escape anyway (the badge
+  // is embedded in third-party READMEs; defense-in-depth costs nothing).
+  const host = String(r.host || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   return `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="190" height="44" viewBox="0 0 190 44" role="img" aria-label="MCP Trust Grade ${r.grade} by wmcp.sh">
-  <title>MCP Trust Grade ${r.grade} · ${r.host} · audited by wmcp.sh</title>
+  <title>MCP Trust Grade ${r.grade} · ${host} · audited by wmcp.sh</title>
   <rect width="190" height="44" rx="10" fill="#0c0c14" stroke="#26263a" stroke-width="1.5"/>
   <text x="12" y="19" font-family="-apple-system,BlinkMacSystemFont,Inter,Segoe UI,sans-serif" font-size="10.5" font-weight="700" fill="#8a8aa8" letter-spacing="0.6">MCP TRUST · WMCP.SH</text>
   <text x="12" y="33" font-family="-apple-system,BlinkMacSystemFont,Inter,Segoe UI,sans-serif" font-size="9.5" font-weight="500" fill="#6a6a88">audited ${new Date(r.checked_at).toISOString().slice(0, 10)}</text>
