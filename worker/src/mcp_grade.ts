@@ -46,6 +46,48 @@ export interface DriftOutcome {
   summary?: { added: string[]; removed: string[]; changed: string[] };
 }
 
+// ---- SSRF guard ----
+// scoreMcpServer fetches fully user-supplied URLs ("grade any server"). Block
+// non-public targets so wmcp.sh can't be turned into a reflective probe against
+// internal/metadata addresses. Best-effort for a Workers runtime (no pre-fetch
+// DNS resolution available): reject https-only violations, IP-literal private
+// ranges, and well-known internal hostnames. Paired with redirect:"manual" on
+// every probe fetch so an https→internal 302 can't bounce past the guard.
+export function blockedTargetReason(rawUrl: string): string | null {
+  let u: URL;
+  try { u = new URL(rawUrl.trim()); } catch { return "invalid_url"; }
+  if (u.protocol !== "https:") return "not_https";
+  const host = u.hostname.toLowerCase().replace(/\.$/, "");
+  if (host === "localhost" || host.endsWith(".localhost") || host.endsWith(".local") ||
+      host.endsWith(".internal") || host === "metadata.google.internal") return "internal_host";
+  // IPv4 literal in a private / link-local / loopback / unspecified range.
+  const m4 = host.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
+  if (m4) {
+    const o = m4.slice(1).map(Number);
+    if (o.some((n) => n > 255)) return "invalid_ip";
+    const [a, b] = o;
+    if (a === 10 || a === 127 || a === 0 ||
+        (a === 172 && b >= 16 && b <= 31) ||
+        (a === 192 && b === 168) ||
+        (a === 169 && b === 254) ||
+        (a === 100 && b >= 64 && b <= 127) || // CGNAT 100.64/10
+        a >= 224) return "private_ip"; // multicast/reserved
+  }
+  // IPv6 literal: loopback, unspecified, unique-local (fc00::/7), link-local (fe80::/10),
+  // and IPv4-mapped private ranges.
+  if (host.includes(":")) {
+    const h = host.replace(/^\[|\]$/g, "");
+    if (h === "::1" || h === "::" || /^f[cd]/.test(h) || /^fe[89ab]/.test(h)) return "private_ip6";
+    const mapped = h.match(/(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
+    if (mapped) {
+      const a = Number(mapped[1]), b = Number(mapped[2]);
+      if (a === 10 || a === 127 || a === 0 || (a === 172 && b >= 16 && b <= 31) ||
+          (a === 192 && b === 168) || (a === 169 && b === 254)) return "private_ip6_mapped";
+    }
+  }
+  return null;
+}
+
 // ---- low-level MCP call (handles JSON and SSE Streamable-HTTP responses) ----
 async function callMcp(url: string, message: any): Promise<{ status: number; ct: string; json: any; text: string }> {
   const ctrl = new AbortController();
@@ -61,6 +103,7 @@ async function callMcp(url: string, message: any): Promise<{ status: number; ct:
       },
       body: JSON.stringify(message),
       signal: ctrl.signal,
+      redirect: "manual", // don't let an https→internal 302 bounce past the SSRF guard
     });
     const ct = res.headers.get("content-type") || "";
     const text = await res.text();
@@ -109,6 +152,14 @@ export async function scoreMcpServer(rawUrl: string): Promise<GradeResult> {
   if (u.protocol !== "https:") {
     r.hard_fail = "plaintext_http";
     r.findings.push({ id: "tls", severity: "fail", owasp: "MCP05", detail: "Endpoint is not HTTPS — credentials and tool I/O travel in plaintext. Automatic F." });
+    r.sub = { spec: z(20), security: z(30), reliability: z(20), hygiene: z(15), transparency: z(15) };
+    return r;
+  }
+  // SSRF guard: never probe internal / private / metadata targets.
+  const blocked = blockedTargetReason(url);
+  if (blocked) {
+    r.hard_fail = "blocked_target";
+    r.findings.push({ id: "target", severity: "fail", detail: `Refusing to probe a non-public address (${blocked}).` });
     r.sub = { spec: z(20), security: z(30), reliability: z(20), hygiene: z(15), transparency: z(15) };
     return r;
   }
@@ -216,7 +267,7 @@ export async function scoreMcpServer(rawUrl: string): Promise<GradeResult> {
   let trans = 60;
   // OAuth resource metadata (RFC 9728) — a transparency/security plus for protected servers.
   try {
-    const meta = await fetch(new URL("/.well-known/oauth-protected-resource", u).toString(), { headers: { "user-agent": "wmcp.sh-grader/1.0" } }).then((x) => x.ok).catch(() => false);
+    const meta = await fetch(new URL("/.well-known/oauth-protected-resource", u).toString(), { headers: { "user-agent": "wmcp.sh-grader/1.0" }, redirect: "manual" }).then((x) => x.ok).catch(() => false);
     if (meta) { trans += 20; transNotes.push("RFC 9728 oauth-protected-resource metadata ✓"); }
     else if (r.auth_required) transNotes.push("auth required but no RFC 9728 resource metadata found");
   } catch {}
@@ -492,7 +543,7 @@ export function gradePageHtml(r: GradeResult, origin: string): string {
     itemReviewed: { "@type": "SoftwareApplication", name: r.host, applicationCategory: "MCP server" },
     reviewRating: { "@type": "Rating", ratingValue: r.score, bestRating: 100, alternateName: r.grade },
     author: { "@type": "Organization", name: "wmcp.sh" }, datePublished: new Date(r.checked_at).toISOString(),
-  });
+  }).replace(/</g, "\\u003c").replace(/>/g, "\\u003e").replace(/&/g, "\\u0026"); // <script> breakout guard (host is attacker-influenceable)
   return `<!doctype html><html lang="en"><head>
 <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>${esc(r.host)} — MCP Trust Grade ${r.grade} | wmcp.sh</title>
