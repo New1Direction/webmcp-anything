@@ -8,6 +8,48 @@
 // moat: graded + vaulted + metered.
 import { PROVIDERS } from "./providers";
 
+/**
+ * Discovery manifest served at /.well-known/mcp — a flat, crawlable list of the
+ * MCP servers wmcp.sh hosts (the trust oracle + every vaulted proxy), derived
+ * from PROVIDERS so it can never drift from what /mcp/:provider actually serves.
+ * No ratified standard exists for this path yet (the official channel is the
+ * registry); this is a de-facto {name,url,description,transport,auth} list.
+ */
+export function wellKnownMcpManifest(origin: string) {
+  const proxied = Object.values(PROVIDERS).filter((p) => p.mcpProxy && p.mcpUrl);
+  return {
+    name: "wmcp.sh",
+    description:
+      "Trust layer + OAuth vault for the Model Context Protocol. Connect a provider once at /connect, then any agent calls it at /mcp/<provider> with the OAuth bearer token injected and auto-refreshed; plus an independent, continuously-watched A–F trust grade for any MCP server.",
+    homepage: origin,
+    servers: [
+      {
+        name: "trust-oracle",
+        url: `${origin}/mcp/trust`,
+        description:
+          "Independent MCP trust oracle. Tools: grade_mcp_server, check_mcp_drift, verify_before_execute. Continuously watched for drift / rug-pulls. REST: GET " +
+          `${origin}/api/v1/mcp/verify?url=<server>. The grade is free and never for sale.`,
+        transport: "streamable-http",
+        auth: "none",
+      },
+      ...proxied.map((p) => ({
+        name: p.id,
+        url: `${origin}/mcp/${p.id}`,
+        description: `OAuth-vault proxy to ${p.name}'s MCP. Connect once at ${origin}/connect; the bearer token is injected and auto-refreshed. Credentials encrypted at rest, never in tool args.`,
+        transport: "streamable-http",
+        auth: "oauth-vault",
+      })),
+    ],
+    auth: {
+      "oauth-vault": {
+        description:
+          "One-time connect via RFC 7591 Dynamic Client Registration + PKCE (zero per-app setup). The vault injects and auto-refreshes the provider's OAuth bearer token on every call; credentials are encrypted at rest and never passed in tool arguments.",
+        connectUrl: `${origin}/connect`,
+      },
+    },
+  };
+}
+
 const CAT_LABEL: Record<string, string> = {
   auth: "Identity", comms: "Comms", billing: "Billing & payments",
   dev: "Dev tools", ai: "AI", productivity: "Productivity", data: "Data",
