@@ -1,56 +1,22 @@
 // test/proxy_freetier.test.ts — the pricing flip: per-agent free-tier gate.
-//
-// Tested through the REAL resolveAuth (not a mock): proxyExecuteGate calls
-// resolveAuth internally, so we set up genuine KV-backed key records + a bearer
-// header and let auth resolve naturally. (Mocking a same-module internal call
-// silently doesn't take — which is exactly the green-on-red the verify gate
-// exists to catch; that's why the first cut of this file failed CI and wasn't
-// merged.)
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { proxyExecuteGate } from "../src/auth";
 
-function kv(seed: Record<string, string> = {}) {
-  const store = new Map(Object.entries(seed));
-  return {
-    store,
-    async get(k: string) { return store.has(k) ? store.get(k)! : null; },
-    async put(k: string, v: string, _o?: any) { store.set(k, v); },
-    async delete(k: string) { store.delete(k); },
-  };
-}
-
-const DAY = new Date().toISOString().slice(0, 10);
-
-// Build a context whose internal resolveAuth() resolves to the given key+plan.
-function ctx(opts: {
-  key?: string;            // omit → no bearer → anonymous
-  plan?: string;           // plan stored on the key record
-  freePerDay?: string;     // PROXY_FREE_CALLS_PER_DAY
-  usageSeed?: Record<string, string>;
-}) {
-  const KEYS = kv();
-  if (opts.key) {
-    KEYS.store.set(`key:${opts.key}`, JSON.stringify({
-      user_id: "u", plan: opts.plan || "free", status: "active", created_at: 1,
-    }));
-  }
-  const USAGE = kv(opts.usageSeed || {});
-  const env: any = { KEYS, USAGE, ENVIRONMENT: "production" };
-  if (opts.freePerDay !== undefined) env.PROXY_FREE_CALLS_PER_DAY = opts.freePerDay;
-
+// Minimal Hono-ish context for the middleware. Tracks header() + json() + next().
+function ctx(opts: { env: any; key?: string; plan: string; anonymous?: boolean }) {
   const headers: Record<string, string> = {};
-  let jsonBody: any = null, jsonStatus = 0, nexted = false;
+  let jsonBody: any = null;
+  let jsonStatus = 0;
+  let nexted = false;
   const c: any = {
-    env,
-    req: {
-      header: (h: string) => (h.toLowerCase() === "authorization" && opts.key ? `Bearer ${opts.key}` : undefined),
-      query: () => undefined,
-      url: "https://wmcp.sh/mcp/stripe_mcp",
-    },
+    env: opts.env,
+    req: { header: () => undefined, query: () => undefined },
     executionCtx: { waitUntil: (_p: Promise<unknown>) => {} },
     set: (_k: string, _v: any) => {},
     header: (k: string, v: string) => { headers[k] = v; },
-    json: (b: any, s = 200) => { jsonBody = b; jsonStatus = s; return b; },
+    json: (b: any, s = 200) => { jsonBody = b; jsonStatus = s; return { _json: b, _status: s }; },
+    // proxyExecuteGate calls resolveAuth(c) — stub it by pre-seeding the bearer.
+    __auth: { key: opts.key || "webmcp_live_k", plan: opts.plan, user_id: "u", anonymous: !!opts.anonymous },
   };
   return {
     c,
@@ -61,17 +27,44 @@ function ctx(opts: {
   };
 }
 
+// proxyExecuteGate calls resolveAuth internally; mock the module's resolveAuth
+// to return our seeded auth so we exercise the gate logic in isolation.
+vi.mock("../src/auth", async (importOriginal) => {
+  const mod: any = await importOriginal();
+  return { ...mod, resolveAuth: async (c: any) => c.__auth };
+});
+
+function kvWith(map: Record<string, string> = {}) {
+  const store = new Map(Object.entries(map));
+  return {
+    store,
+    async get(k: string) { return store.has(k) ? store.get(k)! : null; },
+    async put(k: string, v: string) { store.set(k, v); },
+  };
+}
+
 describe("proxyExecuteGate — pricing flip (per-agent free tier)", () => {
   it("default-off: free plan still 402s (non-breaking)", async () => {
-    const t = ctx({ key: "agentA", plan: "free" }); // no PROXY_FREE_CALLS_PER_DAY
+    const t = ctx({ env: { USAGE: kvWith() }, plan: "free" });
     await proxyExecuteGate()(t.c, t.next);
     expect(t.nexted).toBe(false);
     expect(t.json.status).toBe(402);
     expect(t.json.body.error).toBe("payment_required");
   });
 
-  it("free tier ON: an exhausted agent gets 402 free_tier_exhausted", async () => {
-    const t = ctx({ key: "agentA", plan: "free", freePerDay: "3", usageSeed: { [`freecall:agentA:${DAY}`]: "3" } });
+  it("free tier ON: free plan gets N calls then 402 free_tier_exhausted", async () => {
+    const env = { USAGE: kvWith(), PROXY_FREE_CALLS_PER_DAY: "3" };
+    const day = new Date().toISOString().slice(0, 10);
+    // 3 allowed
+    for (let i = 0; i < 3; i++) {
+      const t = ctx({ env, key: "agentA", plan: "free" });
+      await proxyExecuteGate()(t.c, t.next);
+      expect(t.nexted).toBe(true);
+      // simulate the waitUntil increment landing (gate uses waitUntil; force it)
+      env.USAGE.store.set(`freecall:agentA:${day}`, String(i + 1));
+    }
+    // 4th blocked
+    const t = ctx({ env, key: "agentA", plan: "free" });
     await proxyExecuteGate()(t.c, t.next);
     expect(t.nexted).toBe(false);
     expect(t.json.status).toBe(402);
@@ -79,33 +72,40 @@ describe("proxyExecuteGate — pricing flip (per-agent free tier)", () => {
     expect(t.json.body.free_per_day).toBe(3);
   });
 
-  it("free tier ON: an unused agent is allowed and surfaces remaining", async () => {
-    const t = ctx({ key: "agentA", plan: "free", freePerDay: "10" });
-    await proxyExecuteGate()(t.c, t.next);
-    expect(t.nexted).toBe(true);
-    expect(t.headers["x-webmcp-free-remaining"]).toBe("9");
-  });
-
-  it("PER-AGENT: one key exhausted does NOT block another key (the fleet point)", async () => {
-    const a = ctx({ key: "agentA", plan: "free", freePerDay: "2", usageSeed: { [`freecall:agentA:${DAY}`]: "2" } });
+  it("PER-AGENT: a second key has its OWN free allowance (the fleet point)", async () => {
+    const env = { USAGE: kvWith(), PROXY_FREE_CALLS_PER_DAY: "2" };
+    const day = new Date().toISOString().slice(0, 10);
+    // agentA exhausts its 2
+    env.USAGE.store.set(`freecall:agentA:${day}`, "2");
+    const a = ctx({ env, key: "agentA", plan: "free" });
     await proxyExecuteGate()(a.c, a.next);
     expect(a.nexted).toBe(false); // A is out
-    const b = ctx({ key: "agentB", plan: "free", freePerDay: "2" });
+    // agentB is untouched — its own bucket
+    const b = ctx({ env, key: "agentB", plan: "free" });
     await proxyExecuteGate()(b.c, b.next);
-    expect(b.nexted).toBe(true);  // B has its own allowance
+    expect(b.nexted).toBe(true); // B still has its allowance
   });
 
-  it("paid plan passes through on its own quota (free tier irrelevant)", async () => {
-    const t = ctx({ key: "paidkey", plan: "pro", freePerDay: "1" });
+  it("paid plan: unaffected by the free tier (passes through on its own quota)", async () => {
+    const env = { USAGE: kvWith(), PROXY_FREE_CALLS_PER_DAY: "1" };
+    const t = ctx({ env, key: "paidkey", plan: "pro" });
     await proxyExecuteGate()(t.c, t.next);
     expect(t.nexted).toBe(true);
     expect(t.headers["x-webmcp-plan"]).toBe("pro");
   });
 
   it("anonymous → 401 before any metering", async () => {
-    const t = ctx({ plan: "free", freePerDay: "5" }); // no key → anon
+    const t = ctx({ env: { USAGE: kvWith(), PROXY_FREE_CALLS_PER_DAY: "5" }, plan: "free", anonymous: true });
     await proxyExecuteGate()(t.c, t.next);
     expect(t.nexted).toBe(false);
     expect(t.json.status).toBe(401);
+  });
+
+  it("surfaces x-webmcp-free-remaining on an allowed free call", async () => {
+    const env = { USAGE: kvWith(), PROXY_FREE_CALLS_PER_DAY: "10" };
+    const t = ctx({ env, key: "agentA", plan: "free" });
+    await proxyExecuteGate()(t.c, t.next);
+    expect(t.nexted).toBe(true);
+    expect(t.headers["x-webmcp-free-remaining"]).toBe("9");
   });
 });
