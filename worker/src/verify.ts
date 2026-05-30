@@ -34,6 +34,15 @@ export interface VerifyVerdict {
     removed: string[];
   };
   watched_since: number | null;
+  // Behavioral trust v2: observed from real proxied calls (null until ≥5 seen).
+  behavioral: {
+    observed_calls: number;
+    tools_observed: number;
+    error_rate: number;
+    p50_ms: number | null;
+    p95_ms: number | null;
+    flaky: string[];
+  } | null;
   verdict: "ok" | "caution" | "drifted" | "failing" | "ungraded";
   reason: string;
   checked_at: number;
@@ -60,9 +69,13 @@ function decide(r: GradeResult): { verdict: VerifyVerdict["verdict"]; reason: st
   if (r.grade === "F" || r.grade.startsWith("D")) return { verdict: "failing", reason: `Low trust grade (${r.grade}).` };
   const driftedRecently = !!(r.last_drift && Date.now() - r.last_drift.ts < DRIFT_RECENT_MS);
   if (driftedRecently) return { verdict: "drifted", reason: "Tool surface changed in the last 24h — re-review before executing." };
+  // Behavioral signal (v2): observed flakiness/error from real proxied calls.
+  const beh = r.behavioral;
+  if (beh && beh.flaky.length) return { verdict: "caution", reason: `Observed ${beh.flaky.length} flaky tool(s) in real traffic: ${beh.flaky.map((f) => f.tool).join(", ")}.` };
+  if (beh && beh.error_rate >= 0.5) return { verdict: "caution", reason: `Observed ${(beh.error_rate * 100).toFixed(0)}% error rate across ${beh.observed_calls} real call(s).` };
   if (r.grade.startsWith("C")) return { verdict: "caution", reason: `Moderate trust grade (${r.grade}).` };
   if (!r.grade) return { verdict: "ungraded", reason: "No grade could be produced." };
-  return { verdict: "ok", reason: `Trust grade ${r.grade}; no recent drift.` };
+  return { verdict: "ok", reason: `Trust grade ${r.grade}${beh ? ` · verified over ${beh.observed_calls} observed call(s)` : ""}; no recent drift.` };
 }
 
 /**
@@ -107,6 +120,16 @@ export async function verifyMcpServer(
       removed: r.last_drift?.removed ?? [],
     },
     watched_since: r.tools_hash_since ?? null,
+    behavioral: r.behavioral
+      ? {
+          observed_calls: r.behavioral.observed_calls,
+          tools_observed: r.behavioral.tools_observed,
+          error_rate: r.behavioral.error_rate,
+          p50_ms: r.behavioral.p50_ms,
+          p95_ms: r.behavioral.p95_ms,
+          flaky: r.behavioral.flaky.map((f) => f.tool),
+        }
+      : null,
     verdict,
     reason,
     checked_at: r.checked_at,
