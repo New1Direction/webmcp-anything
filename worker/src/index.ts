@@ -239,12 +239,23 @@ app.get("/mcp/grade", async (c) => {
   const { gradeHomeHtml } = await import("./mcp_grade");
   return c.html(gradeHomeHtml(new URL(c.req.url).origin));
 });
-app.get("/api/v1/mcp/grade", async (c) => {
+// gate("read") draws anonymous callers down the 100/day-per-IP budget so the
+// free CTA can't be looped into a reflective-probe / KV-write DoS. Both routes
+// serve a cached grade (<6h) first and only do a live probe on a cold miss; a
+// forced fresh re-probe (fresh=1) is restricted to authenticated callers.
+app.get("/api/v1/mcp/grade", gate("read"), async (c) => {
   const url = c.req.query("url");
   if (!url) return c.json({ error: "url_required" }, 400);
-  const { scoreMcpServer, recordGrade } = await import("./mcp_grade");
+  const { scoreMcpServer, recordGrade, readGrade } = await import("./mcp_grade");
   try {
-    const r = await scoreMcpServer(url);
+    let host = url;
+    try { host = new URL(url).host.toLowerCase(); } catch {}
+    const allowFresh = c.req.query("fresh") === "1" && !c.var.auth?.anonymous;
+    if (!allowFresh) {
+      const cached = await readGrade(c.env as any, host);
+      if (cached && Date.now() - cached.checked_at < 6 * 3600 * 1000) return c.json(cached);
+    }
+    const r = await scoreMcpServer(url); // SSRF-guarded inside
     await recordGrade(c.env as any, r); // drift-aware persist + registers the watch
     return c.json(r);
   } catch (e) {
@@ -253,11 +264,12 @@ app.get("/api/v1/mcp/grade", async (c) => {
 });
 // Verify-then-execute (liability transfer): one call that returns the watched
 // trust grade + drift status + a connect/caution/avoid verdict for an MCP server.
-// Free read-tier (the grade is never for sale). fresh=1 forces a live re-probe.
-app.get("/api/v1/mcp/verify", async (c) => {
+// Free read-tier (the grade is never for sale). fresh=1 forces a live re-probe,
+// authenticated callers only (anon gets the cached grade).
+app.get("/api/v1/mcp/verify", gate("read"), async (c) => {
   const url = c.req.query("url");
   if (!url) return c.json({ error: "url query param required" }, 400);
-  const fresh = c.req.query("fresh") === "1";
+  const fresh = c.req.query("fresh") === "1" && !c.var.auth?.anonymous;
   try {
     const { verifyMcpServer } = await import("./verify");
     return c.json(await verifyMcpServer(c.env as any, url, { fresh }));
