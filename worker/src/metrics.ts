@@ -15,6 +15,7 @@ export type FunnelEvent =
   | "u_view"
   | "directory_view"
   | "probe_run"
+  | "activated"          // a live tools/call execute succeeded — the real activation
   | "checkout_started"
   | "paid";
 
@@ -22,6 +23,7 @@ const EVENTS: FunnelEvent[] = [
   "u_view",
   "directory_view",
   "probe_run",
+  "activated",
   "checkout_started",
   "paid",
 ];
@@ -89,7 +91,10 @@ export async function getMetrics(c: Context<{ Bindings: MetricsEnv }>) {
   const rate = (num: number, den: number) =>
     den > 0 ? +((100 * num) / den).toFixed(2) : null;
   const funnel = {
+    // The funnel that matters: probe (read) → activated (live execute) → checkout → paid.
+    probe_to_activated_pct: rate(totals.activated, totals.probe_run),
     probe_to_checkout_pct: rate(totals.checkout_started, totals.probe_run),
+    activated_to_checkout_pct: rate(totals.checkout_started, totals.activated),
     checkout_to_paid_pct: rate(totals.paid, totals.checkout_started),
   };
 

@@ -1152,7 +1152,11 @@ app.post("/api/v1/tools/execute", gate("execute"), async (c) => {
     { url: body.url, tool: body.tool, args: body.args },
     { userId: c.var.auth?.user_id }
   );
-  if (r.ok) return c.json({ ok: true, value: r.value });
+  if (r.ok) {
+    // The activation that actually matters — a live tool call succeeded.
+    track(c.env, c.executionCtx, "activated");
+    return c.json({ ok: true, value: r.value });
+  }
   return c.json(r.body, r.status as any);
 });
 
