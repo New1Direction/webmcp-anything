@@ -1,5 +1,6 @@
 // test/control.test.ts — the per-agent control plane (meter + cap + kill + audit).
 import { describe, it, expect } from "vitest";
+import { beforeEach } from "vitest";
 import {
   checkAgentAllowed,
   recordProxyCall,
@@ -7,7 +8,10 @@ import {
   getControl,
   getUsage,
   readAudit,
+  __resetKilledCache,
 } from "../src/control";
+
+beforeEach(() => __resetKilledCache());
 
 function kv() {
   const store = new Map<string, string>();
@@ -106,10 +110,59 @@ describe("agent control plane", () => {
     expect(usage.remaining).toBe(6);
   });
 
-  it("a KV failure is swallowed — control never throws into the proxy", async () => {
+  it("a KV failure is swallowed — recordProxyCall never throws into the proxy", async () => {
     const env = { KEYS: { get: async () => { throw new Error("down"); }, put: async () => { throw new Error("down"); } } } as any;
     await expect(recordProxyCall(env, U, { provider: "p", status: 200 })).resolves.toBeUndefined();
-    // checkAgentAllowed fails OPEN on a read error (spend control, not a security boundary).
+  });
+
+  // ---- SPLIT FAIL CONTRACTS: kill fails closed, cap fails open ----
+
+  it("BEHAVIORAL: a killed agent is actually DENIED with 403 (not a 200 no-op)", async () => {
+    const env = { KEYS: kv() } as any;
+    await setControl(env, U, { killed: true });
+    const v = await checkAgentAllowed(env, U);
+    // The assertion that matters: access is refused, with the kill status — not
+    // that an endpoint returned 200.
+    expect(v.allowed).toBe(false);
+    if (!v.allowed) {
+      expect(v.status).toBe(403);
+      expect(v.body.error).toBe("agent_killed");
+    }
+  });
+
+  it("KILL FAILS CLOSED: a KV read error cannot resurrect a killed agent", async () => {
+    const store = kv();
+    const env = { KEYS: store } as any;
+    // 1. Kill + one authoritative check populates the in-isolate fail-closed cache.
+    await setControl(env, U, { killed: true });
+    expect((await checkAgentAllowed(env, U)).allowed).toBe(false);
+    // 2. Now KV reads start failing.
+    const brokenEnv = { KEYS: { ...store, get: async () => { throw new Error("kv down"); } } } as any;
+    // 3. The killed agent MUST stay denied — the blip must not resurrect it.
+    const v = await checkAgentAllowed(brokenEnv, U);
+    expect(v.allowed).toBe(false);
+    if (!v.allowed) {
+      expect(v.status).toBe(403);
+      expect(v.body.degraded).toBe(true); // signals it's the fail-closed path
+    }
+  });
+
+  it("CAP FAILS OPEN: a KV read error does not take down a non-killed agent", async () => {
+    const env = { KEYS: { get: async () => { throw new Error("kv down"); }, put: async () => {} } } as any;
+    // Never observed killed in this isolate → unreadable state allows (spend, not safety).
     expect((await checkAgentAllowed(env, U)).allowed).toBe(true);
+  });
+
+  it("authoritative not-killed read clears the fail-closed cache (un-kill propagates)", async () => {
+    const store = kv();
+    const env = { KEYS: store } as any;
+    await setControl(env, U, { killed: true });
+    expect((await checkAgentAllowed(env, U)).allowed).toBe(false);
+    await setControl(env, U, { killed: false });
+    // A successful read now shows not-killed → cache cleared → subsequent KV
+    // error fails OPEN again (the agent was genuinely un-killed).
+    expect((await checkAgentAllowed(env, U)).allowed).toBe(true);
+    const brokenEnv = { KEYS: { ...store, get: async () => { throw new Error("down"); } } } as any;
+    expect((await checkAgentAllowed(brokenEnv, U)).allowed).toBe(true);
   });
 });
