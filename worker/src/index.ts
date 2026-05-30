@@ -146,6 +146,18 @@ app.get("/directory", (c) => {
   return c.html(directoryHtml(new URL(c.req.url).origin));
 });
 
+// Public connect/discovery hub — the conversion destination registries +
+// launch posts point at (graded + vaulted + metered, no sign-in wall).
+app.get("/connect", async (c) => {
+  const { connectHubHtml } = await import("./connect_hub");
+  return new Response(connectHubHtml(new URL(c.req.url).origin), {
+    headers: {
+      "content-type": "text/html; charset=utf-8",
+      "cache-control": "public, max-age=900, s-maxage=900",
+    },
+  });
+});
+
 app.get("/connect/anthropic", async (c) => {
   const { connectAnthropicHtml } = await import("./connect_anthropic");
   return c.html(connectAnthropicHtml());
