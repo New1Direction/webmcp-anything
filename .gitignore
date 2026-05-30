@@ -46,3 +46,8 @@ sdks/python/build/
 sdks/javascript/dist/
 sdks/javascript/node_modules/
 
+# playwright-mcp scratch output (added 2026-05-29)
+.playwright-mcp/
+
+# local audit scratch
+wmcp-audit-strategy-*.html

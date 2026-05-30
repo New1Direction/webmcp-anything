@@ -33,11 +33,26 @@ describe("trust oracle (MCP server)", () => {
     expect(res.body.result.capabilities.tools).toBeDefined();
   });
 
-  it("tools/list returns grade_mcp_server + check_mcp_drift", async () => {
+  it("tools/list returns grade + drift + verify tools", async () => {
     const env: any = { CACHE: kvMock() };
     const res = await oracleHandler(post(env, { jsonrpc: "2.0", id: 2, method: "tools/list" }));
     const names = res.body.result.tools.map((t: any) => t.name);
-    expect(names).toEqual(["grade_mcp_server", "check_mcp_drift"]);
+    expect(names).toEqual(["grade_mcp_server", "check_mcp_drift", "verify_before_execute"]);
+  });
+
+  it("verify_before_execute returns a verdict from the cached grade (no probe)", async () => {
+    const env: any = { CACHE: kvMock() };
+    await env.CACHE.put("grade:mcp.cached.com", JSON.stringify({
+      url: "https://mcp.cached.com/mcp", host: "mcp.cached.com", checked_at: Date.now(),
+      reachable: true, auth_required: false, grade: "A", score: 95, sub: {}, findings: [],
+      tools_count: 2, tool_sigs: { a: "1", b: "2" }, tools_hash_since: Date.now() - 5 * 86400000, drift_count: 0,
+    }));
+    vi.stubGlobal("fetch", vi.fn(async () => { throw new Error("should not probe when cached"); }));
+    const res = await oracleHandler(post(env, { jsonrpc: "2.0", id: 9, method: "tools/call", params: { name: "verify_before_execute", arguments: { url: "https://mcp.cached.com/mcp" } } }));
+    const out = JSON.parse(res.body.result.content[0].text);
+    expect(out.host).toBe("mcp.cached.com");
+    expect(out.verdict).toBe("ok");
+    expect(out.methodology).toContain("wmcp.sh/mcp/grade");
   });
 
   it("notifications (no id) → 202", async () => {

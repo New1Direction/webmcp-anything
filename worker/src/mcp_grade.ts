@@ -481,10 +481,11 @@ export function gradePageHtml(r: GradeResult, origin: string): string {
     ? `<div class="findings"><h3>Findings</h3>${r.findings.map((f) => `<div class="f f-${f.severity}"><span class="fb">${f.severity.toUpperCase()}</span>${f.owasp ? `<span class="owasp">${f.owasp}</span>` : ""} ${esc(f.detail)}</div>`).join("")}</div>`
     : `<div class="findings"><h3>Findings</h3><div class="f f-info">No blocking issues found in the static + spec checks.</div></div>`;
   const driftDays = r.tools_hash_since ? Math.floor((r.checked_at - r.tools_hash_since) / 86400000) : 0;
+  const watchedSince = r.tools_hash_since ? new Date(r.tools_hash_since).toISOString().slice(0, 10) : null;
   const attest = r.drift_count
-    ? `<div class="attest drift">⚠ Tool definitions have changed <b>${r.drift_count}×</b> since first audit${r.last_drift ? ` — last ${new Date(r.last_drift.ts).toISOString().slice(0, 10)}` : ""}. Continuously rug-pull-monitored by wmcp.sh.</div>`
+    ? `<div class="attest drift">⚠ <b>Rug-pull watch:</b> this server's tool surface has changed <b>${r.drift_count}×</b> since baseline${r.last_drift ? ` — last ${new Date(r.last_drift.ts).toISOString().slice(0, 10)}` : ""}. Continuously watched by wmcp.sh for drift &amp; rug-pulls.</div>`
     : r.tool_sigs
-      ? `<div class="attest stable">✓ Tool definitions <b>unchanged${driftDays > 0 ? ` for ${driftDays} day${driftDays === 1 ? "" : "s"}` : " since first audit"}</b> — continuously re-verified by wmcp.sh (rug-pull / schema-drift monitored).</div>`
+      ? `<div class="attest stable">✓ <b>Watched${watchedSince ? ` since ${watchedSince}` : ""}</b> — behavioral baseline locked${driftDays > 0 ? `, no drift for ${driftDays} day${driftDays === 1 ? "" : "s"}` : ""}. We re-check this server's tool surface on a schedule; if it adds, removes, or silently rewrites a tool (rug-pull), we record it.</div>`
       : "";
   const jsonld = JSON.stringify({
     "@context": "https://schema.org", "@type": "Review",
@@ -495,7 +496,7 @@ export function gradePageHtml(r: GradeResult, origin: string): string {
   return `<!doctype html><html lang="en"><head>
 <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>${esc(r.host)} — MCP Trust Grade ${r.grade} | wmcp.sh</title>
-<meta name="description" content="Independent MCP server audit of ${esc(r.host)}: grade ${r.grade} (${r.score}/100) across spec conformance, security, reliability, tool hygiene, and transparency. Audited by wmcp.sh."/>
+<meta name="description" content="Independent MCP trust grade for ${esc(r.host)}: ${r.grade} (${r.score}/100) across spec conformance, security, reliability, tool hygiene, and transparency — then continuously watched by wmcp.sh for drift & rug-pulls."/>
 <link rel="canonical" href="${origin}/mcp/grade/${encodeURIComponent(r.host)}"/>
 <script type="application/ld+json">${jsonld}</script>
 <style>
@@ -538,7 +539,7 @@ export function gradePageHtml(r: GradeResult, origin: string): string {
     <div>
       <h1>${esc(r.host)}</h1>
       <div class="muted">${esc(r.url)}</div>
-      <div class="score"><b style="color:${c}">${r.score}/100</b> · MCP Trust Grade · <span class="dim">audited ${new Date(r.checked_at).toISOString().slice(0, 10)}${r.protocol_version ? " · MCP " + r.protocol_version : ""}${r.auth_required ? " · OAuth-protected" : ""}</span></div>
+      <div class="score"><b style="color:${c}">${r.score}/100</b> · MCP Trust Grade · <span class="dim">watched · last checked ${new Date(r.checked_at).toISOString().slice(0, 10)}${r.protocol_version ? " · MCP " + r.protocol_version : ""}${r.auth_required ? " · OAuth-protected" : ""}</span></div>
     </div>
   </div>
   ${attest}
@@ -549,10 +550,11 @@ export function gradePageHtml(r: GradeResult, origin: string): string {
   ${subRow("transparency", "Transparency / provenance")}
   ${findingsHtml}
   <div class="cta">
-    <button class="btn btn-p" id="deepAudit">Get the full audit report →</button>
-    <button class="btn btn-s" id="monitor">Monitor for rug-pulls →</button>
+    <button class="btn btn-p" id="monitor">Watch this server — drift &amp; rug-pull alerts →</button>
+    <button class="btn btn-s" id="deepAudit">Get the full audit report →</button>
     <a class="btn btn-s" href="/mcp/grade">Grade another server</a>
   </div>
+  <p class="muted" style="font-size:.85rem;margin-top:10px">We re-grade <b>${esc(r.host)}</b> on a schedule and alert your Slack/webhook the moment its tools change or its grade drops — rug-pull insurance for the connection.</p>
 
   <div class="embed">
     <h3>Embed this grade</h3>
@@ -612,7 +614,7 @@ export function gradeHomeHtml(origin: string): string {
 </style></head><body>
 <div class="wrap">
   <h1>Grade any MCP server</h1>
-  <p class="muted">Independent A–F trust audit — spec conformance, security (OWASP MCP Top&nbsp;10), reliability, tool hygiene, transparency. Free, and the grade is never for sale.</p>
+  <p class="muted">Independent A–F trust grade — spec conformance, security (OWASP MCP Top&nbsp;10), reliability, tool hygiene, transparency. Free — then we keep watching it for drift &amp; rug-pulls (the grade is never for sale).</p>
   <div class="row">
     <input id="u" type="url" placeholder="https://mcp.example.com/mcp" />
     <button id="go">Grade it</button>
