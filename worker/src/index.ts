@@ -1253,7 +1253,7 @@ app.post("/api/v1/agent/control", async (c) => {
   const { resolveAuth } = await import("./auth");
   const auth = await resolveAuth(c as any);
   if (auth.anonymous) return c.json({ error: "sign_in_required", hint: "Sign in or pass your API key to govern your agent." }, 401);
-  const body = await c.req.json<{ killed?: boolean; daily_cap?: number | null }>().catch(() => ({}));
+  const body = await c.req.json<{ killed?: boolean; daily_cap?: number | null }>().catch(() => ({} as { killed?: boolean; daily_cap?: number | null }));
   const patch: { killed?: boolean; daily_cap?: number } = {};
   if (typeof body.killed === "boolean") patch.killed = body.killed;
   if (body.daily_cap === null) patch.daily_cap = 0; // 0 clears the cap (normalized in setControl)
