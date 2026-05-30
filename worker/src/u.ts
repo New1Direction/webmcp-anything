@@ -596,6 +596,16 @@ export async function sitemapXml(env: any, origin: string): Promise<string> {
     <priority>0.95</priority>
   </url>
   <url>
+    <loc>${origin}/connect</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>${origin}/mcp/grade</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
     <loc>${origin}/agent-ready/shopify</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
