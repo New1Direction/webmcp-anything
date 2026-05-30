@@ -356,6 +356,37 @@ export const PROVIDERS: Record<string, Provider> = {
       "RFC 7591 DCR + PKCE (S256), endpoints verified live against mcp.asana.com OAuth metadata.",
   },
 
+  // PayPal's official remote MCP. DCR + PKCE CONNECT-VERIFIED 2026-05-29: a live
+  // POST to /register with wmcp.sh's real callback returned HTTP 201 + a public
+  // client_id (no secret, PKCE S256) — the actual connect-time call, not just
+  // metadata. Payment-capable provider: scopes are whatever the user authorizes
+  // on their own PayPal account; wmcp.sh only custodies + proxies the token.
+  // NOTE: Square was probed alongside but HELD — Square gates DCR behind a
+  // redirect-URI domain allowlist and wmcp.sh's callback 400s ("domain not in
+  // allowlist"); shipping it would fail at every connect. Add only after Square
+  // partner onboarding allowlists wmcp.sh.
+  paypal: {
+    id: "paypal",
+    name: "PayPal",
+    description:
+      "Manage invoices, orders, payments, subscriptions and disputes on a user's PayPal account via PayPal's official OAuth-protected remote MCP. Connect once; your agent gets the live PayPal tools at /mcp/paypal.",
+    authType: "oauth2",
+    authUrl: "https://mcp.paypal.com/authorize",
+    tokenUrl: "https://mcp.paypal.com/token",
+    scopes: "", // PayPal's AS metadata advertises no scopes_supported
+    usePKCERedirect: true,
+    dcrRegistrationUrl: "https://mcp.paypal.com/register",
+    mcpProxy: true,
+    mcpUrl: "https://mcp.paypal.com/mcp",
+    apiHosts: ["mcp.paypal.com"],
+    category: "billing",
+    status: "experimental",
+    scopeNotice:
+      "Connect your own PayPal account via PayPal's official remote MCP (mcp.paypal.com). This is a PAYMENTS provider — your agent can move money on your behalf; review tool calls accordingly. wmcp.sh self-registers (RFC 7591 DCR), stores your token encrypted, and proxies tool calls at /mcp/paypal.",
+    notes:
+      "RFC 7591 DCR + PKCE (S256), CONNECT-VERIFIED live: /register returned 201 + a public client_id for wmcp.sh's real callback URL (not just metadata). PayPal mints a fresh client_id per registration and does not support CIMD, so the DCR-issued client_id is the only path (which is what wmcp.sh uses).",
+  },
+
   // --- Shopify Admin (for Shopify reseller tier) ---
   shopify: {
     id: "shopify",

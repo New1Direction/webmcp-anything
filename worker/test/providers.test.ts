@@ -12,17 +12,17 @@ describe("MCP-proxy providers are well-formed", () => {
     expect(ids).toContain("sentry");
   });
 
-  it("includes the entrenched-vault providers (move #3): linear, notion, atlassian, asana", () => {
+  it("includes the entrenched-vault providers (move #3): linear, notion, atlassian, asana, paypal", () => {
     const ids = proxied.map((p) => p.id);
-    for (const id of ["linear", "notion", "atlassian", "asana"]) {
+    for (const id of ["linear", "notion", "atlassian", "asana", "paypal"]) {
       expect(ids).toContain(id);
     }
-    // The vault is now at least 6 proxied providers (the 5–10 target).
-    expect(proxied.length).toBeGreaterThanOrEqual(6);
+    // The vault is now at least 7 proxied providers (the 5–10 target).
+    expect(proxied.length).toBeGreaterThanOrEqual(7);
   });
 
   it("every entrenched provider is zero-setup DCR (no operator client secret needed)", () => {
-    for (const id of ["linear", "notion", "atlassian", "asana"]) {
+    for (const id of ["linear", "notion", "atlassian", "asana", "paypal"]) {
       const p = PROVIDERS[id] as any;
       expect(p.dcrRegistrationUrl).toMatch(/^https:\/\//);
       expect(p.usePKCERedirect).toBe(true);
@@ -30,6 +30,13 @@ describe("MCP-proxy providers are well-formed", () => {
       expect(p.clientIdSecret).toBeUndefined();
       expect(p.clientSecretSecret).toBeUndefined();
     }
+  });
+
+  it("Square is intentionally NOT shipped (DCR redirect-allowlist 400s wmcp.sh)", () => {
+    // The live adversarial probe confirmed Square gates DCR behind a redirect-URI
+    // domain allowlist that excludes wmcp.sh — connect would 400. Hold until
+    // Square partner onboarding allowlists the callback domain.
+    expect(PROVIDERS.square).toBeUndefined();
   });
 
   it.each(proxied.map((p) => [p.id, p] as const))(

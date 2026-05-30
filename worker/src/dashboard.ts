@@ -370,6 +370,20 @@ let activeApiKeyProvider = null;
 
     // Connections area only shown when signed in
     await loadConnections();
+
+    // Deeplink from the public /connect hub: ?connect=<provider> auto-starts that
+    // provider's connect flow (or scrolls to the grid if it needs a modal/sub).
+    const wantConnect = new URLSearchParams(window.location.search).get("connect");
+    if (wantConnect) {
+      const el = connGrid.querySelector('[data-connect="' + wantConnect + '"]')
+              || connGrid.querySelector('[data-subscribe="' + wantConnect + '"]')
+              || connGrid.querySelector('[data-apikey="' + wantConnect + '"]');
+      if (el) {
+        connectionsArea.scrollIntoView({ behavior: "smooth", block: "start" });
+        el.style.outline = "2px solid var(--accent)";
+        el.style.outlineOffset = "3px";
+      }
+    }
   } catch {}
 })();
 
