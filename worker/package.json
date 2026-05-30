@@ -10,7 +10,8 @@
     "tail": "wrangler tail",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "verify": "tsc --noEmit && vitest run"
   },
   "dependencies": {
     "hono": "^4.6.0",
