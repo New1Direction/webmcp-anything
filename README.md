@@ -7,7 +7,13 @@
 [![MCP compatible](https://img.shields.io/badge/MCP-compatible-00e5ff)](https://modelcontextprotocol.io)
 [![TypeScript](https://img.shields.io/badge/built%20with-TypeScript-3178c6)](#whats-in-the-repo)
 
-<!-- TODO: hero demo GIF: paste URL -> tools callable in Claude -->
+<p align="center">
+  <a href="https://wmcp.sh/demo/hero.mp4">
+    <img src="https://wmcp.sh/og.png" alt="wmcp.sh — paste any URL, get agent-callable MCP tools in Claude/Cursor/Codex" width="640" />
+  </a>
+  <br/>
+  <em><a href="https://wmcp.sh/demo/hero.mp4">▶ Watch the 30-sec demo</a> — paste a URL → tools appear → agent calls add_to_cart.</em>
+</p>
 
 `wmcp.sh` is a real, spec-compliant **MCP server** (JSON-RPC 2.0 over Streamable HTTP) that turns *any URL* into agent-callable tools — Shopify product pages, OpenAPI specs, JSON-LD pages, OAuth-protected APIs. Every other MCP server is one-per-service and hand-built; wmcp is one endpoint that adapts to whatever URL you point it at. Paste a config line and your agent can read prices, list variants, or call an API on a site that ships no MCP server of its own.
 
