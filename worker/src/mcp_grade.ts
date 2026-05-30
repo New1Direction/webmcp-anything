@@ -9,6 +9,8 @@
 //
 // Positioning: "static scanners read the label; wmcp.sh tasted the food."
 
+import { readBehavior, summarizeBehavior, type BehaviorSummary } from "./behavior";
+
 type Env = { CACHE: KVNamespace; KEYS?: KVNamespace };
 
 const SUPPORTED_VERSIONS = ["2024-11-05", "2025-03-26", "2025-06-18"];
@@ -37,6 +39,8 @@ export interface GradeResult {
   tools_hash_since?: number;           // when the CURRENT tool surface was first observed
   drift_count?: number;                // how many times the tool surface has changed since first seen
   last_drift?: { ts: number; added: string[]; removed: string[]; changed: string[] };
+  // ---- behavioral trust v2: observed from REAL proxied calls (the uncopyable half) ----
+  behavioral?: BehaviorSummary;        // present once we've seen ≥5 real tool calls for this host
 }
 
 export interface DriftOutcome {
@@ -282,12 +286,17 @@ export async function scoreMcpServer(rawUrl: string): Promise<GradeResult> {
   r.sub.transparency = { score: trans, weight: 15, notes: transNotes };
 
   // ---- composite ----
-  const weighted = Object.values(r.sub).reduce((a, s) => a + s.score * s.weight, 0) / 100;
-  r.score = Math.round(weighted);
+  r.score = composite(r.sub);
   // hard-fail gates
   if (injHits || secretHits) { r.score = Math.min(r.score, 45); r.hard_fail = "tool_poisoning"; }
   r.grade = letter(r.score, r.hard_fail);
   return r;
+}
+
+// Weighted mean of the 5 sub-scores (weights sum to 100). Shared by the initial
+// score and the behavioral re-score in recordGrade so the math stays identical.
+function composite(sub: Record<string, SubScore>): number {
+  return Math.round(Object.values(sub).reduce((a, s) => a + s.score * s.weight, 0) / 100);
 }
 
 function z(weight: number): SubScore { return { score: 0, weight, notes: [] }; }
@@ -405,6 +414,43 @@ export async function recordGrade(env: Env, r: GradeResult): Promise<DriftOutcom
     r.drift_count = prev?.drift_count || 0;
     r.last_drift = prev?.last_drift;
   }
+  // ---- behavioral overlay (v2): when we've observed REAL proxied traffic for
+  // this host, replace the single-probe Reliability guess with observed
+  // reliability and attach the behavioral evidence layer. Composite weights are
+  // unchanged (still 5 dims × 100) — Reliability just becomes a measured fact
+  // instead of a synthetic probe. Non-observed hosts are untouched. ----
+  try {
+    const beh = summarizeBehavior(await readBehavior(env, r.host));
+    if (beh) {
+      r.behavioral = beh;
+      r.sub.reliability = {
+        score: beh.reliability_score,
+        weight: 20,
+        notes: [
+          `OBSERVED from ${beh.observed_calls} real proxied call(s) across ${beh.tools_observed} tool(s): ` +
+            `p50 ${beh.p50_ms ?? "?"}ms · p95 ${beh.p95_ms ?? "?"}ms · ${(beh.error_rate * 100).toFixed(1)}% error rate`,
+          beh.flaky.length
+            ? `${beh.flaky.length} flaky tool(s): ${beh.flaky.map((f) => f.tool).join(", ")}`
+            : "no flaky tools in observed traffic",
+        ],
+      };
+      for (const f of beh.flaky) {
+        r.findings.push({
+          id: "flaky_tool",
+          severity: "warn",
+          detail: `Behavioral: tool "${f.tool}" failed ${(f.error_rate * 100).toFixed(0)}% of ${f.calls} observed call(s).`,
+        });
+      }
+      // Re-score with the observed reliability (hard-fail gates still win).
+      if (r.hard_fail !== "plaintext_http" && r.hard_fail !== "blocked_target") {
+        r.score = composite(r.sub);
+        if (r.hard_fail === "tool_poisoning") r.score = Math.min(r.score, 45);
+        r.grade = letter(r.score, r.hard_fail);
+      }
+    }
+  } catch { /* behavioral overlay is best-effort; never break grading */ }
+
+  // Final word on grade-drop, computed against the (possibly behavior-adjusted) grade.
   if (prev && gradeRank(r.grade) > gradeRank(prev.grade)) out.gradeDropped = true;
 
   await env.CACHE.put(`grade:${r.host}`, JSON.stringify(r), { expirationTtl: 60 * 86400 });
@@ -547,6 +593,22 @@ export function gradePageHtml(r: GradeResult, origin: string): string {
     : r.tool_sigs
       ? `<div class="attest stable">✓ <b>Watched${watchedSince ? ` since ${watchedSince}` : ""}</b> — behavioral baseline locked${driftDays > 0 ? `, no drift for ${driftDays} day${driftDays === 1 ? "" : "s"}` : ""}. We re-check this server's tool surface on a schedule; if it adds, removes, or silently rewrites a tool (rug-pull), we record it.</div>`
       : "";
+  // Behavioral evidence layer (v2): observed from real proxied calls. The half a
+  // static scanner can't produce — "we didn't read the label, we tasted the food."
+  const b = r.behavioral;
+  const behavioralHtml = b
+    ? `<div class="behav">
+        <h3>Observed behavior <span class="bdim">— from ${b.observed_calls} real proxied call${b.observed_calls === 1 ? "" : "s"} across ${b.tools_observed} tool${b.tools_observed === 1 ? "" : "s"}</span></h3>
+        <div class="bgrid">
+          <div class="bcard"><div class="bk">p50 latency</div><div class="bv">${b.p50_ms ?? "—"}<small>ms</small></div></div>
+          <div class="bcard"><div class="bk">p95 latency</div><div class="bv">${b.p95_ms ?? "—"}<small>ms</small></div></div>
+          <div class="bcard"><div class="bk">error rate</div><div class="bv" style="color:${b.error_rate >= 0.25 ? "#f87171" : b.error_rate > 0 ? "#ffcf7a" : "#4ade80"}">${(b.error_rate * 100).toFixed(1)}<small>%</small></div></div>
+          <div class="bcard"><div class="bk">tools exercised</div><div class="bv">${b.tools_observed}</div></div>
+        </div>
+        ${b.flaky.length ? `<div class="bflaky">⚠ Flaky in real traffic: ${b.flaky.map((f) => `<code>${esc(f.tool)}</code> (${(f.error_rate * 100).toFixed(0)}% of ${f.calls})`).join(", ")}</div>` : `<div class="bok">✓ No flaky tools in observed traffic — declared behavior matches what we saw.</div>`}
+        <p class="bnote">Reliability above is measured, not a single synthetic probe. This is what only the execution-path proxy can see.</p>
+      </div>`
+    : `<div class="behav behav-empty"><h3>Observed behavior</h3><p class="bnote">No proxied traffic observed for this host yet. Connect it at <a href="/connect">/connect</a> and its grade gains a measured Reliability score + per-tool behavioral evidence — the half a static scan can't produce.</p></div>`;
   const jsonld = JSON.stringify({
     "@context": "https://schema.org", "@type": "Review",
     itemReviewed: { "@type": "SoftwareApplication", name: r.host, applicationCategory: "MCP server" },
@@ -575,6 +637,16 @@ export function gradePageHtml(r: GradeResult, origin: string): string {
   .sub{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin:12px 0}
   .sub-head{display:flex;align-items:center;gap:10px;font-weight:700}.sub-head span:first-child{flex:1}.sub-w{color:var(--dim);font-size:.8rem;font-weight:500}.sub-head b{font-size:1.1rem}
   .sub ul{margin:8px 0 0;padding-left:18px;color:var(--muted);font-size:.85rem}
+  .behav{margin-top:24px;background:linear-gradient(135deg,var(--card),rgba(255,158,44,.05));border:1px solid var(--border);border-radius:12px;padding:16px 18px}
+  .behav h3{margin:0 0 12px;font-size:1rem}.behav .bdim{color:var(--dim);font-weight:400;font-size:.85rem}
+  .behav-empty{background:var(--bg2)}
+  .bgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
+  .bcard{background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:10px 12px}
+  .bcard .bk{color:var(--dim);font-size:.72rem;text-transform:uppercase;letter-spacing:.06em}
+  .bcard .bv{font-size:1.5rem;font-weight:800;margin-top:2px}.bcard .bv small{font-size:.8rem;font-weight:500;color:var(--muted)}
+  .bflaky{margin-top:12px;color:#ffcf7a;font-size:.85rem}.bflaky code{background:var(--bg2);padding:1px 5px;border-radius:5px}
+  .bok{margin-top:12px;color:#bdf0cd;font-size:.85rem}
+  .bnote{margin:10px 0 0;color:var(--muted);font-size:.8rem}
   .findings{margin-top:24px}.findings h3{margin:0 0 10px}
   .f{padding:10px 12px;border-radius:10px;margin-bottom:8px;font-size:.88rem;background:var(--bg2);border:1px solid var(--border)}
   .fb{font-size:.68rem;font-weight:800;letter-spacing:.08em;padding:2px 6px;border-radius:6px;margin-right:6px;background:#0c0c14}
@@ -608,6 +680,7 @@ export function gradePageHtml(r: GradeResult, origin: string): string {
   ${subRow("reliability", "Reliability / performance")}
   ${subRow("hygiene", "Tool hygiene")}
   ${subRow("transparency", "Transparency / provenance")}
+  ${behavioralHtml}
   ${findingsHtml}
   <div class="cta">
     <button class="btn btn-p" id="monitor">Watch this server — drift &amp; rug-pull alerts →</button>
