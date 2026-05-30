@@ -230,6 +230,20 @@ app.get("/api/v1/mcp/grade", async (c) => {
     return c.json({ error: "grade_failed", detail: String(e).slice(0, 200) }, 502);
   }
 });
+// Verify-then-execute (liability transfer): one call that returns the watched
+// trust grade + drift status + a connect/caution/avoid verdict for an MCP server.
+// Free read-tier (the grade is never for sale). fresh=1 forces a live re-probe.
+app.get("/api/v1/mcp/verify", async (c) => {
+  const url = c.req.query("url");
+  if (!url) return c.json({ error: "url query param required" }, 400);
+  const fresh = c.req.query("fresh") === "1";
+  try {
+    const { verifyMcpServer } = await import("./verify");
+    return c.json(await verifyMcpServer(c.env as any, url, { fresh }));
+  } catch (e) {
+    return c.json({ error: "verify_failed", detail: String(e).slice(0, 200) }, 502);
+  }
+});
 app.get("/mcp/grade/:host/badge.svg", async (c) => {
   const host = c.req.param("host");
   const { readGrade, gradeBadgeSvg } = await import("./mcp_grade");

@@ -43,6 +43,19 @@ const TOOLS = [
       required: ["url"],
     },
   },
+  {
+    name: "verify_before_execute",
+    description:
+      "Verify an MCP server immediately BEFORE you execute any of its tools. Combines the continuously-watched trust grade and live drift status into a single connect/caution/avoid verdict (ok | caution | drifted | failing | ungraded), so you can gate the call in one step. Free, read-tier. The grade is independent and never for sale.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        url: { type: "string", description: "The MCP server endpoint URL you are about to call." },
+        fresh: { type: "boolean", description: "Force a live re-probe instead of returning a recent cached grade (<6h)." },
+      },
+      required: ["url"],
+    },
+  },
 ];
 
 function recommendation(r: GradeResult): { recommendation: string; reason: string } {
@@ -130,6 +143,11 @@ export async function oracleHandler(c: Context<{ Bindings: Env }>) {
           rug_pull_recent: !!(r.last_drift && Date.now() - r.last_drift.ts < 24 * 3600 * 1000),
           report_url: `https://wmcp.sh/mcp/grade/${encodeURIComponent(r.host)}`,
         }));
+      }
+      if (name === "verify_before_execute") {
+        const { verifyMcpServer } = await import("./verify");
+        const v = await verifyMcpServer(c.env, url, { fresh: !!args.fresh });
+        return c.json(textResult(id, { ...v, methodology: "https://wmcp.sh/mcp/grade" }));
       }
       return c.json(jerr(id, -32601, `Unknown tool: ${name}`));
     } catch (e) {

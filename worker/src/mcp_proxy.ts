@@ -22,10 +22,17 @@ import { PROVIDERS, type Provider } from "./providers";
 import { loadProviderToken, saveProviderToken } from "./token_vault";
 import { ensureMcpClient, refreshPkceToken } from "./mcp_oauth";
 import { hasManagedConnection } from "./connections";
+import { readGrade, letter, type GradeResult } from "./mcp_grade";
 
 type Env = {
   KEYS: KVNamespace;
+  // Trust signal: grade:<host> lives in CACHE (read-only here). Optional so the
+  // proxy degrades gracefully (no headers) if the binding is ever absent.
+  CACHE?: KVNamespace;
   TOKEN_ENC_KEY?: string;
+  // Opt-in HARD trust gate (default OFF to stay non-breaking). When "1", a
+  // failing or recently-rug-pulled upstream is refused with 412 before proxying.
+  WMCP_TRUST_GATE?: string;
   // Per-connection billing. When set, /mcp/:provider requires an active
   // managed-connection subscription for that provider (see connections.ts).
   // Unset (current state) → no per-connection gate; execute-only.
@@ -162,6 +169,39 @@ export async function mcpProxyHandler(
 
   const origin = new URL(c.req.url).origin;
 
+  // ---- Trust signal (verify-then-execute). Best-effort: NEVER block the proxy
+  // on a grade lookup. One read-only cache read of grade:<host> (kept warm by
+  // the regradeWatched cron); attaches X-WMCP-Trust / X-WMCP-Drift response
+  // headers below. With the opt-in WMCP_TRUST_GATE="1" flag (default off), a
+  // failing or recently-rug-pulled upstream is refused with 412 before we ever
+  // call it. Default (flag unset) = headers only, zero behaviour change. ----
+  let trustGrade: GradeResult | null = null;
+  try {
+    if (c.env.CACHE && provider.mcpUrl) {
+      const gHost = new URL(provider.mcpUrl).host.toLowerCase();
+      trustGrade = await readGrade(c.env as any, gHost);
+    }
+  } catch { trustGrade = null; }
+  if (c.env.WMCP_TRUST_GATE === "1" && trustGrade) {
+    const g = trustGrade;
+    const driftedRecently = !!(g.last_drift && Date.now() - g.last_drift.ts < 24 * 3600 * 1000);
+    const failing = g.grade === "F" || g.grade.startsWith("D");
+    if (failing || ((g.drift_count || 0) > 0 && driftedRecently)) {
+      return c.json(
+        {
+          error: "trust_gate",
+          verdict: failing ? "failing" : "drifted",
+          provider: provider.id,
+          host: g.host,
+          grade: g.grade,
+          drift_count: g.drift_count || 0,
+          report_url: `${origin}/mcp/grade/${encodeURIComponent(g.host)}`,
+        },
+        412
+      );
+    }
+  }
+
   // Per-connection billing (the moat's revenue model): once managed-connection
   // billing is configured (STRIPE_PRICE_CONNECTION set), proxying a provider
   // requires an active managed-connection subscription for it. Before billing
@@ -264,6 +304,12 @@ export async function mcpProxyHandler(
     if (!STRIP_RES_HEADERS.has(k.toLowerCase())) outHeaders.set(k, v);
   });
   outHeaders.set("x-proxied-by", "wmcp.sh");
+  // Non-blocking trust signal for gradeable providers (MCP clients ignore
+  // unknown headers; absent entirely when the upstream host has no grade yet).
+  if (trustGrade) {
+    outHeaders.set("X-WMCP-Trust", trustGrade.grade || letter(trustGrade.score));
+    outHeaders.set("X-WMCP-Drift", (trustGrade.drift_count || 0) > 0 ? "1" : "0");
+  }
 
   return new Response(upstreamRes.body, {
     status: upstreamRes.status,
