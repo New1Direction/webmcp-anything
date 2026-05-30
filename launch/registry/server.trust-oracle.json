@@ -1,0 +1,17 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.New1Direction/trust-oracle",
+  "description": "Agent-callable MCP trust oracle. Returns an independent A–F trust grade for any MCP server (spec conformance, security/OWASP-MCP-Top-10, reliability, tool hygiene, transparency), checks for tool-surface drift / rug-pulls, and gates a connection with a single connect/caution/avoid verdict BEFORE an agent executes. The grade is free and never for sale.",
+  "repository": {
+    "url": "https://github.com/New1Direction/webmcp-anything",
+    "source": "github"
+  },
+  "version": "1.0.0",
+  "websiteUrl": "https://wmcp.sh/mcp/trust",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://wmcp.sh/mcp/trust"
+    }
+  ]
+}

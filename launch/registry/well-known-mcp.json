@@ -1,0 +1,16 @@
+{
+  "_comment": "Reference copy of the /.well-known/mcp manifest. The LIVE version is served dynamically by the worker at https://wmcp.sh/.well-known/mcp (see worker/src/connect_hub.ts wellKnownMcpManifest, derived from PROVIDERS so it can't drift). This file is for reviewers. No ratified standard exists for this path yet — the sanctioned discovery channel is the official registry at registry.modelcontextprotocol.io; this is a de-facto {name,url,description,transport,auth} list for crawlers.",
+  "name": "wmcp.sh",
+  "description": "Trust layer + OAuth vault for the Model Context Protocol.",
+  "homepage": "https://wmcp.sh",
+  "servers": [
+    { "name": "trust-oracle", "url": "https://wmcp.sh/mcp/trust", "transport": "streamable-http", "auth": "none" },
+    { "name": "linear", "url": "https://wmcp.sh/mcp/linear", "transport": "streamable-http", "auth": "oauth-vault" },
+    { "name": "notion", "url": "https://wmcp.sh/mcp/notion", "transport": "streamable-http", "auth": "oauth-vault" },
+    { "name": "atlassian", "url": "https://wmcp.sh/mcp/atlassian", "transport": "streamable-http", "auth": "oauth-vault" },
+    { "name": "asana", "url": "https://wmcp.sh/mcp/asana", "transport": "streamable-http", "auth": "oauth-vault" },
+    { "name": "paypal", "url": "https://wmcp.sh/mcp/paypal", "transport": "streamable-http", "auth": "oauth-vault" },
+    { "name": "sentry", "url": "https://wmcp.sh/mcp/sentry", "transport": "streamable-http", "auth": "oauth-vault" },
+    { "name": "defillama", "url": "https://wmcp.sh/mcp/defillama", "transport": "streamable-http", "auth": "oauth-vault" }
+  ]
+}

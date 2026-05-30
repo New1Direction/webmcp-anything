@@ -158,6 +158,15 @@ app.get("/connect", async (c) => {
   });
 });
 
+// Discovery manifest — a crawlable list of the MCP servers wmcp.sh hosts
+// (trust oracle + vaulted proxies), derived from PROVIDERS so it can't drift.
+app.get("/.well-known/mcp", async (c) => {
+  const { wellKnownMcpManifest } = await import("./connect_hub");
+  return c.json(wellKnownMcpManifest(new URL(c.req.url).origin), 200, {
+    "cache-control": "public, max-age=900, s-maxage=900",
+  });
+});
+
 app.get("/connect/anthropic", async (c) => {
   const { connectAnthropicHtml } = await import("./connect_anthropic");
   return c.html(connectAnthropicHtml());
