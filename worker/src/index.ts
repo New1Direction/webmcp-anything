@@ -90,11 +90,16 @@ app.get("/api/v1/stats/public", async (c) => {
 
 app.get("/api/v1/directory", async (c) => {
   const limit = Math.min(500, parseInt(c.req.query("limit") || "200", 10));
+  // Max entries shown per host so one big store (e.g. the cron's Shopify seed)
+  // can't flood the page and read as spam. ?per_host=0 disables the cap.
+  const perHost = Math.max(0, parseInt(c.req.query("per_host") || "3", 10));
   const { slugFromUrl } = await import("./slug");
 
-  // Parallel: directory entries + verified set + featured ranks.
+  // Pull a WIDE window of seen: keys (the cap dedups it down). KV.list returns
+  // ~insertion/lexical order, so a single prolific host dominates the first 500;
+  // we read up to 1000 then diversify, rather than sorting an already-skewed slice.
   const [list, vList, fList] = await Promise.all([
-    c.env.CACHE.list({ prefix: "seen:", limit }),
+    c.env.CACHE.list({ prefix: "seen:", limit: 1000 }),
     c.env.KEYS.list({ prefix: "verified:", limit: 1000 }),
     c.env.KEYS.list({ prefix: "featured:", limit: 1000 }),
   ]);
@@ -114,7 +119,7 @@ app.get("/api/v1/directory", async (c) => {
     })
   );
 
-  const entries = list.keys
+  const raw = list.keys
     .map((k: any) => k.metadata)
     .filter((m: any) => m && m.url)
     .map((m: any) => {
@@ -130,15 +135,9 @@ app.get("/api/v1/directory", async (c) => {
       };
     });
 
-  // Sort: featured first (asc by rank), then by ts desc.
-  entries.sort((a: any, b: any) => {
-    const ar = a.featured_rank ?? Number.POSITIVE_INFINITY;
-    const br = b.featured_rank ?? Number.POSITIVE_INFINITY;
-    if (ar !== br) return ar - br;
-    return b.ts - a.ts;
-  });
-
-  return c.json({ entries, list_complete: list.list_complete });
+  const { rankDirectory } = await import("./directory_rank");
+  const { entries, distinct_hosts } = rankDirectory(raw, { perHost, limit });
+  return c.json({ entries, list_complete: list.list_complete, distinct_hosts, per_host_cap: perHost || null });
 });
 
 app.get("/directory", (c) => {
