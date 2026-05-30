@@ -287,6 +287,18 @@ export async function mcpProxyHandler(
     upstreamBody = await c.req.arrayBuffer();
   }
 
+  // Behavioral telemetry (v2): which tool is this call invoking? Parse the
+  // JSON-RPC request best-effort (it's already in memory) so we can record the
+  // observed outcome below. Only tools/call carries a tool name worth tracking.
+  let observedTool: string | undefined;
+  if (upstreamBody) {
+    try {
+      const j = JSON.parse(new TextDecoder().decode(upstreamBody));
+      if (j?.method === "tools/call") observedTool = typeof j?.params?.name === "string" ? j.params.name : undefined;
+    } catch { /* not JSON-RPC we can read — skip telemetry */ }
+  }
+
+  const t0 = Date.now();
   const upstreamRes = await fetch(upstreamUrl, {
     method,
     headers: upstreamHeaders,
@@ -296,6 +308,25 @@ export async function mcpProxyHandler(
     // Cloudflare-Workers-specific: don't let CF cache MCP responses (stateful).
     cf: { cacheTtl: 0, cacheEverything: false },
   } as any);
+
+  // Record the observed call — fire-and-forget, never blocks or alters the
+  // proxied response. This is the execution-path signal a static scanner can't
+  // see; it feeds the grade's Reliability dimension via recordGrade. Transport-
+  // level success only (we don't buffer the streamed body to inspect JSON-RPC
+  // isError — that stays a future deepening).
+  if (observedTool && c.env.CACHE) {
+    let behHost = "";
+    try { behHost = new URL(provider.mcpUrl).host.toLowerCase(); } catch {}
+    if (behHost) {
+      const ok = upstreamRes.status >= 200 && upstreamRes.status < 400;
+      const latency_ms = Date.now() - t0;
+      c.executionCtx.waitUntil(
+        import("./behavior").then((m) =>
+          m.recordToolCall(c.env as any, behHost, { tool: observedTool, ok, latency_ms })
+        ).catch(() => {})
+      );
+    }
+  }
 
   // Pass-through response. Strip hop-by-hop headers but keep mcp-session-id
   // and any custom MCP-protocol headers verbatim.
