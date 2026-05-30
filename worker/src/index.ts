@@ -1228,6 +1228,42 @@ app.post("/api/v1/agent-ready/fix/checkout", async (c) => createFixCheckout(c as
 // Per-connection managed OAuth-proxy subscription (the moat's revenue model).
 app.post("/api/v1/connections/checkout", async (c) => createManagedConnectionCheckout(c as any));
 app.get("/api/v1/connections", async (c) => listManagedConnections(c as any));
+
+// ---- Agent control plane: per-agent metering + budget caps + kill switch +
+// audit, governing tool access across ALL proxied providers from one point.
+// Auth = the account (API key or session); resolveAuth handles both.
+app.get("/api/v1/agent/usage", async (c) => {
+  const { resolveAuth } = await import("./auth");
+  const auth = await resolveAuth(c as any);
+  if (auth.anonymous) return c.json({ error: "sign_in_required" }, 401);
+  const { getUsage } = await import("./control");
+  return c.json(await getUsage(c.env as any, auth.user_id));
+});
+app.get("/api/v1/agent/audit", async (c) => {
+  const { resolveAuth } = await import("./auth");
+  const auth = await resolveAuth(c as any);
+  if (auth.anonymous) return c.json({ error: "sign_in_required" }, 401);
+  const limit = parseInt(c.req.query("limit") || "50", 10);
+  const { readAudit } = await import("./control");
+  return c.json({ user_id: auth.user_id, entries: await readAudit(c.env as any, auth.user_id, limit) });
+});
+// Set the kill switch and/or the daily tool-call cap. Body: {killed?, daily_cap?}.
+// killed:true instantly 403s this account's tool access across every provider.
+app.post("/api/v1/agent/control", async (c) => {
+  const { resolveAuth } = await import("./auth");
+  const auth = await resolveAuth(c as any);
+  if (auth.anonymous) return c.json({ error: "sign_in_required", hint: "Sign in or pass your API key to govern your agent." }, 401);
+  const body = await c.req.json<{ killed?: boolean; daily_cap?: number | null }>().catch(() => ({}));
+  const patch: { killed?: boolean; daily_cap?: number } = {};
+  if (typeof body.killed === "boolean") patch.killed = body.killed;
+  if (body.daily_cap === null) patch.daily_cap = 0; // 0 clears the cap (normalized in setControl)
+  else if (typeof body.daily_cap === "number") patch.daily_cap = body.daily_cap;
+  if (Object.keys(patch).length === 0) return c.json({ error: "nothing_to_set", hint: "Pass killed (bool) and/or daily_cap (number, null to clear)." }, 400);
+  const { setControl } = await import("./control");
+  const next = await setControl(c.env as any, auth.user_id, patch);
+  return c.json({ ok: true, control: next });
+});
+
 // MCP trust-authority monetization SKUs (sold off the grade page).
 app.post("/api/v1/mcp/deep-audit/checkout", async (c) => createDeepAuditCheckout(c as any));
 app.post("/api/v1/mcp/monitor/checkout", async (c) => createMonitorCheckout(c as any));
