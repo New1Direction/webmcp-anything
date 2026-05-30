@@ -21,7 +21,7 @@ import {
 } from "./provider_routes";
 import { resolveTokenForUrl, providerForUrl } from "./token_resolver";
 import { loadProviderToken } from "./token_vault";
-import { gate, issueKey, revokeKey, type AuthCtx, type Plan } from "./auth";
+import { gate, proxyExecuteGate, issueKey, revokeKey, type AuthCtx, type Plan } from "./auth";
 import {
   stripeWebhook,
   createCheckout,
@@ -307,12 +307,16 @@ app.all("/mcp/trust", gate("read"), async (c) => {
   return oracleHandler(c as any);
 });
 
-app.all("/mcp/:provider", gate("execute"), async (c) => {
+// proxyExecuteGate (not gate("execute")): same paid-plan execute quota, PLUS the
+// per-agent free tier when PROXY_FREE_CALLS_PER_DAY is set (default-off → free
+// plan still 402s, identical to before). The pricing flip that lets agents
+// activate before the paywall.
+app.all("/mcp/:provider", proxyExecuteGate(), async (c) => {
   const { mcpProxyHandler } = await import("./mcp_proxy");
   return mcpProxyHandler(c as any);
 });
 // Match subpaths too (rare with MCP servers but harmless to support).
-app.all("/mcp/:provider/*", gate("execute"), async (c) => {
+app.all("/mcp/:provider/*", proxyExecuteGate(), async (c) => {
   const { mcpProxyHandler } = await import("./mcp_proxy");
   return mcpProxyHandler(c as any);
 });
