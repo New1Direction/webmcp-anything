@@ -169,6 +169,16 @@ export async function mcpProxyHandler(
 
   const origin = new URL(c.req.url).origin;
 
+  // ---- Control plane: kill switch + per-agent budget cap, enforced on the path
+  // wmcp owns. No-op unless this account has set a control (one KV read). This is
+  // the thing the raw first-party servers can't do — govern an agent's tool use
+  // across every provider from one point. Killed → 403; over daily cap → 429. ----
+  {
+    const { checkAgentAllowed } = await import("./control");
+    const verdict = await checkAgentAllowed(c.env as any, auth.user_id);
+    if (!verdict.allowed) return c.json(verdict.body, verdict.status as any);
+  }
+
   // ---- Trust signal (verify-then-execute). Best-effort: NEVER block the proxy
   // on a grade lookup. One read-only cache read of grade:<host> (kept warm by
   // the regradeWatched cron); attaches X-WMCP-Trust / X-WMCP-Drift response
@@ -327,6 +337,19 @@ export async function mcpProxyHandler(
       );
     }
   }
+
+  // Per-agent meter + audit (control plane). Counts every proxied call for the
+  // account so budget caps + the usage readout + the audit log all work off one
+  // record. Fire-and-forget; never blocks or alters the response.
+  c.executionCtx.waitUntil(
+    import("./control").then((m) =>
+      m.recordProxyCall(c.env as any, auth.user_id, {
+        provider: provider.id,
+        tool: observedTool,
+        status: upstreamRes.status,
+      })
+    ).catch(() => {})
+  );
 
   // Pass-through response. Strip hop-by-hop headers but keep mcp-session-id
   // and any custom MCP-protocol headers verbatim.
