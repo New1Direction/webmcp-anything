@@ -65,4 +65,34 @@ describe("MCP-proxy providers are well-formed", () => {
     expect(s.tokenUrl).toBe("https://mcp.sentry.dev/oauth/token");
     expect(s.usePKCERedirect).toBe(true);
   });
+
+  // ---- horizontal expansion (2026-05-30): 7 → 25 proxied providers ----
+  const EXPANSION_18 = [
+    "stripe_mcp", "webflow", "wix", "canva", "monday", "fireflies", "zapier",
+    "cloudinary", "cloudflare_bindings", "cloudflare_observability", "apify",
+    "globalping", "neon", "posthog", "prisma", "grafana", "huggingface", "telnyx",
+  ];
+
+  it("includes all 18 connect-verified expansion providers (vault now 25)", () => {
+    const ids = proxied.map((p) => p.id);
+    for (const id of EXPANSION_18) expect(ids).toContain(id);
+    expect(proxied.length).toBeGreaterThanOrEqual(25);
+  });
+
+  it("every expansion provider is zero-setup DCR (no static operator secret)", () => {
+    for (const id of EXPANSION_18) {
+      const p = PROVIDERS[id] as any;
+      expect(p, id).toBeTruthy();
+      expect(p.usePKCERedirect).toBe(true);
+      expect(p.dcrRegistrationUrl).toMatch(/^https:\/\//);
+      expect(p.clientIdSecret).toBeUndefined();
+      expect(p.clientSecretSecret).toBeUndefined();
+    }
+  });
+
+  it("HELD candidates stay unshipped (allowlist-blocked / no public DCR / unreachable)", () => {
+    for (const id of ["square", "intercom", "vercel", "github_mcp", "box", "paddle", "plaid", "hubspot", "dialpad"]) {
+      expect(PROVIDERS[id]).toBeUndefined();
+    }
+  });
 });
