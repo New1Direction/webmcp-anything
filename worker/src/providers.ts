@@ -158,38 +158,55 @@ export const PROVIDERS: Record<string, Provider> = {
   },
 
   // --- Productivity ---
+  // Notion's official OAuth-protected remote MCP. Converted from static-OAuth to
+  // MCP-proxy + DCR 2026-05-29 (endpoints verified live against mcp.notion.com
+  // metadata: register auth method "none", PKCE S256). Zero operator setup —
+  // wmcp.sh self-registers, so NOTION_CLIENT_ID/SECRET are no longer needed.
   notion: {
     id: "notion",
     name: "Notion",
-    description: "Read/write pages and databases in a user's Notion workspace.",
+    description:
+      "Read/write pages and databases in a user's Notion workspace via Notion's official OAuth-protected remote MCP. Connect once; your agent gets the live Notion tools at /mcp/notion.",
     authType: "oauth2",
-    authUrl: "https://api.notion.com/v1/oauth/authorize",
-    tokenUrl: "https://api.notion.com/v1/oauth/token",
-    scopes: "", // Notion doesn't use scopes
-    tokenAuthMethod: "header",
-    userInfoUrl: "https://api.notion.com/v1/users/me",
-    userInfoHeaders: { "notion-version": "2022-06-28" },
-    clientIdSecret: "NOTION_CLIENT_ID",
-    clientSecretSecret: "NOTION_CLIENT_SECRET",
-    apiHosts: ["api.notion.com"],
+    authUrl: "https://mcp.notion.com/authorize",
+    tokenUrl: "https://mcp.notion.com/token",
+    scopes: "", // Notion advertises no scopes
+    usePKCERedirect: true,
+    dcrRegistrationUrl: "https://mcp.notion.com/register",
+    mcpProxy: true,
+    mcpUrl: "https://mcp.notion.com/mcp",
+    apiHosts: ["api.notion.com", "mcp.notion.com"],
     category: "productivity",
-    status: "stable",
+    status: "experimental",
+    scopeNotice:
+      "Connect your own Notion workspace via Notion's official remote MCP (mcp.notion.com). wmcp.sh self-registers (RFC 7591 DCR), stores your token encrypted, and proxies tool calls at /mcp/notion — same flow as DefiLlama/Sentry.",
+    notes:
+      "Converted to MCP-proxy 2026-05-29: RFC 7591 DCR + PKCE (S256), endpoints verified live against mcp.notion.com OAuth metadata. Previously static-OAuth (NOTION_CLIENT_ID/SECRET — now unused).",
   },
 
+  // Linear's official OAuth-protected remote MCP. Converted from static-OAuth to
+  // MCP-proxy + DCR 2026-05-29. Note: authorization_endpoint is on linear.app,
+  // token + register on the mcp.linear.app subdomain (verified live).
   linear: {
     id: "linear",
     name: "Linear",
-    description: "Read/write issues, projects, comments in a user's Linear workspace.",
+    description:
+      "Read/write issues, projects, comments in a user's Linear workspace via Linear's official OAuth-protected remote MCP. Connect once; your agent gets the live Linear tools at /mcp/linear.",
     authType: "oauth2",
     authUrl: "https://linear.app/oauth/authorize",
-    tokenUrl: "https://api.linear.app/oauth/token",
-    scopes: "read write",
-    userInfoUrl: "https://api.linear.app/graphql", // GraphQL: viewer { id name email }
-    clientIdSecret: "LINEAR_CLIENT_ID",
-    clientSecretSecret: "LINEAR_CLIENT_SECRET",
-    apiHosts: ["api.linear.app"],
+    tokenUrl: "https://mcp.linear.app/oauth/token",
+    scopes: "read write issues:create comments:create app:assignable app:mentionable",
+    usePKCERedirect: true,
+    dcrRegistrationUrl: "https://mcp.linear.app/oauth/register",
+    mcpProxy: true,
+    mcpUrl: "https://mcp.linear.app/mcp",
+    apiHosts: ["api.linear.app", "mcp.linear.app"],
     category: "dev",
-    status: "stable",
+    status: "experimental",
+    scopeNotice:
+      "Connect your own Linear workspace via Linear's official remote MCP (mcp.linear.app). wmcp.sh self-registers (RFC 7591 DCR) — no app setup — stores your token encrypted, and proxies tool calls at /mcp/linear.",
+    notes:
+      "Converted to MCP-proxy 2026-05-29: RFC 7591 DCR + PKCE (S256). Endpoints verified live against mcp.linear.app metadata (authorization_endpoint on linear.app; token + register on mcp.linear.app). Previously static-OAuth (LINEAR_CLIENT_ID/SECRET — now unused).",
   },
 
   // --- AI providers ---
@@ -287,6 +304,56 @@ export const PROVIDERS: Record<string, Provider> = {
       "MCP-spec compliant — RFC 7591 Dynamic Client Registration + PKCE (S256), verified against mcp.sentry.dev OAuth metadata. " +
       "Agents connect to https://wmcp.sh/mcp/sentry instead of the upstream; wmcp.sh injects the user's bearer token. " +
       "Scopes are what the server advertises (org:read + project/team/event:write) — narrow to \"org:read\" here for read-only.",
+  },
+
+  // Atlassian's official remote MCP (Jira + Confluence). DCR + PKCE verified
+  // live against mcp.atlassian.com metadata (offline_access → refresh tokens).
+  // Using the streamable-http /v1/mcp endpoint (the /v1/sse variant also works).
+  atlassian: {
+    id: "atlassian",
+    name: "Atlassian (Jira + Confluence)",
+    description:
+      "Search, read and update Jira issues and Confluence pages in a user's Atlassian site via Atlassian's official OAuth-protected remote MCP. Connect once; your agent gets the live Jira/Confluence tools at /mcp/atlassian.",
+    authType: "oauth2",
+    authUrl: "https://mcp.atlassian.com/v1/authorize",
+    tokenUrl: "https://mcp.atlassian.com/v1/token",
+    scopes:
+      "read:jira-work read:jira-user write:jira-work read:confluence-content.all read:confluence-space.summary write:confluence-content manage:jira-project read:me read:account offline_access",
+    usePKCERedirect: true,
+    dcrRegistrationUrl: "https://mcp.atlassian.com/v1/register",
+    mcpProxy: true,
+    mcpUrl: "https://mcp.atlassian.com/v1/mcp",
+    apiHosts: ["mcp.atlassian.com"],
+    category: "productivity",
+    status: "experimental",
+    scopeNotice:
+      "Connect your own Atlassian site via Atlassian's official remote MCP (mcp.atlassian.com). wmcp.sh self-registers (RFC 7591 DCR), stores your token encrypted, and proxies tool calls at /mcp/atlassian.",
+    notes:
+      "RFC 7591 DCR + PKCE (S256), endpoints verified live against mcp.atlassian.com OAuth metadata (offline_access present → refresh tokens). Jira + Confluence scopes as advertised.",
+  },
+
+  // Asana's official remote MCP. DCR + PKCE verified live against
+  // mcp.asana.com metadata (registration_endpoint /auth/register, S256).
+  asana: {
+    id: "asana",
+    name: "Asana",
+    description:
+      "Read and update tasks, projects and workspaces in a user's Asana account via Asana's official OAuth-protected remote MCP. Connect once; your agent gets the live Asana tools at /mcp/asana.",
+    authType: "oauth2",
+    authUrl: "https://mcp.asana.com/auth/authorize",
+    tokenUrl: "https://mcp.asana.com/auth/token",
+    scopes: "default",
+    usePKCERedirect: true,
+    dcrRegistrationUrl: "https://mcp.asana.com/auth/register",
+    mcpProxy: true,
+    mcpUrl: "https://mcp.asana.com/mcp",
+    apiHosts: ["mcp.asana.com", "app.asana.com"],
+    category: "productivity",
+    status: "experimental",
+    scopeNotice:
+      "Connect your own Asana account via Asana's official remote MCP (mcp.asana.com). wmcp.sh self-registers (RFC 7591 DCR), stores your token encrypted, and proxies tool calls at /mcp/asana.",
+    notes:
+      "RFC 7591 DCR + PKCE (S256), endpoints verified live against mcp.asana.com OAuth metadata.",
   },
 
   // --- Shopify Admin (for Shopify reseller tier) ---
