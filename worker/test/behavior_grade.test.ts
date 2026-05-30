@@ -49,8 +49,9 @@ describe("recordGrade behavioral overlay (v2)", () => {
     expect(g!.behavioral!.observed_calls).toBe(6);
     expect(g!.sub.reliability.score).toBe(100);          // observed, not the 80 probe
     expect(g!.sub.reliability.notes[0]).toContain("OBSERVED");
-    // composite rises because reliability went 80→100 (weight 20): +4 points.
-    expect(g!.score).toBe(88);
+    // composite re-scores from the sub-scores with observed reliability=100:
+    // (spec100·20 + sec100·30 + rel100·20 + hyg70·15 + trans70·15)/100 = 91.
+    expect(g!.score).toBe(91);
   });
 
   it("surfaces a flaky tool as a behavioral finding and lowers reliability", async () => {
