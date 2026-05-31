@@ -79,6 +79,28 @@ export function dashboardHtml(origin: string): string {
   .usage-card .bar { background: var(--border); height: 4px; border-radius: 999px; overflow: hidden; }
   .usage-card .fill { background: linear-gradient(90deg, var(--accent), var(--accent2)); height: 100%; border-radius: 999px; }
 
+  /* Governance panel — the control plane made visible. */
+  .gov-head { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .pill.live { background: rgba(74,222,128,.15); color: var(--green); }
+  .pill.killed { background: rgba(248,113,113,.18); color: var(--red); }
+  .gov-actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; align-items:flex-end; }
+  .gov-field { display:flex; flex-direction:column; gap:6px; }
+  .gov-field label { color: var(--muted); font-size:.74rem; text-transform:uppercase; letter-spacing:.08em; }
+  .gov-field input { width:140px; }
+  .kill-btn {
+    border:1px solid var(--red); color:var(--red); background:rgba(248,113,113,.08);
+    padding:11px 18px; border-radius:10px; font-weight:700; cursor:pointer; font-family:inherit; font-size:.85rem;
+    transition: all .15s;
+  }
+  .kill-btn:hover { background: var(--red); color:#1a0000; }
+  .kill-btn.revive { border-color: var(--green); color: var(--green); background: rgba(74,222,128,.08); }
+  .kill-btn.revive:hover { background: var(--green); color:#002200; }
+  .audit { width:100%; border-collapse:collapse; margin-top:14px; font-size:.82rem; }
+  .audit th { text-align:left; color:var(--muted); font-weight:600; font-size:.72rem; text-transform:uppercase; letter-spacing:.06em; padding:6px 10px; border-bottom:1px solid var(--border); }
+  .audit td { padding:6px 10px; border-bottom:1px solid var(--bg2); font-family:"SF Mono",Menlo,monospace; }
+  .audit .ok { color: var(--green); } .audit .bad { color: var(--red); }
+  .audit-empty { color: var(--muted); font-size:.85rem; padding:14px 0; }
+
   .plans {
     display: grid; gap: 16px; margin-top: 32px;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -184,6 +206,31 @@ export function dashboardHtml(origin: string): string {
       <span class="muted" id="userId">—</span>
     </div>
     <div class="usage-grid" id="usage"></div>
+  </div>
+</div>
+
+<div id="govern-area" class="key-box" style="display:none">
+  <div class="gov-head">
+    <strong>Agent controls</strong>
+    <span class="pill" id="govern-status">—</span>
+  </div>
+  <p class="muted" style="margin:6px 0 0;font-size:.88rem">
+    One kill switch and one audit trail across <strong>every</strong> provider you've connected — the thing the raw
+    first-party servers can't do. Flip the switch and this agent's tool access stops everywhere, instantly.
+  </p>
+  <div class="usage-grid" id="govern-usage" style="margin-top:16px"></div>
+  <div class="gov-actions">
+    <button class="kill-btn" id="kill-toggle">Kill all tool access</button>
+    <div class="gov-field">
+      <label for="cap-input">Daily call cap</label>
+      <input type="number" id="cap-input" min="0" placeholder="none" />
+    </div>
+    <button class="input-btn" id="cap-save">Set cap</button>
+    <span class="muted" id="govern-msg" style="font-size:.82rem"></span>
+  </div>
+  <div style="margin-top:18px">
+    <strong style="font-size:.9rem">Recent tool calls</strong>
+    <div id="audit-wrap"></div>
   </div>
 </div>
 
@@ -365,8 +412,10 @@ let activeApiKeyProvider = null;
       if (d.key) { inp.value = d.key; loadAuth(); }
     });
 
-    // Pre-fill the manual lookup box if we have a key
+    // Pre-fill the manual lookup box if we have a key, and show the governance
+    // panel straight away (the control plane is the headline, not a hidden API).
     if (lastKey && !inp.value) inp.value = lastKey;
+    if (inp.value) loadGovernance(inp.value);
 
     // Connections area only shown when signed in
     await loadConnections();
@@ -685,11 +734,109 @@ async function check() {
       </div>
     \`;
     result.style.display = "block";
+    // The control plane, made visible: load this agent's governance panel.
+    loadGovernance(key);
   } catch (e) {
     result.innerHTML = '<span style="color:var(--red)">' + String(e) + '</span>';
     result.style.display = "block";
   }
 }
+
+// ----- Agent controls (governance: usage + kill switch + cap + audit) -----
+async function loadGovernance(key) {
+  const area = document.getElementById("govern-area");
+  if (!key) { area.style.display = "none"; return; }
+  const H = { "authorization": "Bearer " + key };
+  try {
+    const [uRes, aRes] = await Promise.all([
+      fetch(ORIGIN + "/api/v1/agent/usage", { headers: H }),
+      fetch(ORIGIN + "/api/v1/agent/audit?limit=25", { headers: H }),
+    ]);
+    if (uRes.status === 401) { area.style.display = "none"; return; } // anon/invalid key
+    const u = await uRes.json();
+    const a = await aRes.json().catch(() => ({ entries: [] }));
+    renderGovernance(u, a.entries || []);
+    area.style.display = "block";
+  } catch { area.style.display = "none"; }
+}
+
+function renderGovernance(u, entries) {
+  const killed = !!u.killed;
+  const cap = u.daily_cap;          // null = no cap
+  const used = u.used_today || 0;
+  const pct = cap ? Math.min(100, Math.round((used / cap) * 100)) : 0;
+
+  const status = document.getElementById("govern-status");
+  status.textContent = killed ? "KILLED" : "Live";
+  status.className = "pill " + (killed ? "killed" : "live");
+
+  document.getElementById("govern-usage").innerHTML = \`
+    <div class="usage-card">
+      <div class="label">Calls today</div>
+      <div class="val">\${used}\${cap != null ? " / " + cap : ""}</div>
+      \${cap != null
+        ? \`<div class="bar"><div class="fill" style="width:\${pct}%"></div></div>\`
+        : \`<div class="label" style="margin-top:4px;text-transform:none">no cap set</div>\`}
+    </div>
+    <div class="usage-card">
+      <div class="label">Remaining</div>
+      <div class="val">\${cap != null ? Math.max(0, cap - used) : "∞"}</div>
+    </div>
+    <div class="usage-card">
+      <div class="label">Tool access</div>
+      <div class="val" style="font-size:1.1rem;color:\${killed ? "var(--red)" : "var(--green)"}">\${killed ? "Paused" : "Active"}</div>
+    </div>\`;
+
+  const kb = document.getElementById("kill-toggle");
+  kb.textContent = killed ? "Re-enable tool access" : "Kill all tool access";
+  kb.className = "kill-btn" + (killed ? " revive" : "");
+  kb.dataset.killed = killed ? "1" : "0";
+
+  const ci = document.getElementById("cap-input");
+  if (document.activeElement !== ci) ci.value = cap != null ? cap : "";
+
+  const wrap = document.getElementById("audit-wrap");
+  if (!entries.length) {
+    wrap.innerHTML = '<div class="audit-empty">No tool calls yet. Once your agent calls a connected provider through wmcp, every call is logged here.</div>';
+    return;
+  }
+  const esc = (s) => String(s == null ? "—" : s).replace(/[&<>"]/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[m]));
+  const rows = entries.map((e) => {
+    const when = (() => { try { return new Date(e.ts).toLocaleString(); } catch { return "—"; } })();
+    const cls = e.ok ? "ok" : "bad";
+    return \`<tr><td>\${esc(when)}</td><td>\${esc(e.provider)}</td><td>\${esc(e.tool)}</td><td class="\${cls}">\${esc(e.status)}</td></tr>\`;
+  }).join("");
+  wrap.innerHTML = \`<table class="audit"><thead><tr><th>When</th><th>Provider</th><th>Tool</th><th>Status</th></tr></thead><tbody>\${rows}</tbody></table>\`;
+}
+
+async function postControl(body) {
+  const key = inp.value.trim();
+  if (!key) return;
+  const msg = document.getElementById("govern-msg");
+  msg.textContent = "Saving…";
+  try {
+    const r = await fetch(ORIGIN + "/api/v1/agent/control", {
+      method: "POST",
+      headers: { "authorization": "Bearer " + key, "content-type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok || d.error) { msg.textContent = "Error: " + (d.error || r.status); return; }
+    msg.textContent = "Saved.";
+    setTimeout(() => { msg.textContent = ""; }, 2000);
+    loadGovernance(key);
+  } catch { msg.textContent = "Network error."; }
+}
+
+document.getElementById("kill-toggle")?.addEventListener("click", () => {
+  const killed = document.getElementById("kill-toggle").dataset.killed === "1";
+  if (!killed && !confirm("Kill ALL tool access for this agent, across every connected provider? Calls will be refused (403) until you re-enable.")) return;
+  postControl({ killed: !killed });
+});
+document.getElementById("cap-save")?.addEventListener("click", () => {
+  const v = document.getElementById("cap-input").value.trim();
+  postControl({ daily_cap: v === "" ? null : parseInt(v, 10) });
+});
 </script>
 </body>
 </html>`;
