@@ -46,10 +46,13 @@ describe("rankDirectory", () => {
     expect(entries.filter((x) => x.host === "aloyoga.com").length).toBe(3);
   });
 
-  it("per_host=0 disables the cap (full list)", () => {
+  it("per_host=0 disables the PER-HOST cap only (limit still applies)", () => {
     const raw = Array.from({ length: 10 }, (_, i) => e(`https://x.com/p${i}`, i));
     const { entries } = rankDirectory(raw, { perHost: 0 });
-    expect(entries.length).toBe(10);
+    expect(entries.length).toBe(10); // all 10 returned: cap off AND under default limit
+    // but `limit` is NOT disabled by perHost=0 — it still truncates:
+    const big = Array.from({ length: 600 }, (_, i) => e(`https://x.com/p${i}`, i));
+    expect(rankDirectory(big, { perHost: 0, limit: 200 }).entries.length).toBe(200);
   });
 
   it("respects the overall limit after dedup", () => {
@@ -57,6 +60,26 @@ describe("rankDirectory", () => {
     for (let h = 0; h < 20; h++) for (let i = 0; i < 5; i++) raw.push(e(`https://h${h}.com/p${i}`, h * 10 + i));
     const { entries } = rankDirectory(raw, { perHost: 3, limit: 10 });
     expect(entries.length).toBe(10);
+  });
+
+  it("distinct_hosts counts the RETURNED rows, not the pre-truncation set", () => {
+    // 20 hosts, 1 entry each survives the cap → deduped=20, but limit=10 returns
+    // 10 rows from 10 hosts. The badge must say 10, not 20.
+    const raw = Array.from({ length: 20 }, (_, h) => e(`https://h${h}.com/p`, h));
+    const { entries, distinct_hosts } = rankDirectory(raw, { perHost: 1, limit: 10 });
+    expect(entries.length).toBe(10);
+    expect(distinct_hosts).toBe(10); // matches rows shown, not the 20 deduped
+  });
+
+  it("subdomains are counted as distinct hosts (documented limitation)", () => {
+    // hostOf does not collapse to the registrable domain, so a multi-subdomain
+    // store gets a per-host quota per subdomain. Locks in current behavior.
+    const raw = [
+      ...Array.from({ length: 4 }, (_, i) => e(`https://x.com/p${i}`, 100 + i)),
+      ...Array.from({ length: 4 }, (_, i) => e(`https://shop.x.com/p${i}`, 200 + i)),
+    ];
+    const { entries } = rankDirectory(raw, { perHost: 3 });
+    expect(entries.length).toBe(6); // 3 from x.com + 3 from shop.x.com
   });
 
   it("hostOf strips www + lowercases", () => {

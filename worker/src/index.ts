@@ -91,7 +91,8 @@ app.get("/api/v1/stats/public", async (c) => {
 app.get("/api/v1/directory", async (c) => {
   const limit = Math.min(500, parseInt(c.req.query("limit") || "200", 10));
   // Max entries shown per host so one big store (e.g. the cron's Shopify seed)
-  // can't flood the page and read as spam. ?per_host=0 disables the cap.
+  // can't flood the page and read as spam. ?per_host=0 disables the per-host cap
+  // only — `limit` (max 500) still applies, so this is not an "everything" escape.
   const perHost = Math.max(0, parseInt(c.req.query("per_host") || "3", 10));
   const { slugFromUrl } = await import("./slug");
 

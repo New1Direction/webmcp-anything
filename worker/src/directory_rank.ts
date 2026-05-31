@@ -20,6 +20,12 @@ export interface RankedEntry extends DirEntry {
   host: string;
 }
 
+// Cap key = full host, lowercased, leading "www." stripped. NOTE: this does NOT
+// collapse to the registrable domain, so shop.x.com and x.com count as two hosts
+// and each gets its own per-host quota. That's intentional (sub-stores can be
+// genuinely distinct, and eTLD+1 collapsing needs a public-suffix list to handle
+// .co.uk etc.) — but it means a motivated multi-subdomain store can still split
+// its flood. Acceptable for the cron-seeded directory; revisit if abuse shows up.
 export function hostOf(u: string): string {
   try { return new URL(u).host.replace(/^www\./, "").toLowerCase(); } catch { return u; }
 }
@@ -27,10 +33,13 @@ export function hostOf(u: string): string {
 /**
  * Rank + diversify directory entries.
  *   • Sort: featured first (asc rank), then newest ts.
- *   • Cap each host to `perHost` entries (0 = no cap) so one store can't flood.
- *   • Featured entries bypass the cap (hand-picked, always shown).
+ *   • Cap each host to `perHost` entries (0 disables the PER-HOST cap only) so one
+ *     store can't flood. `limit` ALWAYS applies on top — perHost=0 is not "full
+ *     list", it still truncates to `limit`.
+ *   • Featured entries bypass the per-host cap (hand-picked, always shown).
  *   • Truncate to `limit`.
- * Returns the ranked entries + the distinct-host count (for the "N stores" badge).
+ * Returns the ranked entries + the distinct-host count OF THE RETURNED entries
+ * (counted after truncation, so the "N stores" badge matches the rows shown).
  */
 export function rankDirectory(
   raw: DirEntry[],
@@ -57,6 +66,9 @@ export function rankDirectory(
     return n <= perHost;
   });
 
-  const distinct_hosts = new Set(deduped.map((e) => e.host)).size;
-  return { entries: deduped.slice(0, limit), distinct_hosts };
+  // Count distinct hosts AFTER truncation so the "N stores" badge can't claim
+  // more stores than the rows actually returned (deduped may exceed `limit`).
+  const entries = deduped.slice(0, limit);
+  const distinct_hosts = new Set(entries.map((e) => e.host)).size;
+  return { entries, distinct_hosts };
 }
