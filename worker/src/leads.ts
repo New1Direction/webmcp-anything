@@ -73,7 +73,11 @@ export function scoreLead(l: Omit<Lead, "score" | "why">): { score: number; why:
   else if (l.connections.length > 0) { score += 8; why.push(`${l.connections.length} tool(s) connected`); }
   if (l.plan && l.plan !== "free") { score += 10; why.push(`on ${l.plan}`); }
   if (l.email) { score += 3; } else { why.push("no email on file"); }
-  if (score === 0) why.push("signed up, no activity yet");
+  // Flag genuine idleness regardless of the small email bonus — an account with
+  // no traffic, no tools, and no governance config is a cold lead even if it has
+  // an email on file (so score may be 3, not 0).
+  const idle = l.calls_recent === 0 && l.connections.length === 0 && !l.cap_set && !l.killed;
+  if (idle) why.push("signed up, no activity yet");
   return { score, why };
 }
 
