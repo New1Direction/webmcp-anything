@@ -838,6 +838,15 @@ app.get("/api/v1/admin/metrics", async (c) => {
   const m = await import("./metrics");
   return m.getMetrics(c as any);
 });
+// Buyer-finding funnel: ranked prospect list from real account/usage signals.
+app.get("/api/v1/admin/leads", async (c) => {
+  const m = await import("./leads");
+  return m.getLeadsResponse(c as any);
+});
+app.get("/dashboard/leads", async (c) => {
+  const m = await import("./leads_page");
+  return c.html(m.leadsPageHtml());
+});
 
 // Category landing — groups all 5 oracle / price-data adapters under one URL.
 // Distinct from /integration/* (single-provider pages) — this is a category.
