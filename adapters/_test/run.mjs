@@ -88,6 +88,175 @@ test("openapi exports an action handler", async () => {
   assert.equal(typeof openapi.actions.openapi_request, "function");
 });
 
+// --- llms.txt ---
+test("llmstxt detects direct llms.txt URLs only", async () => {
+  const llmstxt = await import("../llmstxt.js");
+  assert.ok(llmstxt.detect({ url: "https://example.com/llms.txt" }));
+  assert.ok(llmstxt.detect({ url: "https://example.com/llms-full.txt?raw=1" }));
+  assert.equal(llmstxt.detect({ url: "file:///tmp/llms.txt" }), null);
+  assert.equal(llmstxt.detect({ url: "ftp://example.com/llms.txt" }), null);
+  assert.equal(llmstxt.detect({ url: "https://example.com/docs" }), null);
+  assert.equal(llmstxt.detect({ url: "https://example.com/not-llms.txt.backup" }), null);
+});
+
+test("llmstxt extract parses sections and declared links into tools", async () => {
+  const llmstxt = await import("../llmstxt.js");
+  const body = await fixture("llmstxt_example.txt");
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async (url, opts) => {
+    assert.equal(String(url), "https://example.com/llms.txt");
+    assert.equal(opts.credentials, "omit");
+    return new Response(body, {
+      status: 200,
+      headers: { "content-type": "text/plain; charset=utf-8" },
+    });
+  };
+  try {
+    const data = await llmstxt.extract({ adapter: "llmstxt", sourceUrl: "https://example.com/llms.txt" });
+    assert.equal(data.product.title, "Example Agent Surface");
+    assert.equal(data.product.summary, "A compact map of agent-readable documentation and APIs.");
+    assert.equal(data.product.description, "Use the stable docs before the API reference when bootstrapping an integration.");
+    assert.equal(data.product.section_count, 3);
+    assert.equal(data.product.link_count, 4);
+    const names = data.tools.map((t) => t.name);
+    assert.deepEqual(names, ["list_sections", "get_section", "fetch_link"]);
+    const list = data.tools.find((t) => t.name === "list_sections");
+    assert.equal(list.result.sections[0].name, "Docs");
+    assert.equal(list.result.sections[0].links[0].url, "https://example.com/docs/quickstart.md");
+    const optional = list.result.sections.find((section) => section.name === "Optional");
+    assert.equal(optional.optional, true);
+    assert.equal(optional.links[0].optional, true);
+    assert.equal(optional.links[0].url, "https://example.com/releases");
+    const fetchTool = data.tools.find((t) => t.name === "fetch_link");
+    assert.equal(fetchTool.inputSchema.required[0], "url");
+    assert.equal(fetchTool.action.kind, "llmstxt_fetch_link");
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("llmstxt action returns declared sections by name", async () => {
+  const llmstxt = await import("../llmstxt.js");
+  const section = await llmstxt.actions.llmstxt_get_section({
+    sections: [{ name: "Docs", links: [{ name: "Quickstart", url: "https://example.com/docs" }] }],
+    args: { section: "docs" },
+  });
+  assert.equal(section.name, "Docs");
+  await assert.rejects(
+    llmstxt.actions.llmstxt_get_section({ sections: [], args: { section: "Docs" } }),
+    /not declared/
+  );
+});
+
+test("llmstxt action fetches only declared links", async () => {
+  const llmstxt = await import("../llmstxt.js");
+  const links = [
+    { name: "Quickstart", url: "https://example.com/docs/quickstart.md", description: "Start here." },
+  ];
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async (url, opts) => {
+    assert.equal(String(url), "https://example.com/docs/quickstart.md");
+    assert.equal(opts.credentials, "omit");
+    return new Response("# Quickstart\n\nHello agents.", {
+      status: 200,
+      headers: { "content-type": "text/markdown" },
+    });
+  };
+  try {
+    const value = await llmstxt.actions.llmstxt_fetch_link({
+      links,
+      args: { url: "https://example.com/docs/quickstart.md" },
+    });
+    assert.equal(value.status, 200);
+    assert.equal(value.url, "https://example.com/docs/quickstart.md");
+    assert.match(value.body, /Hello agents/);
+    await assert.rejects(
+      llmstxt.actions.llmstxt_fetch_link({ links, args: { url: "https://other.example.com/" } }),
+      /not declared/
+    );
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("llmstxt rejects non-http declared links", async () => {
+  const llmstxt = await import("../llmstxt.js");
+  let fetchCalls = 0;
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async () => {
+    fetchCalls++;
+    return new Response(
+      "# Example\n\n## Docs\n\n- [Safe](https://example.com/docs)\n- [Mail](mailto:docs@example.com)\n- [Local](http://127.0.0.1/admin)\n- [Metadata](http://169.254.169.254/latest)",
+      { status: 200 }
+    );
+  };
+  try {
+    const data = await llmstxt.extract({ adapter: "llmstxt", sourceUrl: "https://example.com/llms.txt" });
+    const fetchTool = data.tools.find((t) => t.name === "fetch_link");
+    assert.deepEqual(fetchTool.inputSchema.properties.url.enum, ["https://example.com/docs"]);
+    await assert.rejects(
+      llmstxt.actions.llmstxt_fetch_link({
+        links: [{ name: "Local", url: "file:///etc/passwd" }],
+        args: { url: "file:///etc/passwd" },
+      }),
+      /unsupported URL/
+    );
+    assert.equal(fetchCalls, 1);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("llmstxt action truncates large declared-link responses", async () => {
+  const llmstxt = await import("../llmstxt.js");
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async () => new Response("x".repeat(20005), { status: 200 });
+  try {
+    const value = await llmstxt.actions.llmstxt_fetch_link({
+      links: [{ name: "Large", url: "https://example.com/large.md" }],
+      args: { url: "https://example.com/large.md" },
+    });
+    assert.equal(value.body.length, 20000);
+    assert.equal(value.truncated, true);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("llmstxt full context files can produce a bounded context tool without links", async () => {
+  const llmstxt = await import("../llmstxt.js");
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async () =>
+    new Response("# Full Context\n\nThis file contains complete documentation for agents.", {
+      status: 200,
+      headers: { "content-type": "text/plain" },
+    });
+  try {
+    const data = await llmstxt.extract(llmstxt.detect({ url: "https://example.com/llms-full.txt" }));
+    assert.equal(data.product.title, "Full Context");
+    assert.equal(data.product.link_count, 0);
+    assert.deepEqual(data.tools.map((t) => t.name), ["get_full_context"]);
+    assert.match(data.tools[0].result.body, /complete documentation/);
+    assert.equal(data.tools[0].result.truncated, false);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("llmstxt rejects malformed files without declared links", async () => {
+  const llmstxt = await import("../llmstxt.js");
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async () => new Response("# Empty\n\nNo links here.", { status: 200 });
+  try {
+    await assert.rejects(
+      llmstxt.extract({ adapter: "llmstxt", sourceUrl: "https://example.com/llms.txt" }),
+      /no declared links/
+    );
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
 // --- llm fallback ---
 test("llm.detect needs an API key", async () => {
   const llm = await import("../llm.js");
