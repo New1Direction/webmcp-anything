@@ -148,8 +148,8 @@ export function dashboardHtml(origin: string): string {
 <body>
 <div class="wrap">
 <header>
-  <h1>Dashboard</h1>
-  <p class="muted">Manage your API key and usage. Save your key in the extension at chrome-extension://&lt;id&gt;/options.html.</p>
+  <h1>Get your key &amp; go live</h1>
+  <p class="muted">Pick a plan to unlock live <code>execute</code>, or paste an existing key to see plan + usage. Already paid? Recover your key by email below.</p>
 </header>
 
 <div id="auth-area" class="key-box" style="display:none">

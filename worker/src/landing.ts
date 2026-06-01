@@ -334,13 +334,25 @@ export function landingHtml(origin: string): string {
   .plan ul { padding-left: 18px; color: var(--muted); margin: 14px 0; font-size: .9rem; line-height: 1.85; flex: 1; }
   .plan ul li::marker { color: var(--accent2); }
   .plan .pick {
-    display: block; text-align: center; text-decoration: none;
-    background: linear-gradient(135deg, #ff9120, #f25e00);
+    display: block; width: 100%; text-align: center; text-decoration: none;
+    background: linear-gradient(135deg, #ff9120, #f25e00); border: 0; cursor: pointer;
     color: #2a1500; padding: 11px; border-radius: 10px; font-weight: 700;
+    font-family: inherit; font-size: .92rem;
   }
+  .plan .pick:hover { filter: brightness(1.06); }
   .plan .pick.muted-btn {
     background: var(--bg2); color: var(--muted); border: 1px solid var(--border);
   }
+  /* ---- inline checkout (home pricing → Stripe, no extra hop) ---- */
+  #home-checkout { display: none; max-width: 460px; margin: 22px auto 0; background: var(--card);
+    border: 1px solid var(--accent); border-radius: 16px; padding: 22px; text-align: center; }
+  #home-checkout.show { display: block; }
+  #home-checkout .hc-row { display: flex; gap: 8px; margin-top: 12px; }
+  #home-checkout input { flex: 1; background: var(--bg2); border: 1px solid var(--border);
+    color: var(--text); padding: 11px 12px; border-radius: 10px; font-family: inherit; font-size: .92rem; }
+  #home-checkout button { background: linear-gradient(135deg, #ff9120, #f25e00); color: #2a1500;
+    border: 0; padding: 11px 18px; border-radius: 10px; font-weight: 700; cursor: pointer; font-family: inherit; }
+  #home-checkout .hc-err { color: var(--red); font-size: .85rem; margin-top: 10px; min-height: 1em; }
 
   /* ---- flywheel ---- */
   .flywheel {
@@ -471,8 +483,8 @@ export function landingHtml(origin: string): string {
     <h1>Turn any URL into <span class="accent">agent-callable MCP tools.</span></h1>
     <p class="sub">A real, hosted MCP server. Paste any URL to get agent-callable tools — or connect it to <strong style="color:var(--text)">Claude, Cursor, and Codex in one line</strong>. Shopify, OpenAPI, JSON-LD, and growing. Open-source adapters.</p>
     <div class="hero-ctas">
-      <a class="btn-primary" href="#demo"><svg class="ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4v16l13-8z"/></svg>Try the demo</a>
-      <a class="btn-secondary" href="https://github.com/New1Direction/webmcp-anything" target="_blank"><svg class="ico" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.65 7.65 0 0 1 2-.27c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>GitHub</a>
+      <a class="btn-primary" href="#code"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 3 14h9l-1 8 10-12h-9z"/></svg>Connect your agent</a>
+      <a class="btn-secondary" href="#demo"><svg class="ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4v16l13-8z"/></svg>Try the demo</a>
     </div>
     <div class="hero-stat">
       <span id="cache-stat">·</span> <span>URLs cached by the community · grows with every install</span>
@@ -700,7 +712,7 @@ tools = [
         <li>Shopify <code style="color:var(--accent2)">add_to_cart</code></li>
         <li>Live execute — the jump from free</li>
       </ul>
-      <a class="pick" href="/dashboard#pricing">Start building →</a>
+      <button class="pick" data-plan="builder">Start building →</button>
     </div>
     <div class="plan">
       <h3>Pro</h3>
@@ -712,7 +724,7 @@ tools = [
         <li>Shopify <code style="color:var(--accent2)">add_to_cart</code></li>
         <li>Priority cache freshness</li>
       </ul>
-      <a class="pick" href="/dashboard#pricing">Upgrade →</a>
+      <button class="pick" data-plan="pro">Upgrade →</button>
     </div>
     <div class="plan">
       <h3>Reseller</h3>
@@ -724,8 +736,17 @@ tools = [
         <li>Headless tier (coming)</li>
         <li>Email support</li>
       </ul>
-      <a class="pick" href="/dashboard#pricing">Upgrade →</a>
+      <button class="pick" data-plan="reseller">Upgrade →</button>
     </div>
+  </div>
+  <div id="home-checkout">
+    <strong id="hc-title">Continue to checkout</strong>
+    <p style="color:var(--muted);font-size:.86rem;margin:6px 0 0">Enter your email — your API key is tied to it so you can recover it anytime. No password.</p>
+    <div class="hc-row">
+      <input type="email" id="hc-email" placeholder="you@company.com" />
+      <button id="hc-go">Continue →</button>
+    </div>
+    <div class="hc-err" id="hc-err"></div>
   </div>
 </section>
 
@@ -832,6 +853,50 @@ const ORIGIN = ${JSON.stringify(origin)};
     }
     requestAnimationFrame(tick);
   } catch {}
+})();
+
+// ---- one-click checkout straight from the pricing table ----
+// A paid plan button opens an inline email capture and goes straight to Stripe,
+// skipping the old /dashboard#pricing → Upgrade → email detour (two lost hops).
+(function homeCheckout() {
+  var box = document.getElementById("home-checkout");
+  var title = document.getElementById("hc-title");
+  var email = document.getElementById("hc-email");
+  var go = document.getElementById("hc-go");
+  var err = document.getElementById("hc-err");
+  if (!box || !go) return;
+  var plan = "builder";
+  var labels = { builder: "Builder — $39/mo", pro: "Pro — $99/mo", reseller: "Reseller — $299/mo" };
+  document.querySelectorAll("button.pick[data-plan]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      plan = b.getAttribute("data-plan");
+      title.textContent = "Continue to checkout · " + (labels[plan] || plan);
+      box.classList.add("show");
+      err.textContent = "";
+      box.scrollIntoView({ behavior: "smooth", block: "center" });
+      email.focus();
+    });
+  });
+  async function start() {
+    var addr = (email.value || "").trim();
+    err.textContent = "";
+    if (!addr || addr.indexOf("@") < 0) { err.textContent = "Enter a valid email."; return; }
+    go.disabled = true; go.textContent = "Loading…";
+    try {
+      var r = await fetch(ORIGIN + "/api/v1/stripe/checkout", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ email: addr, plan: plan, origin: ORIGIN }),
+      });
+      var d = await r.json();
+      if (!r.ok || !d.url) { err.textContent = d.error || "Checkout failed."; go.disabled = false; go.textContent = "Continue →"; return; }
+      window.location.href = d.url;
+    } catch (e) {
+      err.textContent = "Network error — try again."; go.disabled = false; go.textContent = "Continue →";
+    }
+  }
+  go.addEventListener("click", start);
+  email.addEventListener("keydown", function (e) { if (e.key === "Enter") start(); });
 })();
 
 // ---- live demo ----
