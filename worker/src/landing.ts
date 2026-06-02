@@ -508,8 +508,8 @@ export function landingHtml(origin: string): string {
 <!-- ========== LIVE DEMO ========== -->
 <section id="demo">
   <div class="section-label">Live demo</div>
-  <h2 class="section-h2">Paste an API spec, get the tools.</h2>
-  <p class="section-sub">Drop in any OpenAPI spec — Twilio, Box, your own — and get an MCP tool per endpoint. No signup, no key for reads. (Storefronts work too.)</p>
+  <h2 class="section-h2">Paste a URL, get the tools.</h2>
+  <p class="section-sub">APIs, storefronts, recipes, news, jobs, listings — any URL with structured data becomes agent-callable MCP tools. No signup, no key for reads. Bot-protected sites work through the WebMCP extension.</p>
   <div class="demo-box">
     <div class="row">
       <input id="u" type="url" placeholder="https://raw.githubusercontent.com/twilio/twilio-oai/main/spec/json/twilio_lookups_v2.json" />
@@ -517,9 +517,9 @@ export function landingHtml(origin: string): string {
     </div>
     <div class="chips">
       <span style="color:var(--muted);font-size:.78rem;align-self:center">try:</span>
-      <span class="chip" data-u="https://raw.githubusercontent.com/twilio/twilio-oai/main/spec/json/twilio_lookups_v2.json">Twilio (openapi)</span>
-      <span class="chip" data-u="https://raw.githubusercontent.com/box/box-openapi/main/openapi.json">Box (openapi)</span>
-      <span class="chip" data-u="https://petstore3.swagger.io/api/v3/openapi.json">Petstore (openapi)</span>
+      <span class="chip" data-u="https://raw.githubusercontent.com/twilio/twilio-oai/main/spec/json/twilio_lookups_v2.json">Twilio API (openapi)</span>
+      <span class="chip" data-u="https://minimalistbaker.com/easy-vegan-fried-rice/">a recipe (jsonld)</span>
+      <span class="chip" data-u="https://www.nerdwallet.com/article/banking/best-savings-accounts">an article (jsonld)</span>
       <span class="chip" data-u="https://www.allbirds.com/products/mens-wool-runners">a storefront (shopify)</span>
     </div>
     <pre id="out"><span class="c">// Paste a URL and click Get tools.</span></pre>
