@@ -13,26 +13,26 @@ zip → fill the tabs below.
 **Name** (already in manifest): `WebMCP Anything`
 
 **Summary** (≤132 chars):
-> Give your AI agent the websites that block bots — WebMCP turns any page into agent-callable tools, in your own browser.
+> Your AI agent on the sites that block bots — catch restocks & limited drops, read any page, in your own browser.
 
 **Category:** Developer Tools  ·  **Language:** English
 
 **Description:**
-> AI agents can call APIs but go blind the moment a site blocks bots — which is
-> most of the sites people actually use (shopping, listings, profiles, tickets).
-> WebMCP Anything fixes that by working where the agent can't reach on its own:
-> the page you’re already looking at, in your own browser and your own session.
+> The stuff worth having sells out in seconds — Pokémon boxes, sneaker launches,
+> console & GPU restocks — and those sites block bots hardest. AI agents go blind
+> there. WebMCP Anything fixes that by working where a server can’t reach: the
+> page you’re already on, in your own browser and your own session. You stay in
+> control — it acts only on the page you choose, when you choose.
 >
 > It reads the structured data a page already publishes (schema.org JSON-LD, meta
-> tags) and turns it into agent-callable WebMCP/MCP tools:
+> tags) and turns it into agent-callable WebMCP/MCP tools your agent can use:
 >
-> • Products — price, stock, variants
-> • Articles & blogs — headline, author, date, body
-> • Recipes — ingredients, steps, time
-> • Movies & TV — cast, rating, year
-> • Jobs — company, salary, location
-> • Events — date, venue, tickets
-> • Local businesses — address, hours, rating
+> • Stock & price — check_stock, get_price (watch a drop, know the instant it flips)
+> • Cart — add_to_cart, list_variants (grab your size/qty when it opens)
+> • Articles, recipes, movies, jobs, events, local businesses — full read tools
+>
+> So your agent can poll check_stock on a hyped drop and fire add_to_cart the
+> moment it restocks — on a site no datacenter bot can even load.
 >
 > Pairs with the free hosted server at wmcp.sh for public URLs (paste one line
 > into Claude, Cursor, or Codex). The extension handles the sites a server fetch
@@ -43,13 +43,12 @@ zip → fill the tabs below.
 > Privacy: extraction happens locally in your browser. Nothing about the pages
 > you visit is sent anywhere unless you explicitly turn on the shared cache.
 
-**Screenshots** (need 1–5, 1280×800 or 640×400 PNG/JPG). Best set:
-1. The popup showing extracted tools on a real product/recipe page.
-2. A page with the tool list panel open (get_price / get_recipe / get_job).
-3. The options page (endpoint + API key + “share to cache” toggle).
-4. The agent side: Claude/Cursor calling a tool that came from the extension.
-   → Capture these from the loaded extension; I can also generate branded
-   marketing tiles if you want a polished set.
+**Screenshots** (1280×800, in `launch/store-assets/` — upload in this order):
+1. `wmcp-store-1-hero.png` — "Let your AI agent cop the drop" (the hook).
+2. `wmcp-store-2-pokemon.png` — booster-box restock: check_stock flips → agent fires add_to_cart in 0.8s.
+3. `wmcp-store-3-sneaker.png` — sneaker launch countdown, size armed, watching stock.
+4. `wmcp-store-4-gpu.png` — GPU restock on a bot-blocked site, add_to_cart fired 740ms after restock.
+   (Source: launch/store-assets/scenes.html — regenerate via a local server + 1280×800 headless shot.)
 
 ---
 
