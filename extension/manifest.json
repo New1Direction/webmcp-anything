@@ -41,5 +41,5 @@
     }
   ],
   "host_permissions": ["<all_urls>"],
-  "permissions": ["storage", "activeTab", "scripting"]
+  "permissions": ["storage"]
 }

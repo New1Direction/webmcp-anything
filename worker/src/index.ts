@@ -74,6 +74,12 @@ app.use("*", cors({
 
 app.get("/", (c) => c.html(landingHtml(new URL(c.req.url).origin)));
 
+// Privacy policy — required by the Chrome Web Store listing (host_permissions).
+app.get("/privacy", async (c) => {
+  const { privacyHtml } = await import("./privacy");
+  return c.html(privacyHtml(new URL(c.req.url).origin));
+});
+
 app.get("/api/v1/health", (c) =>
   c.json({ ok: true, version: "0.1.0", env: c.env.ENVIRONMENT })
 );
