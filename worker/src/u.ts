@@ -395,6 +395,7 @@ install, no proxies, no server.
 - [Pokémon restock bot alternative](${origin}/drops/pokemon-restock-bot-alternative): why a browser catcher beats a server bot
 - [QuickCatch vs sneaker bots](${origin}/drops/quickcatch-vs-sneaker-bots): comparison vs Valor/Cybersole/Kodai-style AIO bots
 - [How to snipe a Pokémon drop](${origin}/drops/how-to-snipe-pokemon-drops): step-by-step
+- [Free Pokémon tools](${origin}/tools): incl. the [retail vs resale calculator](${origin}/tools/pokemon-resale-calculator)
 - Localized in 11 languages at \`${origin}/drops/<lang>/<slug>\` — es, fr, de, pt, it, nl, pl, ja, ko, zh, zh-Hant (with hreflang; all URLs in /sitemap.xml)
 - Chrome Web Store: https://chromewebstore.google.com/detail/quickcatch/dgbaaeengmgmkefpocdckkiahilbfdlk
 
@@ -817,6 +818,16 @@ export async function sitemapXml(env: any, origin: string): Promise<string> {
     <loc>${origin}/drops</loc>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>${origin}/tools</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>${origin}/tools/pokemon-resale-calculator</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
   </url>
 ${DROP_SLUGS.map((slug) => `  <url>
     <loc>${origin}/drops/${slug}</loc>

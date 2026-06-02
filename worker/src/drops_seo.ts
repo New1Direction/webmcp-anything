@@ -15,6 +15,7 @@
 // drops_i18n.ts, with hreflang alternates. See dropUrl() / isLocalizable().
 
 import { type Lang, type L, LANGS, LANG_LABEL, T, fill, PRICING } from "./drops_i18n";
+import { WHAT_IS, SHORT_LIST, GLOSS_I18N, BESTOF_I18N } from "./drops_i18n_content";
 
 export { LANGS, LOCALIZED_LANGS } from "./drops_i18n";
 export type { Lang } from "./drops_i18n";
@@ -38,10 +39,11 @@ export interface DropPage {
   h1: string;
   lede: string;        // one-paragraph intro
   topic: string;       // used in the alert label ("alerts for X")
-  kind?: "versus" | "set" | "store" | "guide" | "combo";
+  kind?: "versus" | "set" | "store" | "guide" | "combo" | "glossary" | "bestof";
   product?: { name: string; price?: string; store: string };
   comparison?: { themLabel: string; rows: Array<[string, string, string]> };
   combo?: { name: string; store: string };  // set × store long-tail pages
+  term?: string;  // glossary term (with English article), for the "What is X?" pattern
   extraHtml?: string;  // rendered after the product callout
   faqs: Array<{ q: string; a: string }>;
 }
@@ -712,7 +714,7 @@ interface GlossDef { slug: string; term: string; desc: string; def: string; faqs
 
 function glossaryPage(g: GlossDef): DropPage {
   return {
-    slug: g.slug, cat: "Guides", kind: "guide",
+    slug: g.slug, cat: "Guides", kind: "glossary", term: g.term,
     title: `What is ${g.term}? | QuickCatch`,
     desc: g.desc,
     h1: `What is ${g.term}?`,
@@ -798,7 +800,7 @@ function bestPage(b: BestDef): DropPage {
     </ol>
   </section>`;
   return {
-    slug: b.slug, cat: "Guides", kind: "guide",
+    slug: b.slug, cat: "Guides", kind: "bestof",
     title: b.title, desc: b.desc, h1: b.h1, lede: b.intro, topic: "Pokémon",
     extraHtml: list, faqs: b.faqs,
   };
@@ -912,7 +914,8 @@ export const DROP_PAGES: DropPage[] = [
 
 // Sets/stores/vs/combos exist in every locale; guides are English only.
 export function isLocalizable(p: DropPage): boolean {
-  return p.kind === "set" || p.kind === "store" || p.kind === "versus" || p.kind === "combo";
+  return p.kind === "set" || p.kind === "store" || p.kind === "versus" || p.kind === "combo"
+    || p.kind === "glossary" || p.kind === "bestof";
 }
 export const LOCALIZABLE_SLUGS = DROP_PAGES.filter(isLocalizable).map((p) => p.slug);
 
@@ -1170,6 +1173,25 @@ function fieldsFor(p: DropPage, lang: Lang): LocFields {
     const v = { them };
     return { title: fill(g.vs.title, v), desc: fill(g.vs.desc, v), h1: fill(g.vs.h1, v), lede: fill(g.vs.lede, v), topic: "Pokémon", faqs: mapFaqs(g.vs.faqs, v), comparison: { themLabel: them, rows: g.vs.rows } };
   }
+  if (p.kind === "glossary") {
+    const gl = GLOSS_I18N[p.slug]?.[lang as Exclude<Lang, "en">];
+    const termBare = (p.term || p.h1).replace(/^(an? )/i, "");
+    const h1 = fill(WHAT_IS[lang], { term: termBare });
+    const def = gl?.def || p.lede;
+    return { title: `${h1} | QuickCatch`, desc: def.slice(0, 155), h1, lede: def, topic: "Pokémon", faqs: gl?.faqs || p.faqs };
+  }
+  if (p.kind === "bestof") {
+    const b = BESTOF_I18N[p.slug]?.[lang as Exclude<Lang, "en">];
+    if (!b) return { title: p.title, desc: p.desc, h1: p.h1, lede: p.lede, topic: p.topic, faqs: p.faqs, extraHtml: p.extraHtml };
+    const list = `
+  <section>
+    <h2>${esc(SHORT_LIST[lang])}</h2>
+    <ol class="bestlist">
+      ${b.items.map((i) => `<li>${esc(i)}</li>`).join("\n      ")}
+    </ol>
+  </section>`;
+    return { title: `${b.h1} | QuickCatch`, desc: b.intro.slice(0, 155), h1: b.h1, lede: b.intro, topic: "Pokémon", faqs: b.faqs, extraHtml: list };
+  }
   // combo
   const name = p.combo?.name || "", store = p.combo?.store || "";
   const v = { name, store };
@@ -1274,7 +1296,7 @@ ${localizable ? hreflangTags(origin, p.slug) + "\n" : ""}<meta property="og:titl
 
   ${f.comparison ? comparisonHtml(f.comparison) : ""}
   ${productCallout}
-  ${useLang === "en" ? (f.extraHtml || "") : ""}
+  ${f.extraHtml || ""}
 
   ${whySection(p.kind, ui)}
 
@@ -1334,6 +1356,6 @@ ${hreflangTags(origin, null)}
   </header>
   ${pricingBlock(lang)}
   ${sections}
-  <footer><p><a href="${origin}/">QuickCatch</a> · <a href="${origin}/privacy">${esc(ui.privacy)}</a></p></footer>`;
+  <footer><p><a href="${origin}/">QuickCatch</a> · <a href="${origin}/tools/pokemon-resale-calculator">Calculator</a> · <a href="${origin}/privacy">${esc(ui.privacy)}</a></p></footer>`;
   return shell(origin, head, body, L, lang);
 }

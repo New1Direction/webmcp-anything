@@ -115,6 +115,16 @@ app.get("/drops/:lang/:slug", async (c) => {
   return c.html(dropPageHtml(new URL(c.req.url).origin, page, lang as any));
 });
 
+// Free lead-gen tools (engineering-as-marketing) + built-in funnel.
+app.get("/tools", async (c) => {
+  const { toolsIndexHtml } = await import("./tools");
+  return c.html(toolsIndexHtml(new URL(c.req.url).origin));
+});
+app.get("/tools/pokemon-resale-calculator", async (c) => {
+  const { resaleCalculatorHtml } = await import("./tools");
+  return c.html(resaleCalculatorHtml(new URL(c.req.url).origin));
+});
+
 app.get("/api/v1/health", (c) =>
   c.json({ ok: true, version: "0.1.0", env: c.env.ENVIRONMENT })
 );
