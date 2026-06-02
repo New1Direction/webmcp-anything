@@ -241,6 +241,8 @@ const NAMED_BOTS: Array<[string, string, string]> = [
   ["Velox", "quickcatch-vs-velox", "Velox is an all-in-one sneaker bot for Shopify drops, run from datacenter setups with proxies."],
   ["Dashe", "quickcatch-vs-dashe", "Dashe is a retail checkout bot for Amazon, Walmart, and big-box drops, aimed at resellers buying in bulk."],
   ["The Kick Station", "quickcatch-vs-the-kick-station", "The Kick Station is a monitor and bot group for sneaker and retail drops, billed monthly to its members."],
+  ["Estock", "quickcatch-vs-estock", "Estock is a retail checkout bot for big-box sites, run on servers by resellers buying in bulk."],
+  ["Trickle", "quickcatch-vs-trickle", "Trickle is a sneaker AIO bot for Shopify and Footsite drops, run from servers with proxies."],
 ];
 
 const VS_NAMED: DropPage[] = NAMED_BOTS.map(([name, slug, what]) => vsPage(name, slug, what));
@@ -434,6 +436,16 @@ const SET_DEFS: SetDef[] = [
   { name: "Magic: The Gathering Final Fantasy", slug: "mtg-final-fantasy-restock", where: "Walmart, Target, Best Buy, Amazon and TCGplayer", blurb: "The Magic: The Gathering Final Fantasy set is one of the highest-demand crossovers ever, and sealed product vanishes fast. QuickCatch watches the page and carts the box the second stock returns." },
   { name: "MTG Secret Lair drop", slug: "mtg-secret-lair-restock", where: "the official store page", blurb: "Magic: The Gathering Secret Lair drops are limited-window releases that sell out before most fans reach checkout. QuickCatch watches the drop page and adds it to your cart the moment it goes live." },
   { name: "One Piece booster box", slug: "one-piece-booster-box-restock", where: "Walmart, Target, GameStop, Amazon and TCGplayer", blurb: "One Piece Card Game booster boxes are some of the fastest sellouts in the hobby right now. QuickCatch watches the product page and carts the box the moment it restocks." },
+  { name: "Twilight Masquerade Booster Box", slug: "twilight-masquerade-booster-box-restock", where: POKEMON_STORES, blurb: "Twilight Masquerade booster boxes give the best odds at the set's chase cards, so they clear out fast on restock. QuickCatch watches the product page and adds the box to your cart the moment stock returns." },
+  { name: "Temporal Forces Booster Box", slug: "temporal-forces-booster-box-restock", where: POKEMON_STORES, blurb: "Temporal Forces booster boxes are still in demand for their hits, and restocks vanish quickly. QuickCatch watches the page and carts the box the second it is back in stock." },
+  { name: "Stellar Crown Booster Box", slug: "stellar-crown-booster-box-restock", where: POKEMON_STORES, blurb: "Stellar Crown booster boxes sell through fast every time they restock. QuickCatch watches the product page and adds the box to your cart the moment it returns, so you pay retail." },
+  { name: "Surging Sparks Booster Box", slug: "surging-sparks-booster-box-restock", where: POKEMON_STORES, blurb: "Surging Sparks booster boxes run hot for their chase cards and clear out on every restock. QuickCatch watches the page and carts the box the instant stock flips back to available." },
+  { name: "Obsidian Flames Booster Box", slug: "obsidian-flames-booster-box-restock", where: POKEMON_STORES, blurb: "Obsidian Flames booster boxes still draw collectors and investors, so restocks go quickly. QuickCatch watches the product page and adds the box to your cart the moment it is back." },
+  { name: "Paradox Rift Booster Box", slug: "paradox-rift-booster-box-restock", where: POKEMON_STORES, blurb: "Paradox Rift booster boxes remain a chase for the set's pulls, and restocks sell out fast. QuickCatch watches the page and carts the box the second stock returns." },
+  { name: "Paldea Evolved Booster Box", slug: "paldea-evolved-booster-box-restock", where: POKEMON_STORES, blurb: "Paldea Evolved booster boxes are still wanted for their hits, and restocks clear quickly. QuickCatch watches the product page and adds the box to your cart the moment it restocks." },
+  { name: "Pokémon Surprise Box", slug: "pokemon-surprise-box-restock", where: POKEMON_STORES, blurb: "The Pokémon Surprise Box bundles a stack of sealed product at a sharp price, which makes it a fast holiday sellout. QuickCatch watches the page and carts it the moment it restocks." },
+  { name: "Pokémon Holiday Calendar", slug: "pokemon-holiday-calendar-restock", where: POKEMON_STORES, blurb: "The Pokémon holiday advent calendar lands once a year and sells out within days. QuickCatch watches the product page and adds it to your cart the moment stock returns." },
+  { name: "Pokémon Battle Academy", slug: "pokemon-battle-academy-restock", where: POKEMON_STORES, blurb: "Pokémon Battle Academy is the go-to gift box for new players and restocks fast around the holidays. QuickCatch watches the page and carts it the second it is back in stock." },
 ];
 
 const SETS: DropPage[] = SET_DEFS.map(setPage);
@@ -672,6 +684,8 @@ const COMBO_SETS: Array<[string, string]> = [
   ["Paldean Fates", "paldean-fates"],
   ["Crown Zenith", "crown-zenith"],
   ["Black Bolt", "black-bolt"],
+  ["Twilight Masquerade", "twilight-masquerade"],
+  ["White Flare", "white-flare"],
 ];
 const COMBO_STORES: Array<[string, string]> = [
   ["Pokémon Center", "pokemon-center"],
@@ -680,6 +694,8 @@ const COMBO_STORES: Array<[string, string]> = [
   ["Best Buy", "best-buy"],
   ["GameStop", "gamestop"],
   ["Sam's Club", "sams-club"],
+  ["Amazon", "amazon"],
+  ["Costco", "costco"],
 ];
 
 function comboPage(name: string, setSlug: string, store: string, storeSlug: string): DropPage {
