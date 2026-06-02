@@ -1,11 +1,22 @@
 // popup.js — one-click tool runner. No console needed.
 
 const TOOL_META = {
-  get_product:   { icon: "📦", label: "Get product info" },
-  get_price:     { icon: "💰", label: "Get price" },
-  check_stock:   { icon: "✅", label: "Check stock" },
-  list_variants: { icon: "🎨", label: "List variants" },
-  add_to_cart:   { icon: "🛒", label: "Add to cart" },
+  get_product:      { icon: "📦", label: "Get product info" },
+  get_price:        { icon: "💰", label: "Get price" },
+  check_stock:      { icon: "✅", label: "Check stock" },
+  list_variants:    { icon: "🎨", label: "List variants" },
+  add_to_cart:      { icon: "🛒", label: "Add to cart" },
+  view_product:     { icon: "🔗", label: "Open product" },
+  get_recipe:       { icon: "🍳", label: "Get recipe" },
+  get_article:      { icon: "📰", label: "Get article" },
+  get_title:        { icon: "🎬", label: "Get title info" },
+  get_job:          { icon: "💼", label: "Get job posting" },
+  get_event:        { icon: "🎟️", label: "Get event" },
+  get_business:     { icon: "📍", label: "Get business" },
+  get_organization: { icon: "🏢", label: "Get organization" },
+  get_person:       { icon: "👤", label: "Get person" },
+  get_info:         { icon: "ℹ️", label: "Get page info" },
+  view_page:        { icon: "🔗", label: "Open page" },
 };
 
 let currentTab = null;

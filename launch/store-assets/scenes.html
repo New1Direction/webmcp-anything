@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>wmcp.sh — store screenshots</title>
+<style>
+  :root {
+    --bg:#07070d; --bg2:#0d0d16; --card:#16161f; --card2:#1d1d2b; --border:#26263a;
+    --text:#ececf5; --muted:#9a9ab0; --accent:#ff9e2c; --accent2:#ffcf7a; --green:#4ade80;
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background:#000; font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif; }
+  .shot {
+    width:1280px; height:800px; position:relative; overflow:hidden;
+    background: radial-gradient(1200px 700px at 70% -10%, rgba(255,158,44,.10), transparent 60%), var(--bg);
+  }
+  /* ---- browser frame ---- */
+  .browser { position:absolute; inset:64px 64px 0 64px; background:var(--card); border:1px solid var(--border);
+    border-radius:14px 14px 0 0; box-shadow:0 40px 120px -30px rgba(0,0,0,.8); overflow:hidden; }
+  .chrome { height:46px; background:#1b1b25; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px; padding:0 14px; }
+  .dots { display:flex; gap:7px; }
+  .dots i { width:12px; height:12px; border-radius:50%; display:block; }
+  .dots .r{background:#ff5f57}.dots .y{background:#febc2e}.dots .g{background:#28c840}
+  .tab { margin-left:8px; background:var(--card); border:1px solid var(--border); border-bottom:none;
+    border-radius:8px 8px 0 0; padding:7px 14px; font-size:12.5px; color:var(--text); max-width:280px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .omni { flex:1; background:#0e0e16; border:1px solid var(--border); border-radius:20px; height:30px;
+    display:flex; align-items:center; gap:8px; padding:0 14px; color:var(--muted); font-size:12.5px; }
+  .omni .lock { color:var(--green); font-size:11px; }
+  .ext-icons { display:flex; align-items:center; gap:10px; }
+  .ext-pin { width:30px; height:30px; border-radius:8px; display:grid; place-items:center; font-size:15px;
+    background:linear-gradient(135deg, rgba(255,158,44,.25), rgba(255,207,122,.12)); border:1px solid rgba(255,158,44,.5); position:relative; }
+  .ext-pin .ping { position:absolute; top:-3px; right:-3px; width:9px; height:9px; border-radius:50%; background:var(--green); box-shadow:0 0 8px var(--green); }
+  .page { position:absolute; inset:46px 0 0 0; overflow:hidden; }
+
+  /* ---- the extension popup (faithful to popup.html, amber) ---- */
+  .popup { position:absolute; top:56px; right:18px; width:380px; background:#0a0a12; color:var(--text);
+    border:1px solid var(--border); border-radius:14px; box-shadow:0 30px 80px -20px rgba(0,0,0,.9); overflow:hidden; font-size:13px; z-index:5; }
+  .pop-head { padding:14px 16px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px;
+    background:linear-gradient(135deg, rgba(255,158,44,.14), rgba(255,207,122,.05)); }
+  .pop-logo { font-weight:800; font-size:14px; background:linear-gradient(90deg,var(--accent),var(--accent2));
+    -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .pop-status { margin-left:auto; display:inline-flex; align-items:center; gap:6px; font-size:11px; color:var(--muted); }
+  .pop-status .dot { width:8px; height:8px; border-radius:50%; background:var(--green); box-shadow:0 0 8px var(--green); }
+  .pop-main { padding:12px 16px; }
+  .atag { display:inline-block; padding:2px 8px; background:rgba(255,158,44,.16); color:var(--accent2);
+    border-radius:6px; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; margin-bottom:10px; }
+  .tool { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:12px; margin-bottom:10px; }
+  .tool.hot { border-color:rgba(255,158,44,.55); }
+  .tool-head { display:flex; align-items:center; gap:10px; }
+  .tool .ic { font-size:16px; }
+  .tool .lab { flex:1; font-weight:600; font-size:13px; }
+  .tool .desc { color:var(--muted); font-size:11.5px; margin-top:4px; }
+  .run { background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#2a1500; border:none;
+    border-radius:8px; padding:6px 14px; font-weight:700; font-size:12px; white-space:nowrap; }
+  .result { margin-top:10px; background:#07070d; border:1px solid var(--border); border-radius:8px; padding:10px;
+    font-family:"SF Mono",Menlo,monospace; font-size:11px; color:var(--green); line-height:1.6; }
+  .result .k{color:var(--accent2)} .result .s{color:#f0abfc}
+  .pop-foot { border-top:1px solid var(--border); padding:8px 16px; font-size:10.5px; color:var(--muted); display:flex; justify-content:space-between; }
+  .pop-foot a{color:var(--accent2); text-decoration:none}
+
+  /* ---- generic realistic page mocks ---- */
+  .pg { padding:30px 40px; color:#1a1a1a; height:100%; }
+  .pg.light { background:#fff; }
+  .pg .crumb { color:#888; font-size:12px; margin-bottom:14px; }
+  .pg h1 { font-size:26px; margin:0 0 8px; color:#111; }
+  .pg .by { color:#777; font-size:13px; margin-bottom:18px; }
+  .pg .hero-img { height:230px; border-radius:12px; background:linear-gradient(135deg,#ffe3c2,#ffd0a3); margin-bottom:18px; display:grid; place-items:center; color:#b56a18; font-size:13px; }
+  .pg p { color:#444; font-size:13.5px; line-height:1.7; max-width:560px; }
+  .pg .price { font-size:30px; font-weight:800; color:#111; }
+  .pg .row { display:flex; gap:24px; }
+  .pg .col { flex:1; }
+
+  /* ---- caption band ---- */
+  .cap { position:absolute; left:64px; right:64px; bottom:0; height:64px; display:flex; align-items:center; gap:14px; padding:0 6px; }
+  .cap .big { font-size:22px; font-weight:800; color:var(--text); letter-spacing:-.01em; }
+  .cap .big .am { color:var(--accent); }
+  .cap .sm { color:var(--muted); font-size:14px; }
+
+  /* ---- hero scene ---- */
+  .hero { position:absolute; inset:0; display:flex; flex-direction:column; justify-content:center; padding:0 90px; }
+  .hero .kick { display:inline-flex; align-items:center; gap:8px; color:var(--accent2); font-size:14px; font-weight:700;
+    text-transform:uppercase; letter-spacing:.12em; margin-bottom:18px; }
+  .hero h1 { font-size:62px; line-height:1.05; margin:0 0 18px; color:var(--text); letter-spacing:-.02em; max-width:920px; }
+  .hero h1 .am { color:var(--accent); }
+  .hero p { font-size:21px; color:var(--muted); max-width:720px; margin:0 0 28px; line-height:1.5; }
+  .hero .pills { display:flex; gap:12px; }
+  .hero .pill { border:1px solid var(--border); background:var(--card); border-radius:999px; padding:9px 16px; color:var(--text); font-size:14px; }
+  .hero .pill .am{color:var(--accent)}
+  .hero .mark { position:absolute; right:80px; bottom:70px; font-family:"SF Mono",Menlo,monospace; color:rgba(255,158,44,.18); font-size:120px; font-weight:800; }
+</style>
+</head>
+<body>
+
+<!-- ============ 1) HERO ============ -->
+<div class="shot" id="s1">
+  <div class="hero">
+    <div class="kick">◆ Chrome extension · WebMCP / MCP</div>
+    <h1>Give your AI agent the sites that <span class="am">block bots.</span></h1>
+    <p>WebMCP turns any page into agent-callable tools — read in your own browser, your own session. The harder a site blocks bots, the more only this works.</p>
+    <div class="pills">
+      <div class="pill">🛒 Shopping</div>
+      <div class="pill">📰 News &amp; articles</div>
+      <div class="pill">💼 Jobs</div>
+      <div class="pill">🍳 Recipes</div>
+      <div class="pill"><span class="am">+</span> any URL</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 2) SHOPPING ============ -->
+<div class="shot" id="s2">
+  <div class="browser">
+    <div class="chrome">
+      <div class="dots"><i class="r"></i><i class="y"></i><i class="g"></i></div>
+      <div class="tab">Wool Runner — Allbirds</div>
+      <div class="omni"><span class="lock">🔒</span> www.allbirds.com/products/mens-wool-runners</div>
+      <div class="ext-icons"><div class="ext-pin">⚡<span class="ping"></span></div></div>
+    </div>
+    <div class="page">
+      <div class="pg light">
+        <div class="crumb">Home / Men / Shoes</div>
+        <div class="row">
+          <div class="col"><div class="hero-img">Men's Wool Runner</div></div>
+          <div class="col">
+            <h1>Men's Wool Runner</h1>
+            <div class="by">Natural Grey · Allbirds</div>
+            <div class="price">$110</div>
+            <p style="margin-top:14px">Our original everyday shoe in soft, breathable merino wool. Machine washable.</p>
+          </div>
+        </div>
+      </div>
+      <div class="popup">
+        <div class="pop-head"><div class="pop-logo">⚡ WebMCP Anything</div><div class="pop-status"><span class="dot"></span>5 tools live</div></div>
+        <div class="pop-main">
+          <div class="atag">shopify adapter</div>
+          <div class="tool hot">
+            <div class="tool-head"><span class="ic">💰</span><div class="lab">Get price</div><button class="run">▶ Run</button></div>
+            <div class="result"><span class="k">"price"</span>: <span class="s">"110"</span>, <span class="k">"currency"</span>: <span class="s">"USD"</span>, <span class="k">"in_stock"</span>: true</div>
+          </div>
+          <div class="tool"><div class="tool-head"><span class="ic">📦</span><div class="lab">Get product info</div><button class="run">▶ Run</button></div><div class="desc">Title, brand, SKU, image, availability</div></div>
+          <div class="tool"><div class="tool-head"><span class="ic">🛒</span><div class="lab">Add to cart</div><button class="run">▶ Run</button></div><div class="desc">Live — adds the selected variant</div></div>
+        </div>
+        <div class="pop-foot"><span>www.allbirds.com</span><a>WebMCP docs ↗</a></div>
+      </div>
+    </div>
+  </div>
+  <div class="cap"><div class="big">One click, <span class="am">no console.</span></div><div class="sm">Every product page becomes get_price · add_to_cart · check_stock.</div></div>
+</div>
+
+<!-- ============ 3) RECIPE ============ -->
+<div class="shot" id="s3">
+  <div class="browser">
+    <div class="chrome">
+      <div class="dots"><i class="r"></i><i class="y"></i><i class="g"></i></div>
+      <div class="tab">Easy Vegan Fried Rice</div>
+      <div class="omni"><span class="lock">🔒</span> minimalistbaker.com/easy-vegan-fried-rice</div>
+      <div class="ext-icons"><div class="ext-pin">⚡<span class="ping"></span></div></div>
+    </div>
+    <div class="page">
+      <div class="pg light">
+        <div class="crumb">Recipes / Entrées</div>
+        <h1>Easy Vegan Fried Rice</h1>
+        <div class="by">By Minimalist Baker · 30 minutes · ★ 4.9 (212)</div>
+        <div class="hero-img">🍚 Fried Rice</div>
+        <p>A quick, weeknight-friendly fried rice loaded with crispy tofu and veggies.</p>
+      </div>
+      <div class="popup">
+        <div class="pop-head"><div class="pop-logo">⚡ WebMCP Anything</div><div class="pop-status"><span class="dot"></span>2 tools live</div></div>
+        <div class="pop-main">
+          <div class="atag">jsonld adapter</div>
+          <div class="tool hot">
+            <div class="tool-head"><span class="ic">🍳</span><div class="lab">Get recipe</div><button class="run">▶ Run</button></div>
+            <div class="result"><span class="k">"name"</span>: <span class="s">"Easy Vegan Fried Rice"</span>,<br><span class="k">"total_time"</span>: <span class="s">"PT30M"</span>,<br><span class="k">"ingredients"</span>: [<span class="s">"tofu"</span>, <span class="s">"rice"</span>, <span class="s">"tamari"</span>, …],<br><span class="k">"instructions"</span>: [ 6 steps ]</div>
+          </div>
+          <div class="tool"><div class="tool-head"><span class="ic">🔗</span><div class="lab">Open page</div><button class="run">▶ Run</button></div><div class="desc">Direct link for the agent to cite</div></div>
+        </div>
+        <div class="pop-foot"><span>minimalistbaker.com</span><a>WebMCP docs ↗</a></div>
+      </div>
+    </div>
+  </div>
+  <div class="cap"><div class="big">Not just stores — <span class="am">the whole web.</span></div><div class="sm">Recipes, articles, movies, events, businesses. Any page with structured data.</div></div>
+</div>
+
+<!-- ============ 4) JOBS / ANTI-BOT ============ -->
+<div class="shot" id="s4">
+  <div class="browser">
+    <div class="chrome">
+      <div class="dots"><i class="r"></i><i class="y"></i><i class="g"></i></div>
+      <div class="tab">Staff Engineer — Acme</div>
+      <div class="omni"><span class="lock">🔒</span> jobs.example.com/staff-engineer · <span style="color:var(--accent2)">logged in</span></div>
+      <div class="ext-icons"><div class="ext-pin">⚡<span class="ping"></span></div></div>
+    </div>
+    <div class="page">
+      <div class="pg light">
+        <div class="crumb">Jobs / Engineering</div>
+        <h1>Staff Software Engineer</h1>
+        <div class="by">Acme Inc · San Francisco, CA · Full-time</div>
+        <div class="price" style="font-size:22px">$200k–$260k</div>
+        <p style="margin-top:14px">Own core platform services. 8+ yrs experience. This page blocks server-side bots — but the extension reads it as you, in your session.</p>
+      </div>
+      <div class="popup">
+        <div class="pop-head"><div class="pop-logo">⚡ WebMCP Anything</div><div class="pop-status"><span class="dot"></span>2 tools live</div></div>
+        <div class="pop-main">
+          <div class="atag">jsonld adapter</div>
+          <div class="tool hot">
+            <div class="tool-head"><span class="ic">💼</span><div class="lab">Get job posting</div><button class="run">▶ Run</button></div>
+            <div class="result"><span class="k">"title"</span>: <span class="s">"Staff Software Engineer"</span>,<br><span class="k">"company"</span>: <span class="s">"Acme Inc"</span>,<br><span class="k">"salary"</span>: { <span class="k">"amount"</span>: <span class="s">"200000–260000"</span> },<br><span class="k">"location"</span>: <span class="s">"San Francisco, CA"</span></div>
+          </div>
+          <div class="tool"><div class="tool-head"><span class="ic">🔗</span><div class="lab">Open page</div><button class="run">▶ Run</button></div><div class="desc">A site a datacenter fetch can't reach</div></div>
+        </div>
+        <div class="pop-foot"><span>jobs.example.com</span><a>WebMCP docs ↗</a></div>
+      </div>
+    </div>
+  </div>
+  <div class="cap"><div class="big">Works where <span class="am">bots get blocked.</span></div><div class="sm">Your browser, your session — so your agent gets the sites it's locked out of.</div></div>
+</div>
+
+</body>
+</html>
