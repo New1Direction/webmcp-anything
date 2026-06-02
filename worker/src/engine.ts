@@ -16,6 +16,7 @@ import * as defillama from "../../adapters/defillama.js";
 import * as dexscreener from "../../adapters/dexscreener.js";
 import * as pyth from "../../adapters/pyth.js";
 import * as chainlink from "../../adapters/chainlink.js";
+import * as spotify from "../../adapters/spotify.js";
 import { fetchAndParse } from "./html";
 import { resolveTokenForUrl } from "./token_resolver";
 import { loadProviderToken } from "./token_vault";
@@ -130,6 +131,18 @@ export async function resolveTools(
         product: data.product,
         variants: data.variants,
       };
+      ctx.waitUntil(writeCache(env, url, payload, 3600));
+      return { ok: true, payload, from: "live" };
+    } catch {
+      // fall through
+    }
+  }
+
+  const spotifyCtx = spotify.detect({ url, jsonld: [], meta: {} });
+  if (spotifyCtx) {
+    try {
+      const data = await spotify.extract(spotifyCtx);
+      const payload: ToolsPayload = { adapter: "spotify", tools: data.tools, product: data.product };
       ctx.waitUntil(writeCache(env, url, payload, 3600));
       return { ok: true, payload, from: "live" };
     } catch {
@@ -274,6 +287,19 @@ export async function executeTool(
       if (!handler) return { ok: false, status: 500, body: { error: "no action handler" } };
       const value = await handler({ ...tool.action, args: args || {} });
       return { ok: true, value };
+    } catch (err: any) {
+      return { ok: false, status: 500, body: { ok: false, error: String(err?.message || err) } };
+    }
+  }
+
+  const spCtx = spotify.detect({ url, jsonld: [], meta: {} });
+  if (spCtx) {
+    try {
+      const data = await spotify.extract(spCtx);
+      const tool = data.tools.find((t: any) => t.name === toolName);
+      if (!tool) return { ok: false, status: 404, body: { error: `tool ${toolName} not found` } };
+      if (tool.result !== undefined) return { ok: true, value: tool.result };
+      return { ok: false, status: 400, body: { error: "spotify adapter is read-only" } };
     } catch (err: any) {
       return { ok: false, status: 500, body: { ok: false, error: String(err?.message || err) } };
     }
