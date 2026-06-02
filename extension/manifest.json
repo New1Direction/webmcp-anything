@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "WebMCP Anything",
+  "name": "QuickCatch",
   "version": "0.1.0",
   "description": "Never miss a Pokémon drop again. Your AI watches the page and grabs the restock for you, even on sites that block bots.",
   "minimum_chrome_version": "132",

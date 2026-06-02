@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8" />
-<title>WebMCP Anything — Settings</title>
+<title>QuickCatch — Settings</title>
 <style>
   :root {
     --bg: #0a0a12; --card: #16161f; --bg2: #11111c; --border: #26263a;
@@ -72,14 +72,14 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>WebMCP Anything Settings</h1>
+  <h1>QuickCatch Settings</h1>
   <p class="sub">Local-only by default. Nothing leaves your browser unless you flip a switch.</p>
 
   <div class="card">
     <div class="row">
       <div class="text">
         <strong>Share extracted schemas</strong>
-        <span>When you visit a product page, upload only the WebMCP tool schema (price, name, stock — all data already public on the page) to our worker so other users get instant cache hits.</span>
+        <span>When you visit a product page, upload only the tool schema (price, name, stock — all data already public on the page) to our worker so other users get instant cache hits.</span>
       </div>
       <label class="toggle">
         <input type="checkbox" id="push" />
@@ -91,7 +91,7 @@
 
   <div class="card">
     <strong>Worker API endpoint</strong>
-    <label class="field">URL of the WebMCP Anything API
+    <label class="field">wmcp.sh API URL
       <input type="text" id="endpoint" placeholder="https://wmcp.sh" />
     </label>
     <p class="note">Defaults to the public API. Point at <code>http://localhost:8787</code> for local dev.</p>

@@ -32,7 +32,7 @@ export function privacyHtml(origin: string): string {
 <body>
 <div class="wrap">
   <h1>Privacy Policy</h1>
-  <p class="muted">wmcp.sh and the “WebMCP Anything” browser extension · Last updated ${updated}</p>
+  <p class="muted">wmcp.sh and the “QuickCatch” browser extension · Last updated ${updated}</p>
 
   <div class="box">
     <strong>The short version.</strong> The extension reads the page you’re on to

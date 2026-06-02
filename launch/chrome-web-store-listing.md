@@ -10,7 +10,7 @@ zip → fill the tabs below.
 
 ## Store listing tab
 
-**Name** (already in manifest): `WebMCP Anything`
+**Name** (already in manifest): `QuickCatch`
 
 **Summary** (≤132 chars, matches manifest):
 > Never miss a Pokémon drop again. Your AI watches the page and grabs the restock for you, even on sites that block bots.
