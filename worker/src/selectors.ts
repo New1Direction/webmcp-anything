@@ -11,7 +11,7 @@
 export const SELECTOR_CONFIG = {
   version: "2026-06-02",
   hosts: {
-    "amazon.com": ['#add-to-cart-button', 'input#add-to-cart-button', 'input[name="submit.add-to-cart"]', '#buy-now-button'],
+    "amazon.com": ['#add-to-cart-button', '#nav-assist-add-to-cart', 'input#add-to-cart-button', 'input[name="submit.add-to-cart"]', '#buy-now-button'],
     "walmart.com": ['button[data-automation-id="atc"]', '[data-seo-id="add-to-cart"]', 'button[data-testid="add-to-cart-section"] button'],
     "target.com": ['button[data-test="addToCartButton"]', 'button[data-test="orderPickupButton"]', 'button[data-test="shippingButton"]'],
     "bestbuy.com": ['button.add-to-cart-button', 'button[data-button-state="ADD_TO_CART"]'],

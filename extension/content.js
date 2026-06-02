@@ -142,7 +142,7 @@ const QC_ADD_RE = /\b(add to cart|add to bag|add to basket|pre-?order|buy now)\b
 // subdomains both work. Ordered most-specific first. These reflect current
 // store markup and may drift — the generic text match below is the safety net.
 const QC_HOST_SELECTORS = {
-  "amazon.com": ['#add-to-cart-button', 'input#add-to-cart-button', 'input[name="submit.add-to-cart"]', '#buy-now-button'],
+  "amazon.com": ['#add-to-cart-button', '#nav-assist-add-to-cart', 'input#add-to-cart-button', 'input[name="submit.add-to-cart"]', '#buy-now-button'],
   "walmart.com": ['button[data-automation-id="atc"]', '[data-seo-id="add-to-cart"]', 'button[data-testid="add-to-cart-section"] button'],
   "target.com": ['button[data-test="addToCartButton"]', 'button[data-test="orderPickupButton"]', 'button[data-test="shippingButton"]'],
   "bestbuy.com": ['button.add-to-cart-button', 'button[data-button-state="ADD_TO_CART"]'],
@@ -172,21 +172,33 @@ async function qcRefreshSelectors() {
 }
 qcRefreshSelectors();
 function qcNorm(u) { try { const x = new URL(u); return x.origin + x.pathname; } catch { return u; } }
+// Visible + enabled. Rect-based (not offsetParent, which is null inside the
+// position:fixed/sticky buy boxes retail sites use). A 0x0 / display:none
+// control means the buy button is gated (e.g. pick a size first) — skip it.
+function qcVisible(el) {
+  if (!el || el.disabled || el.getAttribute("aria-disabled") === "true") return false;
+  const r = el.getBoundingClientRect();
+  if (r.width <= 0 || r.height <= 0) return false;
+  const st = getComputedStyle(el);
+  return !(st.visibility === "hidden" || st.display === "none" || +st.opacity === 0);
+}
 function qcAddButton(root) {
   root = root || document;
+  // 1) per-store selectors (server-driven, merged over bundled defaults)
   for (const sel of qcHostSelectors()) {
     let el = null;
     try { el = root.querySelector(sel); } catch { continue; }
-    if (el && !el.disabled && el.getAttribute("aria-disabled") !== "true" && el.offsetParent !== null) return el;
+    if (qcVisible(el)) return el;
   }
+  // 2) Shopify-style cart submit — covers most independent storefronts
+  let sh = null;
+  try { sh = root.querySelector('form[action*="/cart" i] [type="submit"], button[name="add"]'); } catch {}
+  if (qcVisible(sh)) return sh;
+  // 3) generic: any visible, enabled control whose text says add-to-cart
   const cands = Array.from(root.querySelectorAll('button,[role="button"],input[type="submit"],a[class*="add"]'));
-  return cands.find((el) => {
-    const t = (el.innerText || el.value || el.getAttribute("aria-label") || "").trim();
-    if (!QC_ADD_RE.test(t)) return false;
-    if (el.disabled || el.getAttribute("aria-disabled") === "true") return false;
-    if (el.offsetParent === null) return false; // hidden
-    return true;
-  }) || null;
+  return cands.find((el) =>
+    QC_ADD_RE.test((el.innerText || el.value || el.getAttribute("aria-label") || "").trim()) && qcVisible(el)
+  ) || null;
 }
 function qcInStock(root) { return !!qcAddButton(root); }
 async function qcGetWatch() { const all = (await chrome.storage.local.get(QC_KEY))[QC_KEY] || {}; return all[qcNorm(location.href)]; }
