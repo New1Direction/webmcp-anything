@@ -152,13 +152,25 @@ const QC_HOST_SELECTORS = {
   "costco.com": ['#add-to-cart-btn', 'input[id*="add-to-cart" i]', 'button[automation-id="addToCartButton"]'],
   "tcgplayer.com": ['button[data-testid*="add-to-cart" i]', 'button.add-to-cart', 'a[href*="add-to-cart" i]'],
 };
+// QC_HOST_SELECTORS is the offline fallback. At runtime we merge the
+// server-driven config over it (background fetches /api/v1/selectors), so a
+// store that changes its markup is fixed by editing the server, not by a new
+// extension release.
+let QC_SELECTORS = QC_HOST_SELECTORS;
 function qcHostSelectors() {
   const h = location.hostname;
-  for (const domain in QC_HOST_SELECTORS) {
-    if (h === domain || h.endsWith("." + domain)) return QC_HOST_SELECTORS[domain];
+  for (const domain in QC_SELECTORS) {
+    if (h === domain || h.endsWith("." + domain)) return QC_SELECTORS[domain];
   }
   return [];
 }
+async function qcRefreshSelectors() {
+  try {
+    const r = await chrome.runtime.sendMessage({ type: "GET_SELECTORS" });
+    if (r && r.hosts && typeof r.hosts === "object") QC_SELECTORS = { ...QC_HOST_SELECTORS, ...r.hosts };
+  } catch { /* offline → keep bundled defaults */ }
+}
+qcRefreshSelectors();
 function qcNorm(u) { try { const x = new URL(u); return x.origin + x.pathname; } catch { return u; } }
 function qcAddButton(root) {
   root = root || document;
@@ -217,6 +229,7 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
     if (msg?.type === "GET_TOOLS_FOR_PAGE") { sendResponse({ ok: true, tools: lastToolList, url: location.href }); return; }
     if (msg?.type === "START_WATCH") {
       if (qcTimer) clearTimeout(qcTimer);
+      await qcRefreshSelectors(); // get the latest server config before arming
       await qcSetWatch({ active: true, caught: false, intervalSec: msg.intervalSec || 14, startedAt: Date.now() });
       qcResume();
       sendResponse({ ok: true, watching: true });

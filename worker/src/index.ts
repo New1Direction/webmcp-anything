@@ -80,6 +80,13 @@ app.get("/privacy", async (c) => {
   return c.html(privacyHtml(new URL(c.req.url).origin));
 });
 
+// Server-driven add-to-cart selectors for the QuickCatch extension. Edit
+// src/selectors.ts + deploy to fix a store without a Web Store update.
+app.get("/api/v1/selectors", async (c) => {
+  const { SELECTOR_CONFIG } = await import("./selectors");
+  return c.json(SELECTOR_CONFIG, 200, { "cache-control": "public, max-age=3600, s-maxage=3600" });
+});
+
 // QuickCatch drop/restock SEO pages (programmatic) + built-in funnel.
 app.get("/drops", async (c) => {
   const { dropsIndexHtml } = await import("./drops_seo");

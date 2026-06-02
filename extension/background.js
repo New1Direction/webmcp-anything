@@ -15,6 +15,39 @@ const CACHE_TTL = 60 * 1000; // 60s for stock/price freshness
 
 const tabTools = new Map(); // tabId -> { url, tools }
 
+// Server-driven add-to-cart selectors. The content script asks for these and
+// merges them over its bundled defaults, so a store that changes its markup is
+// fixed by editing worker src/selectors.ts + deploying — no Web Store update.
+// Selectors are CSS strings (data used in querySelector), never executed code.
+const QC_SEL_URL = "https://wmcp.sh/api/v1/selectors";
+const QC_SEL_TTL = 6 * 60 * 60 * 1000;
+let qcSelCache = null;
+function qcValidHosts(h) {
+  if (!h || typeof h !== "object") return null;
+  const out = {};
+  for (const k in h) {
+    if (Array.isArray(h[k])) {
+      const arr = h[k].filter((s) => typeof s === "string" && s.length < 200).slice(0, 12);
+      if (arr.length) out[k] = arr;
+    }
+  }
+  return Object.keys(out).length ? out : null;
+}
+async function qcGetSelectors() {
+  if (qcSelCache && Date.now() - qcSelCache.ts < QC_SEL_TTL) return qcSelCache.hosts;
+  try {
+    const stored = (await chrome.storage.local.get("qc_selectors")).qc_selectors;
+    if (stored && Date.now() - stored.ts < QC_SEL_TTL) { qcSelCache = stored; return stored.hosts; }
+  } catch {}
+  try {
+    const cfg = await fetch(QC_SEL_URL).then((r) => (r.ok ? r.json() : null));
+    const hosts = qcValidHosts(cfg && cfg.hosts);
+    if (hosts) { qcSelCache = { ts: Date.now(), hosts }; chrome.storage.local.set({ qc_selectors: qcSelCache }); return hosts; }
+  } catch {}
+  try { const stored = (await chrome.storage.local.get("qc_selectors")).qc_selectors; if (stored) return stored.hosts; } catch {}
+  return null;
+}
+
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   (async () => {
     try {
@@ -46,6 +79,10 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       if (msg?.type === "GET_TAB_TOOLS") {
         const entry = tabTools.get(msg.tabId);
         sendResponse({ ok: true, ...(entry || { url: null, tools: [] }) });
+        return;
+      }
+      if (msg?.type === "GET_SELECTORS") {
+        sendResponse({ ok: true, hosts: await qcGetSelectors() });
         return;
       }
       if (msg?.type === "RESTOCK_DETECTED") {
