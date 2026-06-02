@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { resaleCalculatorHtml, toolsIndexHtml, TOOL_SLUGS } from "../src/tools";
+import { resaleCalculatorHtml, toolsIndexHtml, TOOL_SLUGS, LOCALIZED_LANGS } from "../src/tools";
 
 const origin = "https://wmcp.sh";
 
@@ -28,6 +28,27 @@ describe("free tools", () => {
     const html = toolsIndexHtml(origin);
     expect(html).toContain(`${origin}/tools/pokemon-resale-calculator`);
     expect(TOOL_SLUGS).toContain("pokemon-resale-calculator");
+  });
+
+  it("calculator is localized into all 11 languages with funnel + hreflang", () => {
+    for (const lang of LOCALIZED_LANGS) {
+      const html = resaleCalculatorHtml(origin, lang as any);
+      expect(html, lang).toContain(`<html lang="${lang}">`);
+      expect(html, lang).toContain(`<link rel="canonical" href="${origin}/tools/${lang}/pokemon-resale-calculator" />`);
+      for (const l of LOCALIZED_LANGS) expect(html, lang).toContain(`hreflang="${l}"`);
+      expect(html, lang).toContain('hreflang="x-default"');
+      // calculator + funnel intact in every locale
+      expect(html, lang).toContain('id="o-save"');
+      expect(html, lang).toContain("/api/v1/stripe/checkout");
+      expect(html, lang).toContain("/api/v1/leads");
+      expect(html, lang).toContain('data-plan="reseller"');
+      expect(html, lang).toContain('"inLanguage":"' + lang + '"');
+    }
+  });
+
+  it("localized text differs from English", () => {
+    expect(resaleCalculatorHtml(origin, "es" as any)).toContain("Calculadora");
+    expect(resaleCalculatorHtml(origin, "ja" as any)).toContain("計算機");
   });
 });
 

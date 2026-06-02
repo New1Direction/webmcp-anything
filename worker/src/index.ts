@@ -118,11 +118,23 @@ app.get("/drops/:lang/:slug", async (c) => {
 // Free lead-gen tools (engineering-as-marketing) + built-in funnel.
 app.get("/tools", async (c) => {
   const { toolsIndexHtml } = await import("./tools");
-  return c.html(toolsIndexHtml(new URL(c.req.url).origin));
+  return c.html(toolsIndexHtml(new URL(c.req.url).origin, "en"));
 });
 app.get("/tools/pokemon-resale-calculator", async (c) => {
   const { resaleCalculatorHtml } = await import("./tools");
-  return c.html(resaleCalculatorHtml(new URL(c.req.url).origin));
+  return c.html(resaleCalculatorHtml(new URL(c.req.url).origin, "en"));
+});
+app.get("/tools/:lang/pokemon-resale-calculator", async (c) => {
+  const lang = c.req.param("lang");
+  const { resaleCalculatorHtml, LOCALIZED_LANGS } = await import("./tools");
+  if (!(LOCALIZED_LANGS as readonly string[]).includes(lang)) return c.notFound();
+  return c.html(resaleCalculatorHtml(new URL(c.req.url).origin, lang as any));
+});
+app.get("/tools/:lang", async (c) => {
+  const lang = c.req.param("lang");
+  const { toolsIndexHtml, LOCALIZED_LANGS } = await import("./tools");
+  if (!(LOCALIZED_LANGS as readonly string[]).includes(lang)) return c.notFound();
+  return c.html(toolsIndexHtml(new URL(c.req.url).origin, lang as any));
 });
 
 app.get("/api/v1/health", (c) =>

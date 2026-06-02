@@ -829,6 +829,16 @@ export async function sitemapXml(env: any, origin: string): Promise<string> {
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
+${LOCALIZED_LANGS.map((lang) => `  <url>
+    <loc>${origin}/tools/${lang}</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>${origin}/tools/${lang}/pokemon-resale-calculator</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>`).join("\n")}
 ${DROP_SLUGS.map((slug) => `  <url>
     <loc>${origin}/drops/${slug}</loc>
     <changefreq>daily</changefreq>
