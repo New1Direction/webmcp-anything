@@ -55,40 +55,30 @@ zip → fill the tabs below.
 
 ## Privacy practices tab (the part that gets people rejected — answer all)
 
-**Single purpose** (one sentence):
-> Turn the web page the user is viewing into agent-callable WebMCP/MCP tools.
+**Single purpose** (one field):
+> QuickCatch turns the product page you are viewing into tools an AI agent can use: check stock, get the price, and add the item to your cart when it comes back in stock.
 
 **Permission justifications:**
 
-- **storage** —
-  > Stores the user’s own settings and (optionally) their wmcp.sh API key locally
-  > on their device, so preferences persist between sessions.
+- **storage:**
+  > QuickCatch saves your settings, and an optional wmcp.sh API key, on your own device so they persist between sessions.
 
-- **host permissions (`<all_urls>`)** —
-  > The extension’s single purpose is to turn whatever page the user is viewing
-  > into agent-callable tools. Because the user can invoke it on any site they
-  > choose, it needs to read the structured data (schema.org JSON-LD and meta
-  > tags) of the current page on any host. It reads only the page the user is
-  > actively viewing, on demand — it does not run in the background or read other
-  > tabs.
+- **host permissions (all sites):**
+  > You can run QuickCatch on any product page you choose, so it needs to read the current page on any site. It reads the page's structured data (schema.org JSON-LD and meta tags) only while you are on that page, on demand. It does not run in the background, and it does not read your other tabs.
 
-- **Remote code:** No — all logic is bundled in the package; no remote scripts,
-  no eval.
+- **Remote code:** No. All code ships inside the package. No remote scripts, no eval.
 
-**Data usage — disclose honestly (check these):**
-- ☑ **Website content** — read from the current page to extract tools. Processed
-  locally; transmitted off-device only if the user opts into the shared cache
-  (off by default), and then only the extracted tool schema (e.g. a price or a
-  headline), never browsing history.
-- ☑ **Authentication information** — only if the user adds a wmcp.sh API key; it’s
-  stored locally and sent to wmcp.sh to authenticate their own cache pushes.
-- ☐ Everything else (PII, health, financial, location, web history, personal
-  communications, user activity) — **not collected.**
+**Data usage — check these two, leave the rest unchecked:**
+- ☑ **Website content:**
+  > QuickCatch reads the current product page (title, price, stock) to build its tools. This happens in your browser. It leaves your device only if you turn on the shared cache, and then only the extracted tool data, never your browsing history.
+- ☑ **Authentication information:**
+  > Only if you add a wmcp.sh API key. It is stored on your device and sent to wmcp.sh to authenticate your own requests.
+- ☐ Personally identifiable info, health, financial, location, web history, personal communications, user activity: not collected.
 
-**Certifications (check all three — all true):**
-- ☑ I do not sell or transfer user data to third parties outside the approved use cases.
-- ☑ I do not use or transfer user data for purposes unrelated to the single purpose.
-- ☑ I do not use or transfer user data to determine creditworthiness / for lending.
+**Certifications (check all three, all true):**
+- ☑ I do not sell or transfer user data to third parties, outside of the approved use cases.
+- ☑ I do not use or transfer user data for purposes unrelated to my item's single purpose.
+- ☑ I do not use or transfer user data to determine creditworthiness or for lending purposes.
 
 **Privacy policy URL:** `https://wmcp.sh/privacy`
 
