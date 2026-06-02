@@ -202,13 +202,6 @@ function qcAddButton(root) {
 }
 function qcInStock(root) { return !!qcAddButton(root); }
 async function qcGetWatch() { const all = (await chrome.storage.local.get(QC_KEY))[QC_KEY] || {}; return all[qcNorm(location.href)]; }
-async function qcSetWatch(w) {
-  const all = (await chrome.storage.local.get(QC_KEY))[QC_KEY] || {};
-  const k = qcNorm(location.href);
-  if (w) all[k] = w; else delete all[k];
-  await chrome.storage.local.set({ [QC_KEY]: all });
-}
-let qcTimer = null;
 function qcWaitForBuyBox(maxMs) {
   return new Promise((resolve) => {
     const start = Date.now();
@@ -218,42 +211,23 @@ function qcWaitForBuyBox(maxMs) {
     })();
   });
 }
+// The background engine does the watching/polling. The content script only acts
+// when it lands on a page that's being watched AND is in stock — i.e. the tab
+// the background just opened on a restock. It carts it and tells the background.
 async function qcResume() {
   const w = await qcGetWatch();
   if (!w || !w.active || w.caught) return;
+  await qcRefreshSelectors();
   await qcWaitForBuyBox(9000); // let client-rendered stores paint the buy box
-  if (qcInStock()) { await qcOnRestock(w); return; }
-  const ms = (w.intervalSec || 14) * 1000;
-  qcTimer = setTimeout(() => location.reload(), Math.round(ms * (0.85 + Math.random() * 0.3)));
-}
-async function qcOnRestock(w) {
-  await qcSetWatch({ ...w, active: false, caught: true, caughtAt: Date.now() });
-  try { chrome.runtime.sendMessage({ type: "RESTOCK_DETECTED", url: location.href, title: document.title }); } catch {}
+  if (!qcInStock()) return;    // not actually buyable yet — background keeps polling
   const btn = qcAddButton();
   if (btn) { try { btn.scrollIntoView({ block: "center" }); btn.click(); } catch {} }
+  try { chrome.runtime.sendMessage({ type: "WATCH_CAUGHT", url: location.href }); } catch {}
 }
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", () => qcResume(), { once: true });
 else qcResume();
 
-// Popup control + tool queries (async-safe)
+// Tool queries for the popup (watch start/stop is owned by the background).
 chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
-  (async () => {
-    if (msg?.type === "GET_TOOLS_FOR_PAGE") { sendResponse({ ok: true, tools: lastToolList, url: location.href }); return; }
-    if (msg?.type === "START_WATCH") {
-      if (qcTimer) clearTimeout(qcTimer);
-      await qcRefreshSelectors(); // get the latest server config before arming
-      await qcSetWatch({ active: true, caught: false, intervalSec: msg.intervalSec || 14, startedAt: Date.now() });
-      qcResume();
-      sendResponse({ ok: true, watching: true });
-      return;
-    }
-    if (msg?.type === "STOP_WATCH") { if (qcTimer) clearTimeout(qcTimer); await qcSetWatch(null); sendResponse({ ok: true, watching: false }); return; }
-    if (msg?.type === "GET_WATCH") {
-      const w = await qcGetWatch();
-      sendResponse({ ok: true, watching: !!(w && w.active), caught: !!(w && w.caught), inStock: qcInStock() });
-      return;
-    }
-    sendResponse({ ok: false });
-  })();
-  return true; // keep the channel open for async sendResponse
+  if (msg?.type === "GET_TOOLS_FOR_PAGE") { sendResponse({ ok: true, tools: lastToolList, url: location.href }); return; }
 });

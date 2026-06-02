@@ -206,31 +206,33 @@ async function initWatch(tab) {
     if (st && st.caught) {
       btn.classList.add("caught");
       btn.textContent = "✓ Caught — check your cart";
-      note.textContent = "Restock detected. It's in your cart.";
+      note.textContent = "It restocked and we added it to your cart.";
     } else if (st && st.watching) {
       btn.classList.add("on");
       btn.textContent = "👀 Watching… tap to stop";
-      note.textContent = "Refreshing this tab until it restocks. Keep it open.";
+      note.textContent = "Watching in the background. Close this tab if you want — just keep Chrome open.";
     } else {
       btn.textContent = "⚡ Watch this drop";
-      note.textContent = "Refreshes this tab until it restocks, then adds it to your cart. Keep the tab open.";
+      note.textContent = "We watch it in the background and add it to your cart when it restocks. No need to keep the tab open — just keep Chrome running.";
     }
   }
 
+  // Watch state lives in the background engine, keyed by URL.
+  const url = tab.url, title = tab.title;
   async function refresh() {
     let st = null;
-    try { st = await chrome.tabs.sendMessage(tab.id, { type: "GET_WATCH" }); } catch {}
+    try { st = await chrome.runtime.sendMessage({ type: "WATCH_STATUS", url }); } catch {}
     renderWatch(st);
   }
 
   btn.addEventListener("click", async () => {
     let st = null;
-    try { st = await chrome.tabs.sendMessage(tab.id, { type: "GET_WATCH" }); } catch {}
+    try { st = await chrome.runtime.sendMessage({ type: "WATCH_STATUS", url }); } catch {}
     try {
-      if (st && st.watching) await chrome.tabs.sendMessage(tab.id, { type: "STOP_WATCH" });
-      else await chrome.tabs.sendMessage(tab.id, { type: "START_WATCH", intervalSec: 14 });
+      if (st && st.watching) await chrome.runtime.sendMessage({ type: "WATCH_STOP", url });
+      else await chrome.runtime.sendMessage({ type: "WATCH_START", url, title });
     } catch {
-      note.textContent = "Reload the product page, then try again.";
+      note.textContent = "Couldn't reach the watcher — reload the extension.";
       return;
     }
     refresh();

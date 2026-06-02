@@ -48,6 +48,77 @@ async function qcGetSelectors() {
   return null;
 }
 
+// ---- background watch engine ----------------------------------------------
+// No tab to babysit: chrome.alarms polls each watched URL via fetch (with the
+// user's own cookies), parses stock from the page source, and on a restock
+// opens the product + fires a notification; the content script then carts it.
+// You only need Chrome running, not the tab open.
+const QC_W_KEY = "qc_watches";
+const QC_ALARM = "qc-poll";
+const QC_POLL_MIN = 1; // minutes — gentle enough not to trip store bot-walls
+function qcNorm(u) { try { const x = new URL(u); return x.origin + x.pathname; } catch { return u; } }
+async function qcWatches() { return (await chrome.storage.local.get(QC_W_KEY))[QC_W_KEY] || {}; }
+async function qcSaveWatch(url, w) {
+  const all = await qcWatches(); const k = qcNorm(url);
+  if (w) all[k] = w; else delete all[k];
+  await chrome.storage.local.set({ [QC_W_KEY]: all });
+}
+async function qcEnsureAlarm() {
+  const all = await qcWatches();
+  if (Object.values(all).some((w) => w && w.active && !w.caught)) chrome.alarms.create(QC_ALARM, { periodInMinutes: QC_POLL_MIN });
+  else chrome.alarms.clear(QC_ALARM);
+}
+function qcAvailInStock(node, depth) {
+  if (!node || typeof node !== "object" || depth > 6) return false;
+  const a = node.availability || (node.offers && node.offers.availability);
+  if (typeof a === "string" && /InStock/i.test(a) && !/OutOfStock|SoldOut|PreOrder|BackOrder|Discontinued/i.test(a)) return true;
+  for (const k in node) {
+    const v = node[k];
+    if (v && typeof v === "object") {
+      if (Array.isArray(v)) { for (const it of v) if (qcAvailInStock(it, depth + 1)) return true; }
+      else if (qcAvailInStock(v, depth + 1)) return true;
+    }
+  }
+  return false;
+}
+// Parse stock from raw page source (no DOM in a service worker). Returns
+// true / false / null(unknown). null never triggers a false buy.
+function qcHtmlInStock(html) {
+  const blocks = html.match(/<script[^>]+application\/ld\+json[^>]*>[\s\S]*?<\/script>/gi) || [];
+  for (const b of blocks) {
+    const j = b.replace(/^<script[^>]*>/i, "").replace(/<\/script>\s*$/i, "");
+    try { if (qcAvailInStock(JSON.parse(j), 0)) return true; } catch {}
+  }
+  if (/"availability"\s*:\s*"[^"]*\bInStock\b"/i.test(html)) return true;
+  if (/"availability"\s*:\s*"[^"]*\b(OutOfStock|SoldOut|PreOrder|BackOrder)\b"/i.test(html)) return false;
+  if (/\b(out of stock|sold out|currently unavailable|notify me when|email me when)\b/i.test(html)) return false;
+  return null;
+}
+async function qcPoll() {
+  const all = await qcWatches();
+  const active = Object.entries(all).filter(([, w]) => w && w.active && !w.caught);
+  if (!active.length) { chrome.alarms.clear(QC_ALARM); return; }
+  for (const [url, w] of active) {
+    if (w.opened && Date.now() - (w.openedAt || 0) < 90000) continue; // gave it a tab; let content cart
+    let html = null;
+    try { html = await fetch(url, { credentials: "include", cache: "no-store" }).then((r) => (r.ok ? r.text() : null)); } catch {}
+    if (!html) continue;
+    if (qcHtmlInStock(html) === true) {
+      await qcSaveWatch(url, { ...w, opened: true, openedAt: Date.now() });
+      try {
+        chrome.notifications?.create("qc-" + Date.now(), {
+          type: "basic", iconUrl: chrome.runtime.getURL("icons/icon128.png"), priority: 2,
+          title: "QuickCatch — back in stock!",
+          message: (w.title ? String(w.title).slice(0, 70) : "Your watched item") + " just restocked. Opening it and adding to your cart.",
+        });
+      } catch {}
+      try { const tab = await chrome.tabs.create({ url, active: true }); if (tab.windowId != null) chrome.windows.update(tab.windowId, { focused: true }); } catch {}
+    }
+  }
+}
+chrome.alarms.onAlarm.addListener((a) => { if (a.name === QC_ALARM) qcPoll(); });
+if (chrome.runtime.onStartup) chrome.runtime.onStartup.addListener(() => qcEnsureAlarm());
+
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   (async () => {
     try {
@@ -85,22 +156,28 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         sendResponse({ ok: true, hosts: await qcGetSelectors() });
         return;
       }
-      if (msg?.type === "RESTOCK_DETECTED") {
-        // The watched page flipped back in stock. Notify, and focus the tab.
-        try {
-          chrome.notifications?.create("qc-" + Date.now(), {
-            type: "basic",
-            iconUrl: chrome.runtime.getURL("icons/icon128.png"),
-            title: "QuickCatch — back in stock!",
-            message: (msg.title ? String(msg.title).slice(0, 80) : "Your watched item") +
-              " just restocked. Added to your cart — go check out.",
-            priority: 2,
-          });
-        } catch (e) { /* notifications permission missing or unsupported */ }
-        if (sender.tab?.id != null) {
-          try { chrome.tabs.update(sender.tab.id, { active: true }); } catch (e) {}
-          if (sender.tab.windowId != null) { try { chrome.windows.update(sender.tab.windowId, { focused: true }); } catch (e) {} }
-        }
+      if (msg?.type === "WATCH_START") {
+        await qcSaveWatch(msg.url, { active: true, caught: false, opened: false, title: msg.title || "", startedAt: Date.now() });
+        await qcEnsureAlarm();
+        qcPoll(); // check immediately in case it's already in stock
+        sendResponse({ ok: true, watching: true });
+        return;
+      }
+      if (msg?.type === "WATCH_STOP") {
+        await qcSaveWatch(msg.url, null);
+        await qcEnsureAlarm();
+        sendResponse({ ok: true, watching: false });
+        return;
+      }
+      if (msg?.type === "WATCH_STATUS") {
+        const w = (await qcWatches())[qcNorm(msg.url)];
+        sendResponse({ ok: true, watching: !!(w && w.active && !w.caught), caught: !!(w && w.caught) });
+        return;
+      }
+      if (msg?.type === "WATCH_CAUGHT") {
+        // content script carted it on the opened tab — close out the watch
+        const w = (await qcWatches())[qcNorm(msg.url)];
+        if (w) { await qcSaveWatch(msg.url, { ...w, active: false, caught: true, caughtAt: Date.now() }); await qcEnsureAlarm(); }
         sendResponse({ ok: true });
         return;
       }
