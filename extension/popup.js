@@ -31,6 +31,8 @@ async function load() {
     document.getElementById("url-tag").textContent = new URL(tab.url).hostname;
   } catch {}
 
+  initWatch(tab);
+
   const bg = await chrome.runtime.sendMessage({ type: "GET_TAB_TOOLS", tabId: tab.id });
   if (bg?.tools?.length) {
     currentTools = bg.tools;
@@ -191,6 +193,50 @@ function highlight(json) {
 
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+// "Watch this drop" control. Talks to the content script's watch engine.
+async function initWatch(tab) {
+  const btn = document.getElementById("watch-btn");
+  const note = document.getElementById("watch-note");
+  if (!btn) return;
+
+  function renderWatch(st) {
+    btn.classList.remove("on", "caught");
+    if (st && st.caught) {
+      btn.classList.add("caught");
+      btn.textContent = "✓ Caught — check your cart";
+      note.textContent = "Restock detected. It's in your cart.";
+    } else if (st && st.watching) {
+      btn.classList.add("on");
+      btn.textContent = "👀 Watching… tap to stop";
+      note.textContent = "Refreshing this tab until it restocks. Keep it open.";
+    } else {
+      btn.textContent = "⚡ Watch this drop";
+      note.textContent = "Refreshes this tab until it restocks, then adds it to your cart. Keep the tab open.";
+    }
+  }
+
+  async function refresh() {
+    let st = null;
+    try { st = await chrome.tabs.sendMessage(tab.id, { type: "GET_WATCH" }); } catch {}
+    renderWatch(st);
+  }
+
+  btn.addEventListener("click", async () => {
+    let st = null;
+    try { st = await chrome.tabs.sendMessage(tab.id, { type: "GET_WATCH" }); } catch {}
+    try {
+      if (st && st.watching) await chrome.tabs.sendMessage(tab.id, { type: "STOP_WATCH" });
+      else await chrome.tabs.sendMessage(tab.id, { type: "START_WATCH", intervalSec: 14 });
+    } catch {
+      note.textContent = "Reload the product page, then try again.";
+      return;
+    }
+    refresh();
+  });
+
+  refresh();
 }
 
 load();

@@ -48,6 +48,25 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         sendResponse({ ok: true, ...(entry || { url: null, tools: [] }) });
         return;
       }
+      if (msg?.type === "RESTOCK_DETECTED") {
+        // The watched page flipped back in stock. Notify, and focus the tab.
+        try {
+          chrome.notifications?.create("qc-" + Date.now(), {
+            type: "basic",
+            iconUrl: chrome.runtime.getURL("icons/icon128.png"),
+            title: "QuickCatch — back in stock!",
+            message: (msg.title ? String(msg.title).slice(0, 80) : "Your watched item") +
+              " just restocked. Added to your cart — go check out.",
+            priority: 2,
+          });
+        } catch (e) { /* notifications permission missing or unsupported */ }
+        if (sender.tab?.id != null) {
+          try { chrome.tabs.update(sender.tab.id, { active: true }); } catch (e) {}
+          if (sender.tab.windowId != null) { try { chrome.windows.update(sender.tab.windowId, { focused: true }); } catch (e) {} }
+        }
+        sendResponse({ ok: true });
+        return;
+      }
       sendResponse({ ok: false, error: "unknown message" });
     } catch (err) {
       console.error("[WebMCP Anything bg]", err);
