@@ -19,6 +19,7 @@
 import * as shopify from "../../adapters/shopify.js";
 import { regradeWatched, seedRegistryGrades } from "./mcp_grade";
 import { fireAlert } from "./alerts";
+import { DROP_SLUGS, LOCALIZABLE_SLUGS, LOCALIZED_LANGS } from "./drops_seo";
 
 type Env = {
   CACHE: KVNamespace;
@@ -107,6 +108,41 @@ async function pingIndexNow(urls: string[]): Promise<number> {
     console.log(`[indexnow] failed: ${e?.message || e}`);
   }
   return urlList.length;
+}
+
+// The full drops + tools SEO URL set (English + 11 localized + indexes). These
+// are static pages, so instead of re-submitting all ~2,600 every run, the cron
+// pushes a rotating batch via a KV cursor — the whole set cycles to IndexNow
+// roughly once per day. Keeps Bing/Naver/Yandex crawling without spamming.
+function seoUrls(): string[] {
+  const out: string[] = [];
+  out.push(`${SITE_ORIGIN}/drops`);
+  for (const slug of DROP_SLUGS) out.push(`${SITE_ORIGIN}/drops/${slug}`);
+  for (const lang of LOCALIZED_LANGS) {
+    out.push(`${SITE_ORIGIN}/drops/${lang}`);
+    for (const slug of LOCALIZABLE_SLUGS) out.push(`${SITE_ORIGIN}/drops/${lang}/${slug}`);
+  }
+  out.push(`${SITE_ORIGIN}/tools`, `${SITE_ORIGIN}/tools/pokemon-resale-calculator`);
+  for (const lang of LOCALIZED_LANGS) {
+    out.push(`${SITE_ORIGIN}/tools/${lang}`, `${SITE_ORIGIN}/tools/${lang}/pokemon-resale-calculator`);
+  }
+  return out;
+}
+
+const SEO_CURSOR_KEY = "indexnow:seo:cursor";
+const SEO_BATCH = 300; // ~2,600 urls / 300 ≈ 9 runs ≈ full set every ~18h
+
+async function submitSeoBatch(env: Env): Promise<number> {
+  const all = seoUrls();
+  let cursor = 0;
+  try { cursor = parseInt((await env.CACHE.get(SEO_CURSOR_KEY)) || "0", 10) || 0; } catch {}
+  if (cursor >= all.length) cursor = 0;
+  const batch = all.slice(cursor, cursor + SEO_BATCH);
+  await pingIndexNow(batch);
+  const next = cursor + SEO_BATCH >= all.length ? 0 : cursor + SEO_BATCH;
+  try { await env.CACHE.put(SEO_CURSOR_KEY, String(next)); } catch {}
+  console.log(`[indexnow] seo batch: ${batch.length} urls (cursor ${cursor}→${next} of ${all.length})`);
+  return batch.length;
 }
 
 const UA =
@@ -281,6 +317,8 @@ export async function scheduledHandler(
   if (env.ENVIRONMENT === "production") {
     const freshUrls = reports.flatMap((r) => r.new_urls).map(uUrlFor);
     if (freshUrls.length) ctx.waitUntil(pingIndexNow(freshUrls));
+    // Rotating batch of the static drops/tools SEO pages → IndexNow.
+    ctx.waitUntil(submitSeoBatch(env).catch((e) => console.log("[indexnow] seo batch error", String(e))));
   }
 
   // Re-verify watched MCP servers: rug-pull / schema-drift / grade-drop +
@@ -349,6 +387,28 @@ export async function addSeedStores(c: any): Promise<Response> {
     newly_added: newly_added.length,
     total_stores_in_list: merged.length,
   });
+}
+
+/**
+ * Admin-gated. POST /api/v1/admin/seo-indexnow with `x-admin-token`.
+ * Submits the ENTIRE drops/tools SEO URL set to IndexNow in one shot
+ * (Bing/Naver/Yandex/Seznam) — the instant full backfill. The cron also
+ * rotates through the set automatically; this is for "index everything now".
+ */
+export async function submitSeoIndexNow(c: any): Promise<Response> {
+  const env: Env = c.env;
+  const token = c.req.header("x-admin-token");
+  if (!env.ADMIN_TOKEN || token !== env.ADMIN_TOKEN) {
+    return c.json({ error: "admin only" }, 401);
+  }
+  const all = seoUrls();
+  let submitted = 0;
+  for (let i = 0; i < all.length; i += 10000) {
+    const chunk = all.slice(i, i + 10000);
+    await pingIndexNow(chunk);
+    submitted += chunk.length;
+  }
+  return c.json({ ok: true, submitted, host: SITE_HOST });
 }
 
 /**
