@@ -13,36 +13,34 @@ zip → fill the tabs below.
 **Name** (already in manifest): `WebMCP Anything`
 
 **Summary** (≤132 chars, matches manifest):
-> Never miss a Pokémon drop again. Your AI watches the page and grabs the restock for you — even on sites that block bots.
+> Never miss a Pokémon drop again. Your AI watches the page and grabs the restock for you, even on sites that block bots.
 
 **Category:** Developer Tools  ·  **Language:** English
 
 **Description:**
-> Pokémon drops sell out in seconds — and the sites you buy from (Pokémon Center,
-> Walmart, Sam's Club, Best Buy, Target) block bots hard. So the moment it matters,
-> a normal AI assistant is locked out.
+> Pokémon drops sell out in seconds. The stores that carry them, like Pokémon
+> Center, Walmart, and Sam's Club, block bots, so a normal AI assistant can't
+> reach the page when a box restocks.
 >
-> WebMCP Anything is different: it runs right in your own browser, in your own
-> session — so it works on the exact pages everyone else's bots get blocked from.
+> This extension runs inside your own browser, in your own logged-in session, so
+> it reaches pages that block other tools.
 >
-> Set it up BEFORE the drop:
-> 1. Add the extension (free, one click).
-> 2. Open the product page and arm it — "Watch this drop."
-> 3. Walk away. The second it restocks, your AI grabs it and it's in your cart.
->    You just check out.
+> Set it up before the drop:
+> 1. Add the extension. Free, one click.
+> 2. Open the product page and tap "Watch this drop."
+> 3. Leave it running and walk away.
 >
-> No sitting on the page. No refresh-spamming. No racing to the checkout button.
-> You set it up before the drop — and it's already handled when it goes live.
+> When the box restocks, your AI adds it to your cart. You open the cart and check
+> out. You skip the refreshing and the scramble for the buy button.
 >
-> Works on booster boxes, elite trainer boxes, special collections, and chase
-> singles — anywhere a product page shows price and stock. Because it reads the
-> page in your own browser, it reaches the bot-blocked sites no other tool can.
+> It works on booster boxes, elite trainer boxes, and special collections, on any
+> product page that shows a price and stock.
 >
-> You stay in control — it only ever acts on the page you point it at, and you
-> complete the checkout yourself.
+> You stay in control. It acts only on the page you point it at, and you finish
+> checkout yourself.
 >
-> Free to try. Open-source (MIT). Your data stays in your browser — nothing about
-> the pages you visit leaves unless you explicitly turn it on.
+> Free to try. The code is open source. Your browsing stays on your machine, and
+> nothing about the pages you visit leaves your browser unless you turn that on.
 
 **Screenshots** (1280×800, in `launch/store-assets/` — upload in this order):
 1. `wmcp-store-1-hero.png` — "Let your AI agent cop the drop" (the hook).
