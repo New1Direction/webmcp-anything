@@ -9,15 +9,29 @@
 
 export const ID = "openapi";
 
+// Detection hints. Generous on purpose: a false positive only costs one fetch —
+// extract() validates the body is really OpenAPI/Swagger and throws otherwise,
+// and the engine cascade falls through to the next tier on throw. So we'd rather
+// catch real-world spec URLs (which rarely follow the textbook /openapi.json
+// naming) than miss them. Caught in the wild:
+//   Stripe   /openapi/spec3.json            → "openapi" substring
+//   Twilio   /spec/json/twilio_*.json       → /spec/.../*.json
+//   DO       /specification/*.v2.yaml       → /specification/.../*.yaml
 const URL_HINTS = [
-  /\/openapi(?:\.json)?(\?|$)/i,
-  /\/openapi\.ya?ml(\?|$)/i,
-  /\/swagger(?:\.json)?(\?|$)/i,
-  /\/swagger\.ya?ml(\?|$)/i,
-  /\/api-docs(\.json)?(\?|$|\/)/i,
-  /\/v\d+\/swagger\.json(\?|$)/i,
-  /\/spec\.json(\?|$)/i,
+  /openapi/i,                                    // anywhere in the path
+  /swagger/i,                                    // anywhere in the path
+  /\bapi-docs\b/i,
+  /\/spec\d*\.(json|ya?ml)(\?|$)/i,              // /spec.json, /spec3.json, /spec.yaml
+  /\/spec\/[^?]*\.(json|ya?ml)(\?|$)/i,          // /spec/json/foo.json (Twilio)
+  /\/specification\/[^?]*\.(json|ya?ml)(\?|$)/i, // /specification/foo.yaml (DigitalOcean)
 ];
+
+// Specs above this size are skipped: parsing multi-MB JSON and emitting hundreds
+// of tools in a Worker request is slow and produces an unusable tool list. Stripe's
+// own spec is ~7.8MB — it falls through gracefully rather than hanging the request.
+const MAX_SPEC_BYTES = 3_000_000;
+// Cap the emitted tool count so a giant API doesn't return a 400-tool wall.
+const MAX_TOOLS = 300;
 
 const CHROME_UA =
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 " +
@@ -37,7 +51,18 @@ export async function extract(ctx) {
     credentials: "omit",
   });
   if (!res.ok) throw new Error(`openapi fetch failed: ${res.status}`);
+
+  // Size guard — bail before downloading/parsing a multi-MB spec. Prefer the
+  // declared length; fall back to the actual body length when the header lies
+  // or is absent.
+  const declared = parseInt(res.headers.get("content-length") || "0", 10);
+  if (declared && declared > MAX_SPEC_BYTES) {
+    throw new Error(`openapi: spec too large (${declared} bytes)`);
+  }
   const text = await res.text();
+  if (text.length > MAX_SPEC_BYTES) {
+    throw new Error(`openapi: spec too large (${text.length} bytes)`);
+  }
   let spec;
   try {
     spec = JSON.parse(text);
@@ -121,7 +146,8 @@ export async function extract(ctx) {
       version: spec.info?.version,
     },
     variants: [],
-    tools,
+    tools: tools.slice(0, MAX_TOOLS),
+    truncated: tools.length > MAX_TOOLS ? tools.length : undefined,
   };
 }
 

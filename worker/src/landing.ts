@@ -508,18 +508,19 @@ export function landingHtml(origin: string): string {
 <!-- ========== LIVE DEMO ========== -->
 <section id="demo">
   <div class="section-label">Live demo</div>
-  <h2 class="section-h2">Paste a URL, get the tools.</h2>
-  <p class="section-sub">No signup. No key. Free tier handles 100 reads/day per IP.</p>
+  <h2 class="section-h2">Paste an API spec, get the tools.</h2>
+  <p class="section-sub">Drop in any OpenAPI spec — Twilio, Box, your own — and get an MCP tool per endpoint. No signup, no key for reads. (Storefronts work too.)</p>
   <div class="demo-box">
     <div class="row">
-      <input id="u" type="url" placeholder="https://www.allbirds.com/products/mens-wool-runners" />
+      <input id="u" type="url" placeholder="https://raw.githubusercontent.com/twilio/twilio-oai/main/spec/json/twilio_lookups_v2.json" />
       <button class="go" id="go"><svg class="ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Get tools</button>
     </div>
     <div class="chips">
       <span style="color:var(--muted);font-size:.78rem;align-self:center">try:</span>
-      <span class="chip" data-u="https://www.allbirds.com/products/mens-wool-runners">allbirds (shopify)</span>
-      <span class="chip" data-u="https://www.everlane.com/products/mens-organic-cotton-crew-tee-white">everlane (shopify)</span>
-      <span class="chip" data-u="https://outdoorvoices.com/products/exercise-dress">outdoor voices (jsonld)</span>
+      <span class="chip" data-u="https://raw.githubusercontent.com/twilio/twilio-oai/main/spec/json/twilio_lookups_v2.json">Twilio (openapi)</span>
+      <span class="chip" data-u="https://raw.githubusercontent.com/box/box-openapi/main/openapi.json">Box (openapi)</span>
+      <span class="chip" data-u="https://petstore3.swagger.io/api/v3/openapi.json">Petstore (openapi)</span>
+      <span class="chip" data-u="https://www.allbirds.com/products/mens-wool-runners">a storefront (shopify)</span>
     </div>
     <pre id="out"><span class="c">// Paste a URL and click Get tools.</span></pre>
   </div>
