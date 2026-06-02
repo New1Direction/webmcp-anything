@@ -10,7 +10,7 @@
 // Static import — blog post map is part of the worker bundle. Used by
 // /llms.txt, /llms-full.txt, and sitemapXml below.
 import { BLOG_POSTS, BLOG_SLUGS } from "./blog_posts";
-import { DROP_SLUGS } from "./drops_seo";
+import { DROP_SLUGS, LOCALIZABLE_SLUGS, LOCALIZED_LANGS } from "./drops_seo";
 
 const PROVIDER_BADGE: Record<string, { color: string; label: string }> = {
   shopify: { color: "#4ade80", label: "Shopify" },
@@ -382,6 +382,21 @@ export function llmsTxt(origin: string): string {
 - [Directory](${origin}/directory): every URL the community has turned into MCP tools — ${blogCount > 0 ? "verified badges + featured placement available" : "open submission"}
 - [Submit your site](${origin}/directory/submit): free listing form for site owners
 - [Price-data adapters](${origin}/price-data): 5 oracle / price-data sources (CoinGecko, Pyth, Chainlink, DefiLlama, DexScreener)
+
+## QuickCatch — Pokémon & TCG drop catcher (consumer app)
+
+QuickCatch is wmcp.sh's consumer Chrome extension built on the same engine: it
+watches a Pokémon/TCG product page in your own browser and adds the item to your
+cart the moment it restocks, even on sites that block server-side bots. Free
+install, no proxies, no server.
+
+- [All drop & restock guides](${origin}/drops): index of 120+ English guides — TCG sets, every major store, QuickCatch vs sneaker bots, and sniping how-tos
+- [Pokémon restock tracker](${origin}/drops/pokemon-restock-tracker): the cornerstone explainer
+- [Pokémon restock bot alternative](${origin}/drops/pokemon-restock-bot-alternative): why a browser catcher beats a server bot
+- [QuickCatch vs sneaker bots](${origin}/drops/quickcatch-vs-sneaker-bots): comparison vs Valor/Cybersole/Kodai-style AIO bots
+- [How to snipe a Pokémon drop](${origin}/drops/how-to-snipe-pokemon-drops): step-by-step
+- Localized in 11 languages at \`${origin}/drops/<lang>/<slug>\` — es, fr, de, pt, it, nl, pl, ja, ko, zh, zh-Hant (with hreflang; all URLs in /sitemap.xml)
+- Chrome Web Store: https://chromewebstore.google.com/detail/quickcatch/dgbaaeengmgmkefpocdckkiahilbfdlk
 
 ## Vertical-specific agent-readiness guides
 
@@ -808,6 +823,16 @@ ${DROP_SLUGS.map((slug) => `  <url>
     <changefreq>daily</changefreq>
     <priority>0.85</priority>
   </url>`).join("\n")}
+${LOCALIZED_LANGS.map((lang) => `  <url>
+    <loc>${origin}/drops/${lang}</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+${LOCALIZABLE_SLUGS.map((slug) => `  <url>
+    <loc>${origin}/drops/${lang}/${slug}</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.65</priority>
+  </url>`).join("\n")}`).join("\n")}
 ${blogUrlsXml}
 ${urlsXml}
 </urlset>

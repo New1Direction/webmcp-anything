@@ -88,15 +88,31 @@ app.get("/api/v1/selectors", async (c) => {
 });
 
 // QuickCatch drop/restock SEO pages (programmatic) + built-in funnel.
+// English at /drops + /drops/:slug; localized (es/fr/de/pt/it) at
+// /drops/:lang + /drops/:lang/:slug. hreflang links the variants.
 app.get("/drops", async (c) => {
   const { dropsIndexHtml } = await import("./drops_seo");
-  return c.html(dropsIndexHtml(new URL(c.req.url).origin));
+  return c.html(dropsIndexHtml(new URL(c.req.url).origin, "en"));
 });
-app.get("/drops/:slug", async (c) => {
-  const { DROP_PAGES, dropPageHtml } = await import("./drops_seo");
-  const page = DROP_PAGES.find((p) => p.slug === c.req.param("slug"));
+app.get("/drops/:a", async (c) => {
+  const a = c.req.param("a");
+  const { DROP_PAGES, dropPageHtml, dropsIndexHtml, LOCALIZED_LANGS } = await import("./drops_seo");
+  const origin = new URL(c.req.url).origin;
+  // /drops/<lang> → localized index
+  if ((LOCALIZED_LANGS as readonly string[]).includes(a)) return c.html(dropsIndexHtml(origin, a as any));
+  // /drops/<slug> → English page
+  const page = DROP_PAGES.find((p) => p.slug === a);
   if (!page) return c.notFound();
-  return c.html(dropPageHtml(new URL(c.req.url).origin, page));
+  return c.html(dropPageHtml(origin, page, "en"));
+});
+app.get("/drops/:lang/:slug", async (c) => {
+  const lang = c.req.param("lang");
+  const slug = c.req.param("slug");
+  const { DROP_PAGES, dropPageHtml, isLocalizable, LOCALIZED_LANGS } = await import("./drops_seo");
+  if (!(LOCALIZED_LANGS as readonly string[]).includes(lang)) return c.notFound();
+  const page = DROP_PAGES.find((p) => p.slug === slug);
+  if (!page || !isLocalizable(page)) return c.notFound();
+  return c.html(dropPageHtml(new URL(c.req.url).origin, page, lang as any));
 });
 
 app.get("/api/v1/health", (c) =>
