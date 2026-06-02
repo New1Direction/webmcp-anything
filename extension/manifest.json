@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "WebMCP Anything",
   "version": "0.1.0",
-  "description": "Retrofits Chrome WebMCP tools onto any website. Paste, browse, agent calls. Starting with Shopify.",
+  "description": "Give your AI agent the sites that block bots. WebMCP extracts agent-callable tools from any page — in your own browser, your own session.",
   "minimum_chrome_version": "132",
   "action": {
     "default_popup": "popup.html",
@@ -19,7 +19,7 @@
     "128": "icons/icon128.png"
   },
   "background": {
-    "service_worker": "background.js",
+    "service_worker": "background.bundle.js",
     "type": "module"
   },
   "options_ui": {
