@@ -1,5 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
-  <rect x="4" y="4" width="120" height="120" rx="27" fill="#fb8b00"/>
-  <path d="M72 14 L35 71 L57 71 L47 114 L95 52 L71 52 Z"
-        fill="#2a1500" stroke="#2a1500" stroke-width="3" stroke-linejoin="round"/>
+  <!-- QuickCatch: orange Poké-Ball-style coin with a $ center -->
+  <circle cx="64" cy="64" r="57" fill="#f97316"/>
+  <path d="M7 64 A57 57 0 0 1 121 64 Z" fill="#ffb43c"/>
+  <rect x="8" y="56.5" width="112" height="15" fill="#2a1500"/>
+  <circle cx="64" cy="64" r="25.5" fill="#2a1500"/>
+  <circle cx="64" cy="64" r="21.5" fill="#fff3e0"/>
+  <text x="64" y="65" text-anchor="middle" dominant-baseline="central"
+        font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="37" fill="#2a1500">$</text>
 </svg>
