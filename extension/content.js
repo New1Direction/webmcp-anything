@@ -138,19 +138,34 @@ setInterval(() => {
 // client-rendered stores too. State lives in storage so it survives reloads.
 const QC_KEY = "qc_watches";
 const QC_ADD_RE = /\b(add to cart|add to bag|add to basket|pre-?order|buy now)\b/i;
+// Keyed by bare domain; matched against location.hostname so www and other
+// subdomains both work. Ordered most-specific first. These reflect current
+// store markup and may drift — the generic text match below is the safety net.
 const QC_HOST_SELECTORS = {
-  "www.pokemoncenter.com": ['button[data-testid="add-to-cart"]', 'button[class*="addToCart"]', 'button[class*="AddToCart"]'],
-  "www.walmart.com": ['button[data-automation-id="atc"]', 'button[data-testid="add-to-cart-section"] button'],
-  "www.target.com": ['button[id*="addToCart"]', 'button[data-test*="addToCart"]'],
-  "www.bestbuy.com": ['button.add-to-cart-button:not([disabled])'],
-  "www.samsclub.com": ['button[data-testid="add-to-cart"]'],
+  "amazon.com": ['#add-to-cart-button', 'input#add-to-cart-button', 'input[name="submit.add-to-cart"]', '#buy-now-button'],
+  "walmart.com": ['button[data-automation-id="atc"]', '[data-seo-id="add-to-cart"]', 'button[data-testid="add-to-cart-section"] button'],
+  "target.com": ['button[data-test="addToCartButton"]', 'button[data-test="orderPickupButton"]', 'button[data-test="shippingButton"]'],
+  "bestbuy.com": ['button.add-to-cart-button', 'button[data-button-state="ADD_TO_CART"]'],
+  "samsclub.com": ['button[data-testid="add-to-cart"]', 'button[aria-label*="Add to cart" i]'],
+  "pokemoncenter.com": ['button[data-testid="add-to-cart"]', 'button[class*="addToCart" i]', 'button[aria-label*="Add to Cart" i]'],
+  "gamestop.com": ['button.add-to-cart', '#add-to-cart', 'button[data-id*="addToCart" i]'],
+  "costco.com": ['#add-to-cart-btn', 'input[id*="add-to-cart" i]', 'button[automation-id="addToCartButton"]'],
+  "tcgplayer.com": ['button[data-testid*="add-to-cart" i]', 'button.add-to-cart', 'a[href*="add-to-cart" i]'],
 };
+function qcHostSelectors() {
+  const h = location.hostname;
+  for (const domain in QC_HOST_SELECTORS) {
+    if (h === domain || h.endsWith("." + domain)) return QC_HOST_SELECTORS[domain];
+  }
+  return [];
+}
 function qcNorm(u) { try { const x = new URL(u); return x.origin + x.pathname; } catch { return u; } }
 function qcAddButton(root) {
   root = root || document;
-  for (const sel of (QC_HOST_SELECTORS[location.hostname] || [])) {
-    const el = root.querySelector(sel);
-    if (el && !el.disabled && el.getAttribute("aria-disabled") !== "true") return el;
+  for (const sel of qcHostSelectors()) {
+    let el = null;
+    try { el = root.querySelector(sel); } catch { continue; }
+    if (el && !el.disabled && el.getAttribute("aria-disabled") !== "true" && el.offsetParent !== null) return el;
   }
   const cands = Array.from(root.querySelectorAll('button,[role="button"],input[type="submit"],a[class*="add"]'));
   return cands.find((el) => {
