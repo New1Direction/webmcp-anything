@@ -519,7 +519,7 @@ export function landingHtml(origin: string): string {
       <span style="color:var(--muted);font-size:.78rem;align-self:center">try:</span>
       <span class="chip" data-u="https://raw.githubusercontent.com/twilio/twilio-oai/main/spec/json/twilio_lookups_v2.json">Twilio API (openapi)</span>
       <span class="chip" data-u="https://minimalistbaker.com/easy-vegan-fried-rice/">a recipe (jsonld)</span>
-      <span class="chip" data-u="https://www.nerdwallet.com/article/banking/best-savings-accounts">an article (jsonld)</span>
+      <span class="chip" data-u="https://www.freecodecamp.org/news/the-javascript-array-handbook/">an article (jsonld)</span>
       <span class="chip" data-u="https://www.allbirds.com/products/mens-wool-runners">a storefront (shopify)</span>
     </div>
     <pre id="out"><span class="c">// Paste a URL and click Get tools.</span></pre>
