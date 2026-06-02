@@ -126,6 +126,22 @@
   .hero .pills { display:flex; gap:11px; flex-wrap:wrap; }
   .hero .pill { border:1px solid var(--border); background:var(--card); border-radius:999px; padding:9px 16px; color:var(--text); font-size:14px; }
   .hero .pill .am{color:var(--accent)}
+  /* how-it-works */
+  .how { position:absolute; inset:0; display:flex; flex-direction:column; justify-content:center; padding:0 78px; }
+  .how .kick { display:inline-flex; align-items:center; gap:10px; color:var(--accent2); font-size:13px; font-weight:800; text-transform:uppercase; letter-spacing:.14em; margin-bottom:16px; }
+  .how h1 { font-size:50px; line-height:1.05; margin:0 0 12px; color:var(--text); letter-spacing:-.02em; }
+  .how h1 .am{ color:var(--accent); }
+  .how .magic { color:var(--muted); font-size:19px; margin:0 0 34px; }
+  .steps { display:flex; gap:20px; }
+  .step { flex:1; background:var(--card); border:1px solid var(--border); border-radius:16px; padding:24px 22px; position:relative; }
+  .step.hot { border-color:var(--accent); background:linear-gradient(135deg,var(--card),rgba(255,158,44,.08)); }
+  .step .n { position:absolute; top:-15px; left:22px; width:32px;height:32px;border-radius:50%; background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#2a1500; font-weight:900; display:grid;place-items:center; font-size:16px; }
+  .step .ic { font-size:34px; margin:6px 0 12px; }
+  .step h3 { font-size:18px; margin:0 0 7px; color:var(--text); }
+  .step p { font-size:14px; color:var(--muted); margin:0; line-height:1.5; }
+  .step p b{ color:var(--text); }
+  .note { margin-top:28px; background:rgba(255,158,44,.1); border:1px solid rgba(255,158,44,.42); border-radius:14px; padding:16px 20px; font-size:16.5px; color:var(--text); display:flex; align-items:center; gap:12px; }
+  .note .em{ font-size:22px; } .note b{ color:var(--accent); }
 </style>
 </head>
 <body>
@@ -143,6 +159,36 @@
       <div class="pill">🎴 Presales</div>
       <div class="pill"><span class="am">+</span> any URL</div>
     </div>
+  </div>
+</div>
+
+<!-- ============ 1b) HOW IT WORKS ============ -->
+<div class="shot" id="show">
+  <div class="how">
+    <div class="kick">◆ Set it once · before the drop</div>
+    <h1>So easy it feels like <span class="am">cheating.</span></h1>
+    <div class="magic">Three taps before the drop. Then your agent does the part everyone else is frantically racing to do.</div>
+    <div class="steps">
+      <div class="step">
+        <div class="n">1</div>
+        <div class="ic">🧩</div>
+        <h3>Add the extension</h3>
+        <p>Free, one click in Chrome. <b>Pin it</b> and you're set.</p>
+      </div>
+      <div class="step">
+        <div class="n">2</div>
+        <div class="ic">🎯</div>
+        <h3>Arm it before the drop</h3>
+        <p>Open the product page and tap <b>“Watch this drop.”</b> That's it — leave it running and walk away.</p>
+      </div>
+      <div class="step hot">
+        <div class="n">3</div>
+        <div class="ic">✨</div>
+        <h3>It's in your cart</h3>
+        <p>The second it restocks, your agent grabs it. You just <b>tap checkout</b>.</p>
+      </div>
+    </div>
+    <div class="note"><span class="em">⚡</span><div>You set it up <b>before</b> the drop — so you never have to sit on the page or race to the checkout. When it goes live, it's already handled.</div></div>
   </div>
 </div>
 

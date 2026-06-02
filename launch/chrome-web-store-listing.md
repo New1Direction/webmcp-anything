@@ -45,10 +45,11 @@ zip → fill the tabs below.
 
 **Screenshots** (1280×800, in `launch/store-assets/` — upload in this order):
 1. `wmcp-store-1-hero.png` — "Let your AI agent cop the drop" (the hook).
-2. `wmcp-store-2-pokemoncenter.png` — Pokémon Center: Ascended Heroes ETB flips from UNAVAILABLE → agent adds to cart.
-3. `wmcp-store-3-walmart.png` — Walmart: 151 Ultra-Premium Collection back in stock → agent fires add_to_cart.
-4. `wmcp-store-4-samsclub.png` — Sam's Club: Prismatic Evolutions ETB, "in 50+ carts" → agent in cart first.
-   Real store chrome (Pokémon Center / Walmart / Sam's Club) + real product photos; popup shows only real tools.
+2. `wmcp-store-howto.png` — "So easy it feels like cheating": 3 steps + the key message (arm it BEFORE the drop, no racing to checkout).
+3. `wmcp-store-2-pokemoncenter.png` — Pokémon Center: Ascended Heroes ETB ($59.99) restocks → in your cart.
+4. `wmcp-store-3-walmart.png` — Walmart: 151 Ultra-Premium ($119.99) back in stock → in your cart.
+5. `wmcp-store-4-samsclub.png` — Sam's Club: Prismatic Evolutions ETB ($49.99), beat the 50+ carts.
+   Real store chrome + real product photos + real MSRP; popups are plain-English (no code/JSON).
    (Source: launch/store-assets/scenes.html — regenerate via a local server + 1280×800 headless shot.)
 
 ---
