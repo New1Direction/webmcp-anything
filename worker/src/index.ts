@@ -80,6 +80,18 @@ app.get("/privacy", async (c) => {
   return c.html(privacyHtml(new URL(c.req.url).origin));
 });
 
+// QuickCatch drop/restock SEO pages (programmatic) + built-in funnel.
+app.get("/drops", async (c) => {
+  const { dropsIndexHtml } = await import("./drops_seo");
+  return c.html(dropsIndexHtml(new URL(c.req.url).origin));
+});
+app.get("/drops/:slug", async (c) => {
+  const { DROP_PAGES, dropPageHtml } = await import("./drops_seo");
+  const page = DROP_PAGES.find((p) => p.slug === c.req.param("slug"));
+  if (!page) return c.notFound();
+  return c.html(dropPageHtml(new URL(c.req.url).origin, page));
+});
+
 app.get("/api/v1/health", (c) =>
   c.json({ ok: true, version: "0.1.0", env: c.env.ENVIRONMENT })
 );

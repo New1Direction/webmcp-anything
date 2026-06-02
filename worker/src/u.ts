@@ -10,6 +10,7 @@
 // Static import — blog post map is part of the worker bundle. Used by
 // /llms.txt, /llms-full.txt, and sitemapXml below.
 import { BLOG_POSTS, BLOG_SLUGS } from "./blog_posts";
+import { DROP_SLUGS } from "./drops_seo";
 
 const PROVIDER_BADGE: Record<string, { color: string; label: string }> = {
   shopify: { color: "#4ade80", label: "Shopify" },
@@ -797,6 +798,16 @@ export async function sitemapXml(env: any, origin: string): Promise<string> {
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
+  <url>
+    <loc>${origin}/drops</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+${DROP_SLUGS.map((slug) => `  <url>
+    <loc>${origin}/drops/${slug}</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.85</priority>
+  </url>`).join("\n")}
 ${blogUrlsXml}
 ${urlsXml}
 </urlset>
