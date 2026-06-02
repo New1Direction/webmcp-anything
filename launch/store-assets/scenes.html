@@ -62,6 +62,21 @@
   .pg h1 { font-size:25px; margin:0 0 8px; color:#0e0e12; line-height:1.2; }
   .pg .by { color:#777; font-size:13px; margin-bottom:16px; }
   .pg .img { height:250px; border-radius:14px; display:grid; place-items:center; font-size:56px; }
+  .pg .imgp { height:270px; width:100%; object-fit:contain; background:#fff; border-radius:14px; display:block; }
+  /* store-branded header bars (real retailers) */
+  .store-bar { display:flex; align-items:center; gap:14px; padding:12px 36px; margin:-26px -36px 20px; }
+  .store-bar .nav { color:#5b5b5b; font-size:13px; display:flex; gap:18px; }
+  .store-bar .search { flex:1; background:#f1f1f4; border-radius:8px; height:30px; max-width:340px; }
+  .store-bar .cart { margin-left:auto; position:relative; font-size:20px; }
+  .store-bar .cart .cb { position:absolute; top:-7px; right:-9px; color:#fff; font-size:10px; font-weight:800; border-radius:999px; padding:1px 5px; }
+  .store-bar .logo { font-weight:900; font-size:19px; display:flex; align-items:center; gap:9px; letter-spacing:-.01em; }
+  /* Pokémon Center */
+  .pc-bar { background:#fff; border-bottom:1px solid #eee; } .pc-bar .logo { color:#e3000f; }
+  .pokeball { width:22px;height:22px;border-radius:50%;background:linear-gradient(#ee1515 50%,#f7f7f7 50%);border:2px solid #1a1a1a;position:relative; }
+  .pokeball::after{content:"";position:absolute;top:50%;left:50%;width:6px;height:6px;background:#fff;border:2px solid #1a1a1a;border-radius:50%;transform:translate(-50%,-50%)}
+  .pc-bar .cart .cb { background:#e3000f; }
+  .btn-bag { background:#e3000f; color:#fff; border:none; border-radius:999px; padding:13px 26px; font-weight:800; font-size:14px; margin-top:16px; display:inline-flex; align-items:center; gap:8px; }
+  .added { color:#16a34a; font-weight:700; font-size:13px; margin-top:10px; display:flex; align-items:center; gap:6px; }
   .pg .price { font-size:30px; font-weight:800; color:#0e0e12; }
   .badge { display:inline-flex; align-items:center; gap:7px; font-weight:800; font-size:12px; padding:6px 12px; border-radius:8px; margin-bottom:12px; }
   .b-live { background:#ffe9ee; color:#d4143c; } .b-live .pulse{width:8px;height:8px;border-radius:50%;background:#ff1744;box-shadow:0 0 0 0 rgba(255,23,68,.6)}
@@ -98,12 +113,12 @@
   <div class="hero">
     <div class="kick"><span class="pulse"></span>The drops that block bots</div>
     <h1>Let your AI agent <span class="am">cop the drop.</span></h1>
-    <p>Pokémon boxes, sneaker launches, console &amp; GPU restocks — the limited releases that sell out in seconds and block every bot. WebMCP runs in <b>your own browser, your own session</b>, so your agent is already inside the moment it goes live.</p>
+    <p>Booster boxes, elite trainer boxes, chase singles — the Pokémon drops that sell out in seconds and block every bot. WebMCP runs in <b>your own browser, your own session</b>, so your agent is already inside the moment it goes live.</p>
     <div class="pills">
-      <div class="pill">🃏 TCG drops</div>
-      <div class="pill">👟 Sneaker launches</div>
-      <div class="pill">🎮 Console &amp; GPU restocks</div>
+      <div class="pill">🃏 Booster boxes &amp; ETBs</div>
+      <div class="pill">⭐ Chase singles</div>
       <div class="pill">🔁 Restock alerts</div>
+      <div class="pill">🎴 Presales</div>
       <div class="pill"><span class="am">+</span> any URL</div>
     </div>
   </div>
@@ -114,90 +129,57 @@
   <div class="browser">
     <div class="chrome">
       <div class="dots"><i class="r"></i><i class="y"></i><i class="g"></i></div>
-      <div class="tab">Charizard ex Booster Box — In Stock</div>
-      <div class="omni"><span class="lock">🔒</span> cardvault.example/surging-sparks-booster-box · <span class="li">signed in</span></div>
+      <div class="tab">Mega Evolution: Ascended Heroes ETB | Pokémon Center</div>
+      <div class="omni"><span class="lock">🔒</span> www.pokemoncenter.com/product/ascended-heroes-etb · <span class="li">signed in</span></div>
       <div class="ext-pin">⚡<span class="ping"></span></div>
     </div>
     <div class="page">
       <div class="pg">
-        <div class="crumb">Pokémon TCG / Booster Boxes</div>
+        <div class="store-bar pc-bar">
+          <div class="logo"><span class="pokeball"></span>Pokémon Center</div>
+          <div class="nav">Trading Card Game · Plush · New</div>
+          <div class="cart">🛍️<span class="cb">1</span></div>
+        </div>
         <div class="row">
-          <div class="col"><div class="img" style="background:linear-gradient(135deg,#ffd86b,#ff7a45)">🔥</div></div>
+          <div class="col"><img class="imgp" src="img/pokemon.png" alt="Pokémon ETB" /></div>
           <div class="col">
             <div class="badge b-live"><span class="pulse"></span>RESTOCKED 2s ago</div>
-            <h1>Pokémon TCG: Surging Sparks — Booster Box</h1>
-            <div class="by">36 packs · Charizard ex chase · Limit 1 per customer</div>
-            <div class="price">$159.99</div>
+            <h1>Mega Evolution: Ascended Heroes Elite Trainer Box</h1>
+            <div class="by">Pokémon TCG · 9 booster packs + promo · Limit 1 per customer</div>
+            <div class="price">$49.99</div>
             <div class="badge b-low" style="margin-top:14px">⚠ Only 4 left</div>
+            <button class="btn-bag">🛍️ Add to Bag</button>
+            <div class="added">✓ Added by your agent — bag (1) · ready to check out</div>
           </div>
         </div>
       </div>
       <div class="popup">
         <div class="pop-head"><div class="pop-logo">⚡ WebMCP Anything</div><div class="pop-status"><span class="dot"></span>4 tools live</div></div>
         <div class="pop-main">
-          <div class="atag">shopify adapter</div>
+          <div class="atag">jsonld adapter</div>
           <div class="tool hot">
             <div class="tool-head"><span class="ic">✅</span><div class="lab">Check stock</div><span class="live-badge">JUST FLIPPED</span></div>
             <div class="result"><span class="k">"in_stock"</span>: <span class="ok">true</span>, <span class="k">"availability"</span>: <span class="s">"InStock"</span></div>
           </div>
-          <div class="tool"><div class="tool-head"><span class="ic">🛒</span><div class="lab">Add to cart</div><button class="run">▶ Run</button></div><div class="desc">Live — fires the instant stock flips</div></div>
+          <div class="tool hot">
+            <div class="tool-head"><span class="ic">🛍️</span><div class="lab">Add to cart</div><span class="live-badge">FIRED</span></div>
+            <div class="result"><span class="k">"ok"</span>: <span class="ok">true</span>, <span class="k">"bag_count"</span>: 1, <span class="k">"ms_after_restock"</span>: <span class="ok">810</span></div>
+          </div>
           <div class="tool"><div class="tool-head"><span class="ic">💰</span><div class="lab">Get price</div><button class="run">▶ Run</button></div></div>
         </div>
-        <div class="pop-foot"><span>cardvault.example</span><a>WebMCP docs ↗</a></div>
+        <div class="pop-foot"><span>pokemoncenter.com</span><a>WebMCP docs ↗</a></div>
       </div>
       <div class="agentbar">
         <div class="ln"><span class="who">agent</span> <span class="t">loop: check_stock every 2s…</span></div>
         <div class="ln"><span class="t">← in_stock: </span><span class="ok">true</span> <span class="t">(restock detected)</span></div>
-        <div class="ln"><span class="who">agent</span> <span class="t">→ add_to_cart { qty: 1 } </span><span class="ok">✓ in cart 0.8s</span></div>
+        <div class="ln"><span class="who">agent</span> <span class="t">→ add_to_cart { qty: 1 } </span><span class="ok">✓ in bag 0.8s</span></div>
       </div>
     </div>
   </div>
-  <div class="cap"><div class="big">It restocks. Your agent's <span class="am">already in cart.</span></div><div class="sm">Polls check_stock, fires add_to_cart the instant it flips — in your session.</div></div>
+  <div class="cap"><div class="big">It hits Pokémon Center. <span class="am">It's in your bag.</span></div><div class="sm">Agent polls check_stock, fires add_to_cart the instant it restocks — you check out.</div></div>
 </div>
 
-<!-- ============ 3) SNEAKER DROP ============ -->
-<div class="shot" id="s3">
-  <div class="browser">
-    <div class="chrome">
-      <div class="dots"><i class="r"></i><i class="y"></i><i class="g"></i></div>
-      <div class="tab">Air Jordan 4 Retro — Launch</div>
-      <div class="omni"><span class="lock">🔒</span> thedrop.example/aj4-retro · <span class="li">signed in</span></div>
-      <div class="ext-pin">⚡<span class="ping"></span></div>
-    </div>
-    <div class="page">
-      <div class="pg">
-        <div class="crumb">Sneakers / Launches</div>
-        <div class="row">
-          <div class="col"><div class="img" style="background:linear-gradient(135deg,#e9edf2,#c4ccd6)">👟</div></div>
-          <div class="col">
-            <div class="badge b-live"><span class="pulse"></span>LAUNCH · DROPS IN</div>
-            <div class="count">00:38</div>
-            <h1 style="margin-top:10px">Air Jordan 4 Retro “Drop”</h1>
-            <div class="by">Limited release · 1 pair per customer</div>
-            <div class="price">$215</div>
-            <div class="sizes"><span class="sz out">9</span><span class="sz out">9.5</span><span class="sz">10</span><span class="sz sel">10.5 ✓</span><span class="sz">11</span><span class="sz out">12</span></div>
-          </div>
-        </div>
-      </div>
-      <div class="popup">
-        <div class="pop-head"><div class="pop-logo">⚡ WebMCP Anything</div><div class="pop-status"><span class="dot"></span>5 tools live</div></div>
-        <div class="pop-main">
-          <div class="atag">jsonld adapter</div>
-          <div class="tool hot">
-            <div class="tool-head"><span class="ic">✅</span><div class="lab">Check stock</div><span class="live-badge">WATCHING</span></div>
-            <div class="result"><span class="k">"size"</span>: <span class="s">"10.5"</span>, <span class="k">"in_stock"</span>: <span style="color:#ffb86b">false</span> <span class="t" style="color:#9a9ab0">— drop pending</span></div>
-          </div>
-          <div class="tool"><div class="tool-head"><span class="ic">🛒</span><div class="lab">Add to cart</div><button class="run">▶ Run</button></div><div class="desc">Armed for size 10.5 the second it opens</div></div>
-          <div class="tool"><div class="tool-head"><span class="ic">🎨</span><div class="lab">List variants</div><button class="run">▶ Run</button></div></div>
-        </div>
-        <div class="pop-foot"><span>thedrop.example</span><a>WebMCP docs ↗</a></div>
-      </div>
-    </div>
-  </div>
-  <div class="cap"><div class="big">Be first when it drops — <span class="am">not 10 seconds late.</span></div><div class="sm">Your agent watches the stock flag and grabs your size the moment it opens.</div></div>
-</div>
-
-<!-- ============ 4) GPU / CONSOLE RESTOCK ============ -->
+<!-- ============ 3) GPU / CONSOLE RESTOCK (breadth) ============ -->
 <div class="shot" id="s4">
   <div class="browser">
     <div class="chrome">
@@ -214,7 +196,7 @@
           <div class="col">
             <div class="badge b-live"><span class="pulse"></span>BACK IN STOCK</div>
             <h1>GeForce RTX 5090 Founders Edition</h1>
-            <div class="by">Sold out everywhere · queue bypass-proof · bot-protected checkout</div>
+            <div class="by">Sold out everywhere · bot-protected checkout</div>
             <div class="price">$1,999</div>
             <div class="badge b-low" style="margin-top:14px">⚠ Selling out — 7 left</div>
           </div>
