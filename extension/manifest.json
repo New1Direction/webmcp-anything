@@ -6,7 +6,7 @@
   "minimum_chrome_version": "132",
   "action": {
     "default_popup": "popup.html",
-    "default_title": "WebMCP Anything",
+    "default_title": "QuickCatch",
     "default_icon": {
       "16": "icons/icon16.png",
       "48": "icons/icon48.png",
@@ -28,7 +28,17 @@
   },
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
+      "matches": [
+        "https://*.pokemoncenter.com/*",
+        "https://*.walmart.com/*",
+        "https://*.samsclub.com/*",
+        "https://*.bestbuy.com/*",
+        "https://*.target.com/*",
+        "https://*.gamestop.com/*",
+        "https://*.costco.com/*",
+        "https://*.amazon.com/*",
+        "https://*.tcgplayer.com/*"
+      ],
       "js": ["content.js"],
       "run_at": "document_start",
       "all_frames": false
@@ -37,9 +47,30 @@
   "web_accessible_resources": [
     {
       "resources": ["injected.js"],
-      "matches": ["<all_urls>"]
+      "matches": [
+        "https://*.pokemoncenter.com/*",
+        "https://*.walmart.com/*",
+        "https://*.samsclub.com/*",
+        "https://*.bestbuy.com/*",
+        "https://*.target.com/*",
+        "https://*.gamestop.com/*",
+        "https://*.costco.com/*",
+        "https://*.amazon.com/*",
+        "https://*.tcgplayer.com/*"
+      ]
     }
   ],
-  "host_permissions": ["<all_urls>"],
+  "host_permissions": [
+    "https://*.pokemoncenter.com/*",
+    "https://*.walmart.com/*",
+    "https://*.samsclub.com/*",
+    "https://*.bestbuy.com/*",
+    "https://*.target.com/*",
+    "https://*.gamestop.com/*",
+    "https://*.costco.com/*",
+    "https://*.amazon.com/*",
+    "https://*.tcgplayer.com/*",
+    "https://wmcp.sh/*"
+  ],
   "permissions": ["storage"]
 }

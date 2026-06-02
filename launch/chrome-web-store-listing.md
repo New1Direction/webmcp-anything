@@ -63,8 +63,8 @@ zip → fill the tabs below.
 - **storage:**
   > QuickCatch saves your settings, and an optional wmcp.sh API key, on your own device so they persist between sessions.
 
-- **host permissions (all sites):**
-  > You can run QuickCatch on any product page you choose, so it needs to read the current page on any site. It reads the page's structured data (schema.org JSON-LD and meta tags) only while you are on that page, on demand. It does not run in the background, and it does not read your other tabs.
+- **host permissions (specific retail sites):**
+  > QuickCatch only requests the retail stores where Pokémon drops happen: Pokémon Center, Walmart, Sam's Club, Best Buy, Target, GameStop, Costco, Amazon, and TCGplayer, plus wmcp.sh for its own service. On those store pages it reads the product's price and stock so it can add the item to your cart when it restocks. It does not run on any other site.
 
 - **Remote code:** No. All code ships inside the package. No remote scripts, no eval.
 
@@ -86,8 +86,7 @@ zip → fill the tabs below.
 
 ## Heads-up on review
 
-Broad `<all_urls>` host access gets extra scrutiny — the justification above is
-the strong, honest version, but Google may reply asking for more detail; answer
-with the single-purpose framing. If they reject the broad scope outright, the
-fallback is an `activeTab` + on-click injection model (a small refactor) — ping
-me and I’ll do it. Expect ~1–3 business days.
+Host permissions are scoped to the named retail stores (no `<all_urls>`), so the
+"Broad Host Permissions" delay should not apply. Re-upload the rebuilt zip and
+re-submit. To add a store later, add its domain to manifest host_permissions +
+content_scripts matches and ship an update. Expect ~1-3 business days.
