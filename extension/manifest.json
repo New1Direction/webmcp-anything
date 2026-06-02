@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "WebMCP Anything",
   "version": "0.1.0",
-  "description": "Give your AI agent the sites that block bots — turn any page into agent-callable tools, in your own browser.",
+  "description": "Never miss a Pokémon drop again. Your AI watches the page and grabs the restock for you — even on sites that block bots.",
   "minimum_chrome_version": "132",
   "action": {
     "default_popup": "popup.html",

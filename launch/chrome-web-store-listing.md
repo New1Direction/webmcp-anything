@@ -12,36 +12,37 @@ zip → fill the tabs below.
 
 **Name** (already in manifest): `WebMCP Anything`
 
-**Summary** (≤132 chars):
-> Your AI agent on the sites that block bots — catch restocks & limited drops, read any page, in your own browser.
+**Summary** (≤132 chars, matches manifest):
+> Never miss a Pokémon drop again. Your AI watches the page and grabs the restock for you — even on sites that block bots.
 
 **Category:** Developer Tools  ·  **Language:** English
 
 **Description:**
-> The stuff worth having sells out in seconds — Pokémon boxes, sneaker launches,
-> console & GPU restocks — and those sites block bots hardest. AI agents go blind
-> there. WebMCP Anything fixes that by working where a server can’t reach: the
-> page you’re already on, in your own browser and your own session. You stay in
-> control — it acts only on the page you choose, when you choose.
+> Pokémon drops sell out in seconds — and the sites you buy from (Pokémon Center,
+> Walmart, Sam's Club, Best Buy, Target) block bots hard. So the moment it matters,
+> a normal AI assistant is locked out.
 >
-> It reads the structured data a page already publishes (schema.org JSON-LD, meta
-> tags) and turns it into agent-callable WebMCP/MCP tools your agent can use:
+> WebMCP Anything is different: it runs right in your own browser, in your own
+> session — so it works on the exact pages everyone else's bots get blocked from.
 >
-> • Stock & price — check_stock, get_price (watch a drop, know the instant it flips)
-> • Cart — add_to_cart, list_variants (grab your size/qty when it opens)
-> • Articles, recipes, movies, jobs, events, local businesses — full read tools
+> Set it up BEFORE the drop:
+> 1. Add the extension (free, one click).
+> 2. Open the product page and arm it — "Watch this drop."
+> 3. Walk away. The second it restocks, your AI grabs it and it's in your cart.
+>    You just check out.
 >
-> So your agent can poll check_stock on a hyped drop and fire add_to_cart the
-> moment it restocks — on a site no datacenter bot can even load.
+> No sitting on the page. No refresh-spamming. No racing to the checkout button.
+> You set it up before the drop — and it's already handled when it goes live.
 >
-> Pairs with the free hosted server at wmcp.sh for public URLs (paste one line
-> into Claude, Cursor, or Codex). The extension handles the sites a server fetch
-> can’t — by running as you, on the page you choose.
+> Works on booster boxes, elite trainer boxes, special collections, and chase
+> singles — anywhere a product page shows price and stock. Because it reads the
+> page in your own browser, it reaches the bot-blocked sites no other tool can.
 >
-> Open-source adapters (MIT). No account required to try.
+> You stay in control — it only ever acts on the page you point it at, and you
+> complete the checkout yourself.
 >
-> Privacy: extraction happens locally in your browser. Nothing about the pages
-> you visit is sent anywhere unless you explicitly turn on the shared cache.
+> Free to try. Open-source (MIT). Your data stays in your browser — nothing about
+> the pages you visit leaves unless you explicitly turn it on.
 
 **Screenshots** (1280×800, in `launch/store-assets/` — upload in this order):
 1. `wmcp-store-1-hero.png` — "Let your AI agent cop the drop" (the hook).
