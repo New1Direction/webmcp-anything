@@ -48,6 +48,11 @@
   .result .k{color:var(--accent2)} .result .s{color:#f0abfc} .result .ok{color:var(--green); font-weight:700}
   .pop-foot { border-top:1px solid var(--border); padding:8px 16px; font-size:10.5px; color:var(--muted); display:flex; justify-content:space-between; }
   .pop-foot a{color:var(--accent2); text-decoration:none}
+  /* simple / friendly popup (no code, no JSON) */
+  .friendly { color:#c4c4d4; font-size:12.5px; margin-top:6px; line-height:1.45; }
+  .friendly b { color:var(--green); }
+  .done { background:rgba(74,222,128,.16); color:var(--green); font-weight:700; font-size:10px; padding:2px 7px; border-radius:6px; }
+  .pop-cta { width:100%; margin-top:2px; padding:11px; text-align:center; background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#2a1500; border:none; border-radius:10px; font-weight:800; font-size:13px; cursor:pointer; }
 
   /* agent loop strip — shows the REAL tools firing (honest) */
   .agentbar { position:absolute; left:18px; bottom:18px; width:360px; background:#0a0a12cc; backdrop-filter:blur(4px);
@@ -177,29 +182,23 @@
         </div>
       </div>
       <div class="popup">
-        <div class="pop-head"><div class="pop-logo">⚡ WebMCP Anything</div><div class="pop-status"><span class="dot"></span>4 tools live</div></div>
+        <div class="pop-head"><div class="pop-logo">⚡ WebMCP</div><div class="pop-status"><span class="dot"></span>Watching this page</div></div>
         <div class="pop-main">
-          <div class="atag">jsonld adapter</div>
-          <div class="tool hot">
-            <div class="tool-head"><span class="ic">✅</span><div class="lab">Check stock</div><span class="live-badge">JUST FLIPPED</span></div>
-            <div class="result"><span class="k">"in_stock"</span>: <span class="ok">true</span>, <span class="k">"availability"</span>: <span class="s">"InStock"</span></div>
+          <div class="tool">
+            <div class="tool-head"><span class="ic">✅</span><div class="lab">Back in stock!</div><span class="live-badge">LIVE</span></div>
+            <div class="friendly">The drop just went live.</div>
           </div>
           <div class="tool hot">
-            <div class="tool-head"><span class="ic">🛍️</span><div class="lab">Add to cart</div><span class="live-badge">FIRED</span></div>
-            <div class="result"><span class="k">"ok"</span>: <span class="ok">true</span>, <span class="k">"bag_count"</span>: 1, <span class="k">"ms_after_restock"</span>: <span class="ok">810</span></div>
+            <div class="tool-head"><span class="ic">🛒</span><div class="lab">Added to your cart</div><span class="done">DONE ✓</span></div>
+            <div class="friendly">Grabbed it <b>0.8s</b> after it dropped — before it sold out.</div>
           </div>
-          <div class="tool"><div class="tool-head"><span class="ic">💰</span><div class="lab">Get price</div><button class="run">▶ Run</button></div></div>
+          <button class="pop-cta">Open cart →</button>
         </div>
-        <div class="pop-foot"><span>pokemoncenter.com</span><a>WebMCP docs ↗</a></div>
-      </div>
-      <div class="agentbar">
-        <div class="ln"><span class="who">agent</span> <span class="t">loop: check_stock every 2s…</span></div>
-        <div class="ln"><span class="t">← in_stock: </span><span class="ok">true</span> <span class="t">(restock detected)</span></div>
-        <div class="ln"><span class="who">agent</span> <span class="t">→ add_to_cart { qty: 1 } </span><span class="ok">✓ in bag 0.8s</span></div>
+        <div class="pop-foot"><span>pokemoncenter.com</span><span>auto-detected ✨</span></div>
       </div>
     </div>
   </div>
-  <div class="cap"><div class="big">It hits Pokémon Center. <span class="am">It's in your bag.</span></div><div class="sm">Agent polls check_stock, fires add_to_cart the instant it restocks — you check out.</div></div>
+  <div class="cap"><div class="big">It hits Pokémon Center. <span class="am">It's in your cart.</span></div><div class="sm">Your agent watches the page and grabs it the second it's back — you just check out.</div></div>
 </div>
 
 <!-- ============ 3) WALMART ============ -->
@@ -215,7 +214,7 @@
       <div class="pg" style="padding-top:0">
         <div style="display:flex;align-items:center;gap:14px;padding:11px 24px;margin:0 -36px;background:#0071dc">
           <span style="color:#ffc220;font-size:26px;font-weight:900">✸</span>
-          <div style="background:#004f9a;border-radius:22px;padding:5px 14px;color:#fff;font-size:11px;line-height:1.2;max-width:230px"><b>How do you want your items?</b><span style="display:block;opacity:.85;font-size:10.5px">Edmonton, T5T 9Z0 · W. EDMONTON…</span></div>
+          <div style="background:#004f9a;border-radius:22px;padding:5px 14px;color:#fff;font-size:11px;line-height:1.2;max-width:230px"><b>How do you want your items?</b><span style="display:block;opacity:.85;font-size:10.5px">Vancouver, V6B 1A1 · Grandview Hwy…</span></div>
           <div style="flex:1;background:#fff;border-radius:22px;height:36px;display:flex;align-items:center;padding:0 16px;color:#8a8a8a;font-size:13px">Search everything at Walmart online and in store</div>
           <div style="display:flex;align-items:center;gap:18px;color:#fff;font-size:12px">
             <span>🌐 English</span><span>♡ Reorder</span><span>👤 Sign In</span>
@@ -238,29 +237,23 @@
         </div>
       </div>
       <div class="popup">
-        <div class="pop-head"><div class="pop-logo">⚡ WebMCP Anything</div><div class="pop-status"><span class="dot"></span>4 tools live</div></div>
+        <div class="pop-head"><div class="pop-logo">⚡ WebMCP</div><div class="pop-status"><span class="dot"></span>Watching this page</div></div>
         <div class="pop-main">
-          <div class="atag">jsonld adapter</div>
-          <div class="tool hot">
-            <div class="tool-head"><span class="ic">✅</span><div class="lab">Check stock</div><span class="live-badge">JUST FLIPPED</span></div>
-            <div class="result"><span class="k">"in_stock"</span>: <span class="ok">true</span>, <span class="k">"availability"</span>: <span class="s">"InStock"</span></div>
+          <div class="tool">
+            <div class="tool-head"><span class="ic">✅</span><div class="lab">Back in stock!</div><span class="live-badge">LIVE</span></div>
+            <div class="friendly">The restock just hit.</div>
           </div>
           <div class="tool hot">
-            <div class="tool-head"><span class="ic">🛒</span><div class="lab">Add to cart</div><span class="live-badge">FIRED</span></div>
-            <div class="result"><span class="k">"ok"</span>: <span class="ok">true</span>, <span class="k">"cart_count"</span>: 1, <span class="k">"ms_after_restock"</span>: <span class="ok">760</span></div>
+            <div class="tool-head"><span class="ic">🛒</span><div class="lab">Added to your cart</div><span class="done">DONE ✓</span></div>
+            <div class="friendly">Grabbed it <b>under a second</b> after it dropped.</div>
           </div>
-          <div class="tool"><div class="tool-head"><span class="ic">💰</span><div class="lab">Get price</div><button class="run">▶ Run</button></div></div>
+          <button class="pop-cta">Open cart →</button>
         </div>
-        <div class="pop-foot"><span>walmart.com</span><a>WebMCP docs ↗</a></div>
-      </div>
-      <div class="agentbar">
-        <div class="ln"><span class="who">agent</span> <span class="t">loop: check_stock every 2s…</span></div>
-        <div class="ln"><span class="t">← in_stock: </span><span class="ok">true</span> <span class="t">(restock detected)</span></div>
-        <div class="ln"><span class="who">agent</span> <span class="t">→ add_to_cart { qty: 1 } </span><span class="ok">✓ in cart 0.8s</span></div>
+        <div class="pop-foot"><span>walmart.com</span><span>auto-detected ✨</span></div>
       </div>
     </div>
   </div>
-  <div class="cap"><div class="big">Restocks at Walmart? <span class="am">In your cart in under a second.</span></div><div class="sm">Your agent watches the listing and fires add_to_cart the instant it flips.</div></div>
+  <div class="cap"><div class="big">Restocks at Walmart? <span class="am">In your cart in under a second.</span></div><div class="sm">Your agent watches the listing and grabs it the moment it's back.</div></div>
 </div>
 
 <!-- ============ 4) SAM'S CLUB ============ -->
@@ -304,25 +297,19 @@
         </div>
       </div>
       <div class="popup">
-        <div class="pop-head"><div class="pop-logo">⚡ WebMCP Anything</div><div class="pop-status"><span class="dot"></span>4 tools live</div></div>
+        <div class="pop-head"><div class="pop-logo">⚡ WebMCP</div><div class="pop-status"><span class="dot"></span>Watching this page</div></div>
         <div class="pop-main">
-          <div class="atag">jsonld adapter</div>
-          <div class="tool hot">
-            <div class="tool-head"><span class="ic">✅</span><div class="lab">Check stock</div><span class="live-badge">JUST FLIPPED</span></div>
-            <div class="result"><span class="k">"in_stock"</span>: <span class="ok">true</span>, <span class="k">"fulfillment"</span>: <span class="s">"pickup"</span></div>
+          <div class="tool">
+            <div class="tool-head"><span class="ic">✅</span><div class="lab">Back in stock!</div><span class="live-badge">LIVE</span></div>
+            <div class="friendly">Pickup available near you.</div>
           </div>
           <div class="tool hot">
-            <div class="tool-head"><span class="ic">🛒</span><div class="lab">Add to cart</div><span class="live-badge">FIRED</span></div>
-            <div class="result"><span class="k">"ok"</span>: <span class="ok">true</span>, <span class="k">"cart_count"</span>: 1, <span class="k">"ms_after_restock"</span>: <span class="ok">690</span></div>
+            <div class="tool-head"><span class="ic">🛒</span><div class="lab">Added to your cart</div><span class="done">DONE ✓</span></div>
+            <div class="friendly">Beat the <b>50+ people</b> who had it in their carts.</div>
           </div>
-          <div class="tool"><div class="tool-head"><span class="ic">💰</span><div class="lab">Get price</div><button class="run">▶ Run</button></div></div>
+          <button class="pop-cta">Open cart →</button>
         </div>
-        <div class="pop-foot"><span>samsclub.com</span><a>WebMCP docs ↗</a></div>
-      </div>
-      <div class="agentbar">
-        <div class="ln"><span class="who">agent</span> <span class="t">loop: check_stock every 2s…</span></div>
-        <div class="ln"><span class="t">← in_stock: </span><span class="ok">true</span> <span class="t">· pickup available</span></div>
-        <div class="ln"><span class="who">agent</span> <span class="t">→ add_to_cart { qty: 1 } </span><span class="ok">✓ in cart 0.7s</span></div>
+        <div class="pop-foot"><span>samsclub.com</span><span>auto-detected ✨</span></div>
       </div>
     </div>
   </div>
