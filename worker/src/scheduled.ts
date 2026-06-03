@@ -504,6 +504,7 @@ export async function regradeCorpus(c: any): Promise<Response> {
   }
   const n = Math.min(Math.max(parseInt(c.req.query("n") || "20", 10) || 20, 1), 40);
   const cursor = c.req.query("cursor") || undefined;
+  const fast = c.req.query("fast") === "1"; // default = accurate (full-timeout) probe
   const list: any = await env.CACHE.list({ prefix: "gradewatch:", limit: n, cursor });
   const hosts: string[] = list.keys.map((k: any) => k.name.slice("gradewatch:".length));
 
@@ -513,7 +514,7 @@ export async function regradeCorpus(c: any): Promise<Response> {
     let prev: number | undefined;
     try { const p = await env.CACHE.get(`grade:${h}`); if (p) prev = JSON.parse(p).score; } catch {}
     try {
-      const fresh = await scoreMcpServer(url, { fast: true });
+      const fresh = await scoreMcpServer(url, { fast });
       await recordGrade(env, fresh);
       regraded++;
       if (fresh.reachable) reachable++;

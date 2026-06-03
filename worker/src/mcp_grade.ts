@@ -174,9 +174,12 @@ interface ProbeResult { reachable: boolean; init: any | null; resolvedUrl: strin
 // then fall back to an SSE GET liveness check. This stops us from mislabeling
 // slow / wrong-path / legacy-SSE servers as a false "unreachable F".
 async function probeMcp(url: string, host: string, fast = false): Promise<ProbeResult> {
-  // fast mode (bulk re-grade): short timeouts, no cold-start retry — dead servers
-  // fail quickly so a batch isn't held hostage by one unresponsive host.
-  const to = fast ? 6000 : TIMEOUT_MS;
+  // The PRIMARY endpoint (usually the server's declared URL) gets the full timeout
+  // + a cold-start retry, so we never false-fail a slow-but-live server. The guessed
+  // ALTERNATE paths get a shorter timeout so a genuinely-dead host still fails in
+  // bounded time. (fast mode shrinks both — bulk passes that prioritize speed.)
+  const primaryTo = fast ? 6000 : TIMEOUT_MS;
+  const altTo = fast ? 4000 : 6000;
   const cands: string[] = [];
   const add = (u: string) => { if (u && !cands.includes(u) && !blockedTargetReason(u)) cands.push(u); };
   add(url);
@@ -185,13 +188,14 @@ async function probeMcp(url: string, host: string, fast = false): Promise<ProbeR
 
   for (let i = 0; i < cands.length; i++) {
     const c = cands[i];
+    const to = i === 0 ? primaryTo : altTo;
     let init: any = null;
     try { init = await callMcp(c, initMsg(), to); }
     catch { if (i === 0 && !fast) { try { init = await callMcp(c, initMsg(), to); } catch {} } } // 1 retry on primary (cold start)
     if (looksLikeMcpInit(init)) return { reachable: true, init, resolvedUrl: c, transport: "streamable-http" };
   }
   for (const c of cands) {
-    if (await sseAlive(c, to)) return { reachable: true, init: null, resolvedUrl: c, transport: "sse" };
+    if (await sseAlive(c, altTo)) return { reachable: true, init: null, resolvedUrl: c, transport: "sse" };
   }
   return { reachable: false, init: null, resolvedUrl: url, transport: null };
 }
