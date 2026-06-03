@@ -901,7 +901,20 @@ export async function mcpLeaderboardHtml(env: Env, origin: string): Promise<stri
   } while (cursor && pages < 8);
   rows.sort((a, b) => b.score - a.score || a.host.localeCompare(b.host));
   const total = rows.length;
-  const shown = rows.slice(0, 250); // cap the page weight; total still reported
+  // Dedupe the DISPLAYED ranking to one entry per operator (registrable domain),
+  // keeping each operator's highest-scored server. Without this, a single operator
+  // with many subdomains (e.g. 12× *.caseyjhand.com all at A+) monopolizes the top
+  // and the board reads as gamed. `total` still counts every graded server.
+  const regDomain = (h: string) => { const p = h.split("."); return p.length <= 2 ? h : p.slice(-2).join("."); };
+  const seenDom = new Set<string>();
+  const shown: typeof rows = [];
+  for (const r of rows) {
+    const d = regDomain(r.host);
+    if (seenDom.has(d)) continue;
+    seenDom.add(d);
+    shown.push(r);
+    if (shown.length >= 250) break;
+  }
 
   const esc = (s: string) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" } as any)[c]);
   const body = shown.map((r, i) => {
@@ -952,7 +965,7 @@ ${uiNav(origin)}
   ${count ? `<section style="padding-top:10px"><table class="tbl">
     <thead><tr><th class="num">#</th><th>Grade</th><th>MCP server</th><th class="num">Score</th><th class="num">Tools</th><th>Checked</th></tr></thead>
     <tbody>${body}</tbody>
-  </table>${total > shown.length ? `<p class="muted" style="margin-top:12px;font-size:.85rem">Showing the top ${shown.length} by score of ${total.toLocaleString()} graded servers. Every graded server stays in the continuous drift watch.</p>` : ""}</section>` : `<div class="empty">No servers graded yet. <a href="${origin}/mcp/grade">Grade the first one →</a></div>`}
+  </table>${total > shown.length ? `<p class="muted" style="margin-top:12px;font-size:.85rem">Showing the top ${shown.length} operators (one entry each, their best-graded server) of ${total.toLocaleString()} graded servers. Every graded server stays in the continuous drift watch.</p>` : ""}</section>` : `<div class="empty">No servers graded yet. <a href="${origin}/mcp/grade">Grade the first one →</a></div>`}
   <p style="margin-top:18px"><a class="btn btn-ghost" href="${origin}/reports/state-of-mcp-security-2026">📊 Read the State of MCP Security report</a> <a class="btn btn-ghost" href="${origin}/mcp/badges">Get your trust badge →</a></p>
   ${adSlot()}
   <footer>Grades are free and identical whether or not the operator pays. Methodology: <a href="${origin}/mcp/grade">/mcp/grade</a>. Add the oracle to your agent at <code>${origin}/mcp/trust</code>.</footer>

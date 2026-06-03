@@ -3,123 +3,106 @@
 Asset: https://wmcp.sh/reports/state-of-mcp-security-2026
 Try-it tools: https://wmcp.sh/mcp/grade · https://wmcp.sh/mcp/badges · oracle https://wmcp.sh/mcp/trust
 
-**Real figures (2026-06-03, recomputed live):** 3,106 servers audited · avg 69/100 · 33% A/B · 62% D/F · only 8% had an outright security failure · top weaknesses: unreachable, plaintext HTTP, secret-exfil / prompt-injection patterns in tool descriptions.
+**ACCURATE figures (2026-06-03, after a full accurate re-grade of the corpus):**
+- 3,108 MCP servers audited · avg trust score **56/100**
+- **34%** earn an A or B · **62%** land at D or F
+- **26%** are unreachable / dead (don't respond at all) — the dominant reason for low grades
+- **~74%** reachable; of those, many are auth-protected or low-transparency
+- Genuine security issues (plaintext transport, prompt-injection in tool descriptions, secret-exfiltration surfaces) are **rare (~1%)** — but they exist
 
-**Honesty rules for every post (this is the brand):**
-- Never say "62% are insecure." Say "62% scored D or F" and explain the drivers (unreachable / auth-protected / low transparency), with "only 8% had an outright failure."
-- Disclose you built it. HN/Reddit punish stealth self-promo; transparency is on-brand for a trust authority.
-- Don't vote-manipulate or mass-post. One genuine post per community, then engage in the comments honestly.
-- Lead with the method + the novel findings, not a scary number.
+**The honest headline:** *The MCP ecosystem's problem is rot and opacity, not mass vulnerability.* A quarter of registered servers are already dead; only a third can be safely vetted from the outside. That's a cleaner, more defensible story than "62% insecure" (which would get debunked — and our whole value is being the credible independent authority).
+
+**Rules for every post:** lead with the rot/vettability finding, not a scary vuln %. Disclose you built it. One genuine post per community, no vote manipulation. Be ready to defend the methodology.
 
 ---
 
 ## 1) Hacker News — Show HN
 
 **Title (pick one):**
-- `Show HN: I graded 3,106 MCP servers for security (free, independent A–F)`
-- `Show HN: An independent A–F security grader for MCP servers (3,106 graded)`
+- `Show HN: I audited 3,108 MCP servers — a quarter are already dead`
+- `Show HN: An independent A–F security grader for MCP servers (3,108 graded)`
 
 **URL:** https://wmcp.sh/reports/state-of-mcp-security-2026
 
 **First comment (post immediately after submitting):**
 
-> I built a free, independent security grader for Model Context Protocol (MCP) servers and ran it across 3,106 of them. The report is the aggregate; you can grade any server yourself at /mcp/grade.
+> I built a free, independent security grader for MCP servers and ran it across 3,108 of them. You can grade any server yourself at /mcp/grade; the report is the aggregate.
 >
-> The rubric is open and OWASP-MCP-aligned: spec conformance, transport/auth security, tool-annotation honesty, reliability, and transparency (e.g. RFC 9728 OAuth resource metadata). Letter grades A+→F.
+> Open, OWASP-MCP-aligned rubric: spec conformance, transport/auth security, tool-annotation honesty, reliability, and transparency (e.g. RFC 9728 OAuth resource metadata). A+→F.
 >
-> Honest read of the data:
-> - Average is 69/100; about a third earn an A or B.
-> - 62% land at D or F — but to be clear, that's *mostly* servers that are unreachable, auth-protected (so I can't enumerate their tools unauthenticated), or missing transparency signals. Only ~8% had an outright security *failure*. I'm not claiming 62% are "hacked."
-> - The findings that did show up are the interesting part: a minority of servers ship prompt-injection / hidden-instruction markup and secret-exfiltration file-path patterns *inside their tool descriptions* — which an agent reads and may act on.
-> - Tools mutate silently after launch (the CVE-2025-54136 "MCPoison" class), so I also hash each server's tool set and re-check for drift.
+> The honest findings:
+> - Average grade is 56/100. About a third (34%) earn an A or B.
+> - 62% land at D or F — but I want to be precise about *why*: the dominant driver is **unreachability**. ~26% of registry-listed servers don't respond at all (dead or unresponsive), and many that do are auth-protected or missing transparency signals, so they can't be vetted from the outside. This is mostly ecosystem rot, not mass vulnerability.
+> - Actual security issues are comparatively rare (~1%) — but they're real: a minority of servers ship prompt-injection / hidden-instruction markup and secret-exfiltration file-path patterns *inside their tool descriptions*, which an agent reads and may act on.
+> - Tools also mutate silently after launch (the CVE-2025-54136 "MCPoison" class), so I hash each server's tool set and re-check for drift.
 >
-> The grade is free and identical whether or not the operator pays — I sell depth/monitoring to people who *consume* grades (agent builders), never to the servers being graded. That independence is the whole point; happy to have the methodology torn apart.
+> Grades are free and identical whether or not the operator pays — I sell depth/monitoring to people who *consume* grades, never to the servers being graded. Methodology's open; tell me where the rubric is wrong.
 >
-> Caveats I already know: unauthenticated grading under-rates auth-protected servers, "unreachable" can mean a server that's simply down, and static signals miss runtime behavior (I'm layering behavioral signals from real proxied traffic next). Tell me where the rubric is wrong.
-
-**Timing:** weekday, ~8–10am ET. Post once. If it doesn't catch, don't repost — engage wherever it does land.
+> Known caveats: unauthenticated grading under-rates auth-protected servers; "unreachable" can mean a server that's simply down; static signals miss runtime behavior (behavioral grading via real proxied traffic is next).
 
 ---
 
 ## 2) X / Twitter thread
 
-**1/**
-We built an independent security grader for MCP servers and ran it on 3,106 of them.
+**1/** We built an independent security grader for MCP servers and ran it on 3,108 of them. The ecosystem's problem isn't the one everyone fears. 🧵
 
-The MCP ecosystem has a trust problem — but not the one you'd guess. 🧵
+**2/** The numbers:
+• avg grade: 56/100
+• only 34% earn an A or B
+• **26% are completely dead** — they don't respond at all
 
-**2/**
-Headline numbers:
-• avg grade: 69/100 (a C)
-• 1 in 3 servers earn an A or B
-• 62% land at D or F
+**3/** That's the real story: the MCP registry is full of **rot**. A quarter of listed servers are unreachable, and most live ones are auth-opaque or missing transparency signals — so an agent has no safe way to vet them before connecting.
 
-But "D or F" mostly means *can't be safely vetted from the outside* — not "hacked." Only ~8% had an outright security failure.
+**4/** What about actual vulnerabilities? Rarer than the headlines suggest — ~1% in our sample. But they exist: some live servers embed prompt-injection markup and secret-exfiltration file paths *inside their tool descriptions* — text an agent reads and can act on.
 
-**3/**
-The real problem is transparency. Most servers:
-• aren't reachable, or
-• don't expose OAuth resource metadata (RFC 9728), or
-• ship untyped tool schemas
+**5/** And tools mutate silently after launch (the CVE-2025-54136 "rug-pull" class). A server you vetted last week can ship a malicious tool today. We hash each tool set and watch for drift continuously.
 
-So an agent (or a human) has no safe way to know what they'll do before connecting.
-
-**4/**
-The scary findings are rarer but real: a minority of live servers embed prompt-injection / hidden-instruction markup and secret-exfiltration file paths *inside their tool descriptions* — text an agent reads and can act on.
-
-**5/**
-And tools mutate silently after launch (the CVE-2025-54136 "rug-pull" class). A server you vetted last week can ship a malicious tool today. So we hash each tool set and watch for drift continuously.
-
-**6/**
-Every grade is free and identical whether or not the operator pays. We're not the server's vendor — we're the independent check. Grade any MCP server, or add your own trust badge:
-
+**6/** Every grade is free and identical whether or not the operator pays. We're the independent check, not the vendor. Grade any server, or add a trust badge to yours:
 📊 https://wmcp.sh/reports/state-of-mcp-security-2026
 🔎 https://wmcp.sh/mcp/grade
 
-**7/**
-If you run an MCP server: check your grade, fix the gaps, embed the badge so your users know you're audited. The whole rubric is open — tell us where it's wrong.
+**7/** If you run an MCP server: check your grade, make sure it's actually reachable and transparent, embed the badge. Rubric's open — tell us where it's wrong.
 
 ---
 
 ## 3) Reddit (r/mcp, r/LocalLLaMA, r/AI_Agents — check each sub's self-promo rules first)
 
-**Title:** `We graded 3,106 MCP servers on security — here's what the ecosystem actually looks like`
+**Title:** `I audited 3,108 MCP servers — a quarter are dead, and only a third can be safely vetted`
 
 **Body:**
 
-> Disclosure: I build wmcp.sh, an independent MCP trust grader. Sharing the aggregate because the data's genuinely interesting and I'd like the methodology critiqued.
+> Disclosure: I build wmcp.sh, an independent MCP trust grader. Sharing the aggregate because the data's interesting and I'd like the methodology critiqued.
 >
-> We ran an open, OWASP-MCP-aligned A–F rubric (spec conformance, auth/transport, tool-annotation honesty, reliability, transparency) over 3,106 servers. Findings:
+> Open, OWASP-MCP-aligned A–F rubric over 3,108 servers:
+> - **Average 56/100; 34% grade A/B.**
+> - **62% grade D/F — but mostly because ~26% are unreachable/dead** and many live ones are auth-protected or low-transparency, not because they're compromised. I'm being deliberate about not overstating it.
+> - **Real security issues are rare (~1%)** but present: prompt-injection markup and secret-exfiltration paths embedded in tool descriptions. Tools also mutate silently post-launch (CVE-2025-54136 class), which we monitor via drift detection.
 >
-> - **Average: 69/100. About a third grade A/B.**
-> - **62% grade D/F — but mostly because they're unreachable, auth-protected, or missing transparency signals, not because they're compromised.** Only ~8% had an outright security failure. I want to be precise about that, not alarmist.
-> - **The notable issues:** some servers ship prompt-injection markup and secret-exfiltration file paths *in their tool descriptions* — which an agent reads. And tools mutate silently post-launch (CVE-2025-54136 class), so we hash + monitor for drift.
->
-> Grades are free and identical regardless of whether the operator pays (we sell depth/monitoring to grade *consumers*, not subjects). Full report + grade-your-own: [link]. Where's the rubric wrong?
+> Grades are free and identical regardless of whether the operator pays. Full report + grade-your-own: [link]. Where's the rubric wrong?
 
-(Read rules; some subs require a flair or ban links in the post body — put the link in a comment if so.)
+(Read rules; if a sub bans links in the body, put it in a comment.)
 
 ---
 
-## 4) Dev-newsletter pitch (email to curators: TLDR, Bytes, Console, AI Tidbits, etc.)
+## 4) Dev-newsletter pitch (TLDR, Bytes, Console, AI Tidbits, etc.)
 
-**Subject:** Data: we audited 3,106 MCP servers for security
+**Subject:** Data: we audited 3,108 MCP servers — a quarter are dead
 
-> Hi [name] — quick one. We built an independent A–F security grader for MCP servers and ran it across 3,106 of them. Some findings your readers might like:
+> Hi [name] — quick one. We built an independent A–F security grader for MCP servers and ran it across 3,108 of them. Findings your readers might like:
 >
-> - Avg grade 69/100; only a third earn an A/B.
-> - 62% grade D/F — mostly unreachable / auth-protected / low-transparency, with ~8% showing an outright security failure (we're careful not to overstate it).
-> - A minority embed prompt-injection and secret-exfiltration patterns directly in their tool descriptions.
+> - Avg grade 56/100; only 34% earn an A/B.
+> - 26% are unreachable/dead — the registry has a serious rot problem.
+> - Actual security issues are rare (~1%) but real: prompt-injection and secret-exfiltration patterns embedded in tool descriptions.
 > - Tools mutate silently post-launch (the CVE-2025-54136 "rug-pull" class), which we monitor via drift detection.
 >
-> Open methodology, grades are free + independent. Report: https://wmcp.sh/reports/state-of-mcp-security-2026 — happy to share the raw distribution or a custom cut if useful.
+> Open methodology, grades are free + independent. Report: https://wmcp.sh/reports/state-of-mcp-security-2026 — happy to share the raw distribution or a custom cut.
 
 ---
 
-## 5) LinkedIn (professional/security angle)
+## 5) LinkedIn
 
-> We independently audited 3,106 Model Context Protocol (MCP) servers against an OWASP-aligned rubric. The takeaway isn't "everything's on fire" — it's that most MCP servers can't yet be *safely vetted from the outside*: unreachable, auth-opaque, or missing transparency signals. Only a third grade A/B.
+> We independently audited 3,108 Model Context Protocol (MCP) servers against an OWASP-aligned rubric. The takeaway isn't "everything's vulnerable" — it's that the ecosystem has a rot-and-opacity problem: roughly a quarter of registered servers are unreachable, and most live ones can't be safely vetted from the outside. Only a third grade A/B.
 >
-> The genuine risks we found are narrower but real: prompt-injection and secret-exfiltration patterns embedded in tool descriptions, and silent post-launch tool mutation (the rug-pull class). As agents start auto-connecting to these servers, "trust before connect" stops being optional.
+> The genuine risks are narrower but real: prompt-injection and secret-exfiltration patterns embedded in tool descriptions, plus silent post-launch tool mutation (the rug-pull class). As agents start auto-connecting to these servers, "trust before connect" stops being optional.
 >
 > Full report (grades are free + independent): https://wmcp.sh/reports/state-of-mcp-security-2026

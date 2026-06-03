@@ -351,7 +351,7 @@ app.get("/mcp/set/:id", async (c) => {
 app.get("/mcp/leaderboard", async (c) => {
   const { mcpLeaderboardHtml } = await import("./mcp_grade");
   const html = await mcpLeaderboardHtml(c.env as any, new URL(c.req.url).origin);
-  return new Response(html, { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=900, s-maxage=900" } });
+  return new Response(html, { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=300, s-maxage=300" } });
 });
 
 app.get("/mcp/grade", async (c) => {
