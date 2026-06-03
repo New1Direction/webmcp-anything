@@ -92,7 +92,7 @@ export function landingHtml(origin: string): string {
     display: flex; justify-content: space-between; align-items: center;
     padding: 22px 24px; max-width: 1080px; margin: 0 auto;
   }
-  nav .brand { font-weight: 800; letter-spacing: -.02em; font-size: 1.05rem; }
+  nav .brand { font-weight: 800; letter-spacing: -.02em; font-size: 1.05rem; color: inherit; text-decoration: none; display: inline-flex; align-items: center; }
   nav .brand span { color: var(--accent2); }
   .brand-spark { width: .82em; height: .82em; color: var(--accent); vertical-align: -.1em; margin-right: 6px; }
   nav .links { display: flex; gap: 22px; font-size: .9rem; }
@@ -106,6 +106,10 @@ export function landingHtml(origin: string): string {
     color: var(--text); text-decoration: none; font-weight: 600;
   }
   nav .cta:hover { border-color: var(--accent); }
+  nav .links .cta { margin-left: 6px; }
+  .navtog { display: none; }
+  nav .hamb { display: none; cursor: pointer; flex-direction: column; gap: 5px; padding: 8px; margin: -8px; }
+  nav .hamb span { display: block; width: 22px; height: 2px; background: var(--muted); border-radius: 2px; }
 
   /* ---- hero ---- */
   .hero {
@@ -446,26 +450,33 @@ export function landingHtml(origin: string): string {
     .sub, .hero-ctas { margin-left: auto; margin-right: auto; justify-content: center; }
     .agent { grid-template-columns: 1fr; }
     .flywheel { grid-template-columns: 1fr; gap: 24px; }
-    nav .links { display: none; }
+    nav { flex-wrap: wrap; position: relative; }
+    nav .hamb { display: flex; }
+    nav .links {
+      display: none; position: absolute; top: calc(100% - 6px); right: 24px; left: 24px;
+      flex-direction: column; gap: 0; background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 8px; z-index: 60; box-shadow: 0 14px 40px rgba(0,0,0,.45);
+    }
+    .navtog:checked ~ .links { display: flex; }
+    nav .links a { padding: 12px 12px; border-radius: 8px; }
+    nav .links a:hover { background: var(--bg2); color: var(--text); }
+    nav .links .cta { text-align: center; margin: 4px 0 0; }
   }
 </style>
 </head>
 <body>
 
 <nav>
-  <div class="brand"><svg class="brand-spark" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 1Q12.6 11.4 23 12Q12.6 12.6 12 23Q11.4 12.6 1 12Q11.4 11.4 12 1Z"/></svg>wmcp<span>.sh</span></div>
+  <a class="brand" href="/"><svg class="brand-spark" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 1Q12.6 11.4 23 12Q12.6 12.6 12 23Q11.4 12.6 1 12Q11.4 11.4 12 1Z"/></svg>wmcp<span>.sh</span></a>
+  <input type="checkbox" id="navtog" class="navtog" aria-hidden="true" />
+  <label for="navtog" class="hamb" aria-label="Toggle menu"><span></span><span></span><span></span></label>
   <div class="links">
-    <a href="#demo">Demo</a>
-    <a href="/integration/shopify">Shopify</a>
-    <a href="/integration/openapi">OpenAPI</a>
-    <a href="/integration/stripe">Stripe</a>
-    <a href="#pricing">Pricing</a>
-    <a href="#faq">FAQ</a>
     <a href="/directory">Directory</a>
-    <a href="/mcp/grade">Trust grades</a>
-    <a href="https://github.com/New1Direction/webmcp-anything">GitHub</a>
+    <a href="/mcp/leaderboard">Leaderboard</a>
+    <a href="/webmcp">WebMCP</a>
+    <a href="/#pricing">Pricing</a>
+    <a class="cta" href="/dashboard">Dashboard →</a>
   </div>
-  <a class="cta" href="/dashboard">Dashboard →</a>
 </nav>
 
 <div class="wrap">

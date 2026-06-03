@@ -31,7 +31,18 @@ export function uiCss(maxWidth = 900): string {
   nav.bar .nl:hover{color:var(--text)}
   nav.bar .get{background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#2a1500; padding:9px 16px; border-radius:10px; font-weight:800; text-decoration:none; font-size:.9rem; white-space:nowrap}
   nav.bar .right{display:flex; align-items:center; gap:16px}
-  @media(max-width:640px){ nav.bar .right .nl{display:none} }
+  nav.bar .navtog{display:none}
+  nav.bar .hamb{display:none; cursor:pointer; flex-direction:column; gap:5px; padding:8px; margin:-8px}
+  nav.bar .hamb span{display:block; width:22px; height:2px; background:var(--muted); border-radius:2px}
+  @media(max-width:640px){
+    nav.bar{position:relative; flex-wrap:wrap}
+    nav.bar .hamb{display:flex}
+    nav.bar .right{display:none; position:absolute; top:calc(100% - 2px); right:0; left:0; flex-direction:column; gap:0; align-items:stretch; background:var(--card); border:1px solid var(--border); border-radius:12px; padding:8px; z-index:60; box-shadow:0 14px 40px rgba(0,0,0,.45)}
+    nav.bar .navtog:checked ~ .right{display:flex}
+    nav.bar .right .nl{display:block; padding:12px; border-radius:8px}
+    nav.bar .right .nl:hover{background:var(--bg2)}
+    nav.bar .right .get{text-align:center; margin-top:4px}
+  }
   /* hero */
   header.hero{padding:40px 0 8px}
   h1{font-size:clamp(2rem,4.4vw,2.7rem); line-height:1.08; letter-spacing:-.022em; margin:0 0 14px}
@@ -97,13 +108,16 @@ const STORE_URL = "https://chromewebstore.google.com/detail/quickcatch/dgbaaeeng
 export function uiNav(origin: string, opts: { get?: boolean } = {}): string {
   const get = opts.get === false
     ? ""
-    : `<a class="get" href="${origin}/connect">The MCP hub</a>`;
+    : `<a class="get" href="${origin}/dashboard">Dashboard →</a>`;
   return `<nav class="bar">
   <a class="brand" href="${origin}/"><span class="coin"></span> wmcp.sh</a>
+  <input type="checkbox" id="wnavtog" class="navtog" aria-hidden="true" />
+  <label for="wnavtog" class="hamb" aria-label="Toggle menu"><span></span><span></span><span></span></label>
   <div class="right">
+    <a class="nl" href="${origin}/directory">Directory</a>
     <a class="nl" href="${origin}/mcp/leaderboard">Leaderboard</a>
     <a class="nl" href="${origin}/webmcp">WebMCP</a>
-    <a class="nl" href="${origin}/directory">Directory</a>
+    <a class="nl" href="${origin}/#pricing">Pricing</a>
     ${get}
   </div>
 </nav>`;
