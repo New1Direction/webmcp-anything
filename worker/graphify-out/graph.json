@@ -1515,7 +1515,7 @@
       "source_file": "src/directory_admin.ts",
       "source_location": "L1",
       "id": "src_directory_admin",
-      "community": 119,
+      "community": 6,
       "norm_label": "directory_admin.ts"
     },
     {
@@ -1524,7 +1524,7 @@
       "source_file": "src/directory_admin.ts",
       "source_location": "L13",
       "id": "src_directory_admin_env",
-      "community": 119,
+      "community": 6,
       "norm_label": "env"
     },
     {
@@ -1533,7 +1533,7 @@
       "source_file": "src/directory_admin.ts",
       "source_location": "L19",
       "id": "src_directory_admin_checkadmin",
-      "community": 119,
+      "community": 6,
       "norm_label": "checkadmin()"
     },
     {
@@ -1542,7 +1542,7 @@
       "source_file": "src/directory_admin.ts",
       "source_location": "L27",
       "id": "src_directory_admin_deriveslug",
-      "community": 119,
+      "community": 6,
       "norm_label": "deriveslug()"
     },
     {
@@ -1551,7 +1551,7 @@
       "source_file": "src/directory_admin.ts",
       "source_location": "L37",
       "id": "src_directory_admin_verifylisting",
-      "community": 119,
+      "community": 6,
       "norm_label": "verifylisting()"
     },
     {
@@ -1560,7 +1560,7 @@
       "source_file": "src/directory_admin.ts",
       "source_location": "L59",
       "id": "src_directory_admin_unverifylisting",
-      "community": 119,
+      "community": 6,
       "norm_label": "unverifylisting()"
     },
     {
@@ -1569,7 +1569,7 @@
       "source_file": "src/directory_admin.ts",
       "source_location": "L73",
       "id": "src_directory_admin_featurelisting",
-      "community": 119,
+      "community": 6,
       "norm_label": "featurelisting()"
     },
     {
@@ -1578,7 +1578,7 @@
       "source_file": "src/directory_admin.ts",
       "source_location": "L88",
       "id": "src_directory_admin_unfeaturelisting",
-      "community": 119,
+      "community": 6,
       "norm_label": "unfeaturelisting()"
     },
     {
@@ -1587,7 +1587,7 @@
       "source_file": "src/directory_admin.ts",
       "source_location": "L101",
       "id": "src_directory_admin_listsubmissions",
-      "community": 119,
+      "community": 6,
       "norm_label": "listsubmissions()"
     },
     {
@@ -1596,7 +1596,7 @@
       "source_file": "src/directory_admin.ts",
       "source_location": "L140",
       "id": "src_directory_admin_getdirectorystate",
-      "community": 119,
+      "community": 6,
       "norm_label": "getdirectorystate()"
     },
     {
@@ -2689,10 +2689,28 @@
       "norm_label": "execresult"
     },
     {
+      "label": "executeCapturedTool()",
+      "file_type": "code",
+      "source_file": "src/engine.ts",
+      "source_location": "L259",
+      "id": "src_engine_executecapturedtool",
+      "community": 1,
+      "norm_label": "executecapturedtool()"
+    },
+    {
+      "label": "listCapturedTools()",
+      "file_type": "code",
+      "source_file": "src/engine.ts",
+      "source_location": "L273",
+      "id": "src_engine_listcapturedtools",
+      "community": 1,
+      "norm_label": "listcapturedtools()"
+    },
+    {
       "label": "executeTool()",
       "file_type": "code",
       "source_file": "src/engine.ts",
-      "source_location": "L257",
+      "source_location": "L277",
       "id": "src_engine_executetool",
       "community": 1,
       "norm_label": "executetool()"
@@ -5853,7 +5871,7 @@
       "source_file": "src/slug.ts",
       "source_location": "L1",
       "id": "src_slug",
-      "community": 0,
+      "community": 6,
       "norm_label": "slug.ts"
     },
     {
@@ -5862,7 +5880,7 @@
       "source_file": "src/slug.ts",
       "source_location": "L12",
       "id": "src_slug_slugfromurl",
-      "community": 0,
+      "community": 6,
       "norm_label": "slugfromurl()"
     },
     {
@@ -13819,11 +13837,31 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/engine.ts",
+      "source_location": "L259",
+      "weight": 1.0,
+      "source": "src_engine",
+      "target": "src_engine_executecapturedtool",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/engine.ts",
       "source_location": "L257",
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "src_engine",
       "target": "src_engine_executetool"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/engine.ts",
+      "source_location": "L273",
+      "weight": 1.0,
+      "source": "src_engine",
+      "target": "src_engine_listcapturedtools",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -14094,6 +14132,28 @@
       "target": "src_engine_resolvetools"
     },
     {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/index.ts",
+      "source_location": "L38",
+      "weight": 1.0,
+      "source": "src_index",
+      "target": "src_engine_executecapturedtool",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/index.ts",
+      "source_location": "L38",
+      "weight": 1.0,
+      "source": "src_index",
+      "target": "src_engine_listcapturedtools",
+      "confidence_score": 1.0
+    },
+    {
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
@@ -14153,9 +14213,9 @@
       "source_file": "src/flows2api.ts",
       "source_location": "L9",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_flows2api",
-      "target": "src_flows2api_flow",
-      "confidence_score": 1.0
+      "target": "src_flows2api_flow"
     },
     {
       "relation": "contains",
@@ -14163,9 +14223,9 @@
       "source_file": "src/flows2api.ts",
       "source_location": "L39",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_flows2api",
-      "target": "src_flows2api_inferschema",
-      "confidence_score": 1.0
+      "target": "src_flows2api_inferschema"
     },
     {
       "relation": "contains",
@@ -14173,9 +14233,9 @@
       "source_file": "src/flows2api.ts",
       "source_location": "L53",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_flows2api",
-      "target": "src_flows2api_safejson",
-      "confidence_score": 1.0
+      "target": "src_flows2api_safejson"
     },
     {
       "relation": "contains",
@@ -14183,9 +14243,9 @@
       "source_file": "src/flows2api.ts",
       "source_location": "L61",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_flows2api",
-      "target": "src_flows2api_synthesizefromflows",
-      "confidence_score": 1.0
+      "target": "src_flows2api_synthesizefromflows"
     },
     {
       "relation": "contains",
@@ -14193,9 +14253,9 @@
       "source_file": "src/flows2api.ts",
       "source_location": "L59",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_flows2api",
-      "target": "src_flows2api_synthresult",
-      "confidence_score": 1.0
+      "target": "src_flows2api_synthresult"
     },
     {
       "relation": "contains",
@@ -14203,9 +14263,9 @@
       "source_file": "src/flows2api.ts",
       "source_location": "L20",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_flows2api",
-      "target": "src_flows2api_templatepath",
-      "confidence_score": 1.0
+      "target": "src_flows2api_templatepath"
     },
     {
       "relation": "calls",
@@ -14214,9 +14274,9 @@
       "source_file": "src/flows2api.ts",
       "source_location": "L71",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_flows2api_synthesizefromflows",
-      "target": "src_flows2api_templatepath",
-      "confidence_score": 1.0
+      "target": "src_flows2api_templatepath"
     },
     {
       "relation": "calls",
@@ -14225,9 +14285,9 @@
       "source_file": "src/flows2api.ts",
       "source_location": "L89",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_flows2api_synthesizefromflows",
-      "target": "src_flows2api_inferschema",
-      "confidence_score": 1.0
+      "target": "src_flows2api_inferschema"
     },
     {
       "relation": "calls",
@@ -14236,9 +14296,9 @@
       "source_file": "src/flows2api.ts",
       "source_location": "L77",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_flows2api_synthesizefromflows",
-      "target": "src_flows2api_safejson",
-      "confidence_score": 1.0
+      "target": "src_flows2api_safejson"
     },
     {
       "relation": "contains",
@@ -23659,5 +23719,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "2e4cfdb2b0ddc77e13ce363285c27c2f444226aa"
+  "built_at_commit": "7ccbc8403123cd117567dddfc7f00d9e6be0c781"
 }

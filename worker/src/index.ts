@@ -1689,6 +1689,14 @@ app.post("/api/v1/admin/grade-servers", (c) => addGradeServers(c as any));
 app.post("/api/v1/admin/regrade-corpus", (c) => regradeCorpus(c as any));
 app.post("/api/v1/admin/seed-registry", (c) => seedRegistry(c as any));
 app.post("/api/v1/admin/seed-packages", (c) => seedPackages(c as any));
+// Broadcast to the captured lead list (the report newsletter → Monitor-SKU funnel).
+app.post("/api/v1/admin/broadcast", async (c) => {
+  if (!(c.env as any).ADMIN_TOKEN || c.req.header("x-admin-token") !== (c.env as any).ADMIN_TOKEN) return c.json({ error: "admin only" }, 401);
+  const body = await c.req.json<any>().catch(() => null);
+  if (!body?.subject || !body?.html) return c.json({ error: "POST { subject, html, package?, max? }" }, 400);
+  const { broadcastToLeads } = await import("./email");
+  return c.json(await broadcastToLeads(c.env as any, body.subject, body.html, { pkg: body.package, max: body.max }));
+});
 
 // Default export — Cloudflare Workers expects `fetch` and (since we added
 // crons) `scheduled` as named handlers on the default export.

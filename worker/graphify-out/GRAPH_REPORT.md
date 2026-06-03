@@ -1,16 +1,16 @@
 # Graph Report - worker  (2026-06-03)
 
 ## Corpus Check
-- 175 files · ~312,356 words
+- 175 files · ~312,685 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 872 nodes · 1499 edges · 121 communities (119 shown, 2 thin omitted)
+- 874 nodes · 1503 edges · 120 communities (118 shown, 2 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 4 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `2e4cfdb2`
+- Built from commit: `7ccbc840`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -52,7 +52,6 @@
 - [[_COMMUNITY_Community 34|Community 34]]
 - [[_COMMUNITY_Community 35|Community 35]]
 - [[_COMMUNITY_Community 94|Community 94]]
-- [[_COMMUNITY_Community 119|Community 119]]
 - [[_COMMUNITY_Community 120|Community 120]]
 
 ## God Nodes (most connected - your core abstractions)
@@ -82,15 +81,15 @@
 ## Import Cycles
 - None detected.
 
-## Communities (121 total, 2 thin omitted)
+## Communities (120 total, 2 thin omitted)
 
 ### Community 0 - "Community 0"
 Cohesion: 0.05
-Nodes (69): Action, AuthCtx, bearer(), Bindings, consume(), gate(), issueKey(), KeyRecord (+61 more)
+Nodes (68): Action, AuthCtx, bearer(), Bindings, consume(), gate(), issueKey(), KeyRecord (+60 more)
 
 ### Community 1 - "Community 1"
-Cohesion: 0.11
-Nodes (28): cacheKey(), CRYPTO_ADAPTERS, EngineEnv, ExecResult, executeTool(), normalizeUrl(), readCache(), ResolveResult (+20 more)
+Cohesion: 0.10
+Nodes (30): cacheKey(), CRYPTO_ADAPTERS, EngineEnv, ExecResult, executeCapturedTool(), executeTool(), listCapturedTools(), normalizeUrl() (+22 more)
 
 ### Community 2 - "Community 2"
 Cohesion: 0.06
@@ -109,8 +108,8 @@ Cohesion: 0.09
 Nodes (24): blockedTargetReason(), callMcp(), CATEGORIES, composite(), DriftOutcome, Env, finalizeSseLimited(), Finding (+16 more)
 
 ### Community 6 - "Community 6"
-Cohesion: 0.19
-Nodes (14): AlertEnv, fireAlert(), captureDirectorySubmission(), Env, sanitize(), SubmitBody, validEmail(), validUrl() (+6 more)
+Cohesion: 0.13
+Nodes (24): AlertEnv, fireAlert(), checkAdmin(), deriveSlug(), Env, featureListing(), getDirectoryState(), listSubmissions() (+16 more)
 
 ### Community 7 - "Community 7"
 Cohesion: 0.09
@@ -224,10 +223,6 @@ Nodes (4): badgeHandler(), Env, PILL_INDEXED(), PILL_VERIFIED()
 Cohesion: 0.60
 Nodes (4): embedHtml(), Env, escapeHtml(), verifyEmbedHandler()
 
-### Community 119 - "Community 119"
-Cohesion: 0.42
-Nodes (9): checkAdmin(), deriveSlug(), Env, featureListing(), getDirectoryState(), listSubmissions(), unfeatureListing(), unverifyListing() (+1 more)
-
 ### Community 120 - "Community 120"
 Cohesion: 0.43
 Nodes (6): Flow, inferSchema(), safeJson(), synthesizeFromFlows(), SynthResult, templatePath()
@@ -249,8 +244,8 @@ _Questions this graph is uniquely positioned to answer:_
 - **What connects `name`, `version`, `private` to the rest of the system?**
   _200 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 0` be split into smaller, more focused modules?**
-  _Cohesion score 0.05347985347985348 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.054647599591419814 - nodes in this community are weakly interconnected._
 - **Should `Community 1` be split into smaller, more focused modules?**
-  _Cohesion score 0.10795454545454546 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.09915966386554621 - nodes in this community are weakly interconnected._
 - **Should `Community 2` be split into smaller, more focused modules?**
   _Cohesion score 0.06086956521739131 - nodes in this community are weakly interconnected._
