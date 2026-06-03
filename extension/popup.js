@@ -332,7 +332,7 @@ async function initCapture(tab) {
       if (!resp.ok) throw new Error(d.error || "failed");
       const tools = d.tools || [];
       result.className = "result show";
-      result.innerHTML = "<b style=\"color:var(--accent2)\">" + tools.length + " tools</b> from " + d.stats.flows + " calls · " + d.stats.paths + " endpoints<br>" + tools.slice(0, 12).map(function (t) { return "• " + escapeHtml(t.name); }).join("<br>") + (tools.length > 12 ? "<br>…" : "");
+      result.innerHTML = "<b style=\"color:var(--accent2)\">" + tools.length + " tools</b> from " + d.stats.flows + " calls · " + d.stats.paths + " endpoints<br>" + tools.slice(0, 10).map(function (t) { return "• " + escapeHtml(t.name); }).join("<br>") + (tools.length > 10 ? "<br>…" : "") + (d.openapi_url ? "<br><span style=\"color:var(--muted)\">Agent-callable endpoint:</span><br><span style=\"color:var(--text);word-break:break-all\">" + escapeHtml(d.openapi_url) + "</span>" : "");
     } catch (e) {
       result.className = "result show error"; result.textContent = "❌ " + (e.message || e);
     } finally { buildBtn.disabled = false; buildBtn.textContent = "⚙ Build agent tools"; }

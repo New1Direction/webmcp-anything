@@ -1322,7 +1322,30 @@ app.post("/api/v1/flows", gate("read"), async (c) => {
     return c.json({ error: "POST { flows: [{ method, url, status?, requestBody?, responseBody? }, ...] }" }, 400);
   }
   const flows = body.flows.slice(0, 2000);
-  return c.json(synthesizeFromFlows(flows, body.origin));
+  const result = synthesizeFromFlows(flows, body.origin);
+  // Persist the spec + serve it at a URL the openapi adapter recognizes (/openapi.json)
+  // so the synthesized tools become EXECUTABLE via /api/v1/tools/execute.
+  const origin = new URL(c.req.url).origin;
+  const id = Array.from(crypto.getRandomValues(new Uint8Array(9))).map((b) => b.toString(16).padStart(2, "0")).join("");
+  try { await c.env.CACHE.put(`flowspec:${id}`, JSON.stringify(result.openapi), { expirationTtl: 30 * 86400 }); } catch {}
+  const openapiUrl = `${origin}/toolset/${id}/openapi.json`;
+  return c.json({
+    ...result,
+    toolset_id: id,
+    openapi_url: openapiUrl,
+    execute: {
+      endpoint: `${origin}/api/v1/tools/execute`,
+      method: "POST",
+      note: "Paid (execute tier). Calls the real upstream API.",
+      example: { url: openapiUrl, tool: result.tools[0]?.name || "<tool>", args: {} },
+    },
+  });
+});
+// Serve a synthesized (captured) spec — the /openapi.json path is what the adapter detects.
+app.get("/toolset/:id/openapi.json", async (c) => {
+  const raw = await c.env.CACHE.get(`flowspec:${c.req.param("id")}`);
+  if (!raw) return c.json({ error: "not found or expired" }, 404);
+  return c.body(raw, 200, { "content-type": "application/json; charset=utf-8", "cache-control": "public, max-age=300" });
 });
 
 app.get("/api/v1/tools", gate("read"), async (c) => {

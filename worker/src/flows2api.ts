@@ -85,17 +85,17 @@ export function synthesizeFromFlows(flows: Flow[], originHint?: string): SynthRe
     const parameters: any[] = [];
     for (const p of g.params) parameters.push({ name: p, in: "path", required: true, schema: { type: "string" } });
     for (const q of g.query) parameters.push({ name: q, in: "query", required: false, schema: { type: "string" } });
-    const op: any = { summary: `${g.method} ${g.template}`, parameters, responses: { "200": { description: "observed response", ...(g.resBody !== undefined ? { content: { "application/json": { schema: inferSchema(g.resBody) } } } : {}) } } };
+    const opId = `${g.method.toLowerCase()}_${g.template.replace(/[^a-zA-Z0-9]+/g, "_").replace(/^_|_$/g, "")}`.slice(0, 60);
+    const op: any = { operationId: opId, summary: `${g.method} ${g.template}`, parameters, responses: { "200": { description: "observed response", ...(g.resBody !== undefined ? { content: { "application/json": { schema: inferSchema(g.resBody) } } } : {}) } } };
     if (g.reqBody !== undefined && g.method !== "GET") op.requestBody = { content: { "application/json": { schema: inferSchema(g.reqBody) } } };
     paths[g.template] = paths[g.template] || {};
     paths[g.template][g.method.toLowerCase()] = op;
     operations++;
 
-    // derive a tool
+    // derive a tool (operationId matches the spec so it executes via the openapi adapter)
     const props: any = {};
     for (const pm of parameters) props[pm.name] = { type: pm.schema?.type || "string", description: `${pm.in} parameter` };
     if (op.requestBody) props.body = { type: "object", description: "JSON request body" };
-    const opId = `${g.method.toLowerCase()}_${g.template.replace(/[^a-zA-Z0-9]+/g, "_").replace(/^_|_$/g, "")}`.slice(0, 60);
     tools.push({ name: opId, description: `${g.method} ${g.origin}${g.template}`, inputSchema: { type: "object", properties: props, required: g.params } });
   }
 

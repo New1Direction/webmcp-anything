@@ -500,8 +500,8 @@
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/index.ts": {
-    "mtime": 1780518091.2774796,
-    "ast_hash": "4b95e3114b3cb090bf365200e54703ae",
+    "mtime": 1780518598.2056348,
+    "ast_hash": "c460919125eebe084ea3670621fbf73b",
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/integration_airtable.ts": {
@@ -660,8 +660,8 @@
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/mcp_grade.ts": {
-    "mtime": 1780518098.4603841,
-    "ast_hash": "0146eba467fe64cea16ee2e701284a96",
+    "mtime": 1780518169.162161,
+    "ast_hash": "58203e3a251e50e1aa7149b5b54bd3fb",
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/mcp_oauth.ts": {
@@ -1507,6 +1507,11 @@
   "/Users/alexhearts/webmcp-anything/extension/icons/quickcatch.svg": {
     "mtime": 1780516676.1350124,
     "ast_hash": "37ebce323c9a20056742a91af9cbe938",
+    "semantic_hash": ""
+  },
+  "/Users/alexhearts/webmcp-anything/worker/src/flows2api.ts": {
+    "mtime": 1780518551.7628405,
+    "ast_hash": "a3fbe7006be61a99dc8a11935889485d",
     "semantic_hash": ""
   }
 }
