@@ -461,7 +461,7 @@ export async function recordGrade(env: Env, r: GradeResult): Promise<DriftOutcom
   await env.CACHE.put(`grade:${r.host}`, JSON.stringify(r), { expirationTtl: 60 * 86400, metadata: gradeMeta(r) });
   // Watch set: value = the exact URL so the cron can re-grade. Long TTL,
   // refreshed on every check.
-  await env.CACHE.put(`gradewatch:${r.host}`, r.url, { expirationTtl: 90 * 86400 });
+  await env.CACHE.put(`gradewatch:${r.host}`, r.url, { expirationTtl: 90 * 86400, metadata: { checked_at: r.checked_at } });
   // Capped append-only history (the time series nobody else has).
   let hist: any[] = [];
   try { const h = await env.CACHE.get(`gradehist:${r.host}`); hist = h ? JSON.parse(h) : []; } catch {}
@@ -500,19 +500,18 @@ export async function regradeWatched(
   fireAlertFn: (env: any, ctx: any, text: string) => void,
   max = 20
 ): Promise<{ checked: number; drifted: number; dropped: number }> {
-  const list = await env.CACHE.list({ prefix: "gradewatch:" });
-  // Load current grades to sort oldest-checked first (rotation).
-  const hosts = list.keys.map((k) => k.name.slice("gradewatch:".length));
-  const withTs = await Promise.all(
-    hosts.map(async (h) => ({ h, g: await readGrade(env, h) }))
-  );
-  withTs.sort((a, b) => (a.g?.checked_at || 0) - (b.g?.checked_at || 0));
-  const batch = withTs.slice(0, max);
+  // Scales to thousands of watched servers: sort oldest-checked first from the
+  // key METADATA (one list call, no per-host get). Only the small batch we
+  // actually re-grade needs its URL fetched.
+  const list = await env.CACHE.list({ prefix: "gradewatch:", limit: 1000 });
+  const rows = list.keys.map((k: any) => ({ h: k.name.slice("gradewatch:".length), ts: (k.metadata && k.metadata.checked_at) || 0 }));
+  rows.sort((a, b) => a.ts - b.ts);
+  const batch = rows.slice(0, max);
 
   let drifted = 0, dropped = 0;
   await Promise.all(
-    batch.map(async ({ h, g }) => {
-      const url = g?.url || `https://${h}/mcp`;
+    batch.map(async ({ h }) => {
+      const url = (await env.CACHE.get(`gradewatch:${h}`)) || `https://${h}/mcp`;
       try {
         const fresh = await scoreMcpServer(url);
         const out = await recordGrade(env, fresh);
