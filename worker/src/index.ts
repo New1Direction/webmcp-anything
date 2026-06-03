@@ -420,7 +420,8 @@ app.get("/mcp/grade/:host/card.svg", async (c) => {
   let r = await readGrade(c.env as any, host);
   if (!r) {
     try {
-      if (host.startsWith("npm:")) { const { scoreMcpPackage } = await import("./mcp_pkg"); r = await scoreMcpPackage(host.slice(4)); }
+      if (host.startsWith("pypi:")) { const { scoreMcpPyPiPackage } = await import("./mcp_pkg"); r = await scoreMcpPyPiPackage(host.slice(5)); }
+      else if (host.startsWith("npm:")) { const { scoreMcpPackage } = await import("./mcp_pkg"); r = await scoreMcpPackage(host.slice(4)); }
       else r = await scoreMcpServer(`https://${host}/mcp`);
       if (r) await recordGrade(c.env as any, r);
     } catch {}
@@ -433,11 +434,14 @@ app.get("/mcp/grade/:host", async (c) => {
   const origin = new URL(c.req.url).origin;
   const { readGrade, scoreMcpServer, recordGrade, gradePageHtml } = await import("./mcp_grade");
   // Package (stdio) servers: never probe — read the static scan, or run it on demand.
-  if (host.startsWith("npm:")) {
+  if (host.startsWith("npm:") || host.startsWith("pypi:")) {
     let pr = await readGrade(c.env as any, host);
     if (!pr) {
-      const { scoreMcpPackage } = await import("./mcp_pkg");
-      try { pr = await scoreMcpPackage(host.slice(4)); await recordGrade(c.env as any, pr); } catch {}
+      const { scoreMcpPackage, scoreMcpPyPiPackage } = await import("./mcp_pkg");
+      try {
+        pr = host.startsWith("pypi:") ? await scoreMcpPyPiPackage(host.slice(5)) : await scoreMcpPackage(host.slice(4));
+        await recordGrade(c.env as any, pr);
+      } catch {}
     }
     if (!pr) return c.notFound();
     return c.html(gradePageHtml(pr, origin));

@@ -203,6 +203,147 @@ export async function scoreMcpPackage(rawName: string, version?: string): Promis
   return r;
 }
 
+// Python danger patterns (parallel to the npm DANGER set).
+const PY_DANGER = /\beval\(|\bexec\(|subprocess|os\.system|os\.popen|__import__\(|pickle\.loads|shell\s*=\s*True/;
+const PY_TOOL = /@(?:mcp|server|app|tools?)\.tool|@tool\b|Tool\(\s*name\s*=\s*["']([a-zA-Z0-9_.-]{2,64})["']|types\.Tool\(|add_tool\(|register_tool\(/g;
+
+function ghFromUrls(info: any): { owner: string; repo: string } | null {
+  const cands: string[] = [];
+  const purls = info?.project_urls || {};
+  for (const k of Object.keys(purls)) cands.push(String(purls[k] || ""));
+  if (info?.home_page) cands.push(String(info.home_page));
+  for (const u of cands) {
+    const m = u.match(/github\.com\/([^/\s]+)\/([^/\s#?]+)/i);
+    if (m) return { owner: m[1], repo: m[2].replace(/\.git$/, "") };
+  }
+  return null;
+}
+
+/** Pull a bounded sample of source from a GitHub repo via jsdelivr (no clone). */
+async function scanGitHubSource(owner: string, repo: string, exts: RegExp): Promise<{ source: string; sampled: string[] }> {
+  let source = "", sampled: string[] = [];
+  const meta = await getJson(`https://data.jsdelivr.com/v1/packages/gh/${owner}/${repo}`);
+  const ref = meta?.versions?.[0]?.version || meta?.tags?.latest || "HEAD";
+  const tree = await getJson(`https://data.jsdelivr.com/v1/packages/gh/${owner}/${repo}@${ref}`);
+  if (!tree?.files) return { source, sampled };
+  const flat: string[] = [];
+  const walk = (nodes: any[], prefix: string) => { for (const n of nodes || []) { if (n.type === "directory") walk(n.files, `${prefix}${n.name}/`); else flat.push(`${prefix}${n.name}`); } };
+  walk(tree.files, "");
+  const pick = flat
+    .filter((f) => exts.test(f) && !/(test|spec|__pycache__|\.min\.|examples?\/|docs?\/)/i.test(f))
+    .sort((a, b) => (/(server|main|tool|index|app|__init__)/.test(b) ? 1 : 0) - (/(server|main|tool|index|app|__init__)/.test(a) ? 1 : 0))
+    .slice(0, MAX_SOURCE_FILES);
+  for (const f of pick) {
+    if (source.length > MAX_SOURCE_BYTES) break;
+    const txt = await getText(`https://cdn.jsdelivr.net/gh/${owner}/${repo}@${ref}/${f}`);
+    if (txt) { source += "\n" + txt.slice(0, 80_000); sampled.push(f); }
+  }
+  return { source, sampled };
+}
+
+/** Grade a PyPI package as a (stdio) MCP server from its metadata + GitHub source. */
+export async function scoreMcpPyPiPackage(rawName: string): Promise<GradeResult> {
+  const name = rawName.trim();
+  const host = `pypi:${name}`;
+  const r: GradeResult = {
+    url: `https://pypi.org/project/${name}/`, host, checked_at: Date.now(),
+    reachable: false, auth_required: false, grade: "F", score: 0, sub: {}, findings: [],
+    tools_count: 0, title: name, kind: "package",
+  };
+  const meta = await getJson(`https://pypi.org/pypi/${encodeURIComponent(name)}/json`);
+  if (!meta?.info) {
+    r.findings.push({ id: "pkg_missing", severity: "fail", detail: "Package not found on PyPI." });
+    r.sub = { spec: z(20), security: z(30), maintenance: z(20), hygiene: z(15), transparency: z(15) };
+    r.category = deriveCategory([], name, "");
+    return r;
+  }
+  const info = meta.info;
+  const ver = info.version;
+  r.protocol_version = ver;
+  const summary = String(info.summary || "");
+  const keywords = String(info.keywords || "");
+  const classifiers: string[] = info.classifiers || [];
+  const license = info.license || classifiers.find((c) => /License ::/.test(c))?.split("::").pop()?.trim() || "";
+  const reqs: string[] = info.requires_dist || [];
+  const depCount = reqs.length;
+  const hasMcpSdk = reqs.some((d) => /^(mcp|fastmcp|modelcontextprotocol|mcp-)/i.test(d));
+  const isTyped = classifiers.some((c) => /Typing :: Typed/.test(c));
+  const gh = ghFromUrls(info);
+  const lastUpload = (meta.urls?.[0]?.upload_time_iso_8601) || (meta.releases?.[ver]?.[0]?.upload_time_iso_8601);
+  const ageDays = lastUpload ? Math.floor((Date.now() - new Date(lastUpload).getTime()) / 86400000) : 9999;
+  const verCount = Object.keys(meta.releases || {}).length;
+
+  let downloads = 0;
+  const dl = await getJson(`https://pypistats.org/api/packages/${name.toLowerCase()}/recent`);
+  if (dl?.data?.last_week) downloads = dl.data.last_week;
+
+  let source = "", sampled: string[] = [];
+  if (gh) { const s = await scanGitHubSource(gh.owner, gh.repo, /\.(py|pyi)$/); source = s.source; sampled = s.sampled; }
+
+  // tools from source
+  const toolNames = new Set<string>();
+  let m: RegExpExecArray | null;
+  while ((m = PY_TOOL.exec(source)) && toolNames.size < 30) { if (m[1]) toolNames.add(m[1]); }
+  const toolHits = (source.match(/@(?:mcp|server|app)\.tool|register_tool\(|add_tool\(/g) || []).length;
+  const toolCount = Math.max(toolNames.size, toolHits);
+  r.tools_count = toolCount;
+  if (toolNames.size) r.tools_preview = [...toolNames].slice(0, 18).map((n) => ({ name: n.slice(0, 64), desc: "" }));
+
+  const injHit = INJ.test(source), secretPath = SECRET.test(source), hardcoded = HARDCODED.test(source), danger = PY_DANGER.test(source);
+
+  let sec = 90; const secNotes: string[] = [];
+  if (sampled.length) {
+    if (hardcoded) { sec = Math.min(sec, 5); secNotes.push("⚠ hardcoded API-key-shaped secret in source"); }
+    if (injHit) { sec = Math.min(sec, 15); secNotes.push("⚠ prompt-injection markup in source"); }
+    if (secretPath) { sec = Math.min(sec, 25); secNotes.push("⚠ references sensitive file paths / secrets"); }
+    if (danger) { sec = Math.min(sec, 65); secNotes.push("uses eval/exec/subprocess/pickle (review for unsanitized input)"); }
+    if (sec >= 90) secNotes.push("no high-risk patterns in sampled source");
+    secNotes.push(`scanned ${sampled.length} source file${sampled.length === 1 ? "" : "s"} from GitHub`);
+  } else { sec = 50; secNotes.push(gh ? "source not retrievable — graded on metadata only" : "no public repo linked — graded on metadata only"); }
+
+  let spec = 40; const specNotes: string[] = [];
+  if (hasMcpSdk) { spec += 35; specNotes.push("✓ depends on an MCP SDK (mcp/fastmcp)"); } else specNotes.push("no recognized MCP SDK dependency");
+  if (toolCount) { spec += 25; specNotes.push(`✓ ${toolCount} tool(s) detected in source`); } else specNotes.push("no tools detected");
+  spec = clamp(spec);
+
+  let maint = 50; const maintNotes: string[] = [];
+  if (ageDays < 90) { maint = 92; maintNotes.push("published within 90 days"); }
+  else if (ageDays < 365) { maint = 75; maintNotes.push(`last release ~${Math.round(ageDays / 30)}mo ago`); }
+  else { maint = 40; maintNotes.push(`stale — last release ~${Math.round(ageDays / 365)}y ago`); }
+  if (verCount >= 5) maint = clamp(maint + 8);
+  maintNotes.push(`${verCount} release${verCount === 1 ? "" : "s"}${downloads ? `, ${downloads.toLocaleString()} downloads/wk` : ""}`);
+
+  let hyg = 50; const hygNotes: string[] = [];
+  if (isTyped) { hyg += 20; hygNotes.push("✓ declares Typed classifier"); }
+  if (depCount <= 15) { hyg += 20; hygNotes.push(`${depCount} declared deps`); } else { hyg -= 5; hygNotes.push(`${depCount} declared deps (heavy)`); }
+  if (gh) { hyg += 10; hygNotes.push("public repo"); }
+  hyg = clamp(hyg);
+
+  let trans = 25; const transNotes: string[] = [];
+  if (gh) { trans += 35; transNotes.push(`✓ repo: github.com/${gh.owner}/${gh.repo}`); } else transNotes.push("no public repository linked");
+  if (license) { trans += 25; transNotes.push(`✓ ${String(license).slice(0, 24)} license`); } else transNotes.push("no license declared");
+  if (downloads >= 1000) { trans += 12; }
+  trans = clamp(trans);
+
+  r.sub = {
+    spec: { score: spec, weight: 20, notes: specNotes },
+    security: { score: sec, weight: 30, notes: secNotes },
+    maintenance: { score: maint, weight: 20, notes: maintNotes },
+    hygiene: { score: hyg, weight: 15, notes: hygNotes },
+    transparency: { score: trans, weight: 15, notes: transNotes },
+  };
+  r.score = clamp(Object.values(r.sub).reduce((a, s) => a + (s.score * s.weight) / 100, 0));
+  if (injHit || hardcoded) r.score = Math.min(r.score, 55);
+  r.grade = letter(r.score);
+  r.reachable = true;
+  if (injHit) r.findings.push({ id: "tool_poisoning", severity: "fail", owasp: "MCP01", detail: "Prompt-injection markup found in package source." });
+  if (hardcoded) r.findings.push({ id: "secret_exfil", severity: "fail", owasp: "MCP08", detail: "Hardcoded API-key-shaped secret in package source." });
+  else if (secretPath) r.findings.push({ id: "secret_exfil", severity: "warn", owasp: "MCP08", detail: "References sensitive file paths / secrets." });
+  r.findings.push({ id: "pkg", severity: "info", detail: `Static analysis of PyPI package ${name}@${ver}${gh ? ` (source: github.com/${gh.owner}/${gh.repo})` : ""} — stdio server, no remote endpoint. Runtime behavior not measured.` });
+  r.category = deriveCategory([...toolNames].map((n) => ({ name: n })), name, `${summary} ${keywords}`);
+  return r;
+}
+
 /**
  * Walk the registry for npm-package servers (the ~15k stdio entries we can't reach
  * remotely) and statically grade them. Separate cursor so it doesn't fight the
@@ -212,8 +353,9 @@ export async function seedRegistryPackages(env: any, max = 12): Promise<{ seeded
   const CURSOR = "pkgseed:cursor";
   const cursor = (await env.CACHE.get(CURSOR)) || "";
   let scanned = 0, seeded = 0, nextCursor = cursor, pages = 0;
-  // pull registry pages until we collect `max` npm packages or run out
-  const targets: string[] = [];
+  // pull registry pages until we collect `max` package servers (npm OR pypi) or run out
+  const targets: Array<{ kind: "npm" | "pypi"; name: string }> = [];
+  const seen = new Set<string>();
   let cur = cursor;
   while (targets.length < max && pages < 6) {
     const api = `https://registry.modelcontextprotocol.io/v0/servers?limit=50` + (cur ? `&cursor=${encodeURIComponent(cur)}` : "");
@@ -222,9 +364,12 @@ export async function seedRegistryPackages(env: any, max = 12): Promise<{ seeded
     for (const s of page.servers || []) {
       const srv = s?.server || s; // registry wraps entries as {server, _meta} since 2025-12-11
       const pkgs: any[] = srv?.packages || [];
-      const npm = pkgs.find((p) => /^npm$/i.test(String(p.registry_type || p.registry_name || p.registryType || "")));
-      const nm = npm && String(npm.identifier || npm.name || "").trim();
-      if (nm && !targets.includes(nm) && targets.length < max) targets.push(nm);
+      for (const p of pkgs) {
+        const type = String(p.registry_type || p.registry_name || p.registryType || "").toLowerCase();
+        const nm = String(p.identifier || p.name || "").trim();
+        const kind = type === "npm" ? "npm" : type === "pypi" ? "pypi" : null;
+        if (kind && nm && !seen.has(`${kind}:${nm}`) && targets.length < max) { seen.add(`${kind}:${nm}`); targets.push({ kind, name: nm }); }
+      }
     }
     nextCursor = page?.metadata?.nextCursor || "";
     cur = nextCursor;
@@ -233,13 +378,12 @@ export async function seedRegistryPackages(env: any, max = 12): Promise<{ seeded
   }
   await env.CACHE.put(CURSOR, nextCursor, { expirationTtl: 60 * 86400 });
 
-  await Promise.all(targets.map(async (nm) => {
+  await Promise.all(targets.map(async (t) => {
     scanned++;
     try {
-      // skip if already graded recently
-      const existing = await env.CACHE.get(`grade:npm:${nm.toLowerCase()}`);
+      const existing = await env.CACHE.get(`grade:${t.kind}:${t.name.toLowerCase()}`);
       if (existing) return;
-      const g = await scoreMcpPackage(nm);
+      const g = t.kind === "pypi" ? await scoreMcpPyPiPackage(t.name) : await scoreMcpPackage(t.name);
       await recordGrade(env, g);
       seeded++;
     } catch {}
