@@ -488,6 +488,14 @@ export async function runSeedNow(c: any): Promise<Response> {
     return c.json({ error: "admin only" }, 401);
   }
 
+  // On-demand drain of the agent-fed grade queue. ?grade_only=1 skips the store
+  // seed for a fast grade-only run; ?grade=N sets the batch (capped).
+  const gradeN = Math.min(30, parseInt(c.req.query("grade") || "15", 10) || 15);
+  const grade_seed = await gradeManualSeed(env, gradeN);
+  if (c.req.query("grade_only") === "1") {
+    return c.json({ ok: true, grade_seed });
+  }
+
   const stores = await pickStores(env);
   const reports = await Promise.all(stores.map((s) => seedStore(env, s)));
   const total_new = reports.reduce((s, r) => s + r.new_cached, 0);
@@ -498,5 +506,5 @@ export async function runSeedNow(c: any): Promise<Response> {
     indexnow_submitted = freshUrls.length;
     if (freshUrls.length) c.executionCtx.waitUntil(pingIndexNow(freshUrls));
   }
-  return c.json({ ok: true, total_new, indexnow_submitted, stores: reports });
+  return c.json({ ok: true, total_new, indexnow_submitted, grade_seed, stores: reports });
 }
