@@ -8,6 +8,7 @@
 // moat: graded + vaulted + metered.
 import { PROVIDERS } from "./providers";
 import { adSlot } from "./ads";
+import { CATEGORY_NAMES, categorySlug } from "./mcp_grade";
 
 /**
  * Discovery manifest served at /.well-known/mcp — a flat, crawlable list of the
@@ -212,6 +213,14 @@ verify_before_execute({ url })</pre>
         <div class="muted" style="font-size:.8rem;margin-bottom:6px">In-browser WebMCP — one line in &lt;head&gt;</div>
         <pre class="snip">&lt;script src="${esc(origin)}/webmcp/&lt;b64url&gt;.js" async&gt;&lt;/script&gt;</pre>
       </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Browse the trust leaderboard by category</h2>
+    <p class="muted">Independent A–F grades, grouped by what the servers actually do. Each category is its own ranked board.</p>
+    <div class="pillrow">
+      ${CATEGORY_NAMES.filter((c) => c !== "Other").map((c) => `<a class="pill" href="/mcp/leaderboard/${categorySlug(c)}">${c}</a>`).join("")}
     </div>
   </div>
 
