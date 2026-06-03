@@ -354,8 +354,11 @@ ${uiNav(origin)}
   ${emailCapture("Get the monthly State of MCP Security report", "Plus an alert the moment a server drops a grade or ships a rug-pull. Free — built for agent developers.", "mcp-report")}
 
   <div class="cta">
-    <strong>Run your own MCP server through the audit free →</strong> <a href="/mcp/grade">/mcp/grade</a>.
-    Operators: <a href="/mcp/badges">grab your trust badge</a> to show users you're audited. Browse all grades on the <a href="/mcp/leaderboard">trust leaderboard</a>.
+    <strong>Operators: own your grade.</strong> <a href="/mcp/grade">Grade your server free</a>, <a href="/mcp/badges">embed the badge</a>, then turn on <b>continuous monitoring</b> — we re-check your server on a schedule and alert you the instant a tool changes or your grade drops (rug-pull insurance for the agents that depend on you). Browse all grades on the <a href="/mcp/leaderboard">leaderboard</a>.
+    <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
+      <a class="btn btn-primary" href="/mcp/grade">Grade your server →</a>
+      <a class="btn btn-ghost" href="/mcp/badges">Get the badge</a>
+    </div>
   </div>
 
   <section>
