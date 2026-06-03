@@ -1,16 +1,16 @@
 # Graph Report - webmcp-anything  (2026-06-03)
 
 ## Corpus Check
-- 270 files · ~548,113 words
+- 270 files · ~548,442 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1808 nodes · 2564 edges · 209 communities (190 shown, 19 thin omitted)
+- 1808 nodes · 2567 edges · 209 communities (190 shown, 19 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 25 edges (avg confidence: 0.58)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `c50ad7a9`
+- Built from commit: `114dc27b`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -302,8 +302,8 @@ Cohesion: 0.29
 Nodes (12): b64urlDecode(), b64urlEncode(), claimStart(), claimVerify(), ctEqual(), Env, extractVerifyTokens(), fetchHtml() (+4 more)
 
 ### Community 35 - "Community 35"
-Cohesion: 0.42
-Nodes (7): base64urlEncode(), bridgeDescriptor(), slim(), SlimTool, webmcpHubHtml(), webmcpShimJs(), tools
+Cohesion: 0.46
+Nodes (6): base64urlEncode(), bridgeDescriptor(), slim(), SlimTool, webmcpShimJs(), tools
 
 ### Community 36 - "Community 36"
 Cohesion: 0.27
@@ -406,8 +406,8 @@ Cohesion: 0.29
 Nodes (6): `actions` (optional), Adapter contract, `detect(ctx) → null | DetectionContext`, `extract(ctx) → { tools, product, variants? }`, Headers / fetch etiquette, What "good" looks like
 
 ### Community 61 - "Community 61"
-Cohesion: 0.11
-Nodes (13): dashboardHtml(), directoryHtml(), app, Bindings, HTML_HEADERS, Variables, landingHtml(), EVENTS (+5 more)
+Cohesion: 0.12
+Nodes (13): dashboardHtml(), app, Bindings, HTML_HEADERS, Variables, landingHtml(), EVENTS, FunnelEvent (+5 more)
 
 ### Community 62 - "Community 62"
 Cohesion: 0.29
@@ -450,8 +450,8 @@ Cohesion: 0.23
 Nodes (16): fill(), comparisonHtml(), conversionBlock(), dropPageHtml(), dropsIndexHtml(), dropsIndexUrl(), esc(), fieldsFor() (+8 more)
 
 ### Community 72 - "Community 72"
-Cohesion: 0.31
-Nodes (11): checkAdmin(), deriveSlug(), Env, featureListing(), getDirectoryState(), listSubmissions(), unfeatureListing(), unverifyListing() (+3 more)
+Cohesion: 0.35
+Nodes (10): checkAdmin(), deriveSlug(), Env, featureListing(), getDirectoryState(), listSubmissions(), unfeatureListing(), unverifyListing() (+2 more)
 
 ### Community 73 - "Community 73"
 Cohesion: 0.13
@@ -486,8 +486,8 @@ Cohesion: 0.60
 Nodes (4): embedHtml(), Env, escapeHtml(), verifyEmbedHandler()
 
 ### Community 144 - "Community 144"
-Cohesion: 0.29
-Nodes (7): articlesIndexHtml(), mcpLeaderboardHtml(), badgeHubHtml(), stateOfMcpSecurityHtml(), metricsPageHtml(), uiCss(), uiNav()
+Cohesion: 0.27
+Nodes (8): articlesIndexHtml(), directoryHtml(), mcpLeaderboardHtml(), badgeHubHtml(), metricsPageHtml(), uiCss(), uiNav(), webmcpHubHtml()
 
 ### Community 174 - "Community 174"
 Cohesion: 0.22
@@ -499,7 +499,7 @@ Nodes (16): LOCALIZED_LANGS, alternates(), Calc, calcUrl(), css(), esc(), funnel
 
 ### Community 176 - "Community 176"
 Cohesion: 0.20
-Nodes (19): issueKey(), revokeKey(), track(), createCheckout(), createDeepAuditCheckout(), createDirectoryVerifiedCheckout(), createManagedConnectionCheckout(), createMonitorCheckout() (+11 more)
+Nodes (16): revokeKey(), createCheckout(), createDeepAuditCheckout(), createDirectoryVerifiedCheckout(), createFixCheckout(), createManagedConnectionCheckout(), createMonitorCheckout(), createSessionResponse() (+8 more)
 
 ### Community 177 - "Community 177"
 Cohesion: 0.24
@@ -514,8 +514,8 @@ Cohesion: 0.29
 Nodes (6): 1) Show HN (Hacker News) — biggest same-day dev traffic, 2) Reddit — the free calculator (value-first, no hard sell), 3) X / Twitter — quick thread, 4) Top 5 directory submissions (Track A, wmcp.sh, live now), 5) The one paid push that's deliverable today, Post today — ready-to-paste traffic for the buy path
 
 ### Community 180 - "Community 180"
-Cohesion: 0.34
-Nodes (10): fire(), checkoutCompleted(), CtxOpts, envMock(), EnvOverrides, kvMock(), makeCtx(), signStripe() (+2 more)
+Cohesion: 0.31
+Nodes (12): issueKey(), stripeWebhook(), fire(), checkoutCompleted(), CtxOpts, envMock(), EnvOverrides, kvMock() (+4 more)
 
 ### Community 181 - "Community 181"
 Cohesion: 0.24
@@ -542,8 +542,8 @@ Cohesion: 0.32
 Nodes (9): blogIndexHtml(), blogPostHtml(), escapeHtml(), escapeJson(), footerHtml(), navHtml(), BLOG_POSTS, BLOG_SLUGS (+1 more)
 
 ### Community 202 - "Community 202"
-Cohesion: 0.46
-Nodes (5): connKey(), Env, hasManagedConnection(), isActive(), listManagedConnections()
+Cohesion: 0.43
+Nodes (6): connKey(), Env, hasManagedConnection(), isActive(), listManagedConnections(), handleNonPlanCheckout()
 
 ### Community 203 - "Community 203"
 Cohesion: 0.20
@@ -554,8 +554,8 @@ Cohesion: 0.22
 Nodes (12): readGrade(), Env, gradeFor(), gradeSummary(), jerr(), jrpc(), oracleHandler(), recommendation() (+4 more)
 
 ### Community 205 - "Community 205"
-Cohesion: 0.22
-Nodes (8): baseDomain(), COLOR, computeMcpSecurityReport(), family(), FINDING_EXCLUDE, FINDING_LABELS, FindingFreq, McpReportStats
+Cohesion: 0.20
+Nodes (9): baseDomain(), COLOR, computeMcpSecurityReport(), family(), FINDING_EXCLUDE, FINDING_LABELS, FindingFreq, McpReportStats (+1 more)
 
 ### Community 206 - "Community 206"
 Cohesion: 0.31

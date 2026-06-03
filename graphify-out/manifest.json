@@ -350,8 +350,8 @@
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/directory.ts": {
-    "mtime": 1780507137.3733094,
-    "ast_hash": "aaafee045f64150657dd76dd78c8f2b5",
+    "mtime": 1780507751.83162,
+    "ast_hash": "cb249ebdd3148089ef3c5abd6d477cb1",
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/directory_admin.ts": {
@@ -635,8 +635,8 @@
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/landing.ts": {
-    "mtime": 1780451559.549813,
-    "ast_hash": "78f3a87bfec0871997987903d5be8e60",
+    "mtime": 1780507554.591186,
+    "ast_hash": "2173da1cab86cdfe046759a326e71d68",
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/lead_capture.ts": {
@@ -1440,8 +1440,8 @@
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/ui.ts": {
-    "mtime": 1780463450.1063948,
-    "ast_hash": "a8744c1dbde8f488ebbc4c11045f6f07",
+    "mtime": 1780507592.129845,
+    "ast_hash": "d5c4b6b095c38be7c81713af7d3c3e67",
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/launch/coverage_agent_report_2026-06.md": {

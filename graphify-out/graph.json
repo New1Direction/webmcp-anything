@@ -5424,7 +5424,7 @@
       "source_file": "worker/src/auth.ts",
       "source_location": "L248",
       "id": "src_auth_issuekey",
-      "community": 176,
+      "community": 180,
       "norm_label": "issuekey()"
     },
     {
@@ -5991,16 +5991,16 @@
       "source_file": "worker/src/directory.ts",
       "source_location": "L1",
       "id": "src_directory",
-      "community": 61,
+      "community": 144,
       "norm_label": "directory.ts"
     },
     {
       "label": "directoryHtml()",
       "file_type": "code",
       "source_file": "worker/src/directory.ts",
-      "source_location": "L1",
+      "source_location": "L3",
       "id": "src_directory_directoryhtml",
-      "community": 61,
+      "community": 144,
       "norm_label": "directoryhtml()"
     },
     {
@@ -9069,7 +9069,7 @@
       "source_file": "worker/src/mcp_report.ts",
       "source_location": "L236",
       "id": "src_mcp_report_stateofmcpsecurityhtml",
-      "community": 144,
+      "community": 205,
       "norm_label": "stateofmcpsecurityhtml()"
     },
     {
@@ -9375,7 +9375,7 @@
       "source_file": "worker/src/metrics.ts",
       "source_location": "L35",
       "id": "src_metrics_track",
-      "community": 176,
+      "community": 61,
       "norm_label": "track()"
     },
     {
@@ -10176,7 +10176,7 @@
       "source_file": "worker/src/stripe.ts",
       "source_location": "L200",
       "id": "src_stripe_stripewebhook",
-      "community": 176,
+      "community": 180,
       "norm_label": "stripewebhook()"
     },
     {
@@ -10194,7 +10194,7 @@
       "source_file": "worker/src/stripe.ts",
       "source_location": "L362",
       "id": "src_stripe_handlenonplancheckout",
-      "community": 176,
+      "community": 202,
       "norm_label": "handlenonplancheckout()"
     },
     {
@@ -10212,7 +10212,7 @@
       "source_file": "worker/src/stripe.ts",
       "source_location": "L533",
       "id": "src_stripe_createfixcheckout",
-      "community": 72,
+      "community": 176,
       "norm_label": "createfixcheckout()"
     },
     {
@@ -10687,7 +10687,7 @@
       "label": "uiNav()",
       "file_type": "code",
       "source_file": "worker/src/ui.ts",
-      "source_location": "L97",
+      "source_location": "L108",
       "id": "src_ui_uinav",
       "community": 144,
       "norm_label": "uinav()"
@@ -11184,7 +11184,7 @@
       "source_file": "worker/src/webmcp_bridge.ts",
       "source_location": "L106",
       "id": "src_webmcp_bridge_webmcphubhtml",
-      "community": 35,
+      "community": 144,
       "norm_label": "webmcphubhtml()"
     },
     {
@@ -11238,7 +11238,7 @@
       "source_file": "worker/test/connections.test.ts",
       "source_location": "L1",
       "id": "test_connections_test",
-      "community": 202,
+      "community": 180,
       "norm_label": "connections.test.ts"
     },
     {
@@ -11247,7 +11247,7 @@
       "source_file": "worker/test/connections.test.ts",
       "source_location": "L18",
       "id": "test_connections_test_subdeleted",
-      "community": 202,
+      "community": 180,
       "norm_label": "subdeleted()"
     },
     {
@@ -27296,12 +27296,45 @@
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
+      "source_file": "worker/src/directory.ts",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "src_directory",
+      "target": "src_ui",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "worker/src/directory.ts",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "src_directory",
+      "target": "src_ui_uinav",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
       "source_file": "worker/src/index.ts",
       "source_location": "L10",
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "worker_src_index_ts_src_index",
       "target": "src_directory"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "worker/src/directory.ts",
+      "source_location": "L243",
+      "weight": 1.0,
+      "source": "src_directory_directoryhtml",
+      "target": "src_ui_uinav"
     },
     {
       "relation": "imports",
@@ -30522,9 +30555,9 @@
       "source_file": "worker/src/index.ts",
       "source_location": "L12",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "worker_src_index_ts_src_index",
-      "target": "src_scheduled_regradecorpus",
-      "confidence_score": 1.0
+      "target": "src_scheduled_regradecorpus"
     },
     {
       "relation": "imports",
@@ -35003,9 +35036,9 @@
       "source_file": "worker/src/scheduled.ts",
       "source_location": "L499",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_scheduled",
-      "target": "src_scheduled_regradecorpus",
-      "confidence_score": 1.0
+      "target": "src_scheduled_regradecorpus"
     },
     {
       "relation": "contains",
@@ -41691,9 +41724,9 @@
       "source_file": "launch/state-of-mcp-security-posts.md",
       "source_location": "L88",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "launch_state_of_mcp_security_posts_launch_posts_state_of_mcp_security_2026",
-      "target": "launch_state_of_mcp_security_posts_4_dev_newsletter_pitch_tldr_bytes_console_ai_tidbits_etc",
-      "confidence_score": 1.0
+      "target": "launch_state_of_mcp_security_posts_4_dev_newsletter_pitch_tldr_bytes_console_ai_tidbits_etc"
     },
     {
       "relation": "contains",
@@ -41701,9 +41734,9 @@
       "source_file": "launch/state-of-mcp-security-posts.md",
       "source_location": "L103",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "launch_state_of_mcp_security_posts_launch_posts_state_of_mcp_security_2026",
-      "target": "launch_state_of_mcp_security_posts_5_linkedin",
-      "confidence_score": 1.0
+      "target": "launch_state_of_mcp_security_posts_5_linkedin"
     },
     {
       "relation": "contains",
@@ -43017,5 +43050,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "c50ad7a9e2a5823b38e9a85939c9a4af427ea867"
+  "built_at_commit": "114dc27b21afc90af82e14ae6d22707a9dcd2d15"
 }

@@ -843,8 +843,45 @@ tools = [
 
 </div>
 
+<style>
+  footer{border-top:1px solid var(--border); margin-top:64px; padding:42px 24px 54px; max-width:1080px; margin-left:auto; margin-right:auto}
+  .ftr-cols{display:grid; grid-template-columns:repeat(4,1fr); gap:28px}
+  .ftr-cols h4{font-size:.74rem; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); margin:0 0 10px}
+  .ftr-cols a{display:block; color:var(--text); text-decoration:none; font-size:.9rem; padding:4px 0; opacity:.82}
+  .ftr-cols a:hover{opacity:1; color:var(--accent2)}
+  .ftr-tag{color:var(--muted); font-size:.86rem; margin:30px 0 0}
+  @media (max-width:700px){ .ftr-cols{grid-template-columns:repeat(2,1fr)} }
+</style>
 <footer>
-  <a href="/">Home</a> · <a href="/directory">Directory</a> · <a href="/dashboard">Dashboard</a> · <a href="https://github.com/New1Direction/webmcp-anything">GitHub</a> · <a href="https://developer.chrome.com/docs/ai/webmcp">WebMCP spec <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:.92em;height:.92em;vertical-align:-.16em"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
+  <div class="ftr-cols">
+    <div><h4>Product</h4>
+      <a href="/directory">Directory</a>
+      <a href="/webmcp">WebMCP</a>
+      <a href="/connect">Connect an MCP server</a>
+      <a href="/integration/shopify">Shopify</a>
+      <a href="/integration/openapi">OpenAPI</a>
+      <a href="/integration/stripe">Stripe</a>
+    </div>
+    <div><h4>Trust</h4>
+      <a href="/mcp/leaderboard">Leaderboard</a>
+      <a href="/mcp/grade">Grade a server</a>
+      <a href="/reports/state-of-mcp-security-2026">State of MCP Security</a>
+      <a href="/mcp/badges">Get a badge</a>
+    </div>
+    <div><h4>For collectors</h4>
+      <a href="/">QuickCatch</a>
+      <a href="/drops">Restock guides</a>
+      <a href="/guides">Buying guides</a>
+      <a href="/tools">Free tools</a>
+    </div>
+    <div><h4>Company</h4>
+      <a href="/#pricing">Pricing</a>
+      <a href="/dashboard">Get a key</a>
+      <a href="/privacy">Privacy</a>
+      <a href="https://github.com/New1Direction/webmcp-anything">GitHub ↗</a>
+    </div>
+  </div>
+  <p class="ftr-tag">Any website → tools an agent can use. QuickCatch is the same wmcp tech, marketed for collectors.</p>
 </footer>
 
 <script>
