@@ -8,7 +8,7 @@
 // frequency breakdown samples a bounded number of FULL reports. The whole
 // computed result is cached in KV so the page is fast and doesn't hammer KV.
 
-import { uiCss, uiNav } from "./ui";
+import { uiCss, uiNav, emailCapture } from "./ui";
 import { categorySlug } from "./mcp_grade";
 
 const REPORT_CACHE_KEY = "report:state-of-mcp-security:v3";
@@ -350,6 +350,8 @@ ${uiNav(origin)}
     <p class="muted">The top scorers in the ecosystem right now. Grades are free and identical whether or not the operator pays — independence is the point.</p>
     <table class="tbl"><thead><tr><th class="num">#</th><th>Server</th><th>Grade</th><th class="num">Score</th></tr></thead><tbody>${topRows}</tbody></table>
   </section>
+
+  ${emailCapture("Get the monthly State of MCP Security report", "Plus an alert the moment a server drops a grade or ships a rug-pull. Free — built for agent developers.", "mcp-report")}
 
   <div class="cta">
     <strong>Run your own MCP server through the audit free →</strong> <a href="/mcp/grade">/mcp/grade</a>.

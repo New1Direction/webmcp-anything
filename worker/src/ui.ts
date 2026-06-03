@@ -103,6 +103,22 @@ export function uiCss(maxWidth = 900): string {
 const STORE_URL = "https://chromewebstore.google.com/detail/quickcatch/dgbaaeengmgmkefpocdckkiahilbfdlk";
 
 // Consistent top nav for every secondary page.
+// Drop-in email-capture block (self-contained styles + script) → POST /api/v1/leads.
+// Turns high-traffic dev pages into a list (the asset that monetizes: drift-alert
+// Monitor SKU + a paid report). Self-wires at parse time.
+export function emailCapture(label: string, sublabel: string, pkg: string): string {
+  return `<div class="ecap" style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:18px 20px;margin:28px 0">
+  <div style="font-weight:800;font-size:1.05rem">${label}</div>
+  <div style="color:var(--muted);font-size:.9rem;margin:4px 0 12px">${sublabel}</div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;max-width:480px">
+    <input type="email" class="ecap-e" placeholder="you@company.com" style="flex:1;min-width:220px;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:11px 14px;font-size:.92rem"/>
+    <button class="btn btn-primary ecap-b" type="button">Notify me</button>
+  </div>
+  <div class="ecap-m" style="font-size:.85rem;margin-top:8px;min-height:1em"></div>
+</div>
+<script>(function(){var s=document.currentScript,w=s.previousElementSibling;var e=w.querySelector('.ecap-e'),b=w.querySelector('.ecap-b'),m=w.querySelector('.ecap-m');function go(){var v=(e.value||'').trim();if(v.indexOf('@')<1){m.style.color='#ff5c7c';m.textContent='Enter a valid email.';return;}b.disabled=true;b.textContent='…';fetch('/api/v1/leads',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email:v,package:${JSON.stringify(pkg)},use_case:location.pathname})}).then(function(){m.style.color='#4ade80';m.textContent='Got it — you are on the list.';e.value='';b.textContent='Done';}).catch(function(){m.style.color='#ff5c7c';m.textContent='Try again.';b.disabled=false;b.textContent='Notify me';});}b.addEventListener('click',go);e.addEventListener('keydown',function(ev){if(ev.key==='Enter')go();});})();</script>`;
+}
+
 export function uiNav(origin: string, opts: { get?: boolean } = {}): string {
   const get = opts.get === false
     ? ""

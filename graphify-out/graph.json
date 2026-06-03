@@ -10831,7 +10831,7 @@
       "label": "uiNav()",
       "file_type": "code",
       "source_file": "worker/src/ui.ts",
-      "source_location": "L108",
+      "source_location": "L106",
       "id": "src_ui_uinav",
       "community": 205,
       "norm_label": "uinav()"
@@ -30765,9 +30765,9 @@
       "source_file": "worker/src/index.ts",
       "source_location": "L12",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "worker_src_index_ts_src_index",
-      "target": "src_scheduled_seedpackages",
-      "confidence_score": 1.0
+      "target": "src_scheduled_seedpackages"
     },
     {
       "relation": "imports",
@@ -31934,9 +31934,9 @@
       "source_file": "worker/src/mcp_grade.ts",
       "source_location": "L715",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_mcp_grade",
-      "target": "src_mcp_grade_gradecardsvg",
-      "confidence_score": 1.0
+      "target": "src_mcp_grade_gradecardsvg"
     },
     {
       "relation": "contains",
@@ -32239,9 +32239,9 @@
       "source_file": "worker/src/mcp_pkg.ts",
       "source_location": "L12",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_mcp_pkg",
-      "target": "src_mcp_grade",
-      "confidence_score": 1.0
+      "target": "src_mcp_grade"
     },
     {
       "relation": "imports_from",
@@ -32360,9 +32360,9 @@
       "source_file": "worker/src/mcp_pkg.ts",
       "source_location": "L11",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_mcp_pkg",
-      "target": "src_mcp_grade_subscore",
-      "confidence_score": 1.0
+      "target": "src_mcp_grade_subscore"
     },
     {
       "relation": "imports",
@@ -32382,9 +32382,9 @@
       "source_file": "worker/src/mcp_pkg.ts",
       "source_location": "L11",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_mcp_pkg",
-      "target": "src_mcp_grade_graderesult",
-      "confidence_score": 1.0
+      "target": "src_mcp_grade_graderesult"
     },
     {
       "relation": "imports",
@@ -32580,9 +32580,9 @@
       "source_file": "worker/src/mcp_pkg.ts",
       "source_location": "L12",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_mcp_pkg",
-      "target": "src_mcp_grade_derivecategory",
-      "confidence_score": 1.0
+      "target": "src_mcp_grade_derivecategory"
     },
     {
       "relation": "calls",
@@ -32800,9 +32800,9 @@
       "source_file": "worker/src/mcp_pkg.ts",
       "source_location": "L12",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_mcp_pkg",
-      "target": "src_mcp_grade_letter",
-      "confidence_score": 1.0
+      "target": "src_mcp_grade_letter"
     },
     {
       "relation": "calls",
@@ -33119,9 +33119,9 @@
       "source_file": "worker/src/mcp_pkg.ts",
       "source_location": "L12",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_mcp_pkg",
-      "target": "src_mcp_grade_recordgrade",
-      "confidence_score": 1.0
+      "target": "src_mcp_grade_recordgrade"
     },
     {
       "relation": "imports",
@@ -33770,9 +33770,9 @@
       "source_file": "worker/src/mcp_pkg.ts",
       "source_location": "L38",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_mcp_pkg",
-      "target": "src_mcp_pkg_clamp",
-      "confidence_score": 1.0
+      "target": "src_mcp_pkg_clamp"
     },
     {
       "relation": "contains",
@@ -33780,9 +33780,9 @@
       "source_file": "worker/src/mcp_pkg.ts",
       "source_location": "L18",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_mcp_pkg",
-      "target": "src_mcp_pkg_getjson",
-      "confidence_score": 1.0
+      "target": "src_mcp_pkg_getjson"
     },
     {
       "relation": "contains",
@@ -33790,9 +33790,9 @@
       "source_file": "worker/src/mcp_pkg.ts",
       "source_location": "L27",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_mcp_pkg",
-      "target": "src_mcp_pkg_gettext",
-      "confidence_score": 1.0
+      "target": "src_mcp_pkg_gettext"
     },
     {
       "relation": "contains",
@@ -33800,9 +33800,9 @@
       "source_file": "worker/src/mcp_pkg.ts",
       "source_location": "L50",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_mcp_pkg",
-      "target": "src_mcp_pkg_scoremcppackage",
-      "confidence_score": 1.0
+      "target": "src_mcp_pkg_scoremcppackage"
     },
     {
       "relation": "contains",
@@ -33810,9 +33810,9 @@
       "source_file": "worker/src/mcp_pkg.ts",
       "source_location": "L211",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_mcp_pkg",
-      "target": "src_mcp_pkg_seedregistrypackages",
-      "confidence_score": 1.0
+      "target": "src_mcp_pkg_seedregistrypackages"
     },
     {
       "relation": "contains",
@@ -33820,9 +33820,9 @@
       "source_file": "worker/src/mcp_pkg.ts",
       "source_location": "L37",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_mcp_pkg",
-      "target": "src_mcp_pkg_z",
-      "confidence_score": 1.0
+      "target": "src_mcp_pkg_z"
     },
     {
       "relation": "imports_from",
@@ -33831,9 +33831,9 @@
       "source_file": "worker/src/scheduled.ts",
       "source_location": "L566",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_scheduled_seedpackages",
-      "target": "src_mcp_pkg",
-      "confidence_score": 1.0
+      "target": "src_mcp_pkg"
     },
     {
       "relation": "calls",
@@ -33842,9 +33842,9 @@
       "source_file": "worker/src/mcp_pkg.ts",
       "source_location": "L59",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_mcp_pkg_scoremcppackage",
-      "target": "src_mcp_pkg_getjson",
-      "confidence_score": 1.0
+      "target": "src_mcp_pkg_getjson"
     },
     {
       "relation": "calls",
@@ -33853,9 +33853,9 @@
       "source_file": "worker/src/mcp_pkg.ts",
       "source_location": "L220",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_mcp_pkg_seedregistrypackages",
-      "target": "src_mcp_pkg_getjson",
-      "confidence_score": 1.0
+      "target": "src_mcp_pkg_getjson"
     },
     {
       "relation": "calls",
@@ -33864,9 +33864,9 @@
       "source_file": "worker/src/mcp_pkg.ts",
       "source_location": "L114",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_mcp_pkg_scoremcppackage",
-      "target": "src_mcp_pkg_gettext",
-      "confidence_score": 1.0
+      "target": "src_mcp_pkg_gettext"
     },
     {
       "relation": "calls",
@@ -33875,9 +33875,9 @@
       "source_file": "worker/src/mcp_pkg.ts",
       "source_location": "L62",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_mcp_pkg_scoremcppackage",
-      "target": "src_mcp_pkg_z",
-      "confidence_score": 1.0
+      "target": "src_mcp_pkg_z"
     },
     {
       "relation": "calls",
@@ -33886,9 +33886,9 @@
       "source_file": "worker/src/mcp_pkg.ts",
       "source_location": "L155",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_mcp_pkg_scoremcppackage",
-      "target": "src_mcp_pkg_clamp",
-      "confidence_score": 1.0
+      "target": "src_mcp_pkg_clamp"
     },
     {
       "relation": "calls",
@@ -35659,9 +35659,9 @@
       "source_file": "worker/src/scheduled.ts",
       "source_location": "L558",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_scheduled",
-      "target": "src_scheduled_seedpackages",
-      "confidence_score": 1.0
+      "target": "src_scheduled_seedpackages"
     },
     {
       "relation": "contains",
@@ -43663,5 +43663,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "e55a1da17351f1662c28501a5f2d10ee25d3b91b"
+  "built_at_commit": "c9a3d8c29ed00da7b365681d4e095feb5f5aacfc"
 }
