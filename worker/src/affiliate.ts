@@ -9,19 +9,25 @@
 // your program gives you (so commission tracks). Empty tmpl = that button hides.
 // Nothing renders until at least one tmpl is set, so this is safe to ship dark.
 //
-// Examples (replace YOURTAG / IDs with yours):
-//   amazon:    https://www.amazon.com/s?k={q}&tag=YOURTAG-20
-//   ebay:      https://www.ebay.com/sch/i.html?_nkw={q}&mkcid=1&mkrid=711-53200-19255-0&campid=YOURCAMPID&toolid=10001
-//   tcgplayer: https://www.tcgplayer.com/search/all/product?q={q}&utm_source=YOURPARTNER  (use your Impact tracking link)
-//   walmart:   your Impact/affiliate deep-search link with {q}
+// Examples (replace YOURTAG / IDs with yours). {q} = url-encoded product query.
+//   ebay:      https://www.ebay.com/sch/i.html?_nkw={q}&mkcid=1&mkrid=711-53200-19255-0&campid=YOURCAMPID&toolid=10001   (~3% trading cards; partnernetwork.ebay.com)
+//   tcgplayer: your Impact tracking link with {q}   (3.5%/sale; apply: docs.tcgplayer.com/docs/tcgplayer-affiliate-program)
+//   amazon:    https://www.amazon.com/s?k={q}&tag=YOURTAG-20   (~3% toys&games; needs 3 sales/180d to stay active)
+//   whatnot:   your Whatnot Affiliates link — usually a FIXED referral URL (no {q}); renders the same on every page (whatnotaffiliates.com)
+//   walmart:   your Impact/Walmart Creator deep-search link with {q}
+//   stockx:    https://stockx.com/search?s={q}  with your affiliate params   (for the resale / vs-sneaker-bot pages)
 
 export interface AffiliateNet { label: string; tmpl: string }
 
+// Ordered best-fit first → that's the button order on the page. Each ships dark
+// until you paste its tmpl, so leaving unused ones empty is safe.
 export const AFFILIATE: AffiliateNet[] = [
-  { label: "Amazon", tmpl: "" },
   { label: "eBay", tmpl: "" },
   { label: "TCGplayer", tmpl: "" },
+  { label: "Amazon", tmpl: "" },
+  { label: "Whatnot", tmpl: "" },
   { label: "Walmart", tmpl: "" },
+  { label: "StockX", tmpl: "" },
 ];
 
 function esc(s: string): string {

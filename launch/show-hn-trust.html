@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Show HN — wmcp.sh launch console</title>
+<style>
+  :root{
+    --bg:#07070d;--card:#16161f;--bg2:#11111c;--border:#26263a;
+    --text:#ececf5;--muted:#8a8aa8;--dim:#6a6a88;--accent:#ff9e2c;--accent2:#ffcf7a;--green:#4ade80;--red:#f87171;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);line-height:1.65;
+    font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif;
+    background-image:radial-gradient(ellipse 900px 600px at 12% -8%,rgba(255,158,44,.12),transparent 62%)}
+  .wrap{max-width:780px;margin:0 auto;padding:48px 22px 100px}
+  h1{font-size:1.9rem;letter-spacing:-.02em;margin:0 0 4px}
+  .tag{color:var(--accent2);font-size:.8rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+  .muted{color:var(--muted)} .dim{color:var(--dim)}
+  h2{font-size:1.15rem;margin:38px 0 10px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+  h3{font-size:.95rem;margin:22px 0 6px;color:var(--accent2)}
+  .field{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;margin:14px 0}
+  .field-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+  .field-head .label{flex:1;font-weight:700;font-size:.82rem;letter-spacing:.06em;text-transform:uppercase;color:var(--dim)}
+  .count{font-size:.74rem;color:var(--dim);font-variant-numeric:tabular-nums}
+  .count.ok{color:var(--green)} .count.over{color:var(--red)}
+  button.copy{background:var(--bg2);color:var(--text);border:1px solid var(--border);
+    padding:7px 13px;border-radius:8px;font-weight:600;cursor:pointer;font-size:.78rem;font-family:inherit;transition:all .12s}
+  button.copy:hover{border-color:var(--accent)} button.copy.done{color:var(--green);border-color:var(--green)}
+  .title-box{font-family:"SF Mono",Menlo,monospace;font-size:.95rem;color:var(--accent2);
+    background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:12px 14px;word-break:break-word}
+  .body-box{white-space:pre-wrap;font-size:.92rem;color:var(--text);
+    background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:16px;max-height:none}
+  .pill{display:inline-block;background:rgba(255,158,44,.12);color:var(--accent2);border:1px solid rgba(255,158,44,.3);
+    border-radius:999px;padding:2px 10px;font-size:.72rem;font-weight:700;margin-right:6px}
+  ul{padding-left:20px} li{margin:5px 0}
+  .step{display:flex;gap:12px;margin:10px 0;align-items:flex-start}
+  .step .n{flex:none;width:24px;height:24px;border-radius:7px;background:linear-gradient(135deg,#ff9120,#f25e00);
+    color:#2a1500;font-weight:800;display:grid;place-items:center;font-size:.8rem;margin-top:2px}
+  .step .t{flex:1}
+  .callout{background:rgba(74,222,128,.07);border:1px solid rgba(74,222,128,.3);border-radius:10px;padding:12px 14px;margin:14px 0;font-size:.9rem}
+  .warn{background:rgba(248,113,113,.07);border-color:rgba(248,113,113,.35)}
+  code{background:var(--bg2);border:1px solid var(--border);padding:1px 6px;border-radius:5px;font-size:.85em;color:var(--accent2)}
+  a{color:var(--accent2)}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.86rem}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+  th{color:var(--dim);font-size:.74rem;text-transform:uppercase;letter-spacing:.05em}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="tag">Launch console</div>
+  <h1>Show HN — wmcp.sh</h1>
+  <p class="muted">Copy-ready submission + the playbook to land it. Trust-layer positioning · pricing Free / Builder $39 / Pro $99 / Reseller $299.</p>
+
+  <h2>1 · The submission (copy these two)</h2>
+
+  <div class="field">
+    <div class="field-head">
+      <span class="label">Title</span>
+      <span class="count" id="title-count"></span>
+      <button class="copy" data-target="title">Copy title</button>
+    </div>
+    <div class="title-box" id="title">Show HN: wmcp.sh – independent A-F trust grade for MCP servers + OAuth vault</div>
+  </div>
+
+  <div class="field">
+    <div class="field-head">
+      <span class="label">Body / first comment</span>
+      <button class="copy" data-target="body">Copy body</button>
+    </div>
+    <div class="body-box" id="body">wmcp.sh is a trust layer and OAuth vault for MCP (Model Context Protocol) servers, running on Cloudflare Workers. Two things are the core of it:
+
+1) An independent A–F trust grade for any MCP server. We score across spec conformance (20%), security mapped to the OWASP MCP Top 10 (30%), reliability (20%), tool hygiene (15%), and transparency (15%). Every host gets a grade page at https://wmcp.sh/mcp/grade/<host> and an embeddable SVG badge. The grade is free and is not for sale. We don't sell A's.
+
+The part we care about most: grades are continuously watched for drift. A server you trusted on Monday can change its tool surface on Friday (the CVE-2025-54136 class of rug-pull, where the description/behavior an agent reads shifts after you've granted trust). A one-shot static scanner structurally cannot catch that, because it never looks again. We re-check.
+
+2) An OAuth vault that injects and refreshes tokens so agents never see a credential. You connect a provider once at https://wmcp.sh/connect, then any agent (Claude, Cursor, Codex) calls it at https://wmcp.sh/mcp/<provider> and we inject the OAuth bearer token and auto-refresh it. Credentials are encrypted at rest and never passed in tool args. 7 providers are live: Linear, Notion, Atlassian (Jira+Confluence), Asana, PayPal, Sentry, DefiLlama. All onboard via RFC 7591 Dynamic Client Registration + PKCE, so there's zero per-app client setup.
+
+There's also an agent-callable trust oracle (itself an MCP server at https://wmcp.sh/mcp/trust) with tools grade_mcp_server, check_mcp_drift, and verify_before_execute, so an agent can gate a connection on the grade before it executes anything. If you'd rather hit REST: GET https://wmcp.sh/api/v1/mcp/verify?url=<server>.
+
+Honest limitation: the v1 grade is built from static + spec signals gathered from a single connection to the server. It tells you what a server claims and how it's configured, not yet how it actually behaves under real traffic. The next step is behavioral annotation-truthing through the proxy: checking whether a tool's stated behavior matches what it actually does when called. That's not shipped yet.
+
+What I'd genuinely like: grade a server you depend on at https://wmcp.sh/mcp/grade/<host> and tell me where the grade is wrong, too generous, or too harsh. And try to break the verify oracle or the vault flow. The grade is only worth anything if it survives people poking at it. Positioning, plainly: Moody's for the long tail of MCP servers, with the vault as the part that pays for it. WebMCP adoption is near zero today, which is exactly why now is the time to set the trust signal.</div>
+  </div>
+
+  <div class="field">
+    <div class="field-head">
+      <span class="label">Submit URL</span>
+      <button class="copy" data-target="url">Copy URL</button>
+    </div>
+    <div class="title-box" id="url">https://wmcp.sh/connect</div>
+    <p class="dim" style="margin:8px 0 0;font-size:.82rem">Lead them to a verb, not the brand root. <code>/connect</code> shows the vault + grades; <code>/mcp/grade</code> is the other strong option.</p>
+  </div>
+
+  <h2>2 · Why it's written this way</h2>
+  <p class="muted">HN rewards substance and punishes marketing. Every choice in that body is deliberate:</p>
+  <h3>It opens with the thing, not a greeting</h3>
+  <p class="muted">First sentence states exactly what it is. No "Hi HN," no story windup — HN's algorithm and readers both drop those fast.</p>
+  <h3>Two concrete mechanisms, with numbers</h3>
+  <p class="muted">The grade weights (20/30/20/15/15) and the named primitives (RFC 7591 DCR, PKCE, the three oracle tools) signal "this person built the thing," which is the only credibility that matters here.</p>
+  <h3>The differentiator is a verb HN understands: <em>rug-pull</em></h3>
+  <p class="muted">"A server you trusted Monday changes Friday" + the CVE reference frames continuous drift-watching as a real attack class a static scanner structurally can't catch — not a feature list.</p>
+  <h3>It volunteers a limitation</h3>
+  <p class="muted">The "v1 grade is static+spec, behavioral truthing isn't shipped" paragraph is the single most important trust move. HN <em>looks</em> for what you're hiding; naming it first disarms the top critical comment before it's written.</p>
+  <h3>It ends with an ask, not a pitch</h3>
+  <p class="muted">"Grade a server you depend on and tell me where I'm wrong / try to break it" invites participation. Comments = ranking. The "we don't sell A's" line pre-empts the obvious "isn't a paid grade a conflict of interest?" objection.</p>
+
+  <h2>3 · How to land it — the playbook</h2>
+
+  <h3>Timing</h3>
+  <ul>
+    <li><strong>Tue–Thu, 8:00–10:00am US Pacific.</strong> Best window for sustained US + EU-afternoon traffic. Avoid Fri/weekends (low) and Mon (backlog).</li>
+    <li>Post when you have <strong>3 clear hours free</strong> after. The first 1–2h decide everything.</li>
+  </ul>
+
+  <h3>The first 2 hours (this is the whole game)</h3>
+  <div class="callout">HN ranks on early <strong>comment velocity + upvote rate</strong>, not raw votes. A post that gets 5 thoughtful replies in 30 min beats one that gets 20 silent upvotes.</div>
+  <div class="step"><div class="n">1</div><div class="t"><strong>Post the body as the first comment</strong> immediately after submitting (the URL is the link; the body text goes in a comment). Some prefer text-post; for a live product, link-to-<code>/connect</code> + body-as-comment works well.</div></div>
+  <div class="step"><div class="n">2</div><div class="t"><strong>Reply to every top-level comment within minutes</strong>, especially critical ones. Speed of response is visible and rewarded.</div></div>
+  <div class="step"><div class="n">3</div><div class="t"><strong>Answer criticism with: acknowledge → what you'll do → move on.</strong> Never defensive, never argue. "Fair — that's exactly the v2 behavioral check; here's the gap today" wins the room.</div></div>
+  <div class="step"><div class="n">4</div><div class="t"><strong>Don't ask for upvotes anywhere.</strong> HN auto-penalizes vote solicitation and "it's on HN!" tweets that send a vote spike. Let it rank organically.</div></div>
+
+  <h3>Prepared answers (have these ready to paste)</h3>
+  <table>
+    <tr><th>Likely comment</th><th>Your move</th></tr>
+    <tr><td>"A paid grade is a conflict of interest."</td><td>The grade is free, computed by one open rubric, identical whether you pay. Revenue is custody + monitoring, never the score. Point at the methodology section on any grade page.</td></tr>
+    <tr><td>"Isn't this just a security scanner? Snyk/etc. exist."</td><td>Scanners read the manifest once. This is a runtime reputation signal that keeps watching for post-trust drift (rug-pulls) — the thing a one-shot scan structurally misses.</td></tr>
+    <tr><td>"How is the grade not gameable?"</td><td>v1 is static+spec from a live connection (hard to fake protocol conformance + tool hygiene). Behavioral truthing through the proxy is next. Invite them to try to game a real grade and report it.</td></tr>
+    <tr><td>"Why trust YOU as the authority?"</td><td>Don't ask for trust — the rubric is open and every grade is reproducible. Independence is the product; the moment it's for sale it's worthless, which is why it isn't.</td></tr>
+    <tr><td>"OAuth vault = single point of failure / you hold my tokens."</td><td>True, name it. Encrypted at rest, never in tool args, per-provider, revocable. The alternative (tokens pasted into agent configs) is worse. Self-host is possible (MIT).</td></tr>
+  </table>
+
+  <h3>Force-multipliers</h3>
+  <ul>
+    <li><strong>Have a live grade ready to link</strong> — e.g. grade a well-known MCP server beforehand so you can drop <code>wmcp.sh/mcp/grade/&lt;host&gt;</code> in replies. A clickable artifact &gt; any description.</li>
+    <li><strong>The registry listing is live</strong> (<code>io.github.New1Direction/trust-oracle</code>) — mention agents can add the oracle in one line. Concrete = credible.</li>
+    <li><strong>Cross-post the X thread + r/mcp post a few hours later</strong>, but link to the comments discussion, not "upvote me." (Both drafts are in <code>launch/</code>.)</li>
+    <li><strong>If it stalls,</strong> don't repost same-day. Wait a week, lead with a different angle (the X thread's drift hook, or a specific surprising grade you found).</li>
+  </ul>
+
+  <div class="callout warn">One honest caveat to expect: someone will ask for a concrete example of a server whose grade <em>changed</em>. If you have one from the drift history, it's your strongest possible reply. If not, say the monitor is live and you're accumulating the dataset — don't fabricate one.</div>
+
+  <p class="dim" style="margin-top:40px">Source: <code>launch/show-hn-trust.md</code> · also in <code>launch/</code>: twitter-thread-trust.md, launch-page-copy.md (X thread + landing + r/mcp post).</p>
+</div>
+
+<script>
+  // char counts
+  var t = document.getElementById('title').textContent.trim();
+  var tc = document.getElementById('title-count');
+  tc.textContent = t.length + '/80 chars';
+  tc.className = 'count ' + (t.length <= 80 ? 'ok' : 'over');
+  // copy buttons
+  document.querySelectorAll('button.copy').forEach(function(b){
+    b.addEventListener('click', function(){
+      var el = document.getElementById(b.dataset.target);
+      navigator.clipboard.writeText(el.textContent.trim()).then(function(){
+        var orig = b.textContent; b.textContent = 'Copied ✓'; b.classList.add('done');
+        setTimeout(function(){ b.textContent = orig; b.classList.remove('done'); }, 1600);
+      });
+    });
+  });
+</script>
+</body>
+</html>

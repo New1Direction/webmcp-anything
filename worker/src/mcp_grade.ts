@@ -11,6 +11,7 @@
 
 import { readBehavior, summarizeBehavior, type BehaviorSummary } from "./behavior";
 import { uiCss, uiNav } from "./ui";
+import { adSlot } from "./ads";
 
 type Env = { CACHE: KVNamespace; KEYS?: KVNamespace };
 
@@ -861,6 +862,7 @@ ${uiNav(origin)}
     <thead><tr><th class="num">#</th><th>Grade</th><th>MCP server</th><th class="num">Score</th><th class="num">Tools</th><th>Checked</th></tr></thead>
     <tbody>${body}</tbody>
   </table>${total > shown.length ? `<p class="muted" style="margin-top:12px;font-size:.85rem">Showing the top ${shown.length} by score of ${total.toLocaleString()} graded servers. Every graded server stays in the continuous drift watch.</p>` : ""}</section>` : `<div class="empty">No servers graded yet. <a href="${origin}/mcp/grade">Grade the first one →</a></div>`}
+  ${adSlot()}
   <footer>Grades are free and identical whether or not the operator pays. Methodology: <a href="${origin}/mcp/grade">/mcp/grade</a>. Add the oracle to your agent at <code>${origin}/mcp/trust</code>.</footer>
 </div>
 </body></html>`;

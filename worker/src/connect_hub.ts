@@ -7,6 +7,7 @@
 // dual-emit bridge as copy-paste snippets. One destination that shows the whole
 // moat: graded + vaulted + metered.
 import { PROVIDERS } from "./providers";
+import { adSlot } from "./ads";
 
 /**
  * Discovery manifest served at /.well-known/mcp — a flat, crawlable list of the
@@ -213,6 +214,8 @@ verify_before_execute({ url })</pre>
       </div>
     </div>
   </div>
+
+  ${adSlot()}
 
   <footer>
     Browse the full catalog: <a href="/mcp">/mcp</a> · Grade any server: <a href="/mcp/grade">/mcp/grade</a> · Pricing &amp; keys: <a href="/dashboard">/dashboard</a><br/>

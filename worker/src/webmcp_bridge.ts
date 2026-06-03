@@ -14,6 +14,7 @@
 // "one line → your site is WebMCP-ready" supplier.
 import { base64urlEncode } from "./u";
 import { uiCss, uiNav } from "./ui";
+import { adSlot } from "./ads";
 
 interface SlimTool { name: string; description?: string; inputSchema?: any; result?: any }
 
@@ -161,6 +162,8 @@ ${uiNav(origin)}
     <p class="muted" style="max-width:680px">Browser agents are arriving, and they look for tools on the page via <code>navigator.modelContext</code>. Sites that expose tools get used by those agents; sites that don't are invisible to them. This is the cheapest way to be on the right side of that shift, and it doubles as a server-side MCP endpoint.</p>
     <div class="row" style="margin-top:18px"><a class="btn btn-primary" href="${origin}/connect">Grade, connect and build at the MCP hub →</a></div>
   </section>
+
+  ${adSlot()}
 
   <footer>
     <a href="${origin}/connect">The MCP hub</a><a href="${origin}/mcp/leaderboard">Trust leaderboard</a><a href="${origin}/directory">Directory</a><a href="${origin}/">wmcp.sh</a>

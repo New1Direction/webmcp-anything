@@ -1423,7 +1423,12 @@ ${localizable ? hreflangTags(origin, p.slug) + "\n" : ""}<meta property="og:titl
 
   ${f.comparison ? comparisonHtml(f.comparison) : ""}
   ${productCallout}
-  ${(p.kind === "set" || p.kind === "combo") && f.product ? affiliateButtons(f.product.name) : ""}
+  ${(() => {
+    // Maximize affiliate coverage: any page with a product → buy that product;
+    // best-of lists + buying guides → search the topic. Definitional pages skip.
+    const q = f.product?.name || ((p.kind === "bestof" || p.kind === "guide") ? f.topic : "");
+    return q ? affiliateButtons(q) : "";
+  })()}
   ${f.extraHtml || ""}
 
   ${whySection(p.kind, ui)}
