@@ -561,11 +561,6 @@ export async function seedPackages(c: any): Promise<Response> {
   if (!env.ADMIN_TOKEN || token !== env.ADMIN_TOKEN) {
     return c.json({ error: "admin only" }, 401);
   }
-  if (c.req.query("debug") === "1") {
-    const page: any = await fetch("https://registry.modelcontextprotocol.io/v0/servers?limit=20", { headers: { "user-agent": "wmcp.sh-grader/1.0 (+https://wmcp.sh/mcp/grade)" } }).then((r) => r.json()).catch((e) => ({ err: String(e) }));
-    const first = (page?.servers || [])[0] || {};
-    return c.json({ err: page?.err, topKeys: Object.keys(page || {}), serverKeys: Object.keys(first), firstServerStr: JSON.stringify(first).slice(0, 1600) });
-  }
   if (c.req.query("reset") === "1") await env.CACHE.delete("pkgseed:cursor");
   const n = Math.min(Math.max(parseInt(c.req.query("n") || "12", 10) || 12, 1), 20);
   const { seedRegistryPackages } = await import("./mcp_pkg");
