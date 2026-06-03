@@ -330,8 +330,12 @@ User-agent: *
 Allow: /
 Disallow: /api/
 Disallow: /dashboard
-Disallow: /connect/
+# Block the auth-gated proxy + oracle endpoints, but KEEP the public
+# content under /mcp indexable (these Allow rules win by longest-match):
 Disallow: /mcp/
+Allow: /mcp/grade
+Allow: /mcp/leaderboard
+Allow: /connect
 
 Sitemap: ${origin}/sitemap.xml
 
