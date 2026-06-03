@@ -152,7 +152,22 @@ app.get("/favicon.ico", (c) => c.redirect("/favicon.svg", 302));
 app.get("/api/v1/stats/public", async (c) => {
   const raw = await c.env.CACHE.get("stats:total_cached");
   const cached_urls = raw ? parseInt(raw, 10) || 0 : 0;
-  return c.json({ cached_urls });
+  // Live count of graded MCP servers (grade:* keys) — social proof that grows
+  // itself via the cron registry land-grab. Paginated + capped; response cached.
+  let graded_servers = 0;
+  try {
+    let cursor: string | undefined;
+    let pages = 0;
+    do {
+      const r: any = await c.env.CACHE.list({ prefix: "grade:", limit: 1000, cursor });
+      graded_servers += r.keys.length;
+      cursor = r.list_complete ? undefined : r.cursor;
+      pages++;
+    } while (cursor && pages < 5);
+  } catch {}
+  return c.json({ cached_urls, graded_servers }, 200, {
+    "cache-control": "public, max-age=600, s-maxage=600",
+  });
 });
 
 app.get("/api/v1/directory", async (c) => {

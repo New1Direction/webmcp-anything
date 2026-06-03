@@ -489,6 +489,9 @@ export function landingHtml(origin: string): string {
     <div class="hero-stat">
       <span id="cache-stat">·</span> <span>URLs cached by the community · grows with every install</span>
     </div>
+    <div class="hero-stat">
+      <span id="graded-stat">·</span> <span>MCP servers graded · <a href="/mcp/leaderboard" style="color:var(--accent2);text-decoration:none">live trust leaderboard</a></span>
+    </div>
   </div>
   <div class="hero-3d">
     <div class="term">
@@ -838,14 +841,10 @@ const ORIGIN = ${JSON.stringify(origin)};
 
 // ---- live cache counter ----
 (async function loadStat() {
-  try {
-    const r = await fetch(ORIGIN + "/api/v1/stats/public");
-    const d = await r.json();
-    const target = d.cached_urls | 0;
-    const el = document.getElementById("cache-stat");
-    if (target <= 0) { el.textContent = "Just"; return; }
-    const start = performance.now();
-    const dur = 1400;
+  function countUp(el, target, zeroLabel) {
+    if (!el) return;
+    if (target <= 0) { el.textContent = zeroLabel; return; }
+    const start = performance.now(), dur = 1400;
     function tick(t) {
       const p = Math.min(1, (t - start) / dur);
       const eased = 1 - Math.pow(1 - p, 3);
@@ -853,6 +852,12 @@ const ORIGIN = ${JSON.stringify(origin)};
       if (p < 1) requestAnimationFrame(tick);
     }
     requestAnimationFrame(tick);
+  }
+  try {
+    const r = await fetch(ORIGIN + "/api/v1/stats/public");
+    const d = await r.json();
+    countUp(document.getElementById("cache-stat"), d.cached_urls | 0, "Just");
+    countUp(document.getElementById("graded-stat"), d.graded_servers | 0, "0");
   } catch {}
 })();
 
