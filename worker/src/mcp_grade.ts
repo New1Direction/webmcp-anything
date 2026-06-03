@@ -651,7 +651,18 @@ export async function regradeWatched(
     batch.map(async ({ h }) => {
       const url = (await env.CACHE.get(`gradewatch:${h}`)) || `https://${h}/mcp`;
       try {
-        const fresh = await scoreMcpServer(url);
+        // Route package/source hosts to the static scanner, not the remote prober
+        // (otherwise re-grading would falsely F them by probing npmjs/pypi/github).
+        let fresh: GradeResult;
+        if (h.startsWith("npm:") || h.startsWith("pypi:") || h.startsWith("gh:")) {
+          const mod = await import("./mcp_pkg");
+          if (h.startsWith("pypi:")) fresh = await mod.scoreMcpPyPiPackage(h.slice(5));
+          else if (h.startsWith("gh:")) { const [o, rp] = h.slice(3).split("/"); fresh = await mod.scoreMcpGitHubRepo(o, rp, (env as any).GITHUB_TOKEN); }
+          else fresh = await mod.scoreMcpPackage(h.slice(4));
+          if (fresh.grade === "?") return; // couldn't analyze — leave the prior grade
+        } else {
+          fresh = await scoreMcpServer(url);
+        }
         const out = await recordGrade(env, fresh);
         if (out.drifted) {
           drifted++;

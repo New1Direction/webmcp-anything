@@ -9022,7 +9022,7 @@
       "label": "scoreMcpPyPiPackage()",
       "file_type": "code",
       "source_file": "worker/src/mcp_pkg.ts",
-      "source_location": "L245",
+      "source_location": "L256",
       "id": "src_mcp_pkg_scoremcppypipackage",
       "community": 176,
       "norm_label": "scoremcppypipackage()"
@@ -9031,7 +9031,7 @@
       "label": "scoreMcpGitHubRepo()",
       "file_type": "code",
       "source_file": "worker/src/mcp_pkg.ts",
-      "source_location": "L349",
+      "source_location": "L360",
       "id": "src_mcp_pkg_scoremcpgithubrepo",
       "community": 176,
       "norm_label": "scoremcpgithubrepo()"
@@ -9040,7 +9040,7 @@
       "label": "seedRegistryPackages()",
       "file_type": "code",
       "source_file": "worker/src/mcp_pkg.ts",
-      "source_location": "L439",
+      "source_location": "L456",
       "id": "src_mcp_pkg_seedregistrypackages",
       "community": 176,
       "norm_label": "seedregistrypackages()"
@@ -33911,9 +33911,9 @@
       "source_file": "worker/src/mcp_pkg.ts",
       "source_location": "L210",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_mcp_pkg",
-      "target": "src_mcp_pkg_ghfromurls",
-      "confidence_score": 1.0
+      "target": "src_mcp_pkg_ghfromurls"
     },
     {
       "relation": "contains",
@@ -33921,9 +33921,9 @@
       "source_file": "worker/src/mcp_pkg.ts",
       "source_location": "L223",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_mcp_pkg",
-      "target": "src_mcp_pkg_scangithubsource",
-      "confidence_score": 1.0
+      "target": "src_mcp_pkg_scangithubsource"
     },
     {
       "relation": "contains",
@@ -33931,9 +33931,9 @@
       "source_file": "worker/src/mcp_pkg.ts",
       "source_location": "L349",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_mcp_pkg",
-      "target": "src_mcp_pkg_scoremcpgithubrepo",
-      "confidence_score": 1.0
+      "target": "src_mcp_pkg_scoremcpgithubrepo"
     },
     {
       "relation": "contains",
@@ -33951,9 +33951,9 @@
       "source_file": "worker/src/mcp_pkg.ts",
       "source_location": "L245",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_mcp_pkg",
-      "target": "src_mcp_pkg_scoremcppypipackage",
-      "confidence_score": 1.0
+      "target": "src_mcp_pkg_scoremcppypipackage"
     },
     {
       "relation": "contains",
@@ -33993,9 +33993,9 @@
       "source_file": "worker/src/mcp_pkg.ts",
       "source_location": "L225",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_mcp_pkg_scangithubsource",
-      "target": "src_mcp_pkg_getjson",
-      "confidence_score": 1.0
+      "target": "src_mcp_pkg_getjson"
     },
     {
       "relation": "calls",
@@ -34004,9 +34004,9 @@
       "source_file": "worker/src/mcp_pkg.ts",
       "source_location": "L356",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_mcp_pkg_scoremcpgithubrepo",
-      "target": "src_mcp_pkg_getjson",
-      "confidence_score": 1.0
+      "target": "src_mcp_pkg_getjson"
     },
     {
       "relation": "calls",
@@ -34026,9 +34026,9 @@
       "source_file": "worker/src/mcp_pkg.ts",
       "source_location": "L253",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_mcp_pkg_scoremcppypipackage",
-      "target": "src_mcp_pkg_getjson",
-      "confidence_score": 1.0
+      "target": "src_mcp_pkg_getjson"
     },
     {
       "relation": "calls",
@@ -34048,9 +34048,9 @@
       "source_file": "worker/src/mcp_pkg.ts",
       "source_location": "L238",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_mcp_pkg_scangithubsource",
-      "target": "src_mcp_pkg_gettext",
-      "confidence_score": 1.0
+      "target": "src_mcp_pkg_gettext"
     },
     {
       "relation": "calls",
@@ -34070,9 +34070,9 @@
       "source_file": "worker/src/mcp_pkg.ts",
       "source_location": "L359",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_mcp_pkg_scoremcpgithubrepo",
-      "target": "src_mcp_pkg_z",
-      "confidence_score": 1.0
+      "target": "src_mcp_pkg_z"
     },
     {
       "relation": "calls",
@@ -34092,9 +34092,9 @@
       "source_file": "worker/src/mcp_pkg.ts",
       "source_location": "L256",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_mcp_pkg_scoremcppypipackage",
-      "target": "src_mcp_pkg_z",
-      "confidence_score": 1.0
+      "target": "src_mcp_pkg_z"
     },
     {
       "relation": "calls",
@@ -34103,9 +34103,9 @@
       "source_file": "worker/src/mcp_pkg.ts",
       "source_location": "L397",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_mcp_pkg_scoremcpgithubrepo",
-      "target": "src_mcp_pkg_clamp",
-      "confidence_score": 1.0
+      "target": "src_mcp_pkg_clamp"
     },
     {
       "relation": "calls",
@@ -34125,9 +34125,9 @@
       "source_file": "worker/src/mcp_pkg.ts",
       "source_location": "L307",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_mcp_pkg_scoremcppypipackage",
-      "target": "src_mcp_pkg_clamp",
-      "confidence_score": 1.0
+      "target": "src_mcp_pkg_clamp"
     },
     {
       "relation": "calls",
@@ -34136,9 +34136,9 @@
       "source_file": "worker/src/mcp_pkg.ts",
       "source_location": "L271",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_mcp_pkg_scoremcppypipackage",
-      "target": "src_mcp_pkg_ghfromurls",
-      "confidence_score": 1.0
+      "target": "src_mcp_pkg_ghfromurls"
     },
     {
       "relation": "calls",
@@ -34147,9 +34147,9 @@
       "source_file": "worker/src/mcp_pkg.ts",
       "source_location": "L370",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_mcp_pkg_scoremcpgithubrepo",
-      "target": "src_mcp_pkg_scangithubsource",
-      "confidence_score": 1.0
+      "target": "src_mcp_pkg_scangithubsource"
     },
     {
       "relation": "calls",
@@ -34158,9 +34158,9 @@
       "source_file": "worker/src/mcp_pkg.ts",
       "source_location": "L281",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_mcp_pkg_scoremcppypipackage",
-      "target": "src_mcp_pkg_scangithubsource",
-      "confidence_score": 1.0
+      "target": "src_mcp_pkg_scangithubsource"
     },
     {
       "relation": "calls",
@@ -43967,5 +43967,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "5b87527b3ba5bc9dc96196a881ef6708a25e6af0"
+  "built_at_commit": "f3539ec714b529deb9cac88bd708a9da3787eb79"
 }
