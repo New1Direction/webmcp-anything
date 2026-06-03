@@ -239,6 +239,16 @@ async function scanGitHubSource(owner: string, repo: string, exts: RegExp): Prom
     const txt = await getText(`https://cdn.jsdelivr.net/gh/${owner}/${repo}@${ref}/${f}`);
     if (txt) { source += "\n" + txt.slice(0, 80_000); sampled.push(f); }
   }
+  // Fallback for repos jsdelivr can't mirror (too large): pull common files
+  // straight from raw.githubusercontent (the raw CDN — not API-rate-limited).
+  if (!sampled.length) {
+    const guesses = ["README.md", "readme.md", "pyproject.toml", "package.json", "setup.py", "server.py", "main.py", "src/index.ts", "index.ts", "src/server.py", `src/${repo}/__init__.py`, `${repo}/server.py`, "mcp_server.py", "src/main.rs"];
+    for (const g of guesses) {
+      if (source.length > MAX_SOURCE_BYTES || sampled.length >= MAX_SOURCE_FILES) break;
+      const txt = await getText(`https://raw.githubusercontent.com/${owner}/${repo}/HEAD/${g}`);
+      if (txt) { source += "\n" + txt.slice(0, 80_000); sampled.push(g); }
+    }
+  }
   return { source, sampled, ref, versions };
 }
 
