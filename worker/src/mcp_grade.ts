@@ -36,6 +36,8 @@ export interface GradeResult {
   tools_hash?: string;
   hard_fail?: string;
   latency_ms?: number;
+  transport?: "streamable-http" | "sse"; // how we reached it (null/absent = unreachable)
+  limited?: boolean;                      // reachable but couldn't fully enumerate (e.g. legacy SSE)
   // ---- drift / continuous re-verification (the wedge static scanners can't match) ----
   tool_sigs?: Record<string, string>; // per-tool short hash, for added/removed/changed diffing
   tools_hash_since?: number;           // when the CURRENT tool surface was first observed
@@ -145,6 +147,71 @@ const initMsg = () => ({
   params: { protocolVersion: "2025-06-18", capabilities: {}, clientInfo: { name: "wmcp-grader", version: "1.0" } },
 });
 
+const looksLikeMcpInit = (init: any): boolean =>
+  !!(init && (init.json?.result?.protocolVersion || init.status === 401));
+
+// GET liveness check for legacy HTTP+SSE servers (which need a stream opened with
+// GET before they'll accept POSTed JSON-RPC). A 200 text/event-stream = alive.
+async function sseAlive(url: string): Promise<boolean> {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
+  try {
+    const res = await fetch(url, {
+      method: "GET",
+      headers: { accept: "text/event-stream", "user-agent": "wmcp.sh-grader/1.0 (+https://wmcp.sh/mcp/grade)" },
+      signal: ctrl.signal,
+      redirect: "manual",
+    });
+    const ct = res.headers.get("content-type") || "";
+    return res.status === 200 && ct.includes("text/event-stream");
+  } catch { return false; } finally { clearTimeout(t); }
+}
+
+interface ProbeResult { reachable: boolean; init: any | null; resolvedUrl: string; transport: "streamable-http" | "sse" | null }
+
+// Resilient probe: try the given endpoint + a couple of conventional variants over
+// Streamable HTTP (POST initialize, with one retry on the first for cold starts),
+// then fall back to an SSE GET liveness check. This stops us from mislabeling
+// slow / wrong-path / legacy-SSE servers as a false "unreachable F".
+async function probeMcp(url: string, host: string): Promise<ProbeResult> {
+  const cands: string[] = [];
+  const add = (u: string) => { if (u && !cands.includes(u) && !blockedTargetReason(u)) cands.push(u); };
+  add(url);
+  add(`https://${host}/mcp`);
+  add(`https://${host}/sse`);
+
+  for (let i = 0; i < cands.length; i++) {
+    const c = cands[i];
+    let init: any = null;
+    try { init = await callMcp(c, initMsg()); }
+    catch { if (i === 0) { try { init = await callMcp(c, initMsg()); } catch {} } } // 1 retry on primary (cold start)
+    if (looksLikeMcpInit(init)) return { reachable: true, init, resolvedUrl: c, transport: "streamable-http" };
+  }
+  for (const c of cands) {
+    if (await sseAlive(c)) return { reachable: true, init: null, resolvedUrl: c, transport: "sse" };
+  }
+  return { reachable: false, init: null, resolvedUrl: url, transport: null };
+}
+
+// A reachable legacy HTTP+SSE server we can't fully enumerate over a one-shot
+// probe: grade fairly on reachability + transport (a "limited audit", ~C), never
+// a false F. Full tool audit lands via the proxy (v2).
+function finalizeSseLimited(r: GradeResult): GradeResult {
+  r.limited = true;
+  r.findings.push({ id: "sse_limited", severity: "info", detail: "Live server on the legacy HTTP+SSE transport. Full tool audit requires an interactive SSE session (planned via the wmcp.sh proxy); graded on reachability + transport only. Streamable HTTP is the current spec transport." });
+  const rel = r.latency_ms != null && r.latency_ms < 1500 ? 85 : 70;
+  r.sub = {
+    spec: { score: 60, weight: 20, notes: ["reachable via HTTP+SSE; one-shot probe can't complete the SSE initialize handshake"] },
+    security: { score: 70, weight: 30, notes: ["tool surface not enumerable over a one-shot probe — no static issues seen, none cleared"] },
+    reliability: { score: rel, weight: 20, notes: [`reachable, single-probe latency ${r.latency_ms ?? "?"}ms`] },
+    hygiene: { score: 55, weight: 15, notes: ["tool schemas not enumerable over a one-shot probe"] },
+    transparency: { score: 70, weight: 15, notes: ["HTTPS ✓ — legacy SSE transport (Streamable HTTP preferred)"] },
+  };
+  r.score = Math.round(Object.values(r.sub).reduce((a, x) => a + (x.score * x.weight) / 100, 0));
+  r.grade = letter(r.score);
+  return r;
+}
+
 // ---- the grader ----
 export async function scoreMcpServer(rawUrl: string): Promise<GradeResult> {
   const url = rawUrl.trim();
@@ -176,17 +243,25 @@ export async function scoreMcpServer(rawUrl: string): Promise<GradeResult> {
     return r;
   }
 
-  // ---- probe ----
+  // ---- probe: discover the MCP endpoint + transport (Streamable HTTP, then a
+  //      legacy HTTP+SSE liveness check) before declaring anything unreachable ----
   const t0 = Date.now();
-  let init: Awaited<ReturnType<typeof callMcp>> | null = null;
-  try { init = await callMcp(url, initMsg()); } catch {
-    r.findings.push({ id: "reachable", severity: "fail", detail: "Server did not respond to initialize (timeout or network error)." });
+  const probe = await probeMcp(url, host);
+  if (!probe.reachable) {
+    r.findings.push({ id: "reachable", severity: "fail", detail: "No MCP server responded at the conventional endpoints (timeout, network error, or unsupported transport)." });
     r.sub = { spec: z(20), security: z(30), reliability: z(20), hygiene: z(15), transparency: z(15) };
     r.grade = "F"; r.score = 0;
     return r;
   }
   r.latency_ms = Date.now() - t0;
   r.reachable = true;
+  r.transport = probe.transport || undefined;
+  r.url = probe.resolvedUrl;          // record the endpoint that actually worked
+  const ep = probe.resolvedUrl;       // subsequent MCP calls hit the resolved endpoint
+
+  // Legacy HTTP+SSE server: alive, but a one-shot probe can't enumerate its tools.
+  if (probe.transport === "sse" && !probe.init) return finalizeSseLimited(r);
+  const init = probe.init;
 
   // Auth-required (401 + WWW-Authenticate) is a *good* signal, but blocks tool enumeration.
   const wwwAuth = false; // header captured below via a dedicated check
@@ -205,10 +280,10 @@ export async function scoreMcpServer(rawUrl: string): Promise<GradeResult> {
   // unknown method → -32601
   let toolsJson: any = null;
   if (!r.auth_required) {
-    const bad = await callMcp(url, { jsonrpc: "2.0", id: 9, method: "this/does-not-exist", params: {} }).catch(() => null);
+    const bad = await callMcp(ep, { jsonrpc: "2.0", id: 9, method: "this/does-not-exist", params: {} }).catch(() => null);
     specChecks.push({ ok: bad?.json?.error?.code === -32601, note: `unknown method → ${bad?.json?.error?.code ?? "no JSON-RPC error"}` });
 
-    const tl = await callMcp(url, { jsonrpc: "2.0", id: 2, method: "tools/list", params: {} }).catch(() => null);
+    const tl = await callMcp(ep, { jsonrpc: "2.0", id: 2, method: "tools/list", params: {} }).catch(() => null);
     toolsJson = tl?.json?.result;
     const tools = Array.isArray(toolsJson?.tools) ? toolsJson.tools : [];
     specChecks.push({ ok: tools.length > 0, note: `tools/list → ${tools.length} tools` });

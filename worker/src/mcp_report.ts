@@ -299,6 +299,9 @@ ${uiNav(origin)}
     <div class="kpi"><div class="v" style="color:${COLOR.F}">${s.pct_failing}%</div><div class="l">Scored D or F</div></div>
     <div class="kpi"><div class="v" style="color:${COLOR.A}">${s.pct_passing}%</div><div class="l">Scored A or B</div></div>
   </div>
+  <p class="muted" style="font-size:.9rem;margin-top:4px;border-left:2px solid var(--accent2);padding-left:12px">
+    <b>What "D or F" means:</b> most low grades come from servers that are unreachable, auth-protected (so tools can't be enumerated from outside), or missing transparency signals — <b>not</b> confirmed vulnerabilities. Only <b>${s.sample_fail_pct}%</b> of audited servers had an outright security failure. This is a measure of how vettable the ecosystem is, not a claim that 62% are compromised.
+  </p>
 
   <section>
     <h2>Trust-grade distribution</h2>
