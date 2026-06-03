@@ -12,6 +12,7 @@
 import { BLOG_POSTS, BLOG_SLUGS } from "./blog_posts";
 import { DROP_SLUGS, LOCALIZABLE_SLUGS, LOCALIZED_LANGS } from "./drops_seo";
 import { ARTICLE_SLUGS } from "./articles";
+import { CATEGORY_NAMES, categorySlug } from "./mcp_grade";
 
 const PROVIDER_BADGE: Record<string, { color: string; label: string }> = {
   shopify: { color: "#4ade80", label: "Shopify" },
@@ -878,6 +879,11 @@ export async function sitemapXml(env: any, origin: string): Promise<string> {
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
+${CATEGORY_NAMES.map((c) => `  <url>
+    <loc>${origin}/mcp/leaderboard/${categorySlug(c)}</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>`).join("\n")}
   <url>
     <loc>${origin}/guides</loc>
     <changefreq>weekly</changefreq>

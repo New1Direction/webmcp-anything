@@ -244,6 +244,9 @@ function deriveCategory(tools: any[], host: string, title: string): string {
   for (const [cat, re] of CATEGORIES) if (re.test(blob)) return cat;
   return "Other";
 }
+export const CATEGORY_NAMES: string[] = [...CATEGORIES.map((c) => c[0]), "Other"];
+export const categorySlug = (n: string): string => n.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+export const categoryFromSlug = (s: string): string | undefined => CATEGORY_NAMES.find((n) => categorySlug(n) === s);
 
 // ---- the grader ----
 export async function scoreMcpServer(rawUrl: string, opts: { fast?: boolean } = {}): Promise<GradeResult> {
@@ -927,7 +930,7 @@ async function run(){
 // of the whole MCP ecosystem that compounds daily. Reads grade:* metadata in a
 // single KV.list (no per-host get); falls back to a bounded get for any key
 // missing metadata (pre-metadata grades backfill as the cron re-grades).
-export async function mcpLeaderboardHtml(env: Env, origin: string): Promise<string> {
+export async function mcpLeaderboardHtml(env: Env, origin: string, category?: string): Promise<string> {
   // Paginate the full grade set (KV.list caps at 1000/call) so the ranking is
   // the true top across ALL graded servers, not an arbitrary first 1000.
   const rows: Array<{ host: string; grade: string; score: number; checked_at?: number; tools_count?: number; category?: string }> = [];
@@ -950,7 +953,10 @@ export async function mcpLeaderboardHtml(env: Env, origin: string): Promise<stri
     pages++;
   } while (cursor && pages < 8);
   rows.sort((a, b) => b.score - a.score || a.host.localeCompare(b.host));
-  const total = rows.length;
+  // Per-category page: filter to one category (the route passes the resolved name).
+  const activeCat = category && CATEGORY_NAMES.includes(category) ? category : undefined;
+  const pool = activeCat ? rows.filter((r) => (r.category || "Other") === activeCat) : rows;
+  const total = pool.length;
   // Dedupe the DISPLAYED ranking to one entry per operator (registrable domain),
   // keeping each operator's highest-scored server. Without this, a single operator
   // with many subdomains (e.g. 12× *.caseyjhand.com all at A+) monopolizes the top
@@ -958,7 +964,7 @@ export async function mcpLeaderboardHtml(env: Env, origin: string): Promise<stri
   const regDomain = (h: string) => { const p = h.split("."); return p.length <= 2 ? h : p.slice(-2).join("."); };
   const seenDom = new Set<string>();
   const shown: typeof rows = [];
-  for (const r of rows) {
+  for (const r of pool) {
     const d = regDomain(r.host);
     if (seenDom.has(d)) continue;
     seenDom.add(d);
@@ -981,22 +987,31 @@ export async function mcpLeaderboardHtml(env: Env, origin: string): Promise<stri
       <td class="dim">${when}</td>
     </tr>`;
   }).join("\n");
-  const cats = Array.from(new Set(shown.map((r) => r.category || "Other"))).sort();
-  const chips = `<div class="catfilter"><button class="chip on" data-c="">All</button>${cats.map((ct) => `<button class="chip" data-c="${esc(ct)}">${esc(ct)}</button>`).join("")}</div>`;
+  // Crawlable category links (each is its own indexable page) — doubles as the filter UI.
+  const chips = `<div class="catfilter"><a class="chip${activeCat ? "" : " on"}" href="${origin}/mcp/leaderboard">All</a>${CATEGORY_NAMES.map((ct) => `<a class="chip${activeCat === ct ? " on" : ""}" href="${origin}/mcp/leaderboard/${categorySlug(ct)}">${esc(ct)}</a>`).join("")}</div>`;
 
   const count = total;
+  const canonical = activeCat ? `${origin}/mcp/leaderboard/${categorySlug(activeCat)}` : `${origin}/mcp/leaderboard`;
+  const pageTitle = activeCat ? `Best ${activeCat} MCP servers — ranked by trust grade | wmcp.sh` : `MCP Trust Leaderboard — independent A–F grades for ${count} servers | wmcp.sh`;
+  const pageDesc = activeCat
+    ? `The best ${activeCat} MCP servers, independently graded A–F on security, spec conformance, reliability, and transparency. ${count} ${activeCat} servers ranked, continuously watched for drift.`
+    : `The independent MCP Trust Leaderboard: A–F grades for ${count} MCP servers, scored on spec conformance, OWASP MCP security, reliability, tool hygiene, and transparency, continuously watched for drift and rug-pulls.`;
+  const h1 = activeCat ? `Best ${activeCat} MCP servers` : `MCP Trust Leaderboard`;
+  const lede = activeCat
+    ? `Independent A–F trust grades for ${activeCat} MCP servers — security, spec conformance, reliability, tool hygiene, and transparency, re-checked continuously for drift and rug-pulls. ${count.toLocaleString()} ranked.`
+    : `An independent A–F trust grade for every MCP server we have seen — spec conformance, OWASP MCP security, reliability, tool hygiene, and transparency — re-checked continuously for drift and rug-pulls. ${count.toLocaleString()} servers ranked.`;
   const ld = {
     "@context": "https://schema.org", "@type": "Dataset",
-    name: "MCP Trust Leaderboard", description: "Independent A–F trust grades for MCP servers, continuously watched for drift and rug-pulls.",
-    url: `${origin}/mcp/leaderboard`, creator: { "@type": "Organization", name: "wmcp.sh", url: origin },
+    name: activeCat ? `Best ${activeCat} MCP servers` : "MCP Trust Leaderboard", description: pageDesc,
+    url: canonical, creator: { "@type": "Organization", name: "wmcp.sh", url: origin },
   };
   return `<!doctype html><html lang="en"><head>
 <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>MCP Trust Leaderboard — independent A–F grades for ${count} servers | wmcp.sh</title>
-<meta name="description" content="The independent MCP Trust Leaderboard: A–F grades for ${count} MCP servers, scored on spec conformance, OWASP MCP security, reliability, tool hygiene, and transparency, continuously watched for drift and rug-pulls."/>
-<link rel="canonical" href="${origin}/mcp/leaderboard"/>
-<meta property="og:title" content="MCP Trust Leaderboard | wmcp.sh"/>
-<meta property="og:description" content="Independent A–F trust grades for ${count} MCP servers, continuously watched."/>
+<title>${pageTitle}</title>
+<meta name="description" content="${pageDesc}"/>
+<link rel="canonical" href="${canonical}"/>
+<meta property="og:title" content="${esc(h1)} | wmcp.sh"/>
+<meta property="og:description" content="${pageDesc}"/>
 <meta property="og:image" content="${origin}/og.png"/>
 <script type="application/ld+json">${JSON.stringify(ld)}</script>
 <style>${uiCss(900)}
@@ -1005,7 +1020,7 @@ export async function mcpLeaderboardHtml(env: Env, origin: string): Promise<stri
   a.host{text-decoration:none;font-weight:600;color:var(--text)} a.host:hover{color:var(--accent2)}
   .cat{display:inline-block;font-size:.78rem;color:var(--muted);background:var(--bg2);border:1px solid var(--border);border-radius:999px;padding:2px 9px;white-space:nowrap}
   .catfilter{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px}
-  .chip{background:var(--bg2);border:1px solid var(--border);color:var(--muted);border-radius:999px;padding:6px 13px;font-size:.82rem;cursor:pointer;font-family:inherit}
+  .chip{background:var(--bg2);border:1px solid var(--border);color:var(--muted);border-radius:999px;padding:6px 13px;font-size:.82rem;cursor:pointer;font-family:inherit;text-decoration:none;display:inline-block}
   .chip:hover{color:var(--text)}
   .chip.on{background:var(--accent);color:#2a1500;border-color:var(--accent);font-weight:700}
   .empty{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:32px;text-align:center;color:var(--muted)}
@@ -1013,9 +1028,9 @@ export async function mcpLeaderboardHtml(env: Env, origin: string): Promise<stri
 ${uiNav(origin)}
 <div class="wrap">
   <header class="hero">
-    <p class="crumbs"><a href="${origin}/connect">The MCP hub</a> <span class="sep">›</span> Trust leaderboard</p>
-    <h1>MCP Trust Leaderboard</h1>
-    <p class="lede">An independent A–F trust grade for every MCP server we have seen — spec conformance, OWASP MCP security, reliability, tool hygiene, and transparency — re-checked continuously for drift and rug-pulls. ${count.toLocaleString()} servers ranked.</p>
+    <p class="crumbs"><a href="${origin}/connect">The MCP hub</a> <span class="sep">›</span> ${activeCat ? `<a href="${origin}/mcp/leaderboard">Trust leaderboard</a> <span class="sep">›</span> ${esc(activeCat)}` : "Trust leaderboard"}</p>
+    <h1>${esc(h1)}</h1>
+    <p class="lede">${lede}</p>
     <div class="row">
       <a class="btn btn-primary" href="${origin}/mcp/grade">Grade your server — free</a>
       <a class="btn btn-ghost" href="${origin}/webmcp">WebMCP →</a>
@@ -1029,12 +1044,5 @@ ${uiNav(origin)}
   ${adSlot()}
   <footer>Grades are free and identical whether or not the operator pays. Methodology: <a href="${origin}/mcp/grade">/mcp/grade</a>. Add the oracle to your agent at <code>${origin}/mcp/trust</code>.</footer>
 </div>
-<script>
-(function(){
-  var chips=document.querySelectorAll('.catfilter .chip'), rows=document.querySelectorAll('tbody tr[data-cat]');
-  function apply(c){ var n=0; rows.forEach(function(r){ var show=(!c||r.getAttribute('data-cat')===c); r.style.display=show?'':'none'; if(show)n++; r.querySelector('.rank').textContent=show?n:''; }); }
-  chips.forEach(function(b){ b.addEventListener('click',function(){ chips.forEach(function(x){x.classList.remove('on');}); b.classList.add('on'); apply(b.getAttribute('data-c')); }); });
-})();
-</script>
 </body></html>`;
 }

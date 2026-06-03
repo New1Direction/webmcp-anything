@@ -9,8 +9,9 @@
 // computed result is cached in KV so the page is fast and doesn't hammer KV.
 
 import { uiCss, uiNav } from "./ui";
+import { categorySlug } from "./mcp_grade";
 
-const REPORT_CACHE_KEY = "report:state-of-mcp-security:v2";
+const REPORT_CACHE_KEY = "report:state-of-mcp-security:v3";
 const REPORT_TTL = 6 * 3600;      // recompute at most every 6h
 const SAMPLE_CAP = 120;           // full reports read for the findings breakdown
 
@@ -48,6 +49,7 @@ export interface McpReportStats {
   sample_size: number;
   sample_unreachable_pct: number;   // of sample: ≥1 "reachable" fail (dead/unresponsive)
   sample_security_pct: number;      // of sample: ≥1 real security fail (plaintext / injection / secret-exfil)
+  categories: { name: string; count: number }[]; // full-corpus category distribution
   sample_fail_pct: number;          // % of sampled servers with ≥1 "fail" finding
   finding_freq: FindingFreq[];
   top_servers: { host: string; grade: string; score: number }[];
@@ -67,6 +69,7 @@ export async function computeMcpSecurityReport(env: any, force = false): Promise
 
   const dist: Record<string, number> = { A: 0, B: 0, C: 0, D: 0, F: 0 };
   let total = 0, scoreSum = 0, toolsSum = 0, noTools = 0, zeroScore = 0;
+  const catCount: Record<string, number> = {};
   const all: { host: string; grade: string; score: number }[] = [];
   const sampleNames: string[] = [];
 
@@ -83,6 +86,8 @@ export async function computeMcpSecurityReport(env: any, force = false): Promise
       const tc = typeof m.tools_count === "number" ? m.tools_count : 0;
       toolsSum += tc;
       if (tc === 0) noTools++;
+      const cat = (typeof m.category === "string" && m.category) || "Other";
+      catCount[cat] = (catCount[cat] || 0) + 1;
       all.push({ host: k.name.slice("grade:".length), grade: m.grade, score: m.score });
       if (sampleNames.length < SAMPLE_CAP) sampleNames.push(k.name);
     }
@@ -148,6 +153,7 @@ export async function computeMcpSecurityReport(env: any, force = false): Promise
     sample_fail_pct: sampled ? Math.round((sampleFail / sampled) * 100) : 0,
     sample_unreachable_pct: sampled ? Math.round((sampleUnreach / sampled) * 100) : 0,
     sample_security_pct: sampled ? Math.round((sampleSecurity / sampled) * 100) : 0,
+    categories: Object.entries(catCount).map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count),
     finding_freq,
     top_servers,
   };
@@ -324,6 +330,15 @@ ${uiNav(origin)}
     <h2>The most common weaknesses</h2>
     <p class="muted">Share of a ${s.sample_size}-server sample exhibiting each issue. Unreachability dominates; genuine security findings (plaintext transport, prompt-injection, secret-exfiltration) affect roughly ${s.sample_security_pct}%.</p>
     ${findingRows}
+  </section>
+
+  <section>
+    <h2>What kinds of servers exist</h2>
+    <p class="muted">Every graded server, categorized. Click a category for its own ranked leaderboard.</p>
+    ${(() => {
+      const maxCat = Math.max(1, ...s.categories.map((c) => c.count));
+      return s.categories.map((c) => `<div class="drow"><span class="fl"><a href="${origin}/mcp/leaderboard/${categorySlug(c.name)}" style="color:var(--accent2);text-decoration:none">${c.name}</a></span>${bar(Math.round((c.count / maxCat) * 100), "#ffcf7a")}<span class="dn">${c.count.toLocaleString()}</span></div>`).join("");
+    })()}
   </section>
 
   <section>

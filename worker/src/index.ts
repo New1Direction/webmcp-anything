@@ -353,6 +353,14 @@ app.get("/mcp/leaderboard", async (c) => {
   const html = await mcpLeaderboardHtml(c.env as any, new URL(c.req.url).origin);
   return new Response(html, { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=300, s-maxage=300" } });
 });
+// Per-category leaderboards (indexable SEO: "best <category> MCP servers"). BEFORE /mcp/:provider.
+app.get("/mcp/leaderboard/:category", async (c) => {
+  const { mcpLeaderboardHtml, categoryFromSlug } = await import("./mcp_grade");
+  const cat = categoryFromSlug(c.req.param("category"));
+  if (!cat) return c.notFound();
+  const html = await mcpLeaderboardHtml(c.env as any, new URL(c.req.url).origin, cat);
+  return new Response(html, { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=300, s-maxage=300" } });
+});
 
 app.get("/mcp/grade", async (c) => {
   const { gradeHomeHtml } = await import("./mcp_grade");
