@@ -429,7 +429,9 @@ app.get("/mcp/badges", async (c) => {
 app.get("/reports/state-of-mcp-security-2026", async (c) => {
   const { computeMcpSecurityReport, stateOfMcpSecurityHtml } = await import("./mcp_report");
   const origin = new URL(c.req.url).origin;
-  const stats = await computeMcpSecurityReport(c.env as any);
+  // ?refresh=1 with the admin token forces a recompute (after a bulk re-grade).
+  const force = c.req.query("refresh") === "1" && c.req.header("x-admin-token") === (c.env as any).ADMIN_TOKEN;
+  const stats = await computeMcpSecurityReport(c.env as any, force);
   return c.body(stateOfMcpSecurityHtml(origin, stats), 200, {
     "content-type": "text/html; charset=utf-8",
     "cache-control": "public, max-age=1800",
