@@ -548,11 +548,36 @@ export async function sitemapXml(env: any, origin: string): Promise<string> {
   // Iterate all seen: entries and emit one URL per cached page.
   // KV.list returns up to 1000 keys per page; we don't paginate beyond that
   // for v0 since we're nowhere near the limit.
-  const list = await env.CACHE.list({ prefix: "seen:", limit: 1000 });
-  const entries: Array<{ url: string; ts: number }> = list.keys
+  // Paginate ALL seen: entries (one cached /u page each) — not just the first 1000.
+  const seenKeys: any[] = [];
+  {
+    let cursor: string | undefined, pages = 0;
+    do {
+      const r: any = await env.CACHE.list({ prefix: "seen:", limit: 1000, cursor });
+      seenKeys.push(...r.keys);
+      cursor = r.list_complete ? undefined : r.cursor; pages++;
+    } while (cursor && pages < 8);
+  }
+  const entries: Array<{ url: string; ts: number }> = seenKeys
     .map((k: any) => k.metadata)
     .filter((m: any) => m && m.url)
     .map((m: any) => ({ url: m.url, ts: m.ts || 0 }));
+
+  // Every graded MCP server is a real, unique trust-report page → index them all.
+  const gradeHosts: string[] = [];
+  {
+    let cursor: string | undefined, pages = 0;
+    do {
+      const r: any = await env.CACHE.list({ prefix: "grade:", limit: 1000, cursor });
+      for (const k of r.keys) gradeHosts.push(k.name.slice("grade:".length));
+      cursor = r.list_complete ? undefined : r.cursor; pages++;
+    } while (cursor && pages < 8);
+  }
+  const gradeUrlsXml = gradeHosts.map((h) => `  <url>
+    <loc>${origin}/mcp/grade/${encodeURIComponent(h)}</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>`).join("\n");
 
   // Blog posts (auto-generated; 24 at time of writing).
   const blogUrlsXml = BLOG_SLUGS.map((slug) => {
@@ -873,6 +898,7 @@ ${LOCALIZABLE_SLUGS.map((slug) => `  <url>
     <priority>0.65</priority>
   </url>`).join("\n")}`).join("\n")}
 ${blogUrlsXml}
+${gradeUrlsXml}
 ${urlsXml}
 </urlset>
 `;
