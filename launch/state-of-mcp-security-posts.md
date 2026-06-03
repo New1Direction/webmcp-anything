@@ -1,5 +1,9 @@
 # Launch posts — State of MCP Security 2026
 
+> ⚠️ **NUMBERS SUPERSEDED (2026-06-03).** The corpus grew 3,108 → **6,762** after npm/pypi package scanning, which changed every figure (now: 42% A/B, 38% D/F, 13% dead, ~1% security, Developer Tools dominates). Use **`launch/distribution-kit.md`** as the canonical, current launch asset. Swap any "6,815 / a quarter dead / 62%" below for the kit's numbers before posting.
+
+
+
 Asset: https://wmcp.sh/reports/state-of-mcp-security-2026
 Try-it tools: https://wmcp.sh/mcp/grade · https://wmcp.sh/mcp/badges · oracle https://wmcp.sh/mcp/trust
 
