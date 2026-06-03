@@ -10,9 +10,27 @@
 
 import { uiCss, uiNav } from "./ui";
 
-const REPORT_CACHE_KEY = "report:state-of-mcp-security";
+const REPORT_CACHE_KEY = "report:state-of-mcp-security:v2";
 const REPORT_TTL = 6 * 3600;      // recompute at most every 6h
 const SAMPLE_CAP = 120;           // full reports read for the findings breakdown
+
+// Human labels for finding ids; ids not listed fall back to humanize().
+const FINDING_LABELS: Record<string, string> = {
+  tls: "No HTTPS (plaintext transport)",
+  reachable: "Server unreachable / no response",
+  tool_poisoning: "Prompt-injection in tool descriptions",
+  secret_exfil: "Secret / credential exfiltration surface",
+  flaky_tool: "Unstable / flaky tools",
+  url: "Invalid endpoint URL",
+};
+// Not real server weaknesses: "target" = our SSRF guard refusing a private addr;
+// "auth" is info-only (already filtered). Don't count them as ecosystem flaws.
+const FINDING_EXCLUDE = new Set(["target", "auth"]);
+
+const baseDomain = (h: string): string => {
+  const parts = String(h || "").split(".");
+  return parts.length <= 2 ? h : parts.slice(-2).join(".");
+};
 
 const COLOR: Record<string, string> = { A: "#4ade80", B: "#ffcf7a", C: "#ff9e2c", D: "#ff6a3c", F: "#f87171" };
 
@@ -81,7 +99,7 @@ export async function computeMcpSecurityReport(env: any, force = false): Promise
       const seen = new Set<string>();
       for (const f of findings) {
         if (f.severity === "info") continue;       // only weaknesses
-        if (!f.id || seen.has(f.id)) continue;
+        if (!f.id || FINDING_EXCLUDE.has(f.id) || seen.has(f.id)) continue;
         seen.add(f.id);
         const cur = findingCounts[f.id] || { count: 0, severity: f.severity };
         cur.count++;
@@ -91,11 +109,22 @@ export async function computeMcpSecurityReport(env: any, force = false): Promise
     } catch {}
   }
   const finding_freq: FindingFreq[] = Object.entries(findingCounts)
-    .map(([id, v]) => ({ id, label: humanize(id), severity: v.severity, pct: sampled ? Math.round((v.count / sampled) * 100) : 0 }))
+    .map(([id, v]) => ({ id, label: FINDING_LABELS[id] || humanize(id), severity: v.severity, pct: sampled ? Math.round((v.count / sampled) * 100) : 0 }))
     .sort((a, b) => b.pct - a.pct)
     .slice(0, 10);
 
+  // Top servers, deduped to ONE per registrable domain so the "most trustworthy"
+  // list shows diverse operators, not 10 subdomains of one deployment.
   all.sort((a, b) => b.score - a.score);
+  const topSeen = new Set<string>();
+  const top_servers: { host: string; grade: string; score: number }[] = [];
+  for (const s of all) {
+    const d = baseDomain(s.host);
+    if (topSeen.has(d)) continue;
+    topSeen.add(d);
+    top_servers.push(s);
+    if (top_servers.length >= 10) break;
+  }
 
   const stats: McpReportStats = {
     total,
@@ -109,7 +138,7 @@ export async function computeMcpSecurityReport(env: any, force = false): Promise
     sample_size: sampled,
     sample_fail_pct: sampled ? Math.round((sampleFail / sampled) * 100) : 0,
     finding_freq,
-    top_servers: all.slice(0, 10),
+    top_servers,
   };
 
   try { await env.CACHE.put(REPORT_CACHE_KEY, JSON.stringify(stats), { expirationTtl: REPORT_TTL }); } catch {}

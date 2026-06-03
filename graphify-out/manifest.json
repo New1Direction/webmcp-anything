@@ -500,8 +500,8 @@
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/index.ts": {
-    "mtime": 1780475783.730893,
-    "ast_hash": "903ce50d9bf2a29d86daff2a2ec4f085",
+    "mtime": 1780480145.712957,
+    "ast_hash": "b170eda0825897aa502e2c4f8fe0747d",
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/integration_airtable.ts": {
@@ -660,8 +660,8 @@
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/mcp_grade.ts": {
-    "mtime": 1780472336.3907866,
-    "ast_hash": "efa3acae01d14d25cd70dadd7468b016",
+    "mtime": 1780480187.5978265,
+    "ast_hash": "aa854874be2e7886f0778310c920efce",
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/mcp_oauth.ts": {
@@ -780,8 +780,8 @@
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/scheduled.ts": {
-    "mtime": 1780475815.2879453,
-    "ast_hash": "a9a50031edea2493a76991c0736d0e09",
+    "mtime": 1780480170.8283,
+    "ast_hash": "c2ef50c24397940fa9b169f610738ad0",
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/selectors.ts": {
@@ -815,8 +815,8 @@
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/u.ts": {
-    "mtime": 1780475810.902084,
-    "ast_hash": "74799e1308a3c1d521ffeebd71044ac4",
+    "mtime": 1780480165.2084124,
+    "ast_hash": "ea7b4ce8feac46acab5380c6f5d60276",
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/use_case_agent_commerce.ts": {
@@ -1487,6 +1487,11 @@
   "/Users/alexhearts/webmcp-anything/worker/src/articles.ts": {
     "mtime": 1780478457.8327358,
     "ast_hash": "d2885f892d0030bf18e539ba6e5d4a89",
+    "semantic_hash": ""
+  },
+  "/Users/alexhearts/webmcp-anything/worker/src/mcp_report.ts": {
+    "mtime": 1780480115.6698823,
+    "ast_hash": "7d4e31504800fb703148d2a27d95f813",
     "semantic_hash": ""
   }
 }
