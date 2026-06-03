@@ -513,6 +513,124 @@ ${alternates(origin, "calc")}
   return shell(origin, head, body, lang, funnelScript(lang, c.alertDone));
 }
 
+// Second free tool (English): PSA/CGC grading ROI calculator. A link magnet for
+// the reseller/investor audience — directly the QuickCatch Reseller buyer.
+export function gradingCalculatorHtml(origin: string): string {
+  const ui = T.en.ui;
+  const url = `${origin}/tools/pokemon-grading-calculator`;
+  const title = "Pokémon Grading ROI Calculator (PSA / CGC) | QuickCatch";
+  const desc = "Free calculator: is grading that card worth it? Enter raw price, graded value, and grading cost to see profit and ROI. Then catch the raw card at retail with QuickCatch.";
+  const faqs = [
+    { q: "Is grading my Pokémon card worth it?", a: "It depends on the gap between the raw price and the graded value minus grading and shipping cost. Enter your numbers and this shows the profit and ROI per card." },
+    { q: "What does grading cost?", a: "PSA and CGC tiers vary by value and turnaround, often around $19 to $25 per card at the cheaper tiers, plus shipping. Edit the cost field to your real tier." },
+    { q: "What is the catch?", a: "Not every card grades a 10. The calculator assumes the graded value you enter, so use the value for the grade you realistically expect, not the best case." },
+  ];
+  const faqLd = { "@context": "https://schema.org", "@type": "FAQPage", inLanguage: "en", mainEntity: faqs.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })) };
+  const appLd = {
+    "@context": "https://schema.org", "@type": "WebApplication", name: "Pokémon Grading ROI Calculator",
+    applicationCategory: "FinanceApplication", operatingSystem: "Any", url, inLanguage: "en", browserRequirements: "Requires JavaScript",
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" }, publisher: { "@type": "Organization", name: "QuickCatch", url: origin },
+  };
+  const crumbLd = { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [
+    { "@type": "ListItem", position: 1, name: "QuickCatch", item: `${origin}/` },
+    { "@type": "ListItem", position: 2, name: "Free tools", item: `${origin}/tools` },
+    { "@type": "ListItem", position: 3, name: "Grading ROI", item: url },
+  ] };
+  const head = `<title>${esc(title)}</title>
+<meta name="description" content="${esc(desc)}" />
+<link rel="canonical" href="${url}" />
+<meta property="og:title" content="Pokémon Grading ROI Calculator" />
+<meta property="og:description" content="${esc(desc)}" />
+<meta property="og:url" content="${url}" />
+<meta property="og:image" content="${origin}/og.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<script type="application/ld+json">${JSON.stringify(appLd)}</script>
+<script type="application/ld+json">${JSON.stringify(faqLd)}</script>
+<script type="application/ld+json">${JSON.stringify(crumbLd)}</script>`;
+
+  const body = `
+  <nav class="crumbs"><a href="${origin}/">QuickCatch</a> › <a href="${origin}/tools">Free tools</a> › <span style="color:var(--accent2)">Grading ROI</span></nav>
+  <header class="hero">
+    <h1>Pokémon grading worth-it calculator</h1>
+    <p class="lede">Should you grade that card? Enter the raw price, the value at the grade you expect, and grading cost to see your profit and ROI. Then catch the raw card at retail with QuickCatch.</p>
+  </header>
+
+  <section>
+    <div class="calc">
+      <div class="grid">
+        <label>Raw card price ($)
+          <input id="raw" type="number" min="0" step="0.01" value="40" />
+        </label>
+        <label>Graded value ($) <span style="color:var(--accent2)">— at the grade you expect</span>
+          <input id="graded" type="number" min="0" step="0.01" value="180" />
+        </label>
+        <label>Grading cost per card ($)
+          <input id="gcost" type="number" min="0" step="0.01" value="19" />
+        </label>
+        <label>Quantity
+          <input id="gqty" type="number" min="1" value="1" />
+        </label>
+      </div>
+      <div class="out">
+        <div class="stat good"><div class="k">Profit per card</div><div class="v" id="g-profit">$121.00</div></div>
+        <div class="stat accent"><div class="k">ROI</div><div class="v" id="g-roi">205%</div></div>
+        <div class="stat"><div class="k">Total profit</div><div class="v" id="g-total">$121.00</div></div>
+        <div class="stat"><div class="k">Total cost</div><div class="v" id="g-cost">$59.00</div></div>
+      </div>
+      <p style="color:var(--muted);font-size:.82rem;margin-top:12px">Profit per card = graded value minus raw price minus grading cost. ROI = profit / (raw + grading cost). Not every card grades a 10, so use the value for the grade you realistically expect, and add shipping to the grading cost for a true number.</p>
+    </div>
+  </section>
+
+  <div class="cta">
+    <h2>Catch the raw card at retail first</h2>
+    <p>Grading only pays if you buy the raw card cheap. Install QuickCatch free and it carts the card the moment it restocks at retail. Or get a free email heads-up.</p>
+    <div class="row">
+      <a class="btn btn-primary" href="${STORE_URL}" target="_blank" rel="noopener">🛒 ${esc(ui.getFree)}</a>
+      <a class="btn btn-ghost" href="#pro">⚡ ${esc(ui.proBtn)}</a>
+    </div>
+    <form class="lead capture" id="alerts">
+      <p style="color:var(--muted);margin:14px 0 0">Not ready to install? Get a free alert when raw cards restock at retail.</p>
+      <div class="f">
+        <input type="email" placeholder="${esc(ui.emailPh)}" aria-label="email" />
+        <input class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
+        <button class="btn btn-primary" type="submit">${esc(ui.getAlerts)}</button>
+      </div>
+      <div class="msg"></div>
+    </form>
+  </div>
+
+  ${pricingBlock("en")}
+
+  <section>
+    <h2>${esc(ui.faqH)}</h2>
+    ${faqs.map((f) => `<details><summary>${esc(f.q)}</summary><div class="a">${esc(f.a)}</div></details>`).join("\n    ")}
+  </section>
+
+  <footer>
+    <p><a href="${origin}/tools">Free tools</a> · <a href="${origin}/tools/pokemon-resale-calculator">Retail vs resale</a> · <a href="${origin}/drops">Drop guides</a> · <a href="${origin}/">QuickCatch</a></p>
+  </footer>
+
+  <script>
+  (function(){
+    var raw = document.getElementById("raw"), graded = document.getElementById("graded"),
+        gcost = document.getElementById("gcost"), qty = document.getElementById("gqty");
+    function money(n){ return "$" + (Math.round(n*100)/100).toLocaleString("en-US", {minimumFractionDigits:2, maximumFractionDigits:2}); }
+    function calc(){
+      var r = parseFloat(raw.value)||0, g = parseFloat(graded.value)||0, c = parseFloat(gcost.value)||0, q = Math.max(1, parseInt(qty.value)||1);
+      var per = g - r - c, cost = r + c;
+      document.getElementById("g-profit").textContent = money(per);
+      document.getElementById("g-roi").textContent = cost > 0 ? Math.round((per/cost)*100) + "%" : "—";
+      document.getElementById("g-total").textContent = money(per * q);
+      document.getElementById("g-cost").textContent = money(cost * q);
+    }
+    [raw, graded, gcost, qty].forEach(function(el){ el.addEventListener("input", calc); });
+    calc();
+  })();
+  </script>`;
+
+  return shell(origin, head, body, "en", funnelScript("en", "Done. We'll alert you when raw cards restock at retail."));
+}
+
 export function toolsIndexHtml(origin: string, lang: Lang = "en"): string {
   const c = CALC[lang], ui = T[lang].ui;
   const url = toolsUrl(origin, lang);
@@ -523,6 +641,10 @@ ${alternates(origin, "index")}
 <meta property="og:title" content="${esc(c.idxH1)}" />
 <meta property="og:image" content="${origin}/og.png" />`;
   const card = `<a class="plan" style="text-decoration:none;color:inherit;display:block" href="${calcUrl(origin, lang)}"><div class="pname" style="color:var(--accent2)">${esc(c.h1)}</div><p class="pdesc" style="margin-top:6px">${esc(c.toolBlurb)}</p></a>`;
+  // The grading ROI calculator is English-only for now; show it on the EN index.
+  const gradingCard = lang === "en"
+    ? `<a class="plan" style="text-decoration:none;color:inherit;display:block" href="${origin}/tools/pokemon-grading-calculator"><div class="pname" style="color:var(--accent2)">Pokémon grading worth-it calculator</div><p class="pdesc" style="margin-top:6px">Is grading that card worth it? See the profit and ROI of sending it to PSA or CGC.</p></a>`
+    : "";
   const body = `
   <header class="hero">
     <h1>${esc(c.idxH1)}</h1>
@@ -532,10 +654,11 @@ ${alternates(origin, "index")}
   </header>
   <section><div class="plans">
     ${card}
+    ${gradingCard}
   </div></section>
   <footer><p><a href="${lang === "en" ? origin + "/drops" : origin + "/drops/" + lang}">${esc(ui.allDropGuides)}</a> · <a href="${origin}/">QuickCatch</a> · <a href="${origin}/privacy">${esc(ui.privacy)}</a></p></footer>`;
   return shell(origin, head, body, lang, funnelScript(lang, c.alertDone));
 }
 
-export const TOOL_SLUGS = ["pokemon-resale-calculator"];
+export const TOOL_SLUGS = ["pokemon-resale-calculator", "pokemon-grading-calculator"];
 export { LOCALIZED_LANGS };

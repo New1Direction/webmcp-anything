@@ -829,6 +829,11 @@ export async function sitemapXml(env: any, origin: string): Promise<string> {
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
+  <url>
+    <loc>${origin}/tools/pokemon-grading-calculator</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
 ${LOCALIZED_LANGS.map((lang) => `  <url>
     <loc>${origin}/tools/${lang}</loc>
     <changefreq>weekly</changefreq>

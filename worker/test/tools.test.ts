@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { resaleCalculatorHtml, toolsIndexHtml, TOOL_SLUGS, LOCALIZED_LANGS } from "../src/tools";
+import { resaleCalculatorHtml, gradingCalculatorHtml, toolsIndexHtml, TOOL_SLUGS, LOCALIZED_LANGS } from "../src/tools";
 
 const origin = "https://wmcp.sh";
 
@@ -44,6 +44,19 @@ describe("free tools", () => {
       expect(html, lang).toContain('data-plan="reseller"');
       expect(html, lang).toContain('"inLanguage":"' + lang + '"');
     }
+  });
+
+  it("grading ROI calculator: inputs, funnel, schema", () => {
+    const html = gradingCalculatorHtml(origin);
+    expect(html).toContain('id="raw"');
+    expect(html).toContain('id="graded"');
+    expect(html).toContain('id="g-roi"');
+    expect(html).toContain("/api/v1/stripe/checkout");
+    expect(html).toContain("/api/v1/leads");
+    expect(html).toContain('data-plan="reseller"');
+    expect(html).toContain('"@type":"WebApplication"');
+    expect(html).toContain(`<link rel="canonical" href="${origin}/tools/pokemon-grading-calculator" />`);
+    expect(TOOL_SLUGS).toContain("pokemon-grading-calculator");
   });
 
   it("localized text differs from English", () => {

@@ -124,6 +124,10 @@ app.get("/tools/pokemon-resale-calculator", async (c) => {
   const { resaleCalculatorHtml } = await import("./tools");
   return c.html(resaleCalculatorHtml(new URL(c.req.url).origin, "en"));
 });
+app.get("/tools/pokemon-grading-calculator", async (c) => {
+  const { gradingCalculatorHtml } = await import("./tools");
+  return c.html(gradingCalculatorHtml(new URL(c.req.url).origin));
+});
 app.get("/tools/:lang/pokemon-resale-calculator", async (c) => {
   const lang = c.req.param("lang");
   const { resaleCalculatorHtml, LOCALIZED_LANGS } = await import("./tools");
