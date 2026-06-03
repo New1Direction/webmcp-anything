@@ -42,9 +42,12 @@ export interface McpReportStats {
   avg_score: number;
   pct_passing: number;              // A or B
   pct_failing: number;              // D or F
+  pct_zero: number;                 // score 0 — unreachable / plaintext / blocked (mostly dead servers)
   avg_tools: number;
   pct_no_tools: number;
   sample_size: number;
+  sample_unreachable_pct: number;   // of sample: ≥1 "reachable" fail (dead/unresponsive)
+  sample_security_pct: number;      // of sample: ≥1 real security fail (plaintext / injection / secret-exfil)
   sample_fail_pct: number;          // % of sampled servers with ≥1 "fail" finding
   finding_freq: FindingFreq[];
   top_servers: { host: string; grade: string; score: number }[];
@@ -63,7 +66,7 @@ export async function computeMcpSecurityReport(env: any, force = false): Promise
   }
 
   const dist: Record<string, number> = { A: 0, B: 0, C: 0, D: 0, F: 0 };
-  let total = 0, scoreSum = 0, toolsSum = 0, noTools = 0;
+  let total = 0, scoreSum = 0, toolsSum = 0, noTools = 0, zeroScore = 0;
   const all: { host: string; grade: string; score: number }[] = [];
   const sampleNames: string[] = [];
 
@@ -75,6 +78,7 @@ export async function computeMcpSecurityReport(env: any, force = false): Promise
       if (!m || typeof m.score !== "number") { sampleNames.push(k.name); continue; }
       total++;
       scoreSum += m.score;
+      if (m.score === 0) zeroScore++;   // unreachable / plaintext / blocked — fully failed
       dist[family(m.grade)] = (dist[family(m.grade)] || 0) + 1;
       const tc = typeof m.tools_count === "number" ? m.tools_count : 0;
       toolsSum += tc;
@@ -87,7 +91,8 @@ export async function computeMcpSecurityReport(env: any, force = false): Promise
 
   // Findings breakdown from a bounded sample of full reports.
   const findingCounts: Record<string, { count: number; severity: string }> = {};
-  let sampled = 0, sampleFail = 0;
+  const SECURITY_IDS = new Set(["tls", "tool_poisoning", "secret_exfil"]);
+  let sampled = 0, sampleFail = 0, sampleUnreach = 0, sampleSecurity = 0;
   for (const name of sampleNames.slice(0, SAMPLE_CAP)) {
     try {
       const raw = await env.CACHE.get(name);
@@ -95,7 +100,10 @@ export async function computeMcpSecurityReport(env: any, force = false): Promise
       const g = JSON.parse(raw);
       sampled++;
       const findings: any[] = Array.isArray(g.findings) ? g.findings : [];
-      if (findings.some((f) => f.severity === "fail")) sampleFail++;
+      const failIds = new Set(findings.filter((f) => f.severity === "fail").map((f) => f.id));
+      if (failIds.size) sampleFail++;
+      if (failIds.has("reachable")) sampleUnreach++;
+      if ([...failIds].some((id) => SECURITY_IDS.has(id as string))) sampleSecurity++;
       const seen = new Set<string>();
       for (const f of findings) {
         if (f.severity === "info") continue;       // only weaknesses
@@ -133,10 +141,13 @@ export async function computeMcpSecurityReport(env: any, force = false): Promise
     avg_score: total ? Math.round(scoreSum / total) : 0,
     pct_passing: total ? Math.round(((dist.A + dist.B) / total) * 100) : 0,
     pct_failing: total ? Math.round(((dist.D + dist.F) / total) * 100) : 0,
+    pct_zero: total ? Math.round((zeroScore / total) * 100) : 0,
     avg_tools: total ? Math.round((toolsSum / total) * 10) / 10 : 0,
     pct_no_tools: total ? Math.round((noTools / total) * 100) : 0,
     sample_size: sampled,
     sample_fail_pct: sampled ? Math.round((sampleFail / sampled) * 100) : 0,
+    sample_unreachable_pct: sampled ? Math.round((sampleUnreach / sampled) * 100) : 0,
+    sample_security_pct: sampled ? Math.round((sampleSecurity / sampled) * 100) : 0,
     finding_freq,
     top_servers,
   };
@@ -300,7 +311,7 @@ ${uiNav(origin)}
     <div class="kpi"><div class="v" style="color:${COLOR.A}">${s.pct_passing}%</div><div class="l">Scored A or B</div></div>
   </div>
   <p class="muted" style="font-size:.9rem;margin-top:4px;border-left:2px solid var(--accent2);padding-left:12px">
-    <b>What "D or F" means:</b> most low grades come from servers that are unreachable, auth-protected (so tools can't be enumerated from outside), or missing transparency signals — <b>not</b> confirmed vulnerabilities. Only <b>${s.sample_fail_pct}%</b> of audited servers had an outright security failure. This is a measure of how vettable the ecosystem is, not a claim that 62% are compromised.
+    <b>What "D or F" means — it's mostly rot, not vulnerabilities.</b> The single biggest driver of low grades is <b>unreachability</b>: ${s.pct_zero}% of registry-listed servers don't respond at all (dead or unresponsive), and many that do are auth-protected or missing transparency signals, so they can't be vetted from outside. Confirmed <b>security</b> issues are comparatively rare — about <b>${s.sample_security_pct}%</b> of audited servers exposed an actual problem like a credential-exfiltration surface or plaintext transport. This measures how <i>vettable</i> the ecosystem is, not that most servers are compromised.
   </p>
 
   <section>
@@ -311,7 +322,7 @@ ${uiNav(origin)}
 
   <section>
     <h2>The most common weaknesses</h2>
-    <p class="muted">Share of a ${s.sample_size}-server sample exhibiting each issue. ${s.sample_fail_pct}% had at least one outright failure.</p>
+    <p class="muted">Share of a ${s.sample_size}-server sample exhibiting each issue. Unreachability dominates; genuine security findings (plaintext transport, prompt-injection, secret-exfiltration) affect roughly ${s.sample_security_pct}%.</p>
     ${findingRows}
   </section>
 
