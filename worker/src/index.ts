@@ -9,7 +9,7 @@ import { landingHtml } from "./landing";
 import { dashboardHtml } from "./dashboard";
 import { directoryHtml } from "./directory";
 import { ogSvg } from "./og";
-import { scheduledHandler, runSeedNow, addSeedStores, submitSeoIndexNow, addGradeServers, regradeCorpus } from "./scheduled";
+import { scheduledHandler, runSeedNow, addSeedStores, submitSeoIndexNow, addGradeServers, regradeCorpus, seedRegistry } from "./scheduled";
 import { githubStart, githubCallback, logout, me, issueOwnKey } from "./oauth";
 import {
   getProviders,
@@ -1598,6 +1598,7 @@ app.post("/api/v1/admin/seed-stores", (c) => addSeedStores(c as any));
 app.post("/api/v1/admin/seo-indexnow", (c) => submitSeoIndexNow(c as any));
 app.post("/api/v1/admin/grade-servers", (c) => addGradeServers(c as any));
 app.post("/api/v1/admin/regrade-corpus", (c) => regradeCorpus(c as any));
+app.post("/api/v1/admin/seed-registry", (c) => seedRegistry(c as any));
 
 // Default export — Cloudflare Workers expects `fetch` and (since we added
 // crons) `scheduled` as named handlers on the default export.

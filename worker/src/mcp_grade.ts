@@ -248,6 +248,18 @@ export const CATEGORY_NAMES: string[] = [...CATEGORIES.map((c) => c[0]), "Other"
 export const categorySlug = (n: string): string => n.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 export const categoryFromSlug = (s: string): string | undefined => CATEGORY_NAMES.find((n) => categorySlug(n) === s);
 
+// Human "1d ago" relative time (server-rendered; pages are short-cached so it stays fresh).
+function relTime(ts?: number): string {
+  if (!ts) return "—";
+  const s = Math.max(0, Math.floor((Date.now() - ts) / 1000));
+  if (s < 60) return "just now";
+  if (s < 3600) return `${Math.floor(s / 60)}m ago`;
+  if (s < 86400) return `${Math.floor(s / 3600)}h ago`;
+  if (s < 86400 * 30) return `${Math.floor(s / 86400)}d ago`;
+  if (s < 86400 * 365) return `${Math.floor(s / (86400 * 30))}mo ago`;
+  return `${Math.floor(s / (86400 * 365))}y ago`;
+}
+
 // ---- the grader ----
 export async function scoreMcpServer(rawUrl: string, opts: { fast?: boolean } = {}): Promise<GradeResult> {
   const url = rawUrl.trim();
@@ -724,7 +736,7 @@ export function gradePageHtml(r: GradeResult, origin: string): string {
   const driftDays = r.tools_hash_since ? Math.floor((r.checked_at - r.tools_hash_since) / 86400000) : 0;
   const watchedSince = r.tools_hash_since ? new Date(r.tools_hash_since).toISOString().slice(0, 10) : null;
   const attest = r.drift_count
-    ? `<div class="attest drift">⚠ <b>Rug-pull watch:</b> this server's tool surface has changed <b>${r.drift_count}×</b> since baseline${r.last_drift ? ` — last ${new Date(r.last_drift.ts).toISOString().slice(0, 10)}` : ""}. Continuously watched by wmcp.sh for drift &amp; rug-pulls.</div>`
+    ? `<div class="attest drift">⚠ <b>Rug-pull watch:</b> this server's tool surface has changed <b>${r.drift_count}×</b> since baseline${r.last_drift ? ` — last ${relTime(r.last_drift.ts)}` : ""}. Continuously watched by wmcp.sh for drift &amp; rug-pulls.</div>`
     : r.tool_sigs
       ? `<div class="attest stable">✓ <b>Watched${watchedSince ? ` since ${watchedSince}` : ""}</b> — behavioral baseline locked${driftDays > 0 ? `, no drift for ${driftDays} day${driftDays === 1 ? "" : "s"}` : ""}. We re-check this server's tool surface on a schedule; if it adds, removes, or silently rewrites a tool (rug-pull), we record it.</div>`
       : "";
@@ -811,7 +823,7 @@ export function gradePageHtml(r: GradeResult, origin: string): string {
     <div>
       <h1>${esc(r.host)}</h1>
       <div class="muted">${esc(r.url)}</div>
-      <div class="score"><b style="color:${c}">${r.score}/100</b> · MCP Trust Grade · <span class="dim">watched · last checked ${new Date(r.checked_at).toISOString().slice(0, 10)}${r.protocol_version ? " · MCP " + r.protocol_version : ""}${r.auth_required ? " · OAuth-protected" : ""}</span></div>
+      <div class="score"><b style="color:${c}">${r.score}/100</b> · MCP Trust Grade · <span class="dim">watched · checked ${relTime(r.checked_at)}${r.protocol_version ? " · MCP " + r.protocol_version : ""}${r.auth_required ? " · OAuth-protected" : ""}</span></div>
     </div>
   </div>
   ${attest}
@@ -975,7 +987,7 @@ export async function mcpLeaderboardHtml(env: Env, origin: string, category?: st
   const esc = (s: string) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" } as any)[c]);
   const body = shown.map((r, i) => {
     const color = GRADE_COLOR[r.grade] || "#8a8aa8";
-    const when = r.checked_at ? new Date(r.checked_at).toISOString().slice(0, 10) : "—";
+    const when = relTime(r.checked_at);
     const cat = r.category || "Other";
     return `<tr data-cat="${esc(cat)}">
       <td class="rank">${i + 1}</td>

@@ -532,6 +532,24 @@ export async function regradeCorpus(c: any): Promise<Response> {
 }
 
 /**
+ * Admin-gated bulk registry drain. POST /api/v1/admin/seed-registry?n=<page>
+ * Pulls one cursor page from the official MCP registry and grades its remote
+ * servers (advancing the persistent cursor), so a caller can loop it to cover
+ * the whole registry now instead of the slow 10/run cron. Returns seeded count.
+ */
+export async function seedRegistry(c: any): Promise<Response> {
+  const env: Env = c.env;
+  const token = c.req.header("x-admin-token");
+  if (!env.ADMIN_TOKEN || token !== env.ADMIN_TOKEN) {
+    return c.json({ error: "admin only" }, 401);
+  }
+  const n = Math.min(Math.max(parseInt(c.req.query("n") || "30", 10) || 30, 1), 50);
+  const before = (await env.CACHE.get("gradeseed:cursor")) || "";
+  const r = await seedRegistryGrades(env, n);
+  return c.json({ ok: true, seeded: r.seeded, cursor_before: before, cursor_after: r.nextCursor, wrapped: !r.nextCursor });
+}
+
+/**
  * Admin-gated manual trigger. POST /api/v1/admin/seed-now with
  * `x-admin-token: <ADMIN_TOKEN>`. Runs the same logic as the cron and
  * returns the per-store report as JSON for quick verification.
