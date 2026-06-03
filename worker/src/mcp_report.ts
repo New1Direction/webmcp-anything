@@ -334,10 +334,14 @@ ${uiNav(origin)}
 
   <section>
     <h2>What kinds of servers exist</h2>
-    <p class="muted">Every graded server, categorized. Click a category for its own ranked leaderboard.</p>
+    <p class="muted">Categorized by what their tools do. Click a category for its own ranked leaderboard.</p>
     ${(() => {
-      const maxCat = Math.max(1, ...s.categories.map((c) => c.count));
-      return s.categories.map((c) => `<div class="drow"><span class="fl"><a href="${origin}/mcp/leaderboard/${categorySlug(c.name)}" style="color:var(--accent2);text-decoration:none">${c.name}</a></span>${bar(Math.round((c.count / maxCat) * 100), "#ffcf7a")}<span class="dn">${c.count.toLocaleString()}</span></div>`).join("");
+      const named = s.categories.filter((c) => c.name !== "Other");
+      const other = s.categories.find((c) => c.name === "Other");
+      const maxCat = Math.max(1, ...named.map((c) => c.count));
+      const bars = named.map((c) => `<div class="drow"><span class="fl"><a href="${origin}/mcp/leaderboard/${categorySlug(c.name)}" style="color:var(--accent2);text-decoration:none">${c.name}</a></span>${bar(Math.round((c.count / maxCat) * 100), "#ffcf7a")}<span class="dn">${c.count.toLocaleString()}</span></div>`).join("");
+      const note = other ? `<p class="muted" style="font-size:.85rem;margin-top:10px">+ <a href="${origin}/mcp/leaderboard/other" style="color:var(--accent2)">${other.count.toLocaleString()} uncategorized</a> — mostly unreachable or auth-protected servers whose tools couldn't be inspected from outside. Developer tooling is by far the largest identifiable category; consumer-facing categories are thin.</p>` : "";
+      return bars + note;
     })()}
   </section>
 
