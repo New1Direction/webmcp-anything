@@ -421,7 +421,7 @@ app.get("/mcp/grade/:host/card.svg", async (c) => {
   if (!r) {
     try {
       if (host.startsWith("pypi:")) { const { scoreMcpPyPiPackage } = await import("./mcp_pkg"); r = await scoreMcpPyPiPackage(host.slice(5)); }
-      else if (host.startsWith("gh:")) { const { scoreMcpGitHubRepo } = await import("./mcp_pkg"); const [o, rp] = host.slice(3).split("/"); if (o && rp) r = await scoreMcpGitHubRepo(o, rp); }
+      else if (host.startsWith("gh:")) { const { scoreMcpGitHubRepo } = await import("./mcp_pkg"); const [o, rp] = host.slice(3).split("/"); if (o && rp) r = await scoreMcpGitHubRepo(o, rp, (c.env as any).GITHUB_TOKEN); }
       else if (host.startsWith("npm:")) { const { scoreMcpPackage } = await import("./mcp_pkg"); r = await scoreMcpPackage(host.slice(4)); }
       else r = await scoreMcpServer(`https://${host}/mcp`);
       if (r) await recordGrade(c.env as any, r);
@@ -441,9 +441,9 @@ app.get("/mcp/grade/:host", async (c) => {
       const mod = await import("./mcp_pkg");
       try {
         if (host.startsWith("pypi:")) pr = await mod.scoreMcpPyPiPackage(host.slice(5));
-        else if (host.startsWith("gh:")) { const [o, rp] = host.slice(3).split("/"); if (o && rp) pr = await mod.scoreMcpGitHubRepo(o, rp); }
+        else if (host.startsWith("gh:")) { const [o, rp] = host.slice(3).split("/"); if (o && rp) pr = await mod.scoreMcpGitHubRepo(o, rp, (c.env as any).GITHUB_TOKEN); }
         else pr = await mod.scoreMcpPackage(host.slice(4));
-        if (pr) await recordGrade(c.env as any, pr);
+        if (pr && pr.grade !== "?") await recordGrade(c.env as any, pr); // don't leaderboard "couldn't analyze"
       } catch {}
     }
     if (!pr) return c.notFound();

@@ -15,11 +15,11 @@ const PKG_TIMEOUT = 10000;
 const MAX_SOURCE_FILES = 6;
 const MAX_SOURCE_BYTES = 240_000;
 
-async function getJson(url: string): Promise<any | null> {
+async function getJson(url: string, extraHeaders: Record<string, string> = {}): Promise<any | null> {
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), PKG_TIMEOUT);
   try {
-    const res = await fetch(url, { headers: { "user-agent": "wmcp.sh-grader/1.0 (+https://wmcp.sh/mcp/grade)", accept: "application/json" }, signal: ctrl.signal });
+    const res = await fetch(url, { headers: { "user-agent": "wmcp.sh-grader/1.0 (+https://wmcp.sh/mcp/grade)", accept: "application/json", ...extraHeaders }, signal: ctrl.signal });
     if (!res.ok) return null;
     return await res.json();
   } catch { return null; } finally { clearTimeout(t); }
@@ -357,21 +357,23 @@ export async function scoreMcpPyPiPackage(rawName: string): Promise<GradeResult>
 
 /** Grade a GitHub-hosted MCP server directly from its repo (for servers not on
  *  npm/pypi — e.g. headroom). Uses the GitHub API for metadata + jsdelivr for source. */
-export async function scoreMcpGitHubRepo(owner: string, repo: string): Promise<GradeResult> {
+export async function scoreMcpGitHubRepo(owner: string, repo: string, token?: string): Promise<GradeResult> {
   const host = `gh:${owner}/${repo}`;
   const r: GradeResult = {
     url: `https://github.com/${owner}/${repo}`, host, checked_at: Date.now(),
     reachable: false, auth_required: false, grade: "F", score: 0, sub: {}, findings: [],
     tools_count: 0, title: repo, kind: "package",
   };
-  // GitHub API gives stars/license/recency, but the worker's shared IP gets
-  // rate-limited (60/hr unauth). So treat it as a bonus, not a requirement — the
-  // real signal (source + release history) comes from jsdelivr, which isn't limited.
-  const gm = (await getJson(`https://api.github.com/repos/${owner}/${repo}`)) || {};
+  // GitHub API gives stars/license/recency. Unauth is 60/hr (the worker's shared
+  // IP burns that fast) → set GITHUB_TOKEN to lift it to 5,000/hr. Source comes
+  // from jsdelivr / raw.githubusercontent, which aren't rate-limited.
+  const gm = (await getJson(`https://api.github.com/repos/${owner}/${repo}`, token ? { authorization: `Bearer ${token}` } : {})) || {};
   const apiOk = !!gm.full_name;
   const { source, sampled, versions } = await scanGitHubSource(owner, repo, /\.(py|pyi|ts|tsx|js|mjs|rs)$/);
-  if (!apiOk && !sampled.length && !versions) {
-    r.findings.push({ id: "pkg_missing", severity: "fail", detail: "GitHub repository not found or has no published source." });
+  // Never assign a confident grade to a repo we couldn't actually inspect.
+  if (!sampled.length && !apiOk) {
+    r.grade = "?"; r.score = 0; r.limited = true;
+    r.findings.push({ id: "insufficient_data", severity: "info", detail: `Not graded — couldn't retrieve source (repo too large for our source mirror) and the GitHub API was rate-limited. We don't assign a grade we can't justify.${versions ? ` ${versions} releases observed.` : ""} Set a GITHUB_TOKEN to grade large repos.` });
     r.sub = { spec: z(20), security: z(30), maintenance: z(20), hygiene: z(15), transparency: z(15) };
     r.category = deriveCategory([], repo, "");
     return r;

@@ -872,7 +872,7 @@ export function gradePageHtml(r: GradeResult, origin: string): string {
     <div>
       <h1>${esc(r.host)}</h1>
       <div class="muted">${esc(r.url)}</div>
-      <div class="score"><b style="color:${c}">${r.score}/100</b> · MCP Trust Grade · <span class="dim">watched · checked ${relTime(r.checked_at)}${r.protocol_version ? " · MCP " + r.protocol_version : ""}${r.auth_required ? " · OAuth-protected" : ""}</span></div>
+      <div class="score">${r.grade === "?" ? `<b style="color:${c}">Not graded</b> · insufficient data` : `<b style="color:${c}">${r.score}/100</b> · MCP Trust Grade`} · <span class="dim">checked ${relTime(r.checked_at)}${r.protocol_version ? " · MCP " + r.protocol_version : ""}${r.auth_required ? " · OAuth-protected" : ""}</span></div>
     </div>
   </div>
   ${attest}
