@@ -116,11 +116,12 @@ app.get("/drops/:lang/:slug", async (c) => {
 });
 
 // Long-form buyer-intent articles (real editorial, eBay affiliate, link-worthy).
-app.get("/blog", async (c) => {
+// Path is /guides (the dev/MCP blog owns /blog — different audience).
+app.get("/guides", async (c) => {
   const { articlesIndexHtml } = await import("./articles");
   return c.html(articlesIndexHtml(new URL(c.req.url).origin));
 });
-app.get("/blog/:slug", async (c) => {
+app.get("/guides/:slug", async (c) => {
   const { getArticle, articleHtml } = await import("./articles");
   const a = getArticle(c.req.param("slug"));
   if (!a) return c.notFound();

@@ -127,8 +127,8 @@ function seoUrls(): string[] {
   for (const lang of LOCALIZED_LANGS) {
     out.push(`${SITE_ORIGIN}/tools/${lang}`, `${SITE_ORIGIN}/tools/${lang}/pokemon-resale-calculator`);
   }
-  out.push(`${SITE_ORIGIN}/blog`);
-  for (const slug of ARTICLE_SLUGS) out.push(`${SITE_ORIGIN}/blog/${slug}`);
+  out.push(`${SITE_ORIGIN}/guides`);
+  for (const slug of ARTICLE_SLUGS) out.push(`${SITE_ORIGIN}/guides/${slug}`);
   return out;
 }
 

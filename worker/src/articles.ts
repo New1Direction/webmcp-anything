@@ -1,4 +1,4 @@
-// articles.ts — long-form, genuinely-written buyer-intent articles at /blog.
+// articles.ts — long-form, genuinely-written buyer-intent articles at /guides.
 //
 // These are deliberately NOT templated (the templated bulk is what tripped
 // Google's scaled-content dampener and left the site mostly un-indexed). Each
@@ -56,7 +56,7 @@ export const ARTICLES: Article[] = [
       h2("How to actually buy these at retail") +
       p(`The catch: the boxes worth buying sell out at retail in seconds and only resurface at a markup. The cheapest way to get one is to catch the restock the moment it goes live rather than paying the resale price. Our free <a href="/drops">restock guides</a> cover where each set restocks, and <a href="/">QuickCatch</a> watches a product page and carts it the instant it's back. Before you buy at resale, run the numbers through the <a href="/tools/pokemon-resale-calculator">retail vs resale calculator</a> so you know what you're actually paying over retail.`) +
       h2("Sealed or singles?") +
-      p(`If you want a specific card, singles are almost always cheaper than chasing it in packs — see <a href="/blog/sealed-vs-singles-pokemon">sealed vs singles</a> for the math. Buy boxes when you want the experience of ripping, or to hold sealed product through a print cycle.`),
+      p(`If you want a specific card, singles are almost always cheaper than chasing it in packs — see <a href="/guides/sealed-vs-singles-pokemon">sealed vs singles</a> for the math. Buy boxes when you want the experience of ripping, or to hold sealed product through a print cycle.`),
     faqs: [
       { q: "Which Pokémon booster box has the best pull rates?", a: "Surging Sparks is the strongest rip-for-value box right now because Pikachu ex SIR pulls its expected value up. For holding sealed rather than ripping, Prismatic Evolutions and 151 hold price best." },
       { q: "Is it better to buy a booster box or singles?", a: "If you want one specific card, singles are cheaper. Buy a box for the experience of opening packs, or to hold sealed product through a print cycle as it appreciates." },
@@ -229,7 +229,7 @@ function articleSchema(origin: string, a: Article): string {
     author: { "@type": "Organization", name: "wmcp.sh" },
     publisher: { "@type": "Organization", name: "wmcp.sh", url: origin },
     dateModified: a.updated,
-    mainEntityOfPage: `${origin}/blog/${a.slug}`,
+    mainEntityOfPage: `${origin}/guides/${a.slug}`,
   };
   const faq = {
     "@context": "https://schema.org",
@@ -245,8 +245,8 @@ function articleSchema(origin: string, a: Article): string {
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: origin },
-      { "@type": "ListItem", position: 2, name: "Guides", item: `${origin}/blog` },
-      { "@type": "ListItem", position: 3, name: a.h1, item: `${origin}/blog/${a.slug}` },
+      { "@type": "ListItem", position: 2, name: "Guides", item: `${origin}/guides` },
+      { "@type": "ListItem", position: 3, name: a.h1, item: `${origin}/guides/${a.slug}` },
     ],
   };
   return [article, faq, crumbs]
@@ -258,7 +258,7 @@ function relatedHtml(a: Article): string {
   const links = a.related
     .map((s) => bySlug.get(s))
     .filter((r): r is Article => !!r)
-    .map((r) => `<li><a href="/blog/${r.slug}">${r.h1}</a></li>`)
+    .map((r) => `<li><a href="/guides/${r.slug}">${r.h1}</a></li>`)
     .join("");
   return links ? `<section class="related"><h2>Keep reading</h2><ul>${links}</ul></section>` : "";
 }
@@ -269,12 +269,12 @@ export function articleHtml(origin: string, a: Article): string {
 <meta charset="utf-8" />
 <title>${a.title}</title>
 <meta name="description" content="${a.desc}" />
-<link rel="canonical" href="${origin}/blog/${a.slug}" />
+<link rel="canonical" href="${origin}/guides/${a.slug}" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta property="og:type" content="article" />
 <meta property="og:title" content="${a.h1}" />
 <meta property="og:description" content="${a.desc}" />
-<meta property="og:url" content="${origin}/blog/${a.slug}" />
+<meta property="og:url" content="${origin}/guides/${a.slug}" />
 <style>${uiCss(760)}
   article p{line-height:1.7;margin:14px 0;color:var(--text)}
   article h2{margin:34px 0 6px;font-size:1.35rem}
@@ -289,7 +289,7 @@ ${articleSchema(origin, a)}
 </head><body>
 ${uiNav(origin)}
 <div class="wrap" style="padding-top:24px">
-  <nav class="crumbs"><a href="/">Home</a> › <a href="/blog">Guides</a> › <span>${a.h1}</span></nav>
+  <nav class="crumbs"><a href="/">Home</a> › <a href="/guides">Guides</a> › <span>${a.h1}</span></nav>
   <header>
     <h1>${a.h1}</h1>
     <p class="dek">${a.dek}</p>
@@ -313,7 +313,7 @@ ${uiNav(origin)}
   ${relatedHtml(a)}
 
   <footer>
-    <a href="/blog">All guides</a> · <a href="/drops">Restock guides</a> · <a href="/tools">Free tools</a> · <a href="/">wmcp.sh</a>
+    <a href="/guides">All guides</a> · <a href="/drops">Restock guides</a> · <a href="/tools">Free tools</a> · <a href="/">wmcp.sh</a>
   </footer>
 </div>
 </body></html>`;
@@ -321,7 +321,7 @@ ${uiNav(origin)}
 
 export function articlesIndexHtml(origin: string): string {
   const cards = ARTICLES.map(
-    (a) => `<a class="card" href="/blog/${a.slug}">
+    (a) => `<a class="card" href="/guides/${a.slug}">
       <h3 style="margin:0 0 6px">${a.h1}</h3>
       <p class="muted" style="margin:0">${a.dek}</p>
       <p class="dim" style="margin:8px 0 0;font-size:.82rem">${a.readMins} min · updated ${a.updated}</p>
@@ -332,7 +332,7 @@ export function articlesIndexHtml(origin: string): string {
 <meta charset="utf-8" />
 <title>Pokémon buying guides — what to buy, where, and for how much | wmcp.sh</title>
 <meta name="description" content="Honest, in-depth Pokémon buying guides: which booster boxes and sets are worth it, sealed vs singles, spotting fakes, and what holds value — plus how to buy at retail." />
-<link rel="canonical" href="${origin}/blog" />
+<link rel="canonical" href="${origin}/guides" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <style>${uiCss(820)}
   .grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));margin-top:18px}
