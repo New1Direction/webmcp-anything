@@ -171,12 +171,23 @@ app.get("/api/v1/stats/public", async (c) => {
 });
 
 app.get("/api/v1/directory", async (c) => {
-  const limit = Math.min(500, parseInt(c.req.query("limit") || "200", 10));
   const { slugFromUrl } = await import("./slug");
 
-  // Parallel: directory entries + verified set + featured ranks.
-  const [list, vList, fList] = await Promise.all([
-    c.env.CACHE.list({ prefix: "seen:", limit }),
+  // Paginate the FULL seen: set (KV.list caps at 1000/call) so the directory
+  // shows every site, not just the first 200 keys (which clustered on a few
+  // high-volume stores). The page groups these by host itself.
+  const seenKeys: any[] = [];
+  let cursor: string | undefined;
+  let pages = 0;
+  do {
+    const r: any = await c.env.CACHE.list({ prefix: "seen:", limit: 1000, cursor });
+    seenKeys.push(...r.keys);
+    cursor = r.list_complete ? undefined : r.cursor;
+    pages++;
+  } while (cursor && pages < 6 && seenKeys.length < 6000);
+  const list = { keys: seenKeys, list_complete: !cursor };
+
+  const [vList, fList] = await Promise.all([
     c.env.KEYS.list({ prefix: "verified:", limit: 1000 }),
     c.env.KEYS.list({ prefix: "featured:", limit: 1000 }),
   ]);
@@ -220,7 +231,9 @@ app.get("/api/v1/directory", async (c) => {
     return b.ts - a.ts;
   });
 
-  return c.json({ entries, list_complete: list.list_complete });
+  return c.json({ entries, list_complete: list.list_complete }, 200, {
+    "cache-control": "public, max-age=300, s-maxage=300",
+  });
 });
 
 app.get("/directory", (c) => {
