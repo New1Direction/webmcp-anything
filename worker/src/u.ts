@@ -11,6 +11,7 @@
 // /llms.txt, /llms-full.txt, and sitemapXml below.
 import { BLOG_POSTS, BLOG_SLUGS } from "./blog_posts";
 import { DROP_SLUGS, LOCALIZABLE_SLUGS, LOCALIZED_LANGS } from "./drops_seo";
+import { ARTICLE_SLUGS } from "./articles";
 
 const PROVIDER_BADGE: Record<string, { color: string; label: string }> = {
   shopify: { color: "#4ade80", label: "Shopify" },
@@ -403,6 +404,7 @@ install, no proxies, no server.
 - [QuickCatch vs sneaker bots](${origin}/drops/quickcatch-vs-sneaker-bots): comparison vs Valor/Cybersole/Kodai-style AIO bots
 - [How to snipe a Pokémon drop](${origin}/drops/how-to-snipe-pokemon-drops): step-by-step
 - [Free Pokémon tools](${origin}/tools): incl. the [retail vs resale calculator](${origin}/tools/pokemon-resale-calculator)
+- [Pokémon buying guides](${origin}/blog): in-depth articles on what's worth buying (booster boxes, sealed vs singles, spotting fakes, what holds value)
 - Localized in 11 languages at \`${origin}/drops/<lang>/<slug>\` — es, fr, de, pt, it, nl, pl, ja, ko, zh, zh-Hant (with hreflang; all URLs in /sitemap.xml)
 - Chrome Web Store: https://chromewebstore.google.com/detail/quickcatch/dgbaaeengmgmkefpocdckkiahilbfdlk
 
@@ -866,6 +868,16 @@ export async function sitemapXml(env: any, origin: string): Promise<string> {
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
+  <url>
+    <loc>${origin}/blog</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+${ARTICLE_SLUGS.map((slug) => `  <url>
+    <loc>${origin}/blog/${slug}</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>`).join("\n")}
   <url>
     <loc>${origin}/tools/pokemon-resale-calculator</loc>
     <changefreq>weekly</changefreq>

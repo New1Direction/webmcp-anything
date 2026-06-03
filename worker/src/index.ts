@@ -115,6 +115,18 @@ app.get("/drops/:lang/:slug", async (c) => {
   return c.html(dropPageHtml(new URL(c.req.url).origin, page, lang as any));
 });
 
+// Long-form buyer-intent articles (real editorial, eBay affiliate, link-worthy).
+app.get("/blog", async (c) => {
+  const { articlesIndexHtml } = await import("./articles");
+  return c.html(articlesIndexHtml(new URL(c.req.url).origin));
+});
+app.get("/blog/:slug", async (c) => {
+  const { getArticle, articleHtml } = await import("./articles");
+  const a = getArticle(c.req.param("slug"));
+  if (!a) return c.notFound();
+  return c.html(articleHtml(new URL(c.req.url).origin, a));
+});
+
 // Free lead-gen tools (engineering-as-marketing) + built-in funnel.
 app.get("/tools", async (c) => {
   const { toolsIndexHtml } = await import("./tools");

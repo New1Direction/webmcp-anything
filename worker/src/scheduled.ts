@@ -20,6 +20,7 @@ import * as shopify from "../../adapters/shopify.js";
 import { regradeWatched, seedRegistryGrades, scoreMcpServer, recordGrade } from "./mcp_grade";
 import { fireAlert } from "./alerts";
 import { DROP_SLUGS, LOCALIZABLE_SLUGS, LOCALIZED_LANGS } from "./drops_seo";
+import { ARTICLE_SLUGS } from "./articles";
 
 type Env = {
   CACHE: KVNamespace;
@@ -126,6 +127,8 @@ function seoUrls(): string[] {
   for (const lang of LOCALIZED_LANGS) {
     out.push(`${SITE_ORIGIN}/tools/${lang}`, `${SITE_ORIGIN}/tools/${lang}/pokemon-resale-calculator`);
   }
+  out.push(`${SITE_ORIGIN}/blog`);
+  for (const slug of ARTICLE_SLUGS) out.push(`${SITE_ORIGIN}/blog/${slug}`);
   return out;
 }
 
