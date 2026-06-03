@@ -1,3 +1,5 @@
+import { uiNav } from "./ui";
+
 export function directoryHtml(origin: string): string {
   return `<!doctype html>
 <html lang="en" translate="no">
@@ -215,9 +217,30 @@ export function directoryHtml(origin: string): string {
     .product-row { grid-template-columns: auto 1fr auto; }
     .product-row .age { display: none; }
   }
+  nav.bar{display:flex; justify-content:space-between; align-items:center; gap:16px; max-width:1080px; margin:0 auto; padding:18px 24px}
+  nav.bar .brand{display:flex; align-items:center; gap:9px; font-weight:800; color:var(--text); text-decoration:none; font-size:1rem}
+  nav.bar .coin{width:22px; height:22px; border-radius:50%; background:#f97316; border:2px solid #2a1500; position:relative; flex:none}
+  nav.bar .coin::after{content:"$"; position:absolute; inset:0; display:grid; place-items:center; color:#2a1500; font-size:11px; font-weight:900}
+  nav.bar .right{display:flex; align-items:center; gap:16px}
+  nav.bar .nl{color:var(--muted); text-decoration:none; font-size:.9rem}
+  nav.bar .nl:hover{color:var(--text)}
+  nav.bar .get{background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#2a1500; padding:9px 16px; border-radius:10px; font-weight:800; text-decoration:none; font-size:.9rem; white-space:nowrap}
+  nav.bar .navtog{display:none}
+  nav.bar .hamb{display:none; cursor:pointer; flex-direction:column; gap:5px; padding:8px; margin:-8px}
+  nav.bar .hamb span{display:block; width:22px; height:2px; background:var(--muted); border-radius:2px}
+  @media(max-width:640px){
+    nav.bar{position:relative; flex-wrap:wrap}
+    nav.bar .hamb{display:flex}
+    nav.bar .right{display:none; position:absolute; top:calc(100% - 2px); right:24px; left:24px; flex-direction:column; gap:0; align-items:stretch; background:var(--card); border:1px solid var(--border); border-radius:12px; padding:8px; z-index:60; box-shadow:0 14px 40px rgba(0,0,0,.45)}
+    nav.bar .navtog:checked ~ .right{display:flex}
+    nav.bar .right .nl{display:block; padding:12px; border-radius:8px}
+    nav.bar .right .nl:hover{background:var(--bg2)}
+    nav.bar .right .get{text-align:center; margin-top:4px}
+  }
 </style>
 </head>
 <body>
+${uiNav(origin)}
 <div class="wrap">
 <header>
   <h1>Directory</h1>
