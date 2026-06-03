@@ -330,8 +330,8 @@
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/connect_hub.ts": {
-    "mtime": 1780463655.8936124,
-    "ast_hash": "d2e28fa81f98001c628ccbbfcfba84ec",
+    "mtime": 1780472331.6781287,
+    "ast_hash": "256f860878c456982174c8a6ab030948",
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/connections.ts": {
@@ -375,8 +375,8 @@
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/drops_seo.ts": {
-    "mtime": 1780470429.0170784,
-    "ast_hash": "f64016c11c0bd185a0009dbac82f1b0b",
+    "mtime": 1780472261.8501039,
+    "ast_hash": "bda403bac246c98b435576b7f3741370",
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/engine.ts": {
@@ -660,8 +660,8 @@
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/mcp_grade.ts": {
-    "mtime": 1780463765.6869872,
-    "ast_hash": "2d3ced9bf349489b623f13add7b512bd",
+    "mtime": 1780472336.3907866,
+    "ast_hash": "efa3acae01d14d25cd70dadd7468b016",
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/mcp_oauth.ts": {
@@ -780,8 +780,8 @@
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/scheduled.ts": {
-    "mtime": 1780459764.625643,
-    "ast_hash": "4ff61febad44d88433ab02015a096bb4",
+    "mtime": 1780470869.103242,
+    "ast_hash": "74af297259675b2a7457af18b8f0cb5e",
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/selectors.ts": {
@@ -925,8 +925,8 @@
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/webmcp_bridge.ts": {
-    "mtime": 1780463619.0493782,
-    "ast_hash": "7ec8c8ff01fabc715ffb88cd52b7b3d2",
+    "mtime": 1780472340.691571,
+    "ast_hash": "bee1d48fc25f2ffe411012fa953cdb24",
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/test/behavior.test.ts": {
@@ -1475,8 +1475,13 @@
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/affiliate.ts": {
-    "mtime": 1780470316.8644555,
-    "ast_hash": "c56cff5f7f174a287c5eeff1049bd647",
+    "mtime": 1780472256.3268576,
+    "ast_hash": "9e00418bfb27015d818c31162b4c702f",
+    "semantic_hash": ""
+  },
+  "/Users/alexhearts/webmcp-anything/worker/src/ads.ts": {
+    "mtime": 1780472301.8163445,
+    "ast_hash": "b197fb9a11a16add78dc736d847aaec4",
     "semantic_hash": ""
   }
 }

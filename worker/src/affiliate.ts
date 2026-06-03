@@ -22,7 +22,7 @@ export interface AffiliateNet { label: string; tmpl: string }
 // Ordered best-fit first → that's the button order on the page. Each ships dark
 // until you paste its tmpl, so leaving unused ones empty is safe.
 export const AFFILIATE: AffiliateNet[] = [
-  { label: "eBay", tmpl: "" },
+  { label: "eBay", tmpl: "https://www.ebay.com/sch/i.html?_nkw={q}&mkcid=1&mkrid=711-53200-19255-0&siteid=0&campid=5339155495&customid=wmcp&toolid=10001&mkevt=1" },
   { label: "TCGplayer", tmpl: "" },
   { label: "Amazon", tmpl: "" },
   { label: "Whatnot", tmpl: "" },
