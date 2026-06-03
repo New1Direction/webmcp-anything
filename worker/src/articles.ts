@@ -214,6 +214,184 @@ export const ARTICLES: Article[] = [
     ],
     related: ["best-pokemon-booster-boxes-2026", "is-prismatic-evolutions-worth-it", "sealed-vs-singles-pokemon"],
   },
+
+  {
+    slug: "best-pokemon-elite-trainer-boxes-2026",
+    title: "Best Pokémon Elite Trainer Boxes (ETBs) to Buy in 2026 | wmcp.sh",
+    desc: "Which Pokémon Elite Trainer Boxes are worth buying in 2026 — what's inside an ETB, the best ones for value and collecting, and how ETBs compare to booster boxes.",
+    h1: "Best Pokémon Elite Trainer Boxes to Buy in 2026",
+    dek: "What's actually in an ETB, which ones are worth it, and when a booster box is the smarter buy.",
+    updated: "June 2026",
+    readMins: 6,
+    bodyHtml:
+      p(`An Elite Trainer Box (ETB) is the most popular single sealed SKU in Pokémon: 8–9 booster packs plus sleeves, dice, energy cards and a storage box, usually around $49.99 retail. It's the default "I want one nice sealed thing" purchase — but some ETBs are far better value than others.`) +
+      h2("1. Prismatic Evolutions ETB — best overall") +
+      p(`The Eeveelution set's ETB is the most demanded of the era. Strong pack contents, the best-looking accessories, and the sealed box holds value well thanks to special-set demand. If you buy one ETB this year, this is it.`) +
+      buy("Pokemon Prismatic Evolutions Elite Trainer Box") +
+      h2("2. Pokémon 151 — buy the UPC over the ETB") +
+      p(`151's standard ETB is good, but the <strong>Ultra Premium Collection</strong> is the SKU collectors actually chase here — more packs, premium accessories, and stronger resale. If you can find the UPC near retail, it beats the plain ETB.`) +
+      buy("Pokemon 151 Ultra Premium Collection") +
+      h2("3. Surging Sparks ETB — best for rippers") +
+      p(`If you're buying an ETB to open rather than shelf, Surging Sparks gives you the best shot at a marquee hit (Pikachu ex SIR) per dollar.`) +
+      buy("Pokemon Surging Sparks Elite Trainer Box") +
+      h2("ETB vs booster box — which should you buy?") +
+      p(`Per pack, a booster box is almost always cheaper than an ETB. You buy an ETB for the accessories, the display box, or as a single gift; you buy a booster box when you want the most packs for your money. See the full breakdown in <a href="/guides/pokemon-booster-bundle-vs-booster-box">bundle vs box</a>.`) +
+      h2("Buy at retail") +
+      p(`ETBs of hot sets sell out fast and resurface at a markup. Compare any listing with the <a href="/tools/pokemon-resale-calculator">resale calculator</a>, and use <a href="/">QuickCatch</a> plus the <a href="/drops">restock guides</a> to grab them at retail.`),
+    faqs: [
+      { q: "What comes in a Pokémon Elite Trainer Box?", a: "Typically 8–9 booster packs, card sleeves, dice or damage counters, energy cards, a player's guide, and a storage box — around $49.99 at retail." },
+      { q: "Is an Elite Trainer Box worth it?", a: "For the accessories, display box, or a single sealed gift, yes. If you just want the most packs per dollar, a booster box is better value." },
+    ],
+    related: ["best-pokemon-booster-boxes-2026", "pokemon-booster-bundle-vs-booster-box", "is-prismatic-evolutions-worth-it"],
+  },
+
+  {
+    slug: "pokemon-center-restock-times",
+    title: "Pokémon Center Restock Times: When Do Drops Happen? (2026) | wmcp.sh",
+    desc: "When Pokémon Center actually restocks sold-out sets, the patterns that exist (and the ones that don't), and how to catch a restock at retail instead of paying resale.",
+    h1: "Pokémon Center Restock Times: When Do Drops Happen?",
+    dek: "The honest answer: there's no fixed schedule — but there are patterns you can play.",
+    updated: "June 2026",
+    readMins: 6,
+    bodyHtml:
+      p(`The most-searched question for any sold-out set is "when does it restock?" Here's the honest answer, plus the patterns that actually help.`) +
+      h2("There is no published restock schedule") +
+      p(`Pokémon Center does not announce restock times in advance, and anyone claiming an exact daily schedule is guessing. Restocks happen in unpredictable waves — sometimes a trickle of single units throughout the day, sometimes a larger drop.`) +
+      h2("The patterns that do hold") +
+      p(`Across many restocks, a few tendencies show up: drops skew toward <strong>weekday mornings (US Eastern)</strong>; inventory often appears in <strong>short bursts</strong> rather than one big release; and items frequently flip between "out of stock" and "add to cart" for minutes at a time as carts are abandoned. None of these are guarantees — they're tendencies, not a timetable.`) +
+      h2("Why staring at the page doesn't work") +
+      p(`Restock windows can last seconds, and they often happen while you're asleep or at work. Manually refreshing is a losing game against both bots and luck. The only reliable approach is an automated watch that reacts the instant stock flips.`) +
+      p(`That's exactly what <a href="/">QuickCatch</a> does — it watches the product page and carts the item the moment it's back, so you don't have to babysit a tab. See the per-set <a href="/drops">restock guides</a> for the specific pages to watch.`) +
+      h2("If you'd rather just buy it now") +
+      p(`If you don't want to wait for a restock, the secondary market always has stock at a premium. Check what it's actually trading for and compare against retail with the <a href="/tools/pokemon-resale-calculator">resale calculator</a> before you pay up.`) +
+      buy("Pokemon Prismatic Evolutions Elite Trainer Box", "See it in stock now on eBay:") +
+      h2("Bottom line") +
+      p(`Don't chase a schedule that doesn't exist. Set an automated watch, play the weekday-morning tendency, and decide your max price in advance so you're ready when the window opens.`),
+    faqs: [
+      { q: "What time does Pokémon Center restock?", a: "There's no published schedule. Restocks tend to favor weekday mornings (US Eastern) and arrive in short, unpredictable bursts. An automated stock watch is far more reliable than guessing a time." },
+      { q: "How do I catch a Pokémon Center restock?", a: "Use an automated watcher that reacts the instant stock flips, rather than refreshing manually — restock windows can last only seconds. QuickCatch watches the page and carts the item for you." },
+      { q: "Does Pokémon Center restock sold-out sets?", a: "Yes, popular sets are usually restocked in waves over time, but without advance notice. Watching the product page is the only way to catch it at retail." },
+    ],
+    related: ["best-pokemon-booster-boxes-2026", "how-much-is-a-pokemon-booster-box", "best-places-to-buy-pokemon-cards-online"],
+  },
+
+  {
+    slug: "psa-vs-cgc-vs-beckett-pokemon",
+    title: "PSA vs CGC vs Beckett for Pokémon Cards: Which Grader in 2026? | wmcp.sh",
+    desc: "A practical comparison of PSA, CGC and Beckett for grading Pokémon cards in 2026 — cost, turnaround, slab demand and resale premium — and which to use for your card.",
+    h1: "PSA vs CGC vs Beckett for Pokémon Cards",
+    dek: "Which grading company gets you the best resale, for which card, at what cost.",
+    updated: "June 2026",
+    readMins: 7,
+    bodyHtml:
+      p(`Grading can multiply a card's value — or cost you more than the card is worth. The grader you choose matters because the market pays different premiums for each slab. Here's the practical breakdown for Pokémon.`) +
+      h2("PSA — the market default") +
+      p(`PSA slabs command the highest and most consistent resale premium for Pokémon, especially for modern chase cards and vintage. A PSA 10 is the benchmark buyers search for. The trade-off is cost and turnaround, which swing with demand. If you want maximum liquidity and resale, PSA is usually the answer.`) +
+      h2("CGC — strong value, growing demand") +
+      p(`CGC is typically cheaper and faster than PSA, and its slabs have gained real market acceptance. For mid-value modern cards where PSA's fees eat the upside, CGC often makes more economic sense. Resale premium is a notch below PSA but closing.`) +
+      h2("Beckett (BGS) — best for high-end vintage") +
+      p(`Beckett's reputation is strongest at the high end and for subgrades. A BGS 9.5/10 (especially a "Black Label") carries serious prestige on premium vintage. For everyday modern cards, it's usually overkill and slower.`) +
+      h2("Which should you use?") +
+      `<table class="tbl"><thead><tr><th>Your card</th><th>Best grader</th></tr></thead><tbody>` +
+      `<tr><td>Modern chase card for max resale</td><td>PSA</td></tr>` +
+      `<tr><td>Mid-value modern, cost-sensitive</td><td>CGC</td></tr>` +
+      `<tr><td>High-end vintage / want subgrades</td><td>Beckett (BGS)</td></tr>` +
+      `</tbody></table>` +
+      h2("Do the math before you grade") +
+      p(`Grading only pays if the graded price minus the raw price minus grading cost is positive — and that assumes you hit a 10. Run your card through the <a href="/tools/pokemon-grading-calculator">grading calculator</a> first. And check live graded comps before you commit:`) +
+      buy("PSA 10 Pokemon card", "See graded card prices on eBay:") +
+      p(`If you're buying raw to grade, read <a href="/guides/best-pokemon-cards-to-invest-2026">best cards to invest in</a> for which cards are worth the gamble.`),
+    faqs: [
+      { q: "Which grading company is best for Pokémon cards?", a: "PSA has the highest and most consistent resale premium for Pokémon, making it the default for max liquidity. CGC is cheaper and faster for mid-value cards; Beckett (BGS) is best for high-end vintage and subgrades." },
+      { q: "Is it worth grading Pokémon cards?", a: "Only when the graded value minus the raw value minus grading cost is positive — and that assumes a top grade. Run the numbers first; low-value cards rarely justify the fee." },
+      { q: "Is CGC as good as PSA for Pokémon?", a: "CGC slabs are widely accepted and usually cheaper and faster, but PSA still commands a higher resale premium for most Pokémon cards. CGC often wins on value for mid-tier modern cards." },
+    ],
+    related: ["best-pokemon-cards-to-invest-2026", "sealed-vs-singles-pokemon", "how-to-spot-fake-pokemon-booster-box"],
+  },
+
+  {
+    slug: "pokemon-booster-bundle-vs-booster-box",
+    title: "Pokémon Booster Bundle vs Booster Box: Which Is Better Value? | wmcp.sh",
+    desc: "Booster bundle vs booster box for Pokémon — how many packs each has, the real cost per pack, and which one to buy depending on your goal and budget.",
+    h1: "Booster Bundle vs Booster Box: Which to Buy?",
+    dek: "The cost-per-pack math that tells you which sealed SKU is actually the better deal.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Booster bundle, booster box, ETB — the sealed SKUs are easy to confuse, and the price-per-pack difference is bigger than most buyers realize. Here's the simple comparison.`) +
+      h2("What each one is") +
+      p(`A <strong>booster bundle</strong> is usually 6 packs for around $27 retail. A <strong>booster box</strong> is 36 packs for roughly $144–$160 retail (varies by set). An ETB sits in between with 8–9 packs plus accessories.`) +
+      h2("The cost-per-pack math") +
+      p(`Booster box: ~$160 ÷ 36 ≈ <strong>$4.40 a pack</strong>. Booster bundle: ~$27 ÷ 6 ≈ <strong>$4.50 a pack</strong>. ETB: ~$50 ÷ 9 ≈ <strong>$5.50 a pack</strong> (you're paying for the accessories). So per pack, the box is cheapest, the bundle is close, and the ETB costs the most per pack.`) +
+      h2("So which should you buy?") +
+      p(`Buy a <strong>booster box</strong> if you want the most packs per dollar or plan to hold sealed. Buy a <strong>bundle</strong> if you want a low-commitment rip without dropping box money. Buy an <strong>ETB</strong> if you want the accessories or a single gift. Want it sealed as a hold? The box appreciates better than the smaller SKUs.`) +
+      buy("Pokemon booster box") +
+      p(`Either way, compare against retail with the <a href="/tools/pokemon-resale-calculator">resale calculator</a> and catch restocks at retail with <a href="/">QuickCatch</a> — the per-pack math only works if you're not paying a resale markup on top.`),
+    faqs: [
+      { q: "How many packs are in a Pokémon booster bundle vs a booster box?", a: "A booster bundle is usually 6 packs; a booster box is 36 packs. An ETB has 8–9 packs plus accessories." },
+      { q: "Is a booster box cheaper per pack than a bundle?", a: "Slightly. A box works out to roughly $4.40 a pack vs about $4.50 for a bundle at retail. The ETB is the most expensive per pack because you're paying for the accessories." },
+    ],
+    related: ["best-pokemon-booster-boxes-2026", "best-pokemon-elite-trainer-boxes-2026", "how-much-is-a-pokemon-booster-box"],
+  },
+
+  {
+    slug: "how-much-is-a-pokemon-booster-box",
+    title: "How Much Is a Pokémon Booster Box? (Retail vs Resale 2026) | wmcp.sh",
+    desc: "What a Pokémon booster box actually costs in 2026 — retail prices by set type, why resale runs higher, and how to avoid overpaying the scalper premium.",
+    h1: "How Much Is a Pokémon Booster Box?",
+    dek: "Retail prices by set type, why resale runs higher, and what you should actually pay.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Booster box prices confuse buyers because there are two completely different numbers: the retail price (what stores charge) and the resale price (what it actually sells for when it's sold out). Here's both.`) +
+      h2("Retail prices in 2026") +
+      `<table class="tbl"><thead><tr><th>Product type</th><th>Typical retail</th></tr></thead><tbody>` +
+      `<tr><td>Standard set booster box (36 packs)</td><td>~$144–$160</td></tr>` +
+      `<tr><td>Special set booster box</td><td>~$160–$180</td></tr>` +
+      `<tr><td>Elite Trainer Box</td><td>~$49.99</td></tr>` +
+      `<tr><td>Booster bundle (6 packs)</td><td>~$26.99</td></tr>` +
+      `</tbody></table>` +
+      h2("Why resale is higher") +
+      p(`The moment a hyped set sells out at retail, the price you'll actually pay jumps. Resale on in-demand sealed boxes routinely runs well above MSRP during shortages — sometimes 1.5–2x for the hottest sets. That premium is pure cost: a box bought at 2x retail has to nearly double in value just for you to break even.`) +
+      h2("What you should actually pay") +
+      p(`Pay retail. The single biggest factor in whether sealed product is a good buy is your entry price, and buying at MSRP instead of resale is the whole edge. Run any listing through the <a href="/tools/pokemon-resale-calculator">retail vs resale calculator</a> to see exactly how much over MSRP you'd be paying.`) +
+      h2("How to get one at retail") +
+      p(`Boxes worth buying sell out in seconds. Use <a href="/">QuickCatch</a> to cart them the instant they restock, and the <a href="/drops">restock guides</a> to know where each set comes back. If you'd rather buy now and skip the wait, check current resale prices:`) +
+      buy("Pokemon booster box", "See current booster box prices on eBay:"),
+    faqs: [
+      { q: "How much does a Pokémon booster box cost?", a: "At retail, a standard 36-pack booster box runs about $144–$160, and special sets a bit more. Resale on sold-out hyped sets runs well above that — sometimes 1.5–2x MSRP." },
+      { q: "Why are Pokémon booster boxes so expensive?", a: "Retail prices are set by product type, but sold-out hyped sets command a large resale premium during shortages. Buying at retail instead of resale is the main way to avoid overpaying." },
+    ],
+    related: ["best-pokemon-booster-boxes-2026", "pokemon-booster-bundle-vs-booster-box", "pokemon-center-restock-times"],
+  },
+
+  {
+    slug: "best-places-to-buy-pokemon-cards-online",
+    title: "Best Places to Buy Pokémon Cards Online (2026) | wmcp.sh",
+    desc: "The best places to buy Pokémon cards online in 2026 — retailers for sealed product at MSRP, marketplaces for singles and graded cards, and which to use for what.",
+    h1: "Best Places to Buy Pokémon Cards Online",
+    dek: "Where to buy sealed at retail, where to buy singles, and how not to overpay.",
+    updated: "June 2026",
+    readMins: 6,
+    bodyHtml:
+      p(`Where you buy depends on what you're buying — sealed product, singles, or graded cards each have a best venue. Here's the practical map.`) +
+      h2("For sealed product at retail — the official retailers") +
+      p(`Pokémon Center, Walmart, Target, Best Buy, GameStop and Costco all carry sealed product at MSRP. The catch is availability: hot sets sell out in seconds. This is where you want to buy (lowest price), but you need to catch the restock. The <a href="/drops">restock guides</a> cover where each set drops, and <a href="/">QuickCatch</a> carts it the instant it's live.`) +
+      h2("For singles — TCGplayer and eBay") +
+      p(`If you want a specific card, marketplaces beat ripping packs. TCGplayer is the deepest singles marketplace; eBay is best for breadth, sold-price history and harder-to-find cards. Always check <em>sold</em> prices, not listed prices.`) +
+      buy("Pokemon single cards", "Browse singles on eBay:") +
+      h2("For graded cards — eBay") +
+      p(`eBay is the most liquid market for graded (PSA/CGC/Beckett) slabs, with the best comp history so you can see what a given grade actually sells for. If you're deciding whether to grade your own, see <a href="/guides/psa-vs-cgc-vs-beckett-pokemon">PSA vs CGC vs Beckett</a>.`) +
+      h2("For sealed at resale — eBay, with caution") +
+      p(`If a set is sold out everywhere and you don't want to wait, the secondary market has it at a premium. Buy from sellers with strong feedback and read <a href="/guides/how-to-spot-fake-pokemon-booster-box">how to spot a fake box</a> first — and run the price through the <a href="/tools/pokemon-resale-calculator">resale calculator</a> so you know your markup.`) +
+      h2("Bottom line") +
+      p(`Sealed at MSRP → official retailers (catch the restock). Singles → TCGplayer/eBay. Graded → eBay. The money you save by buying sealed at retail instead of resale dwarfs everything else.`),
+    faqs: [
+      { q: "Where is the best place to buy Pokémon cards online?", a: "For sealed product at retail: Pokémon Center, Walmart, Target, Best Buy and Costco (if you can catch the restock). For singles: TCGplayer and eBay. For graded cards: eBay, which has the deepest comp history." },
+      { q: "Is it safe to buy Pokémon cards on eBay?", a: "Yes, if you buy from sellers with strong feedback, check sold prices, and watch for counterfeit sealed product. eBay's buyer protection helps if an item isn't as described." },
+    ],
+    related: ["best-pokemon-booster-boxes-2026", "how-much-is-a-pokemon-booster-box", "psa-vs-cgc-vs-beckett-pokemon"],
+  },
 ];
 
 export const ARTICLE_SLUGS = ARTICLES.map((a) => a.slug);
@@ -280,7 +458,12 @@ export function articleHtml(origin: string, a: Article): string {
   article h2{margin:34px 0 6px;font-size:1.35rem}
   .dek{color:var(--muted);font-size:1.1rem;margin:4px 0 10px}
   .ameta{color:var(--dim);font-size:.85rem;margin-bottom:8px}
-  .buynow{margin:14px 0 6px}
+  /* subtle inline price-check aside — reads as a helpful note, not a banner */
+  .buynow{display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap;margin:6px 0 20px;padding:9px 14px;
+    border-left:2px solid var(--accent2);background:var(--bg2);border-radius:0 8px 8px 0}
+  .buynow-l{color:var(--muted);font-size:.85rem;margin:0}
+  .buynow .row{display:flex;gap:8px;flex-wrap:wrap}
+  .buynow .btn-ghost{padding:5px 12px;font-size:.85rem}
   .related ul{line-height:2}
   table.tbl{margin:14px 0}
   .cta{margin:30px 0;padding:18px 20px;border:1px solid var(--border);border-radius:14px;background:var(--bg2)}
