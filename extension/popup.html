@@ -206,6 +206,13 @@
     <button id="watch-btn">⚡ Watch this drop</button>
     <div id="watch-note">Watches in the background and carts it when it restocks. Keep Chrome open — you can close the tab.</div>
   </div>
+  <div id="capture-bar" style="padding:12px 16px;border-bottom:1px solid var(--border)">
+    <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">API Capture <span style="color:var(--accent2)">· beta</span></div>
+    <button id="cap-btn" class="run-btn" style="width:100%;padding:11px;font-size:13px">🎯 Capture this site's API</button>
+    <button id="cap-build" style="display:none;width:100%;padding:11px;margin-top:6px;font-size:13px;font-weight:700;border:none;border-radius:8px;cursor:pointer;font-family:inherit;background:var(--green);color:#06250f">⚙ Build agent tools (<span id="cap-count">0</span>)</button>
+    <div id="cap-note" style="font-size:10.5px;color:var(--muted);margin-top:7px;line-height:1.4">Turns this site's hidden API into agent-callable tools. Records this tab's calls locally; auth fields are redacted; nothing is sent until you Build.</div>
+    <div id="cap-result" class="result"></div>
+  </div>
   <main id="main">
     <div class="empty">Scanning current page…</div>
   </main>
