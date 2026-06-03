@@ -254,6 +254,26 @@ export type ExecResult = { ok: true; value: any } | { ok: false; status: number;
 // Mirrors what /api/v1/tools/execute did inline. `userId` is needed only by
 // the OpenAPI branch, whose injected resolveToken authenticates against the
 // caller's connected providers.
+// Execute a tool from a captured/synthesized spec (parsed from KV, not fetched —
+// avoids the worker looping on its own zone). Runs the real upstream API call.
+export async function executeCapturedTool(specJson: string, toolName: string, args: any, specUrl: string): Promise<ExecResult> {
+  let spec: any;
+  try { spec = JSON.parse(specJson); } catch { return { ok: false, status: 500, body: { error: "bad spec" } }; }
+  const { tools } = (openapi as any).extractFromSpec(spec, specUrl);
+  const tool = tools.find((t: any) => t.name === toolName);
+  if (!tool?.action) return { ok: false, status: 404, body: { error: "no such tool", available: tools.map((t: any) => t.name) } };
+  try {
+    const value = await (openapi.actions as any).openapi_request({ ...tool.action, args: args || {}, resolveToken: async () => null });
+    return { ok: true, value };
+  } catch (e: any) {
+    return { ok: false, status: 502, body: { error: String(e?.message || e) } };
+  }
+}
+
+export function listCapturedTools(specJson: string, specUrl: string): any[] {
+  try { return (openapi as any).extractFromSpec(JSON.parse(specJson), specUrl).tools; } catch { return []; }
+}
+
 export async function executeTool(
   env: EngineEnv,
   input: { url: string; tool: string; args?: any },

@@ -295,8 +295,8 @@
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/index.ts": {
-    "mtime": 1780518091.2774796,
-    "ast_hash": "4b95e3114b3cb090bf365200e54703ae",
+    "mtime": 1780519269.3197622,
+    "ast_hash": "e54cb0a1ec4bd18c836954dd9da12b53",
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/integration_airtable.ts": {
@@ -902,6 +902,11 @@
   "/Users/alexhearts/webmcp-anything/worker/src/mcp_pkg.ts": {
     "mtime": 1780518068.4407022,
     "ast_hash": "28ab0ef9df4d6d07dfe8c780648ca89f",
+    "semantic_hash": ""
+  },
+  "/Users/alexhearts/webmcp-anything/worker/src/flows2api.ts": {
+    "mtime": 1780519255.8423045,
+    "ast_hash": "59a2262284b702b83799fba60e0f5747",
     "semantic_hash": ""
   }
 }

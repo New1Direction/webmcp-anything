@@ -35,7 +35,7 @@ import {
 } from "./stripe";
 import { listManagedConnections } from "./connections";
 import { track } from "./metrics";
-import { resolveTools, executeTool, cacheKey, normalizeUrl, writeCache } from "./engine";
+import { resolveTools, executeTool, cacheKey, normalizeUrl, writeCache, executeCapturedTool, listCapturedTools } from "./engine";
 
 type Bindings = {
   CACHE: KVNamespace;
@@ -1334,18 +1334,39 @@ app.post("/api/v1/flows", gate("read"), async (c) => {
     toolset_id: id,
     openapi_url: openapiUrl,
     execute: {
-      endpoint: `${origin}/api/v1/tools/execute`,
+      endpoint: `${origin}/api/v1/toolset/${id}/execute`,
       method: "POST",
       note: "Paid (execute tier). Calls the real upstream API.",
-      example: { url: openapiUrl, tool: result.tools[0]?.name || "<tool>", args: {} },
+      example: { tool: result.tools[0]?.name || "<tool>", args: {} },
     },
   });
 });
-// Serve a synthesized (captured) spec — the /openapi.json path is what the adapter detects.
+// Serve a synthesized (captured) spec — external agents (Claude/Cursor) can fetch
+// this directly; the /openapi.json suffix is what the OpenAPI adapter detects.
 app.get("/toolset/:id/openapi.json", async (c) => {
   const raw = await c.env.CACHE.get(`flowspec:${c.req.param("id")}`);
   if (!raw) return c.json({ error: "not found or expired" }, 404);
   return c.body(raw, 200, { "content-type": "application/json; charset=utf-8", "cache-control": "public, max-age=300" });
+});
+// List a captured toolset's tools (discovery).
+app.get("/api/v1/toolset/:id", gate("read"), async (c) => {
+  const id = c.req.param("id");
+  const raw = await c.env.CACHE.get(`flowspec:${id}`);
+  if (!raw) return c.json({ error: "toolset not found or expired" }, 404);
+  const origin = new URL(c.req.url).origin;
+  return c.json({ toolset_id: id, openapi_url: `${origin}/toolset/${id}/openapi.json`, tools: listCapturedTools(raw, `${origin}/toolset/${id}/openapi.json`) });
+});
+// Execute a captured tool (paid) — reads the spec from KV, calls the real upstream.
+app.post("/api/v1/toolset/:id/execute", gate("execute"), async (c) => {
+  const id = c.req.param("id");
+  const raw = await c.env.CACHE.get(`flowspec:${id}`);
+  if (!raw) return c.json({ error: "toolset not found or expired" }, 404);
+  const body = await c.req.json<any>().catch(() => ({}));
+  if (!body.tool) return c.json({ error: "POST { tool, args }" }, 400);
+  const origin = new URL(c.req.url).origin;
+  const r = await executeCapturedTool(raw, body.tool, body.args, `${origin}/toolset/${id}/openapi.json`);
+  if (r.ok) { track(c.env, c.executionCtx, "activated"); return c.json({ ok: true, value: r.value }); }
+  return c.json(r.body, r.status as any);
 });
 
 app.get("/api/v1/tools", gate("read"), async (c) => {

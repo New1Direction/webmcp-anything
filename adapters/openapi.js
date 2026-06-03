@@ -74,7 +74,13 @@ export async function extract(ctx) {
     throw new Error("not an OpenAPI/Swagger document");
   }
 
-  const baseUrl = resolveBaseUrl(spec, ctx.specUrl);
+  return extractFromSpec(spec, ctx.specUrl);
+}
+
+// Build tools from an ALREADY-PARSED spec object. Used by the worker for its own
+// captured/synthesized specs, where fetching our own zone (extract) would loop.
+export function extractFromSpec(spec, specUrl) {
+  const baseUrl = resolveBaseUrl(spec, specUrl);
   const resolve = (s) => resolveRef(s, spec);
   const tools = [];
 

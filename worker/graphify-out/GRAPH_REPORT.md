@@ -1,16 +1,16 @@
 # Graph Report - worker  (2026-06-03)
 
 ## Corpus Check
-- 174 files · ~311,313 words
+- 175 files · ~312,356 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 865 nodes · 1490 edges · 119 communities (117 shown, 2 thin omitted)
+- 872 nodes · 1499 edges · 121 communities (119 shown, 2 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 4 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `ed06089f`
+- Built from commit: `2e4cfdb2`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -52,6 +52,8 @@
 - [[_COMMUNITY_Community 34|Community 34]]
 - [[_COMMUNITY_Community 35|Community 35]]
 - [[_COMMUNITY_Community 94|Community 94]]
+- [[_COMMUNITY_Community 119|Community 119]]
+- [[_COMMUNITY_Community 120|Community 120]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `integrationPageHtml()` - 20 edges
@@ -74,21 +76,21 @@
   test/mcp_skus.test.ts → src/stripe.ts
 - `fireSigned()` --calls--> `stripeWebhook()`  [EXTRACTED]
   test/money-path.test.ts → src/stripe.ts
-- `connectHubHtml()` --calls--> `adSlot()`  [EXTRACTED]
-  src/connect_hub.ts → src/ads.ts
+- `post()` --calls--> `makeCtx()`  [EXTRACTED]
+  test/mcp_oracle.test.ts → test/helpers.ts
 
 ## Import Cycles
 - None detected.
 
-## Communities (119 total, 2 thin omitted)
+## Communities (121 total, 2 thin omitted)
 
 ### Community 0 - "Community 0"
-Cohesion: 0.10
-Nodes (39): issueKey(), revokeKey(), connKey(), Env, hasManagedConnection(), isActive(), listManagedConnections(), EVENTS (+31 more)
+Cohesion: 0.05
+Nodes (69): Action, AuthCtx, bearer(), Bindings, consume(), gate(), issueKey(), KeyRecord (+61 more)
 
 ### Community 1 - "Community 1"
-Cohesion: 0.07
-Nodes (47): Action, AuthCtx, bearer(), Bindings, consume(), gate(), KeyRecord, Plan (+39 more)
+Cohesion: 0.11
+Nodes (28): cacheKey(), CRYPTO_ADAPTERS, EngineEnv, ExecResult, executeTool(), normalizeUrl(), readCache(), ResolveResult (+20 more)
 
 ### Community 2 - "Community 2"
 Cohesion: 0.06
@@ -100,15 +102,15 @@ Nodes (13): deriveCategory(), letter(), clamp(), getJson(), getText(), ghFromUrl
 
 ### Community 4 - "Community 4"
 Cohesion: 0.06
-Nodes (27): BEST_DEFS, BestDef, BESTOF, CAT_ORDER, COMBO_SETS, COMBO_STORES, COMBOS, CURATED (+19 more)
+Nodes (33): LANGS, BEST_DEFS, BestDef, BESTOF, CAT_ORDER, COMBO_SETS, COMBO_STORES, COMBOS (+25 more)
 
 ### Community 5 - "Community 5"
 Cohesion: 0.09
 Nodes (24): blockedTargetReason(), callMcp(), CATEGORIES, composite(), DriftOutcome, Env, finalizeSseLimited(), Finding (+16 more)
 
 ### Community 6 - "Community 6"
-Cohesion: 0.13
-Nodes (24): AlertEnv, fireAlert(), checkAdmin(), deriveSlug(), Env, featureListing(), getDirectoryState(), listSubmissions() (+16 more)
+Cohesion: 0.19
+Nodes (14): AlertEnv, fireAlert(), captureDirectorySubmission(), Env, sanitize(), SubmitBody, validEmail(), validUrl() (+6 more)
 
 ### Community 7 - "Community 7"
 Cohesion: 0.09
@@ -119,8 +121,8 @@ Cohesion: 0.16
 Nodes (13): integrationAirtableHtml(), integrationAnthropicHtml(), integrationDiscordHtml(), integrationGithubHtml(), integrationGoogleHtml(), integrationLinearHtml(), integrationNotionHtml(), integrationOpenaiHtml() (+5 more)
 
 ### Community 9 - "Community 9"
-Cohesion: 0.07
-Nodes (45): dashboardHtml(), cacheKey(), CRYPTO_ADAPTERS, EngineEnv, ExecResult, executeTool(), normalizeUrl(), readCache() (+37 more)
+Cohesion: 0.17
+Nodes (22): regradeWatched(), seedRegistryGrades(), addGradeServers(), addSeedStores(), cacheKey(), DEFAULT_STORES, Env, gradeManualSeed() (+14 more)
 
 ### Community 10 - "Community 10"
 Cohesion: 0.20
@@ -143,8 +145,8 @@ Cohesion: 0.29
 Nodes (15): LOCALIZED_LANGS, alternates(), Calc, calcUrl(), css(), esc(), funnelScript(), gradingCalculatorHtml() (+7 more)
 
 ### Community 15 - "Community 15"
-Cohesion: 0.19
-Nodes (10): BehaviorRecord, BehaviorSummary, Env, KEY(), pct(), readBehavior(), recordToolCall(), summarizeBehavior() (+2 more)
+Cohesion: 0.29
+Nodes (8): BehaviorRecord, Env, KEY(), pct(), readBehavior(), recordToolCall(), summarizeBehavior(), ToolStat
 
 ### Community 16 - "Community 16"
 Cohesion: 0.12
@@ -163,8 +165,8 @@ Cohesion: 0.31
 Nodes (5): decide(), Env, gradeForVerify(), verifyMcpServer(), VerifyVerdict
 
 ### Community 20 - "Community 20"
-Cohesion: 0.25
-Nodes (14): gradeRank(), readGrade(), recordGrade(), reputationFeed(), Env, gradeFor(), gradeSummary(), jerr() (+6 more)
+Cohesion: 0.21
+Nodes (11): Env, gradeFor(), gradeSummary(), jerr(), jrpc(), oracleHandler(), recommendation(), SUPPORTED (+3 more)
 
 ### Community 21 - "Community 21"
 Cohesion: 0.18
@@ -208,11 +210,11 @@ Nodes (6): adSlot(), CAT_LABEL, connectHubHtml(), CATEGORY_NAMES, categorySlug()
 
 ### Community 31 - "Community 31"
 Cohesion: 0.29
-Nodes (6): LANGS, DROP_PAGES, DROP_SLUGS, dropUrl(), isLocalizable(), LOCALIZABLE_SLUGS
+Nodes (12): b64urlDecode(), b64urlEncode(), claimStart(), claimVerify(), ctEqual(), Env, extractVerifyTokens(), fetchHtml() (+4 more)
 
 ### Community 32 - "Community 32"
-Cohesion: 0.29
-Nodes (3): diffTools(), goodTool, MockOpts
+Cohesion: 0.17
+Nodes (9): BehaviorSummary, diffTools(), gradeRank(), GradeResult, readGrade(), recordGrade(), reputationFeed(), goodTool (+1 more)
 
 ### Community 33 - "Community 33"
 Cohesion: 0.60
@@ -222,25 +224,33 @@ Nodes (4): badgeHandler(), Env, PILL_INDEXED(), PILL_VERIFIED()
 Cohesion: 0.60
 Nodes (4): embedHtml(), Env, escapeHtml(), verifyEmbedHandler()
 
+### Community 119 - "Community 119"
+Cohesion: 0.42
+Nodes (9): checkAdmin(), deriveSlug(), Env, featureListing(), getDirectoryState(), listSubmissions(), unfeatureListing(), unverifyListing() (+1 more)
+
+### Community 120 - "Community 120"
+Cohesion: 0.43
+Nodes (6): Flow, inferSchema(), safeJson(), synthesizeFromFlows(), SynthResult, templatePath()
+
 ## Knowledge Gaps
-- **198 isolated node(s):** `name`, `version`, `private`, `description`, `type` (+193 more)
+- **200 isolated node(s):** `name`, `version`, `private`, `description`, `type` (+195 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **2 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `LOCALIZED_LANGS` connect `Community 14` to `Community 4`, `Community 9`, `Community 11`, `Community 18`, `Community 31`?**
+- **Why does `LOCALIZED_LANGS` connect `Community 14` to `Community 9`, `Community 18`, `Community 11`, `Community 4`?**
   _High betweenness centrality (0.033) - this node is a cross-community bridge._
-- **Why does `mcpProxyHandler()` connect `Community 10` to `Community 0`, `Community 2`, `Community 3`, `Community 15`, `Community 20`?**
-  _High betweenness centrality (0.033) - this node is a cross-community bridge._
-- **Why does `resolveAuth()` connect `Community 1` to `Community 0`, `Community 2`?**
+- **Why does `mcpProxyHandler()` connect `Community 10` to `Community 0`, `Community 32`, `Community 2`, `Community 3`, `Community 15`?**
+  _High betweenness centrality (0.032) - this node is a cross-community bridge._
+- **Why does `resolveAuth()` connect `Community 0` to `Community 1`, `Community 2`, `Community 31`?**
   _High betweenness centrality (0.017) - this node is a cross-community bridge._
 - **What connects `name`, `version`, `private` to the rest of the system?**
-  _198 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _200 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 0` be split into smaller, more focused modules?**
-  _Cohesion score 0.09502262443438914 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.05347985347985348 - nodes in this community are weakly interconnected._
 - **Should `Community 1` be split into smaller, more focused modules?**
-  _Cohesion score 0.06801346801346801 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.10795454545454546 - nodes in this community are weakly interconnected._
 - **Should `Community 2` be split into smaller, more focused modules?**
   _Cohesion score 0.06086956521739131 - nodes in this community are weakly interconnected._
