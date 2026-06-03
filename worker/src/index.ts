@@ -1312,6 +1312,19 @@ app.get("/api/v1/debug", async (c) => {
  *   3. Fetch HTML + run JSON-LD adapter
  *   4. Cache miss / blocked → 404 with hint
  */
+// API Capture (premium): observed HTTP traffic → OpenAPI spec → agent tools.
+// The extension captures a site's XHR/fetch exchanges and POSTs them here. v1 is
+// read-gated; flip to gate("execute") to make it a paid-plan-only feature.
+app.post("/api/v1/flows", gate("read"), async (c) => {
+  const { synthesizeFromFlows } = await import("./flows2api");
+  const body = await c.req.json<any>().catch(() => null);
+  if (!body || !Array.isArray(body.flows) || !body.flows.length) {
+    return c.json({ error: "POST { flows: [{ method, url, status?, requestBody?, responseBody? }, ...] }" }, 400);
+  }
+  const flows = body.flows.slice(0, 2000);
+  return c.json(synthesizeFromFlows(flows, body.origin));
+});
+
 app.get("/api/v1/tools", gate("read"), async (c) => {
   const url = c.req.query("url");
   if (!url) return c.json({ error: "url query param required" }, 400);
