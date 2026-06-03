@@ -107,10 +107,10 @@ export function connectHubHtml(origin: string): string {
 
   return `<!doctype html><html lang="en"><head>
 <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Connect an MCP server — OAuth handled, credentials vaulted, trust graded | wmcp.sh</title>
+<title>The MCP hub — connect, grade & build any MCP server | wmcp.sh</title>
 <meta name="description" content="Connect ${proxied.length} OAuth-protected MCP servers (Linear, Notion, Atlassian, Asana, PayPal, Sentry, DefiLlama) once via wmcp.sh — then any agent calls them with the bearer token injected and refreshed, plus a free independent A–F trust grade that's continuously watched for drift & rug-pulls."/>
 <link rel="canonical" href="${origin}/connect"/>
-<meta property="og:title" content="Connect an MCP server | wmcp.sh"/>
+<meta property="og:title" content="The MCP hub — connect, grade & build any MCP server | wmcp.sh"/>
 <meta property="og:description" content="Connect once; any agent calls it with OAuth handled, credentials vaulted, and a continuously-watched trust grade."/>
 <meta property="og:url" content="${origin}/connect"/>
 <meta property="og:image" content="${origin}/og.png"/>
@@ -156,9 +156,15 @@ export function connectHubHtml(origin: string): string {
 </style></head><body>
 <div class="wrap">
   <a class="back" href="/">← wmcp.sh</a>
-  <h1>Connect an MCP server</h1>
-  <p class="lede">Connect once. Any agent — Claude, Cursor, Codex — then calls it at <code>${esc(origin)}/mcp/&lt;provider&gt;</code> with the OAuth bearer token injected and refreshed for you. No token pasting, ever.</p>
+  <h1>The MCP hub</h1>
+  <p class="lede">One hub for the Model Context Protocol: <strong>connect</strong> any MCP server with OAuth handled, <strong>grade</strong> any server for trust, and turn <strong>any URL</strong> into MCP tools. Any agent — Claude, Cursor, Codex — then calls it at <code>${esc(origin)}/mcp/&lt;provider&gt;</code>, bearer token injected and refreshed. No token pasting, ever.</p>
   <p class="sub">Every connection is <strong>credential-vaulted</strong> (encrypted, never in tool args), <strong>metered</strong>, and carries an <strong>independent A–F trust grade</strong> that we keep watching for drift &amp; rug-pulls.</p>
+  <div style="display:flex;flex-wrap:wrap;gap:10px;margin:18px 0 6px">
+    <a href="/mcp" style="background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:9px 14px;text-decoration:none;color:var(--text);font-weight:700;font-size:.9rem">🔌 Browse connectable servers</a>
+    <a href="/mcp/grade" style="background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:9px 14px;text-decoration:none;color:var(--text);font-weight:700;font-size:.9rem">🛡️ Grade an MCP server</a>
+    <a href="/directory" style="background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:9px 14px;text-decoration:none;color:var(--text);font-weight:700;font-size:.9rem">📚 Directory: any URL → MCP</a>
+    <a href="/directory/submit" style="background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:9px 14px;text-decoration:none;color:var(--text);font-weight:700;font-size:.9rem">➕ Submit your server</a>
+  </div>
 
   <div class="how">
     <div class="step"><b>1 · Connect</b><p>One OAuth click. wmcp.sh self-registers with the upstream (RFC 7591) — nothing to configure.</p></div>

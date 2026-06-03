@@ -78,39 +78,46 @@ A 30–60s screen-recording of arming a watch + the cart firing beats any image.
 
 **Name:** wmcp.sh
 
-**Tagline (≤60):** `Turn any URL into tools your AI agent can use`
+**Tagline (≤60, pick one):**
+- `The hub for the Model Context Protocol`
+- `Connect, grade & build any MCP server, one hub`
 
 **Topics:** Developer Tools · Artificial Intelligence · API · Open Source (if applicable)
 
-**Links:** Website = https://wmcp.sh
+**Links:** Website = https://wmcp.sh/connect
 
 **Description (~260 chars):**
 ```
-wmcp.sh turns any website into agent-callable MCP tools, no MCP server to build.
-Drop in a URL, get a JSON tool list (read price, add to cart, call an API) for
-Claude, OpenAI, or any agent. Free read tier; governed paid actions.
+wmcp.sh is the MCP hub: connect any MCP server with OAuth handled and an
+independent A–F trust grade, or turn any URL into agent-callable MCP tools, no
+server to build. One endpoint for Claude, Cursor, Codex, or any agent.
 ```
 
 **Maker's first comment:**
 ```
 Hey Product Hunt 👋
 
-Every MCP server I touched was hand-built, one per service. It felt backwards.
-So I built wmcp.sh: drop in any URL and get back agent-callable tools as
-MCP / tool-use JSON. One endpoint, any site.
+MCP is taking off but it's fragmented: every server is hand-built one per
+service, you paste OAuth tokens by hand, and you have no real way to know which
+third-party servers are safe to point an agent at.
 
-Reading is the easy part, so it's free. The useful part is acting, so the paid
-layer holds the credentials and proxies the action with governance on top:
-kill switch, spend caps, audit.
+So I built wmcp.sh as the MCP hub — three things in one place:
 
-One thing I learned: server-side fetch is blocked or JS-gated on a lot of big
-sites, so a browser extension reads the rendered page client-side and shares the
-same adapters as the worker. Built on Cloudflare Workers.
+1. Connect — hook up an MCP server with one OAuth click. The token is vaulted
+   (encrypted, never in tool args) and auto-refreshed. Your agent just calls
+   wmcp.sh/mcp/<provider>.
+2. Grade — an independent A–F trust grade for any MCP server, continuously
+   watched for drift and rug-pulls. Free, and your agent can gate on it before
+   it executes.
+3. Build — drop in any URL and get agent-callable MCP tools back, no server to
+   write. The read tier is free; the paid layer proxies real actions with
+   governance (kill switch, spend caps, audit).
 
-Free tier is live, would love feedback from anyone building agents.
+Built on Cloudflare Workers. Free tier is live: https://wmcp.sh/connect
+Would love feedback from anyone building or shipping MCP servers.
 ```
 
-**Gallery:** the API call → tool-list JSON; the directory; a vs-Composio comparison; the governance dashboard.
+**Gallery:** the /connect hub (connect + grade + build pillars); a trust-grade report with the A–F badge; the API call → tool-list JSON; the directory of servers; the governance dashboard.
 
 ---
 
