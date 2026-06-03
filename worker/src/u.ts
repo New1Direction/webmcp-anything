@@ -407,7 +407,7 @@ install, no proxies, no server.
 - [Free Pokémon tools](${origin}/tools): incl. the [retail vs resale calculator](${origin}/tools/pokemon-resale-calculator)
 - [Pokémon buying guides](${origin}/guides): in-depth articles on what's worth buying (booster boxes, sealed vs singles, spotting fakes, what holds value)
 - Localized in 11 languages at \`${origin}/drops/<lang>/<slug>\` — es, fr, de, pt, it, nl, pl, ja, ko, zh, zh-Hant (with hreflang; all URLs in /sitemap.xml)
-- Chrome Web Store: https://chromewebstore.google.com/detail/quickcatch/dgbaaeengmgmkefpocdckkiahilbfdlk
+- Chrome Web Store: https://chromewebstore.google.com/detail/quickcatch/bglmmkpaofofjnpkabfneeemgnjpjejl
 
 ## Vertical-specific agent-readiness guides
 

@@ -100,7 +100,7 @@ export function uiCss(maxWidth = 900): string {
   footer a{color:var(--accent2); text-decoration:none; margin-right:14px}`;
 }
 
-const STORE_URL = "https://chromewebstore.google.com/detail/quickcatch/dgbaaeengmgmkefpocdckkiahilbfdlk";
+const STORE_URL = "https://chromewebstore.google.com/detail/quickcatch/bglmmkpaofofjnpkabfneeemgnjpjejl";
 
 // Consistent top nav for every secondary page.
 // Drop-in email-capture block (self-contained styles + script) → POST /api/v1/leads.

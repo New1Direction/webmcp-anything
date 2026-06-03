@@ -8,7 +8,7 @@
 
 import { type Lang, LANGS, LOCALIZED_LANGS, T, PRICING } from "./drops_i18n";
 
-const STORE_URL = "https://chromewebstore.google.com/detail/quickcatch/dgbaaeengmgmkefpocdckkiahilbfdlk";
+const STORE_URL = "https://chromewebstore.google.com/detail/quickcatch/bglmmkpaofofjnpkabfneeemgnjpjejl";
 
 function esc(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");

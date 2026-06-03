@@ -21,7 +21,7 @@ import { affiliateButtons } from "./affiliate";
 export { LANGS, LOCALIZED_LANGS } from "./drops_i18n";
 export type { Lang } from "./drops_i18n";
 
-const STORE_URL = "https://chromewebstore.google.com/detail/quickcatch/dgbaaeengmgmkefpocdckkiahilbfdlk";
+const STORE_URL = "https://chromewebstore.google.com/detail/quickcatch/bglmmkpaofofjnpkabfneeemgnjpjejl";
 // Paste a Stripe Payment Link here to turn the Pro button into a real sale.
 // Until then the Pro button falls back to the founding-email capture.
 const PRO_URL = "";
