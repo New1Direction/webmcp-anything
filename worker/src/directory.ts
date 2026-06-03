@@ -1,8 +1,9 @@
 export function directoryHtml(origin: string): string {
   return `<!doctype html>
-<html lang="en">
+<html lang="en" translate="no">
 <head>
 <meta charset="utf-8" />
+<meta name="google" content="notranslate" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <title>Directory · WebMCP Anything</title>
