@@ -1312,6 +1312,12 @@ app.get("/api/v1/debug", async (c) => {
  *   3. Fetch HTML + run JSON-LD adapter
  *   4. Cache miss / blocked → 404 with hint
  */
+// API Capture developer landing (with live in-browser demo).
+app.get("/capture", async (c) => {
+  const { captureLandingHtml } = await import("./flows2api");
+  return c.html(captureLandingHtml(new URL(c.req.url).origin));
+});
+
 // API Capture (premium): observed HTTP traffic → OpenAPI spec → agent tools.
 // The extension captures a site's XHR/fetch exchanges and POSTs them here. v1 is
 // read-gated; flip to gate("execute") to make it a paid-plan-only feature.

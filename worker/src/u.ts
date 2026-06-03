@@ -879,6 +879,11 @@ export async function sitemapXml(env: any, origin: string): Promise<string> {
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
+  <url>
+    <loc>${origin}/capture</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
 ${CATEGORY_NAMES.map((c) => `  <url>
     <loc>${origin}/mcp/leaderboard/${categorySlug(c)}</loc>
     <changefreq>weekly</changefreq>

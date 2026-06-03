@@ -169,6 +169,7 @@ export function connectHubHtml(origin: string): string {
     <a class="pill" href="/mcp/grade">🛡️ Grade an MCP server</a>
     <a class="pill" href="/mcp">🔌 Connectable servers</a>
     <a class="pill" href="/webmcp">🌐 WebMCP</a>
+    <a class="pill" href="/capture">📡 API Capture</a>
     <a class="pill" href="/directory">📚 Directory</a>
   </div>
 

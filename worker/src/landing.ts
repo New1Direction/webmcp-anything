@@ -857,6 +857,7 @@ tools = [
     <div><h4>Product</h4>
       <a href="/directory">Directory</a>
       <a href="/webmcp">WebMCP</a>
+      <a href="/capture">API Capture</a>
       <a href="/connect">Connect an MCP server</a>
       <a href="/integration/shopify">Shopify</a>
       <a href="/integration/openapi">OpenAPI</a>
