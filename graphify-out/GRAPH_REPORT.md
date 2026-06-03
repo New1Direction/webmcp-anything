@@ -1,16 +1,16 @@
 # Graph Report - webmcp-anything  (2026-06-03)
 
 ## Corpus Check
-- 270 files · ~548,924 words
+- 270 files · ~549,252 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1810 nodes · 2570 edges · 204 communities (185 shown, 19 thin omitted)
+- 1813 nodes · 2579 edges · 202 communities (183 shown, 19 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 25 edges (avg confidence: 0.58)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `e92095fb`
+- Built from commit: `6da56d7e`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -104,7 +104,6 @@
 - [[_COMMUNITY_Community 87|Community 87]]
 - [[_COMMUNITY_Community 88|Community 88]]
 - [[_COMMUNITY_Community 89|Community 89]]
-- [[_COMMUNITY_Community 144|Community 144]]
 - [[_COMMUNITY_Community 149|Community 149]]
 - [[_COMMUNITY_Community 170|Community 170]]
 - [[_COMMUNITY_Community 174|Community 174]]
@@ -129,7 +128,6 @@
 - [[_COMMUNITY_Community 204|Community 204]]
 - [[_COMMUNITY_Community 205|Community 205]]
 - [[_COMMUNITY_Community 206|Community 206]]
-- [[_COMMUNITY_Community 207|Community 207]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `Per-page guidance (what each page is actually about)` - 26 edges
@@ -158,7 +156,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (204 total, 19 thin omitted)
+## Communities (202 total, 19 thin omitted)
 
 ### Community 0 - "Community 0"
 Cohesion: 0.05
@@ -221,8 +219,8 @@ Cohesion: 0.08
 Nodes (23): 1. Bing IndexNow (5 min) — already automated, 2. Bing Webmaster Tools (10 min), 3. Google Search Console (10 min), 4. Official MCP Registry (`modelcontextprotocol/registry`) — **as a REMOTE server, no npm package**, 5. Anthropic Connectors Directory (longest review — start NOW), Asset A — `server.json` (official registry, REMOTE server), Asset B — ready-to-paste listing copy (use for every directory), Asset C — awesome-mcp-servers PR line (punkpeye format) (+15 more)
 
 ### Community 15 - "Community 15"
-Cohesion: 0.29
-Nodes (8): BehaviorRecord, Env, KEY(), pct(), readBehavior(), recordToolCall(), summarizeBehavior(), ToolStat
+Cohesion: 0.19
+Nodes (10): BehaviorRecord, BehaviorSummary, Env, KEY(), pct(), readBehavior(), recordToolCall(), summarizeBehavior() (+2 more)
 
 ### Community 16 - "Community 16"
 Cohesion: 0.16
@@ -253,8 +251,8 @@ Cohesion: 0.12
 Nodes (16): 1/4 — the hook, 1/ — the hook, 2/4 — the insight, 2/ — the config, 3/4 — the network effect, 3/ — how it works (5-tier), 4/4 — the ask, 4/ — compose + toolsets (+8 more)
 
 ### Community 24 - "Community 24"
-Cohesion: 0.20
-Nodes (15): EngineEnv, buildToolIndex(), handleOne(), hostToken(), McpCtx, McpEnv, mcpHandler(), rpcError() (+7 more)
+Cohesion: 0.19
+Nodes (16): consume(), EngineEnv, buildToolIndex(), handleOne(), hostToken(), McpCtx, McpEnv, mcpHandler() (+8 more)
 
 ### Community 25 - "Community 25"
 Cohesion: 0.12
@@ -297,8 +295,8 @@ Cohesion: 0.29
 Nodes (12): b64urlDecode(), b64urlEncode(), claimStart(), claimVerify(), ctEqual(), Env, extractVerifyTokens(), fetchHtml() (+4 more)
 
 ### Community 35 - "Community 35"
-Cohesion: 0.46
-Nodes (6): base64urlEncode(), bridgeDescriptor(), slim(), SlimTool, webmcpShimJs(), tools
+Cohesion: 0.18
+Nodes (11): adSlot(), CAT_LABEL, connectHubHtml(), mcpLeaderboardHtml(), base64urlEncode(), bridgeDescriptor(), slim(), SlimTool (+3 more)
 
 ### Community 36 - "Community 36"
 Cohesion: 0.27
@@ -402,7 +400,7 @@ Nodes (6): `actions` (optional), Adapter contract, `detect(ctx) → null | Detec
 
 ### Community 61 - "Community 61"
 Cohesion: 0.05
-Nodes (70): Action, AuthCtx, bearer(), Bindings, consume(), gate(), issueKey(), KeyRecord (+62 more)
+Nodes (69): Action, AuthCtx, bearer(), Bindings, gate(), issueKey(), KeyRecord, Plan (+61 more)
 
 ### Community 62 - "Community 62"
 Cohesion: 0.29
@@ -473,16 +471,12 @@ Cohesion: 0.60
 Nodes (4): badgeHandler(), Env, PILL_INDEXED(), PILL_VERIFIED()
 
 ### Community 80 - "Community 80"
-Cohesion: 0.11
-Nodes (24): blockedTargetReason(), callMcp(), CATEGORIES, composite(), deriveCategory(), DriftOutcome, Env, finalizeSseLimited() (+16 more)
+Cohesion: 0.10
+Nodes (24): blockedTargetReason(), callMcp(), CATEGORIES, deriveCategory(), DriftOutcome, Env, finalizeSseLimited(), Finding (+16 more)
 
 ### Community 81 - "Community 81"
 Cohesion: 0.60
 Nodes (4): embedHtml(), Env, escapeHtml(), verifyEmbedHandler()
-
-### Community 144 - "Community 144"
-Cohesion: 0.27
-Nodes (8): articlesIndexHtml(), directoryHtml(), mcpLeaderboardHtml(), badgeHubHtml(), metricsPageHtml(), uiCss(), uiNav(), webmcpHubHtml()
 
 ### Community 174 - "Community 174"
 Cohesion: 0.22
@@ -517,32 +511,28 @@ Cohesion: 0.33
 Nodes (5): Don't, LAUNCH A — QuickCatch (fire when the extension is approved), LAUNCH B — wmcp.sh (live now, launch any day), Launch-day checklist (either launch), Product Hunt launch kit
 
 ### Community 199 - "Community 199"
-Cohesion: 0.23
-Nodes (8): baseCss(), CacheEntry, escapeHtml(), hostnameOf(), notFoundHtml(), PROVIDER_BADGE, relTime(), uHtml()
+Cohesion: 0.19
+Nodes (10): CATEGORY_NAMES, categorySlug(), baseCss(), CacheEntry, escapeHtml(), hostnameOf(), notFoundHtml(), PROVIDER_BADGE (+2 more)
 
 ### Community 200 - "Community 200"
 Cohesion: 0.32
 Nodes (9): blogIndexHtml(), blogPostHtml(), escapeHtml(), escapeJson(), footerHtml(), navHtml(), BLOG_POSTS, BLOG_SLUGS (+1 more)
 
 ### Community 203 - "Community 203"
-Cohesion: 0.17
-Nodes (9): BehaviorSummary, diffTools(), gradeRank(), GradeResult, readGrade(), recordGrade(), reputationFeed(), goodTool (+1 more)
+Cohesion: 0.20
+Nodes (7): composite(), diffTools(), gradeRank(), recordGrade(), reputationFeed(), goodTool, MockOpts
 
 ### Community 204 - "Community 204"
-Cohesion: 0.19
-Nodes (12): seedRegistryGrades(), Env, gradeFor(), gradeSummary(), jerr(), jrpc(), oracleHandler(), recommendation() (+4 more)
+Cohesion: 0.22
+Nodes (12): readGrade(), seedRegistryGrades(), Env, gradeFor(), gradeSummary(), jerr(), jrpc(), oracleHandler() (+4 more)
 
 ### Community 205 - "Community 205"
-Cohesion: 0.20
-Nodes (9): baseDomain(), COLOR, computeMcpSecurityReport(), family(), FINDING_EXCLUDE, FINDING_LABELS, FindingFreq, McpReportStats (+1 more)
+Cohesion: 0.16
+Nodes (15): articlesIndexHtml(), directoryHtml(), badgeHubHtml(), baseDomain(), COLOR, computeMcpSecurityReport(), family(), FINDING_EXCLUDE (+7 more)
 
 ### Community 206 - "Community 206"
 Cohesion: 0.31
 Nodes (5): decide(), Env, gradeForVerify(), verifyMcpServer(), VerifyVerdict
-
-### Community 207 - "Community 207"
-Cohesion: 0.38
-Nodes (3): adSlot(), CAT_LABEL, connectHubHtml()
 
 ## Knowledge Gaps
 - **702 isolated node(s):** `actions`, `HERE`, `FIXTURES`, `ETHEREUM_FEEDS`, `actions` (+697 more)
@@ -554,10 +544,10 @@ _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `LOCALIZED_LANGS` connect `Community 175` to `Community 5`, `Community 52`, `Community 13`, `Community 199`?**
   _High betweenness centrality (0.008) - this node is a cross-community bridge._
-- **Why does `mcpProxyHandler()` connect `Community 2` to `Community 203`, `Community 15`, `Community 80`, `Community 19`, `Community 61`?**
-  _High betweenness centrality (0.007) - this node is a cross-community bridge._
 - **Why does `resolveAuth()` connect `Community 61` to `Community 24`, `Community 2`, `Community 34`?**
   _High betweenness centrality (0.005) - this node is a cross-community bridge._
+- **Why does `providerStart()` connect `Community 2` to `Community 61`?**
+  _High betweenness centrality (0.004) - this node is a cross-community bridge._
 - **Are the 12 inferred relationships involving `Tool` (e.g. with `Any` and `str`) actually correct?**
   _`Tool` has 12 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 6 inferred relationships involving `WmcpClient` (e.g. with `Any` and `bool`) actually correct?**
