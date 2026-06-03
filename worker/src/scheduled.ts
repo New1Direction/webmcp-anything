@@ -467,6 +467,16 @@ export async function submitSeoIndexNow(c: any): Promise<Response> {
     return c.json({ error: "admin only" }, 401);
   }
   const all = seoUrls();
+  all.push(`${SITE_ORIGIN}/mcp/leaderboard`, `${SITE_ORIGIN}/webmcp`, `${SITE_ORIGIN}/connect`, `${SITE_ORIGIN}/directory`);
+  // Include every graded MCP-server report page (the moat content) in IndexNow.
+  try {
+    let cursor: string | undefined, pages = 0;
+    do {
+      const r: any = await env.CACHE.list({ prefix: "grade:", limit: 1000, cursor });
+      for (const k of r.keys) all.push(`${SITE_ORIGIN}/mcp/grade/${encodeURIComponent(k.name.slice("grade:".length))}`);
+      cursor = r.list_complete ? undefined : r.cursor; pages++;
+    } while (cursor && pages < 8);
+  } catch {}
   let submitted = 0;
   for (let i = 0; i < all.length; i += 10000) {
     const chunk = all.slice(i, i + 10000);
