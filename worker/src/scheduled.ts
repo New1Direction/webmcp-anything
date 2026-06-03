@@ -490,6 +490,47 @@ export async function submitSeoIndexNow(c: any): Promise<Response> {
 }
 
 /**
+ * Admin-gated BULK corpus re-grade. POST /api/v1/admin/regrade-corpus
+ * `x-admin-token` + ?n=<batch>&cursor=<kv-cursor>. Re-grades one cursor page of
+ * the gradewatch: set in parallel (fast probe) and returns the next cursor, so a
+ * caller can loop the whole corpus through the improved grader without the 2-week
+ * cron wait. Bounded per call (subrequests + wall-clock) by the batch size.
+ */
+export async function regradeCorpus(c: any): Promise<Response> {
+  const env: Env = c.env;
+  const token = c.req.header("x-admin-token");
+  if (!env.ADMIN_TOKEN || token !== env.ADMIN_TOKEN) {
+    return c.json({ error: "admin only" }, 401);
+  }
+  const n = Math.min(Math.max(parseInt(c.req.query("n") || "20", 10) || 20, 1), 40);
+  const cursor = c.req.query("cursor") || undefined;
+  const list: any = await env.CACHE.list({ prefix: "gradewatch:", limit: n, cursor });
+  const hosts: string[] = list.keys.map((k: any) => k.name.slice("gradewatch:".length));
+
+  let regraded = 0, failed = 0, reachable = 0, improved = 0;
+  await Promise.all(hosts.map(async (h) => {
+    const url = (await env.CACHE.get(`gradewatch:${h}`)) || `https://${h}/mcp`;
+    let prev: number | undefined;
+    try { const p = await env.CACHE.get(`grade:${h}`); if (p) prev = JSON.parse(p).score; } catch {}
+    try {
+      const fresh = await scoreMcpServer(url, { fast: true });
+      await recordGrade(env, fresh);
+      regraded++;
+      if (fresh.reachable) reachable++;
+      if (typeof prev === "number" && fresh.score > prev) improved++;
+    } catch { failed++; }
+  }));
+
+  return c.json({
+    ok: true,
+    batch: hosts.length,
+    regraded, failed, reachable, improved,
+    next_cursor: list.list_complete ? null : list.cursor,
+    done: !!list.list_complete,
+  });
+}
+
+/**
  * Admin-gated manual trigger. POST /api/v1/admin/seed-now with
  * `x-admin-token: <ADMIN_TOKEN>`. Runs the same logic as the cron and
  * returns the per-store report as JSON for quick verification.

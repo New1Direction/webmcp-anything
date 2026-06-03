@@ -103,9 +103,9 @@ export function blockedTargetReason(rawUrl: string): string | null {
 }
 
 // ---- low-level MCP call (handles JSON and SSE Streamable-HTTP responses) ----
-async function callMcp(url: string, message: any): Promise<{ status: number; ct: string; json: any; text: string }> {
+async function callMcp(url: string, message: any, timeoutMs = TIMEOUT_MS): Promise<{ status: number; ct: string; json: any; text: string }> {
   const ctrl = new AbortController();
-  const t = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
+  const t = setTimeout(() => ctrl.abort(), timeoutMs);
   try {
     const res = await fetch(url, {
       method: "POST",
@@ -152,9 +152,9 @@ const looksLikeMcpInit = (init: any): boolean =>
 
 // GET liveness check for legacy HTTP+SSE servers (which need a stream opened with
 // GET before they'll accept POSTed JSON-RPC). A 200 text/event-stream = alive.
-async function sseAlive(url: string): Promise<boolean> {
+async function sseAlive(url: string, timeoutMs = TIMEOUT_MS): Promise<boolean> {
   const ctrl = new AbortController();
-  const t = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
+  const t = setTimeout(() => ctrl.abort(), timeoutMs);
   try {
     const res = await fetch(url, {
       method: "GET",
@@ -173,7 +173,10 @@ interface ProbeResult { reachable: boolean; init: any | null; resolvedUrl: strin
 // Streamable HTTP (POST initialize, with one retry on the first for cold starts),
 // then fall back to an SSE GET liveness check. This stops us from mislabeling
 // slow / wrong-path / legacy-SSE servers as a false "unreachable F".
-async function probeMcp(url: string, host: string): Promise<ProbeResult> {
+async function probeMcp(url: string, host: string, fast = false): Promise<ProbeResult> {
+  // fast mode (bulk re-grade): short timeouts, no cold-start retry — dead servers
+  // fail quickly so a batch isn't held hostage by one unresponsive host.
+  const to = fast ? 6000 : TIMEOUT_MS;
   const cands: string[] = [];
   const add = (u: string) => { if (u && !cands.includes(u) && !blockedTargetReason(u)) cands.push(u); };
   add(url);
@@ -183,12 +186,12 @@ async function probeMcp(url: string, host: string): Promise<ProbeResult> {
   for (let i = 0; i < cands.length; i++) {
     const c = cands[i];
     let init: any = null;
-    try { init = await callMcp(c, initMsg()); }
-    catch { if (i === 0) { try { init = await callMcp(c, initMsg()); } catch {} } } // 1 retry on primary (cold start)
+    try { init = await callMcp(c, initMsg(), to); }
+    catch { if (i === 0 && !fast) { try { init = await callMcp(c, initMsg(), to); } catch {} } } // 1 retry on primary (cold start)
     if (looksLikeMcpInit(init)) return { reachable: true, init, resolvedUrl: c, transport: "streamable-http" };
   }
   for (const c of cands) {
-    if (await sseAlive(c)) return { reachable: true, init: null, resolvedUrl: c, transport: "sse" };
+    if (await sseAlive(c, to)) return { reachable: true, init: null, resolvedUrl: c, transport: "sse" };
   }
   return { reachable: false, init: null, resolvedUrl: url, transport: null };
 }
@@ -213,7 +216,7 @@ function finalizeSseLimited(r: GradeResult): GradeResult {
 }
 
 // ---- the grader ----
-export async function scoreMcpServer(rawUrl: string): Promise<GradeResult> {
+export async function scoreMcpServer(rawUrl: string, opts: { fast?: boolean } = {}): Promise<GradeResult> {
   const url = rawUrl.trim();
   let host = url;
   try { host = new URL(url).host.toLowerCase(); } catch {}
@@ -246,7 +249,7 @@ export async function scoreMcpServer(rawUrl: string): Promise<GradeResult> {
   // ---- probe: discover the MCP endpoint + transport (Streamable HTTP, then a
   //      legacy HTTP+SSE liveness check) before declaring anything unreachable ----
   const t0 = Date.now();
-  const probe = await probeMcp(url, host);
+  const probe = await probeMcp(url, host, opts.fast);
   if (!probe.reachable) {
     r.findings.push({ id: "reachable", severity: "fail", detail: "No MCP server responded at the conventional endpoints (timeout, network error, or unsupported transport)." });
     r.sub = { spec: z(20), security: z(30), reliability: z(20), hygiene: z(15), transparency: z(15) };

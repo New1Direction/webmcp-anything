@@ -660,8 +660,8 @@
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/mcp_grade.ts": {
-    "mtime": 1780480187.5978265,
-    "ast_hash": "aa854874be2e7886f0778310c920efce",
+    "mtime": 1780481334.0659983,
+    "ast_hash": "bb1d8331805620c8d19e2245e3eb27d2",
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/mcp_oauth.ts": {
@@ -1490,8 +1490,13 @@
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/mcp_report.ts": {
-    "mtime": 1780480347.8033693,
-    "ast_hash": "f61b85c44781a4f8a35c38b379bc4fcf",
+    "mtime": 1780481287.2809439,
+    "ast_hash": "3e15c486fca6953f178ccdd4639ddae7",
+    "semantic_hash": ""
+  },
+  "/Users/alexhearts/webmcp-anything/launch/state-of-mcp-security-posts.md": {
+    "mtime": 1780480978.0172956,
+    "ast_hash": "e2bce1f066a37ebb6ef232ab60cec13f",
     "semantic_hash": ""
   }
 }
