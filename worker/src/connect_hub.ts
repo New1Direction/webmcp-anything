@@ -152,6 +152,9 @@ export function connectHubHtml(origin: string): string {
   .two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
   @media(max-width:720px){.two{grid-template-columns:1fr}}
   .muted{color:var(--muted)}
+  .pillrow{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0 6px}
+  .pill{display:inline-flex;align-items:center;gap:7px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:9px 14px;color:var(--text);text-decoration:none;font-weight:700;font-size:.9rem}
+  .pill:hover{border-color:var(--accent)}
   footer{margin-top:60px;color:var(--dim);font-size:.85rem;border-top:1px solid var(--border);padding-top:18px}
 </style></head><body>
 <div class="wrap">
@@ -159,12 +162,12 @@ export function connectHubHtml(origin: string): string {
   <h1>The MCP hub</h1>
   <p class="lede">One hub for the Model Context Protocol: <strong>connect</strong> any MCP server with OAuth handled, <strong>grade</strong> any server for trust, and turn <strong>any URL</strong> into MCP tools. Any agent — Claude, Cursor, Codex — then calls it at <code>${esc(origin)}/mcp/&lt;provider&gt;</code>, bearer token injected and refreshed. No token pasting, ever.</p>
   <p class="sub">Every connection is <strong>credential-vaulted</strong> (encrypted, never in tool args), <strong>metered</strong>, and carries an <strong>independent A–F trust grade</strong> that we keep watching for drift &amp; rug-pulls.</p>
-  <div style="display:flex;flex-wrap:wrap;gap:10px;margin:18px 0 6px">
-    <a href="/mcp/leaderboard" style="background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:9px 14px;text-decoration:none;color:var(--text);font-weight:700;font-size:.9rem">🏆 Trust leaderboard</a>
-    <a href="/mcp/grade" style="background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:9px 14px;text-decoration:none;color:var(--text);font-weight:700;font-size:.9rem">🛡️ Grade an MCP server</a>
-    <a href="/mcp" style="background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:9px 14px;text-decoration:none;color:var(--text);font-weight:700;font-size:.9rem">🔌 Connectable servers</a>
-    <a href="/webmcp" style="background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:9px 14px;text-decoration:none;color:var(--text);font-weight:700;font-size:.9rem">🌐 WebMCP (in-browser)</a>
-    <a href="/directory" style="background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:9px 14px;text-decoration:none;color:var(--text);font-weight:700;font-size:.9rem">📚 Directory: any URL → MCP</a>
+  <div class="pillrow">
+    <a class="pill" href="/mcp/leaderboard">🏆 Trust leaderboard</a>
+    <a class="pill" href="/mcp/grade">🛡️ Grade an MCP server</a>
+    <a class="pill" href="/mcp">🔌 Connectable servers</a>
+    <a class="pill" href="/webmcp">🌐 WebMCP</a>
+    <a class="pill" href="/directory">📚 Directory</a>
   </div>
 
   <div class="how">

@@ -1,0 +1,110 @@
+// ui.ts — one shared design system for the secondary pages (leaderboard, webmcp
+// hub, connect, tools). Same tokens + spacing scale + components so everything
+// lines up and matches the homepage instead of each page rolling its own CSS.
+
+export function uiCss(maxWidth = 900): string {
+  return `
+  :root{
+    --bg:#07070d; --card:#16161f; --bg2:#11111c; --border:#26263a;
+    --text:#ececf5; --muted:#9a9ab0; --dim:#6a6a88;
+    --accent:#ff9e2c; --accent2:#ffcf7a; --green:#4ade80; --red:#ff5470;
+    --r:14px; --maxw:${maxWidth}px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; color:var(--text); background:var(--bg);
+    font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif;
+    line-height:1.6; font-size:16px;
+    background-image:radial-gradient(ellipse 900px 600px at 12% -5%,rgba(255,158,44,.13),transparent 60%);
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--accent2)}
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 24px}
+  /* top nav */
+  nav.bar{display:flex; justify-content:space-between; align-items:center; gap:16px;
+    max-width:1120px; margin:0 auto; padding:18px 24px}
+  nav.bar .brand{display:flex; align-items:center; gap:9px; font-weight:800; color:var(--text); text-decoration:none; font-size:1rem}
+  nav.bar .coin{width:22px; height:22px; border-radius:50%; background:#f97316; border:2px solid #2a1500; position:relative; flex:none}
+  nav.bar .coin::after{content:"$"; position:absolute; inset:0; display:grid; place-items:center; color:#2a1500; font-size:11px; font-weight:900}
+  nav.bar .nl{color:var(--muted); text-decoration:none; font-size:.9rem}
+  nav.bar .nl:hover{color:var(--text)}
+  nav.bar .get{background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#2a1500; padding:9px 16px; border-radius:10px; font-weight:800; text-decoration:none; font-size:.9rem; white-space:nowrap}
+  nav.bar .right{display:flex; align-items:center; gap:16px}
+  @media(max-width:640px){ nav.bar .right .nl{display:none} }
+  /* hero */
+  header.hero{padding:40px 0 8px}
+  h1{font-size:clamp(2rem,4.4vw,2.7rem); line-height:1.08; letter-spacing:-.022em; margin:0 0 14px}
+  h2{font-size:1.45rem; letter-spacing:-.01em; margin:34px 0 14px}
+  h3{font-size:1.05rem; margin:0 0 6px}
+  .lede{color:var(--muted); font-size:1.12rem; max-width:680px; margin:0 0 22px}
+  p{margin:0 0 14px}
+  .muted{color:var(--muted)} .dim{color:var(--dim)}
+  /* breadcrumb + small navs */
+  .crumbs{color:var(--muted); font-size:.85rem; padding-top:6px}
+  .crumbs a{color:var(--accent2); text-decoration:none}
+  .crumbs .sep{opacity:.5; margin:0 2px}
+  section{padding:24px 0}
+  /* buttons */
+  .row{display:flex; gap:12px; flex-wrap:wrap; align-items:center}
+  .btn{display:inline-flex; align-items:center; gap:8px; padding:12px 19px; border-radius:11px;
+    font-weight:800; font-size:.94rem; text-decoration:none; border:none; cursor:pointer; font-family:inherit; line-height:1; white-space:nowrap}
+  .btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#2a1500}
+  .btn-ghost{background:var(--bg2); color:var(--text); border:1px solid var(--border)}
+  .btn-primary:hover{filter:brightness(1.05)} .btn-ghost:hover{border-color:var(--accent)}
+  /* pill row (consistent quick-nav) */
+  .pillrow{display:flex; gap:10px; flex-wrap:wrap; margin:18px 0 6px}
+  .pill{display:inline-flex; align-items:center; gap:7px; background:var(--bg2); border:1px solid var(--border);
+    border-radius:10px; padding:9px 14px; color:var(--text); text-decoration:none; font-weight:700; font-size:.9rem}
+  .pill:hover{border-color:var(--accent); color:var(--text)}
+  .pill.cur{border-color:var(--accent); color:var(--accent2)}
+  /* cards + grids */
+  .card{background:var(--card); border:1px solid var(--border); border-radius:var(--r); padding:20px}
+  .grid{display:grid; gap:14px}
+  .grid.c2{grid-template-columns:repeat(2,1fr)}
+  .grid.c3{grid-template-columns:repeat(3,1fr)}
+  .grid.c4{grid-template-columns:repeat(4,1fr)}
+  @media(max-width:640px){ .grid.c2,.grid.c3,.grid.c4{grid-template-columns:1fr} }
+  .step b,.step .n{color:var(--accent2); font-weight:800; font-size:.78rem; letter-spacing:.08em; text-transform:uppercase}
+  .step p{margin:6px 0 0; color:var(--muted); font-size:.92rem}
+  /* table */
+  table.tbl{width:100%; border-collapse:collapse; background:var(--card); border:1px solid var(--border); border-radius:var(--r); overflow:hidden}
+  table.tbl th,table.tbl td{text-align:left; padding:12px 14px; border-bottom:1px solid var(--border); font-size:.93rem; vertical-align:middle}
+  table.tbl thead th{background:rgba(255,158,44,.07); font-size:.72rem; text-transform:uppercase; letter-spacing:.06em; color:var(--accent2); font-weight:700}
+  table.tbl tbody tr:last-child td{border-bottom:none}
+  table.tbl tbody tr:hover{background:rgba(255,255,255,.02)}
+  table.tbl td.num{text-align:right; font-variant-numeric:tabular-nums}
+  table.tbl td.rank{color:var(--dim); width:42px; text-align:right; font-variant-numeric:tabular-nums}
+  /* form inputs */
+  label.fld{display:flex; flex-direction:column; gap:6px; font-size:.78rem; text-transform:uppercase; letter-spacing:.05em; color:var(--dim)}
+  input,select{background:var(--bg2); border:1px solid var(--border); color:var(--text); border-radius:10px; padding:12px 14px; font-size:1rem; font-family:inherit; width:100%}
+  input:focus,select:focus{outline:none; border-color:var(--accent)}
+  /* code snippet */
+  .snip{background:var(--bg2); border:1px solid var(--border); border-radius:10px; padding:12px 14px;
+    font-family:"SF Mono",Menlo,monospace; font-size:.82rem; line-height:1.5; overflow-x:auto;
+    white-space:pre-wrap; word-break:break-all; margin:0; color:var(--text)}
+  details{background:var(--card); border:1px solid var(--border); border-radius:12px; padding:15px 18px; margin-bottom:10px}
+  details summary{font-weight:700; cursor:pointer; list-style:none}
+  details .a{color:var(--muted); margin-top:10px}
+  /* footer */
+  footer{margin-top:44px; padding:22px 0 40px; border-top:1px solid var(--border); color:var(--dim); font-size:.85rem}
+  footer a{color:var(--accent2); text-decoration:none; margin-right:14px}`;
+}
+
+const STORE_URL = "https://chromewebstore.google.com/detail/quickcatch/dgbaaeengmgmkefpocdckkiahilbfdlk";
+
+// Consistent top nav for every secondary page.
+export function uiNav(origin: string, opts: { get?: boolean } = {}): string {
+  const get = opts.get === false
+    ? ""
+    : `<a class="get" href="${origin}/connect">The MCP hub</a>`;
+  return `<nav class="bar">
+  <a class="brand" href="${origin}/"><span class="coin"></span> wmcp.sh</a>
+  <div class="right">
+    <a class="nl" href="${origin}/mcp/leaderboard">Leaderboard</a>
+    <a class="nl" href="${origin}/webmcp">WebMCP</a>
+    <a class="nl" href="${origin}/directory">Directory</a>
+    ${get}
+  </div>
+</nav>`;
+}

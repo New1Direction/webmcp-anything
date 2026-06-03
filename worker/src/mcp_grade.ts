@@ -10,6 +10,7 @@
 // Positioning: "static scanners read the label; wmcp.sh tasted the food."
 
 import { readBehavior, summarizeBehavior, type BehaviorSummary } from "./behavior";
+import { uiCss, uiNav } from "./ui";
 
 type Env = { CACHE: KVNamespace; KEYS?: KVNamespace };
 
@@ -808,7 +809,7 @@ export async function mcpLeaderboardHtml(env: Env, origin: string): Promise<stri
     return `<tr>
       <td class="rank">${i + 1}</td>
       <td><span class="g" style="color:${color};border-color:${color}55;background:${color}14">${esc(r.grade)}</span></td>
-      <td class="host"><a href="${origin}/mcp/grade/${encodeURIComponent(r.host)}">${esc(r.host)}</a></td>
+      <td><a class="host" href="${origin}/mcp/grade/${encodeURIComponent(r.host)}">${esc(r.host)}</a></td>
       <td class="num">${r.score}</td>
       <td class="num dim">${r.tools_count ?? "—"}</td>
       <td class="dim">${when}</td>
@@ -830,41 +831,27 @@ export async function mcpLeaderboardHtml(env: Env, origin: string): Promise<stri
 <meta property="og:description" content="Independent A–F trust grades for ${count} MCP servers, continuously watched."/>
 <meta property="og:image" content="${origin}/og.png"/>
 <script type="application/ld+json">${JSON.stringify(ld)}</script>
-<style>
-  :root{--bg:#07070d;--card:#16161f;--bg2:#11111c;--border:#26263a;--text:#ececf5;--muted:#8a8aa8;--dim:#6a6a88;--accent:#ff9e2c;--accent2:#ffcf7a}
-  *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif;line-height:1.5;background-image:radial-gradient(ellipse 900px 600px at 12% -5%,rgba(255,158,44,.14),transparent 60%)}
-  .wrap{max-width:860px;margin:0 auto;padding:40px 22px}
-  a{color:var(--accent2)}
-  .back{color:var(--muted);text-decoration:none;font-size:.85rem}
-  h1{font-size:clamp(1.8rem,4vw,2.5rem);margin:14px 0 8px;letter-spacing:-.02em}
-  .lede{color:var(--muted);max-width:680px;margin:0 0 18px}
-  .row{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0 24px}
-  .btn{display:inline-block;text-decoration:none;font-weight:800;padding:11px 17px;border-radius:10px;font-size:.92rem}
-  .btn-p{background:linear-gradient(135deg,#ff9120,#f25e00);color:#2a1500}
-  .btn-s{background:var(--bg2);color:var(--text);border:1px solid var(--border)}
-  table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden}
-  th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--border);font-size:.92rem}
-  thead th{background:rgba(255,158,44,.07);font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--accent2)}
-  tr:last-child td{border-bottom:none}
-  td.rank{color:var(--dim);width:34px}
-  td.num{text-align:right;font-variant-numeric:tabular-nums;width:56px} td.dim,.dim{color:var(--dim)}
-  td.host a{text-decoration:none;font-weight:600}
-  .g{display:inline-block;min-width:30px;text-align:center;font-weight:800;border:1px solid;border-radius:7px;padding:2px 7px;font-size:.85rem}
-  .empty{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:28px;text-align:center;color:var(--muted)}
-  footer{margin-top:34px;color:var(--dim);font-size:.82rem;border-top:1px solid var(--border);padding-top:16px}
+<style>${uiCss(900)}
+  .g{display:inline-block;min-width:32px;text-align:center;font-weight:800;border:1px solid;border-radius:7px;padding:3px 8px;font-size:.82rem}
+  table.tbl td .g{margin:0}
+  a.host{text-decoration:none;font-weight:600;color:var(--text)} a.host:hover{color:var(--accent2)}
+  .empty{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:32px;text-align:center;color:var(--muted)}
 </style></head><body>
+${uiNav(origin)}
 <div class="wrap">
-  <a class="back" href="${origin}/connect">← The MCP hub</a>
-  <h1>MCP Trust Leaderboard</h1>
-  <p class="lede">An independent A–F trust grade for every MCP server we have seen, scored on spec conformance, OWASP MCP security, reliability, tool hygiene, and transparency. Continuously re-checked for drift and rug-pulls. ${count} servers ranked.</p>
-  <div class="row">
-    <a class="btn btn-p" href="${origin}/mcp/grade">Grade your server — free</a>
-    <a class="btn btn-s" href="${origin}/connect">The MCP hub</a>
-  </div>
-  ${count ? `<table>
-    <thead><tr><th>#</th><th>Grade</th><th>MCP server</th><th class="num">Score</th><th class="num">Tools</th><th>Checked</th></tr></thead>
+  <header class="hero">
+    <p class="crumbs"><a href="${origin}/connect">The MCP hub</a> <span class="sep">›</span> Trust leaderboard</p>
+    <h1>MCP Trust Leaderboard</h1>
+    <p class="lede">An independent A–F trust grade for every MCP server we have seen — spec conformance, OWASP MCP security, reliability, tool hygiene, and transparency — re-checked continuously for drift and rug-pulls. ${count.toLocaleString()} servers ranked.</p>
+    <div class="row">
+      <a class="btn btn-primary" href="${origin}/mcp/grade">Grade your server — free</a>
+      <a class="btn btn-ghost" href="${origin}/webmcp">WebMCP →</a>
+    </div>
+  </header>
+  ${count ? `<section style="padding-top:10px"><table class="tbl">
+    <thead><tr><th class="num">#</th><th>Grade</th><th>MCP server</th><th class="num">Score</th><th class="num">Tools</th><th>Checked</th></tr></thead>
     <tbody>${body}</tbody>
-  </table>` : `<div class="empty">No servers graded yet. <a href="${origin}/mcp/grade">Grade the first one →</a></div>`}
+  </table></section>` : `<div class="empty">No servers graded yet. <a href="${origin}/mcp/grade">Grade the first one →</a></div>`}
   <footer>Grades are free and identical whether or not the operator pays. Methodology: <a href="${origin}/mcp/grade">/mcp/grade</a>. Add the oracle to your agent at <code>${origin}/mcp/trust</code>.</footer>
 </div>
 </body></html>`;
