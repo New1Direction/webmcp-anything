@@ -1061,11 +1061,16 @@ renderChat();
       if (Q.depth>zb[Q.sy][Q.sx]){ var bb = (Q.depth+1)/2; var idx = Math.max(0,Math.min(RAMP.length-1,Math.round(bb*(RAMP.length-1)))); grid[Q.sy][Q.sx] = RAMP[idx]; zb[Q.sy][Q.sx] = Q.depth; } }
     var out = ''; for (var ry = 0; ry < ROWS; ry++){ out += grid[ry].join('') + '\\n'; }
     el.textContent = out;
-    if (!reduce) raf = requestAnimationFrame(frame);
+    raf = requestAnimationFrame(frame);
   }
-  // Lazy: only animate once the section scrolls into view.
-  if ('IntersectionObserver' in window){ var io = new IntersectionObserver(function(es){ es.forEach(function(en){ if (en.isIntersecting){ frame(); io.disconnect(); } }); }); io.observe(el); }
-  else { frame(); }
+  var started = false;
+  function start(){ if (started) return; started = true; frame(); }
+  // Lazy-start when it scrolls into view, with a fallback so it always runs.
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(es){ if (es.some(function(en){ return en.isIntersecting; })){ start(); io.disconnect(); } });
+    io.observe(el);
+    setTimeout(start, 2500);
+  } else { start(); }
 })();
 </script>
 </body>

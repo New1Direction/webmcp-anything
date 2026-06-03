@@ -25,8 +25,6 @@ export function uiCss(maxWidth = 900): string {
   nav.bar{display:flex; justify-content:space-between; align-items:center; gap:16px;
     max-width:1120px; margin:0 auto; padding:18px 24px}
   nav.bar .brand{display:flex; align-items:center; gap:9px; font-weight:800; color:var(--text); text-decoration:none; font-size:1rem}
-  nav.bar .coin{width:22px; height:22px; border-radius:50%; background:#f97316; border:2px solid #2a1500; position:relative; flex:none}
-  nav.bar .coin::after{content:"$"; position:absolute; inset:0; display:grid; place-items:center; color:#2a1500; font-size:11px; font-weight:900}
   nav.bar .nl{color:var(--muted); text-decoration:none; font-size:.9rem}
   nav.bar .nl:hover{color:var(--text)}
   nav.bar .get{background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#2a1500; padding:9px 16px; border-radius:10px; font-weight:800; text-decoration:none; font-size:.9rem; white-space:nowrap}
@@ -110,7 +108,7 @@ export function uiNav(origin: string, opts: { get?: boolean } = {}): string {
     ? ""
     : `<a class="get" href="${origin}/dashboard">Dashboard →</a>`;
   return `<nav class="bar">
-  <a class="brand" href="${origin}/"><span class="coin"></span> wmcp.sh</a>
+  <a class="brand" href="${origin}/"><svg viewBox="0 0 24 24" fill="#ff9e2c" width="20" height="20" aria-hidden="true" style="flex:none"><path d="M12 1Q12.6 11.4 23 12Q12.6 12.6 12 23Q11.4 12.6 1 12Q11.4 11.4 12 1Z"/></svg>wmcp.sh</a>
   <input type="checkbox" id="wnavtog" class="navtog" aria-hidden="true" />
   <label for="wnavtog" class="hamb" aria-label="Toggle menu"><span></span><span></span><span></span></label>
   <div class="right">
