@@ -17,7 +17,7 @@
 // Skips stores that 4xx/5xx/timeout. Logs results to CF Tail.
 
 import * as shopify from "../../adapters/shopify.js";
-import { regradeWatched, seedRegistryGrades } from "./mcp_grade";
+import { regradeWatched, seedRegistryGrades, scoreMcpServer, recordGrade } from "./mcp_grade";
 import { fireAlert } from "./alerts";
 import { DROP_SLUGS, LOCALIZABLE_SLUGS, LOCALIZED_LANGS } from "./drops_seo";
 
@@ -143,6 +143,26 @@ async function submitSeoBatch(env: Env): Promise<number> {
   try { await env.CACHE.put(SEO_CURSOR_KEY, String(next)); } catch {}
   console.log(`[indexnow] seo batch: ${batch.length} urls (cursor ${cursor}→${next} of ${all.length})`);
   return batch.length;
+}
+
+// Agent-fed MCP grading firehose. External agents POST a big list of MCP server
+// URLs to /api/v1/admin/grade-servers; the cron grades a slice each run and they
+// land on /mcp/leaderboard + enter the continuous drift watch. This is how the
+// trust-graph moat scales without per-call rate limits — agents dump, cron eats.
+const GRADE_SEED_KEY = "gradeseed:manual";
+
+async function gradeManualSeed(env: Env, max = 18): Promise<{ graded: number; remaining: number }> {
+  let list: string[] = [];
+  try { const raw = await env.CACHE.get(GRADE_SEED_KEY); list = raw ? JSON.parse(raw) : []; } catch {}
+  if (!Array.isArray(list) || !list.length) return { graded: 0, remaining: 0 };
+  const batch = list.slice(0, max);
+  const rest = list.slice(max);
+  let graded = 0;
+  await Promise.all(batch.map(async (url) => {
+    try { const r = await scoreMcpServer(url); await recordGrade(env as any, r); graded++; } catch { /* unreachable / non-MCP — drop */ }
+  }));
+  try { await env.CACHE.put(GRADE_SEED_KEY, JSON.stringify(rest)); } catch {}
+  return { graded, remaining: rest.length };
 }
 
 const UA =
@@ -338,6 +358,14 @@ export async function scheduledHandler(
       .then((d) => console.log(`[cron] registry-seed: seeded=${d.seeded} nextCursor=${d.nextCursor || "(start)"}`))
       .catch((e) => console.log("[cron] registry-seed error", String(e)))
   );
+
+  // Agent-fed grading firehose: grade a slice of the manually-seeded MCP server
+  // URLs (POSTed by external agents to /api/v1/admin/grade-servers).
+  ctx.waitUntil(
+    gradeManualSeed(env)
+      .then((d) => console.log(`[cron] grade-seed: graded=${d.graded} remaining=${d.remaining}`))
+      .catch((e) => console.log("[cron] grade-seed error", String(e)))
+  );
 }
 
 const STORE_HOSTNAME_RE = /^[a-z0-9]([a-z0-9.-]*[a-z0-9])?\.[a-z]{2,}$/i;
@@ -386,6 +414,43 @@ export async function addSeedStores(c: any): Promise<Response> {
     rejected: body.stores.length - cleaned.length,
     newly_added: newly_added.length,
     total_stores_in_list: merged.length,
+  });
+}
+
+/**
+ * Admin-gated. POST /api/v1/admin/grade-servers with
+ * { urls: ["https://server.com/mcp", ...] }
+ * Queues MCP server URLs into `gradeseed:manual`; the cron grades a slice each
+ * run → they appear on /mcp/leaderboard and enter the continuous drift watch.
+ * The firehose external agents use to scale the trust-graph moat.
+ */
+export async function addGradeServers(c: any): Promise<Response> {
+  const env: Env = c.env;
+  const token = c.req.header("x-admin-token");
+  if (!env.ADMIN_TOKEN || token !== env.ADMIN_TOKEN) {
+    return c.json({ error: "admin only" }, 401);
+  }
+  const body: { urls?: string[] } | null = await c.req.json().catch(() => null);
+  if (!body || !Array.isArray(body.urls)) {
+    return c.json({ error: "urls array required" }, 400);
+  }
+  const cleaned = body.urls
+    .map((u) => String(u).trim())
+    .filter((u) => { try { return new URL(u).protocol === "https:"; } catch { return false; } });
+
+  let existing: string[] = [];
+  try { const raw = await env.CACHE.get(GRADE_SEED_KEY); if (raw) { const p = JSON.parse(raw); if (Array.isArray(p)) existing = p; } } catch {}
+  const before = new Set(existing);
+  const merged = [...new Set([...existing, ...cleaned])].slice(0, 20000);
+  const newly_added = merged.filter((u) => !before.has(u)).length;
+  await env.CACHE.put(GRADE_SEED_KEY, JSON.stringify(merged));
+
+  return c.json({
+    ok: true,
+    accepted: cleaned.length,
+    rejected: body.urls.length - cleaned.length,
+    newly_added,
+    queued_total: merged.length,
   });
 }
 
