@@ -16,6 +16,7 @@
 
 import { type Lang, type L, LANGS, LANG_LABEL, T, fill, PRICING } from "./drops_i18n";
 import { WHAT_IS, SHORT_LIST, GLOSS_I18N, BESTOF_I18N } from "./drops_i18n_content";
+import { affiliateButtons } from "./affiliate";
 
 export { LANGS, LOCALIZED_LANGS } from "./drops_i18n";
 export type { Lang } from "./drops_i18n";
@@ -446,6 +447,16 @@ const SET_DEFS: SetDef[] = [
   { name: "Pokémon Surprise Box", slug: "pokemon-surprise-box-restock", where: POKEMON_STORES, blurb: "The Pokémon Surprise Box bundles a stack of sealed product at a sharp price, which makes it a fast holiday sellout. QuickCatch watches the page and carts it the moment it restocks." },
   { name: "Pokémon Holiday Calendar", slug: "pokemon-holiday-calendar-restock", where: POKEMON_STORES, blurb: "The Pokémon holiday advent calendar lands once a year and sells out within days. QuickCatch watches the product page and adds it to your cart the moment stock returns." },
   { name: "Pokémon Battle Academy", slug: "pokemon-battle-academy-restock", where: POKEMON_STORES, blurb: "Pokémon Battle Academy is the go-to gift box for new players and restocks fast around the holidays. QuickCatch watches the page and carts it the second it is back in stock." },
+  { name: "Pokémon Trick or Trade", slug: "pokemon-trick-or-trade-restock", where: POKEMON_STORES, blurb: "The Pokémon Trick or Trade Halloween booster bundle lands once a year and sells out fast. QuickCatch watches the product page and adds it to your cart the moment it restocks." },
+  { name: "Scarlet & Violet Base Elite Trainer Box", slug: "scarlet-violet-base-etb-restock", where: POKEMON_STORES, blurb: "The Scarlet & Violet base Elite Trainer Box is a staple that restocks in waves and clears fast. QuickCatch watches the page and carts the ETB the second stock returns." },
+  { name: "Pokémon Paldea Adventure Chest", slug: "pokemon-paldea-adventure-chest-restock", where: POKEMON_STORES, blurb: "The Paldea Adventure Chest packs sealed product and accessories into a sharp-value box that sells out quickly. QuickCatch watches the page and adds it to your cart the moment it restocks." },
+  { name: "Pokémon ex Deluxe Battle Deck", slug: "pokemon-ex-deluxe-battle-deck-restock", where: POKEMON_STORES, blurb: "Pokémon ex Deluxe Battle Decks are popular ready-to-play products that restock fast. QuickCatch watches the product page and carts it the second it is back in stock." },
+  { name: "Pokémon V Battle Deck", slug: "pokemon-v-battle-deck-restock", where: POKEMON_STORES, blurb: "Pokémon V Battle Decks are a cheap entry that moves quickly on restock. QuickCatch watches the page and adds it to your cart the moment stock returns." },
+  { name: "Charizard ex Premium Collection", slug: "charizard-ex-premium-collection-restock", where: "Pokémon Center, Walmart, Best Buy, GameStop", blurb: "The Charizard ex Premium Collection sells out on the Charizard pull alone. QuickCatch watches the product page and adds it to your cart the moment it restocks." },
+  { name: "Paldean Fates Premium Collection", slug: "paldean-fates-premium-collection-restock", where: POKEMON_STORES, blurb: "Paldean Fates Premium Collections are a shiny-set favorite and clear out fast. QuickCatch watches the page and carts it the second it is back in stock." },
+  { name: "Pokémon GO Elite Trainer Box", slug: "pokemon-go-etb-restock", where: POKEMON_STORES, blurb: "The Pokémon GO Elite Trainer Box stays in demand for its crossover cards and restocks vanish quickly. QuickCatch watches the page and adds it to your cart the moment it returns." },
+  { name: "Crown Zenith Elite Trainer Box", slug: "crown-zenith-etb-restock", where: POKEMON_STORES, blurb: "The Crown Zenith Elite Trainer Box remains a top seller for its Galarian Gallery cards. QuickCatch watches the product page and carts the ETB the second stock returns." },
+  { name: "Pokémon Booster Box Case", slug: "pokemon-booster-box-case-restock", where: "Pokémon Center, Costco, Sam's Club", blurb: "A booster box case (multiple sealed boxes) is the bulk buy distributors and serious collectors chase. QuickCatch watches the product page and adds it to your cart the moment it restocks." },
 ];
 
 const SETS: DropPage[] = SET_DEFS.map(setPage);
@@ -1098,6 +1109,8 @@ ${head}
   .btn { display:inline-flex; align-items:center; gap:8px; padding:13px 20px; border-radius:11px; font-weight:800; text-decoration:none; border:none; cursor:pointer; font-size:.95rem; font-family:inherit; }
   .btn-primary { background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#2a1500; }
   .btn-ghost { background:var(--bg2); color:var(--text); border:1px solid var(--border); }
+  .buynow { margin-top:14px; }
+  .buynow-l { display:block; color:var(--muted); font-size:.85rem; margin-bottom:8px; }
   /* pricing */
   .plans { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:6px; }
   @media (max-width:600px){ .plans{ grid-template-columns:1fr; } }
@@ -1410,6 +1423,7 @@ ${localizable ? hreflangTags(origin, p.slug) + "\n" : ""}<meta property="og:titl
 
   ${f.comparison ? comparisonHtml(f.comparison) : ""}
   ${productCallout}
+  ${(p.kind === "set" || p.kind === "combo") && f.product ? affiliateButtons(f.product.name) : ""}
   ${f.extraHtml || ""}
 
   ${whySection(p.kind, ui)}
