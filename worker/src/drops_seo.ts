@@ -914,6 +914,103 @@ const BEST_DEFS: BestDef[] = [
 const BESTOF: DropPage[] = BEST_DEFS.map(bestPage);
 
 // ---------------------------------------------------------------------------
+// 9) Grading / card-terms cluster — high-intent, evergreen definitions that
+//    tie into the resale + grading-ROI calculators. English guides.
+// ---------------------------------------------------------------------------
+const GRADING_GUIDES: DropPage[] = [
+  guide("what-is-a-graded-pokemon-card", "What is a Graded Pokémon Card? | QuickCatch",
+    "A graded Pokémon card is one a company like PSA or CGC has authenticated and scored 1–10 for condition, then sealed in a slab.",
+    "What is a graded Pokémon card?",
+    "A graded Pokémon card has been sent to a grading company (PSA, CGC, or BGS), authenticated as genuine, scored on a 1 to 10 scale for centering, corners, edges, and surface, then sealed in a tamper-evident case. The grade sets the card's market value.",
+    "Pokémon", [
+      { q: "Why grade a card?", a: "Grading authenticates the card and can multiply its value — a PSA 10 often sells for several times the raw price." },
+      { q: "Which company should I use?", a: "PSA has the largest market and population data; CGC and BGS are strong alternatives. Weigh turnaround and fees for your card's value." },
+      { q: "How do I buy the raw card cheap first?", a: "Grading only pays if you buy the raw card at retail. QuickCatch carts it the moment it restocks; check the math with the grading ROI calculator." },
+    ]),
+  guide("psa-vs-cgc-vs-bgs", "PSA vs CGC vs BGS: Which Grader? | QuickCatch",
+    "PSA, CGC, and BGS all grade Pokémon cards 1–10. PSA has the biggest market, CGC is strong on modern cards, BGS is known for subgrades.",
+    "PSA vs CGC vs BGS: which grading company?",
+    "PSA, CGC, and BGS all authenticate and grade cards on a 1 to 10 scale. PSA has the deepest resale demand and population database, CGC is popular for modern cards and turnaround, and BGS is known for subgrades and the Black Label 10. The right pick depends on the card and your budget.",
+    "Pokémon", [
+      { q: "Which grader gets the highest resale?", a: "For most Pokémon, PSA carries the strongest resale demand and the largest pop database. CGC and BGS can match or beat it for specific cards." },
+      { q: "Which is cheapest or fastest?", a: "Fees and turnaround change often, so check current tiers. CGC and lower-value PSA tiers are usually the most affordable." },
+      { q: "Is grading worth it for my card?", a: "Run the numbers in the grading ROI calculator: raw price, expected graded value, and grading cost." },
+    ]),
+  guide("what-is-a-chase-card", "What is a Chase Card? | QuickCatch",
+    "A chase card is the rare, most-wanted card in a Pokémon set — the one collectors open packs hoping to pull.",
+    "What is a chase card?",
+    "A chase card is the standout rare in a Pokémon set, usually a special-art or hyper-rare version of a popular Pokémon, that collectors open packs chasing. Chase cards drive demand for the whole set and command the highest singles prices.",
+    "Pokémon", [
+      { q: "What makes a card a chase?", a: "A low pull rate plus high demand, usually a special illustration rare or alt art of a fan-favorite Pokémon." },
+      { q: "Should I pull it or buy the single?", a: "Pulling is a gamble; buying the single is certain. Sealed product is the bet, singles are the sure thing." },
+      { q: "How do I get sealed product at retail?", a: "Arm QuickCatch on the product page; it carts the box the moment it restocks." },
+    ]),
+  guide("what-is-an-alt-art-card", "What is an Alt Art Card? | QuickCatch",
+    "An alt art (alternate art) card is a special full-art Pokémon card with unique artwork and a rarer pull rate.",
+    "What is an alt art card?",
+    "An alternate art card, or alt art, is a special full-art version of a card with unique artwork that differs from the standard print. Alt arts have low pull rates and are among the most valuable and chased cards in modern Pokémon sets.",
+    "Pokémon", [
+      { q: "How rare are alt arts?", a: "They sit near the top of the rarity ladder with low pull rates, which is why their singles command premium prices." },
+      { q: "Are alt arts worth grading?", a: "A near-mint alt art that grades a 10 can multiply in value. Check it in the grading ROI calculator first." },
+      { q: "How do I land the set at retail?", a: "Arm QuickCatch on the product page and it carts the item the moment it restocks." },
+    ]),
+  guide("what-is-a-secret-rare", "What is a Secret Rare? | QuickCatch",
+    "A secret rare is a Pokémon card numbered beyond the set's printed total — a bonus rare like a gold or rainbow card.",
+    "What is a secret rare?",
+    "A secret rare is a card whose number exceeds the set's official count, like 201/200. They are bonus rares, often gold, rainbow, or special-texture versions, with low pull rates and strong collector demand.",
+    "Pokémon", [
+      { q: "How do I spot a secret rare?", a: "Its collector number is higher than the set's total printed count, so it sits past the last numbered card." },
+      { q: "Are secret rares valuable?", a: "Often yes, thanks to low pull rates and demand, though value varies by the Pokémon and finish." },
+      { q: "How do I buy the set at retail?", a: "Arm QuickCatch on the product page and it carts it the moment it restocks." },
+    ]),
+  guide("what-is-a-special-illustration-rare", "What is a Special Illustration Rare? | QuickCatch",
+    "A Special Illustration Rare (SIR) is a premium full-art Pokémon card with unique illustrated artwork and a very low pull rate.",
+    "What is a Special Illustration Rare?",
+    "A Special Illustration Rare, or SIR, is a premium full-art card in Scarlet & Violet sets featuring unique character illustration art. SIRs sit near the top of the rarity ladder and are among the most valuable chase cards in a set.",
+    "Pokémon", [
+      { q: "How is an SIR different from an alt art?", a: "SIR is the current name for the special full-art illustration tier; collectors often use alt art and SIR interchangeably for these cards." },
+      { q: "Why are SIRs so expensive?", a: "Very low pull rates plus high demand for the artwork push their single prices to the top of the set." },
+      { q: "How do I get the set at retail?", a: "Arm QuickCatch on the product page and it carts the box the moment it restocks." },
+    ]),
+  guide("what-is-pull-rate", "What is a Pull Rate? | QuickCatch",
+    "A pull rate is how often a specific Pokémon card appears per pack or box — the odds of pulling it.",
+    "What is a pull rate?",
+    "A pull rate is the probability of finding a specific card in a pack or box, often expressed as one in N packs. Chase cards like alt arts and special illustration rares have the lowest pull rates, which is why their singles cost the most.",
+    "Pokémon", [
+      { q: "What is a good pull rate?", a: "It depends on the card tier. Common rares hit often; chase alt arts and SIRs can be one in dozens of boxes." },
+      { q: "Does buying a box guarantee a chase?", a: "No. A box improves your odds but guarantees nothing. Singles are the only sure way to get a specific card." },
+      { q: "How do I buy boxes at retail?", a: "Arm QuickCatch on the product page; it carts the box the moment it restocks." },
+    ]),
+  guide("what-is-a-psa-population-report", "What is a PSA Population Report? | QuickCatch",
+    "A PSA population report shows how many copies of a card PSA has graded at each grade — a scarcity signal for collectors.",
+    "What is a PSA population report?",
+    "A PSA population report, or pop report, shows how many copies of a card PSA has graded at each grade. A low population at PSA 10 signals scarcity and supports a higher price; a high pop means the grade is common. Collectors use it to judge true rarity.",
+    "Pokémon", [
+      { q: "Why does the pop report matter?", a: "It reveals real scarcity at a given grade, which drives price more than the print run alone." },
+      { q: "Does a low pop guarantee value?", a: "Not on its own — demand matters too. Low pop plus high demand is what pushes price." },
+      { q: "How do I buy raw cards at retail?", a: "QuickCatch carts sealed product the moment it restocks, so you start at retail, not resale." },
+    ]),
+  guide("is-grading-pokemon-cards-worth-it", "Is Grading Pokémon Cards Worth It? | QuickCatch",
+    "Grading pays when the graded value beats the raw price plus grading and shipping. Here's how to decide, with a free calculator.",
+    "Is grading Pokémon cards worth it?",
+    "Grading is worth it when the graded value clears the raw price plus grading and shipping, and when the card has a realistic shot at a high grade. For low-value or played cards, the fees usually eat the upside. Run your numbers before you send.",
+    "Pokémon", [
+      { q: "How do I calculate if it's worth it?", a: "Use the grading ROI calculator: enter the raw price, the value at the grade you expect, and grading cost to see profit and margin." },
+      { q: "Which cards are worth grading?", a: "High-value chase cards in near-mint condition, where a PSA 10 multiplies the price. Bulk and played cards usually are not." },
+      { q: "Where do I buy the raw card at retail?", a: "QuickCatch carts sealed product and listings the moment they restock, so you start at retail not resale." },
+    ]),
+  guide("best-pokemon-cards-to-grade", "Best Pokémon Cards to Grade | QuickCatch",
+    "The best Pokémon cards to grade are high-demand chase cards in near-mint condition where a high grade multiplies value.",
+    "The best Pokémon cards to grade",
+    "The cards worth grading are the ones where a high grade multiplies the price: modern alt arts and special illustration rares of popular Pokémon, vintage holos in clean condition, and key chase cards from hyped sets. Condition is everything, so grade near-mint or better.",
+    "Pokémon", [
+      { q: "How do I know a card will profit from grading?", a: "Compare the raw price to the graded value minus grading cost in the grading ROI calculator." },
+      { q: "Is it worth grading bulk?", a: "Rarely. Grading fees outweigh the value of common cards; focus on chase cards and clean vintage." },
+      { q: "How do I source raw cards at retail?", a: "Arm QuickCatch on the product page and it carts the item the moment it restocks." },
+    ]),
+];
+
+// ---------------------------------------------------------------------------
 // Assemble. Order controls the index grouping fallback.
 // ---------------------------------------------------------------------------
 export const DROP_PAGES: DropPage[] = [
@@ -926,6 +1023,7 @@ export const DROP_PAGES: DropPage[] = [
   ...GUIDES,
   ...GLOSSARY,
   ...BESTOF,
+  ...GRADING_GUIDES,
 ];
 
 // Sets/stores/vs/combos exist in every locale; guides are English only.
