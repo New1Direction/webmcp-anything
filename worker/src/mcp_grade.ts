@@ -695,14 +695,14 @@ export function gradePageHtml(r: GradeResult, origin: string): string {
   </div>
   <p class="muted" style="font-size:.85rem;margin-top:10px">We re-grade <b>${esc(r.host)}</b> on a schedule and alert your Slack/webhook the moment its tools change or its grade drops — rug-pull insurance for the connection.</p>
 
-  <div class="embed">
+  <div class="embed" id="embed">
     <h3>Embed this grade</h3>
-    <p class="muted" style="font-size:.85rem">A <b>live</b> badge — it re-verifies itself and shows current stability. Static scorecards can't.</p>
+    <p class="muted" style="font-size:.85rem">A <b>live</b> badge — it re-verifies itself and shows current stability. Static scorecards can't. Paste it in your README or site to show users you're independently audited.</p>
     <div style="margin:10px 0"><img src="${badgeUrl}" alt="MCP Trust Grade ${r.grade} · wmcp.sh" height="44"/></div>
-    <label>Markdown</label>
-    <pre class="snip">[![MCP Trust Grade ${r.grade}](${badgeUrl})](${reportUrl})</pre>
+    <label>Markdown <span class="dim">(for your README)</span></label>
+    <div style="position:relative"><pre class="snip" id="snipMd">[![MCP Trust Grade ${r.grade}](${badgeUrl})](${reportUrl})</pre><button class="btn btn-ghost cpy" data-t="snipMd" style="position:absolute;top:7px;right:7px;padding:3px 10px;font-size:.78rem">Copy</button></div>
     <label>HTML</label>
-    <pre class="snip">${esc(`<a href="${reportUrl}"><img src="${badgeUrl}" alt="MCP Trust Grade ${r.grade} · wmcp.sh"></a>`)}</pre>
+    <div style="position:relative"><pre class="snip" id="snipHtml">${esc(`<a href="${reportUrl}"><img src="${badgeUrl}" alt="MCP Trust Grade ${r.grade} · wmcp.sh"></a>`)}</pre><button class="btn btn-ghost cpy" data-t="snipHtml" style="position:absolute;top:7px;right:7px;padding:3px 10px;font-size:.78rem">Copy</button></div>
   </div>
 
   <div class="oracle">
@@ -727,6 +727,15 @@ export function gradePageHtml(r: GradeResult, origin: string): string {
     }
     var da=document.getElementById("deepAudit"); if(da)da.onclick=function(){go("/api/v1/mcp/deep-audit/checkout");};
     var mo=document.getElementById("monitor"); if(mo)mo.onclick=function(){var w=(prompt("Optional https Slack-compatible webhook for drift alerts (blank to skip):")||"").trim();go("/api/v1/mcp/monitor/checkout", w?{alert_url:w}:{});};
+    Array.prototype.forEach.call(document.querySelectorAll(".cpy"),function(b){
+      b.addEventListener("click",function(){
+        var el=document.getElementById(b.getAttribute("data-t")); if(!el)return;
+        var txt=el.textContent||"";
+        (navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(txt):Promise.reject())
+          .then(function(){var o=b.textContent;b.textContent="Copied!";setTimeout(function(){b.textContent=o;},1400);})
+          .catch(function(){var rng=document.createRange();rng.selectNodeContents(el);var sel=window.getSelection();sel.removeAllRanges();sel.addRange(rng);try{document.execCommand("copy");b.textContent="Copied!";setTimeout(function(){b.textContent="Copy";},1400);}catch(e){}});
+      });
+    });
   })();
   </script>
 </div>
@@ -862,6 +871,7 @@ ${uiNav(origin)}
     <thead><tr><th class="num">#</th><th>Grade</th><th>MCP server</th><th class="num">Score</th><th class="num">Tools</th><th>Checked</th></tr></thead>
     <tbody>${body}</tbody>
   </table>${total > shown.length ? `<p class="muted" style="margin-top:12px;font-size:.85rem">Showing the top ${shown.length} by score of ${total.toLocaleString()} graded servers. Every graded server stays in the continuous drift watch.</p>` : ""}</section>` : `<div class="empty">No servers graded yet. <a href="${origin}/mcp/grade">Grade the first one →</a></div>`}
+  <p style="margin-top:18px"><a class="btn btn-ghost" href="${origin}/reports/state-of-mcp-security-2026">📊 Read the State of MCP Security report</a> <a class="btn btn-ghost" href="${origin}/mcp/badges">Get your trust badge →</a></p>
   ${adSlot()}
   <footer>Grades are free and identical whether or not the operator pays. Methodology: <a href="${origin}/mcp/grade">/mcp/grade</a>. Add the oracle to your agent at <code>${origin}/mcp/trust</code>.</footer>
 </div>

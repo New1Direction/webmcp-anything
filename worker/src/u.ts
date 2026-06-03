@@ -869,6 +869,16 @@ export async function sitemapXml(env: any, origin: string): Promise<string> {
     <priority>0.85</priority>
   </url>
   <url>
+    <loc>${origin}/reports/state-of-mcp-security-2026</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>${origin}/mcp/badges</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>${origin}/guides</loc>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>

@@ -470,7 +470,7 @@ export async function submitSeoIndexNow(c: any): Promise<Response> {
     return c.json({ error: "admin only" }, 401);
   }
   const all = seoUrls();
-  all.push(`${SITE_ORIGIN}/mcp/leaderboard`, `${SITE_ORIGIN}/webmcp`, `${SITE_ORIGIN}/connect`, `${SITE_ORIGIN}/directory`);
+  all.push(`${SITE_ORIGIN}/mcp/leaderboard`, `${SITE_ORIGIN}/webmcp`, `${SITE_ORIGIN}/connect`, `${SITE_ORIGIN}/directory`, `${SITE_ORIGIN}/reports/state-of-mcp-security-2026`, `${SITE_ORIGIN}/mcp/badges`);
   // Include every graded MCP-server report page (the moat content) in IndexNow.
   try {
     let cursor: string | undefined, pages = 0;

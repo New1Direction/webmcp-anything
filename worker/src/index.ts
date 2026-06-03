@@ -419,6 +419,25 @@ app.get("/mcp/grade/:host", async (c) => {
   return c.html(gradePageHtml(r, origin));
 });
 
+// "Get your badge" hub — the embed distribution funnel. MUST be before /mcp/:provider.
+app.get("/mcp/badges", async (c) => {
+  const { badgeHubHtml } = await import("./mcp_report");
+  return c.html(badgeHubHtml(new URL(c.req.url).origin));
+});
+
+// State of MCP Security — live, data-backed report (the link-bait asset).
+app.get("/reports/state-of-mcp-security-2026", async (c) => {
+  const { computeMcpSecurityReport, stateOfMcpSecurityHtml } = await import("./mcp_report");
+  const origin = new URL(c.req.url).origin;
+  const stats = await computeMcpSecurityReport(c.env as any);
+  return c.body(stateOfMcpSecurityHtml(origin, stats), 200, {
+    "content-type": "text/html; charset=utf-8",
+    "cache-control": "public, max-age=1800",
+  });
+});
+app.get("/reports/state-of-mcp-security", (c) => c.redirect("/reports/state-of-mcp-security-2026", 301));
+app.get("/reports", (c) => c.redirect("/reports/state-of-mcp-security-2026", 302));
+
 // Agent-callable MCP trust oracle (grade_mcp_server / check_mcp_drift). Free
 // read-tier so agents can gate connections on our grade. BEFORE /mcp/:provider.
 app.all("/mcp/trust", gate("read"), async (c) => {
