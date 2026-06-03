@@ -41,6 +41,7 @@ export interface GradeResult {
   latency_ms?: number;
   transport?: "streamable-http" | "sse"; // how we reached it (null/absent = unreachable)
   limited?: boolean;                      // reachable but couldn't fully enumerate (e.g. legacy SSE)
+  kind?: string;                          // "package" for statically-scanned stdio/npm servers
   // ---- drift / continuous re-verification (the wedge static scanners can't match) ----
   tool_sigs?: Record<string, string>; // per-tool short hash, for added/removed/changed diffing
   tools_hash_since?: number;           // when the CURRENT tool surface was first observed
@@ -239,7 +240,7 @@ const CATEGORIES: Array<[string, RegExp]> = [
   ["Web & Scraping", /scrape|crawl|\bfetch\b|browse|\bhtml\b|webpage|playwright|puppeteer|screenshot/i],
   ["Government & Data", /\bgov\b|census|statistics|\bfec\b|nhtsa|clinicaltrials|eurostat|registry|dataset|open.?data/i],
 ];
-function deriveCategory(tools: any[], host: string, title: string): string {
+export function deriveCategory(tools: any[], host: string, title: string): string {
   const blob = `${title} ${host} ${tools.map((t) => `${t?.name || ""} ${t?.description || ""}`).join(" ")}`.toLowerCase();
   for (const [cat, re] of CATEGORIES) if (re.test(blob)) return cat;
   return "Other";
@@ -828,12 +829,13 @@ export function gradePageHtml(r: GradeResult, origin: string): string {
   </div>
   ${attest}
   ${toolsHtml}
-  ${subRow("spec", "Spec conformance")}
+  ${subRow("spec", r.kind === "package" ? "Spec / packaging" : "Spec conformance")}
   ${subRow("security", "Security (OWASP MCP)")}
   ${subRow("reliability", "Reliability / performance")}
+  ${subRow("maintenance", "Maintenance / popularity")}
   ${subRow("hygiene", "Tool hygiene")}
   ${subRow("transparency", "Transparency / provenance")}
-  ${behavioralHtml}
+  ${r.kind === "package" ? "" : behavioralHtml}
   ${findingsHtml}
   <div class="cta">
     <button class="btn btn-p" id="monitor">Watch this server — drift &amp; rug-pull alerts →</button>

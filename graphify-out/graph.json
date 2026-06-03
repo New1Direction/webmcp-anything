@@ -5055,7 +5055,7 @@
       "source_file": "worker/src/alerts.ts",
       "source_location": "L1",
       "id": "src_alerts",
-      "community": 176,
+      "community": 5,
       "norm_label": "alerts.ts"
     },
     {
@@ -5064,7 +5064,7 @@
       "source_file": "worker/src/alerts.ts",
       "source_location": "L10",
       "id": "src_alerts_alertenv",
-      "community": 176,
+      "community": 5,
       "norm_label": "alertenv"
     },
     {
@@ -5073,7 +5073,7 @@
       "source_file": "worker/src/alerts.ts",
       "source_location": "L12",
       "id": "src_alerts_firealert",
-      "community": 176,
+      "community": 5,
       "norm_label": "firealert()"
     },
     {
@@ -5325,7 +5325,7 @@
       "source_file": "worker/src/auth.ts",
       "source_location": "L16",
       "id": "src_auth_plan",
-      "community": 178,
+      "community": 61,
       "norm_label": "plan"
     },
     {
@@ -5433,7 +5433,7 @@
       "source_file": "worker/src/auth.ts",
       "source_location": "L276",
       "id": "src_auth_revokekey",
-      "community": 61,
+      "community": 144,
       "norm_label": "revokekey()"
     },
     {
@@ -8196,7 +8196,7 @@
       "source_file": "worker/src/lead_capture.ts",
       "source_location": "L1",
       "id": "src_lead_capture",
-      "community": 176,
+      "community": 5,
       "norm_label": "lead_capture.ts"
     },
     {
@@ -8205,7 +8205,7 @@
       "source_file": "worker/src/lead_capture.ts",
       "source_location": "L20",
       "id": "src_lead_capture_env",
-      "community": 176,
+      "community": 5,
       "norm_label": "env"
     },
     {
@@ -8214,7 +8214,7 @@
       "source_file": "worker/src/lead_capture.ts",
       "source_location": "L26",
       "id": "src_lead_capture_leadbody",
-      "community": 176,
+      "community": 5,
       "norm_label": "leadbody"
     },
     {
@@ -8223,7 +8223,7 @@
       "source_file": "worker/src/lead_capture.ts",
       "source_location": "L38",
       "id": "src_lead_capture_sanitize",
-      "community": 176,
+      "community": 5,
       "norm_label": "sanitize()"
     },
     {
@@ -8232,7 +8232,7 @@
       "source_file": "worker/src/lead_capture.ts",
       "source_location": "L43",
       "id": "src_lead_capture_isvalidemail",
-      "community": 176,
+      "community": 5,
       "norm_label": "isvalidemail()"
     },
     {
@@ -8241,7 +8241,7 @@
       "source_file": "worker/src/lead_capture.ts",
       "source_location": "L47",
       "id": "src_lead_capture_isvalidurl",
-      "community": 176,
+      "community": 5,
       "norm_label": "isvalidurl()"
     },
     {
@@ -8250,7 +8250,7 @@
       "source_file": "worker/src/lead_capture.ts",
       "source_location": "L56",
       "id": "src_lead_capture_capturelead",
-      "community": 176,
+      "community": 5,
       "norm_label": "capturelead()"
     },
     {
@@ -8560,10 +8560,19 @@
       "norm_label": "categoryfromslug()"
     },
     {
-      "label": "scoreMcpServer()",
+      "label": "relTime()",
       "file_type": "code",
       "source_file": "worker/src/mcp_grade.ts",
       "source_location": "L252",
+      "id": "src_mcp_grade_reltime",
+      "community": 80,
+      "norm_label": "reltime()"
+    },
+    {
+      "label": "scoreMcpServer()",
+      "file_type": "code",
+      "source_file": "worker/src/mcp_grade.ts",
+      "source_location": "L264",
       "id": "src_mcp_grade_scoremcpserver",
       "community": 80,
       "norm_label": "scoremcpserver()"
@@ -8572,16 +8581,16 @@
       "label": "composite()",
       "file_type": "code",
       "source_file": "worker/src/mcp_grade.ts",
-      "source_location": "L422",
+      "source_location": "L434",
       "id": "src_mcp_grade_composite",
-      "community": 203,
+      "community": 80,
       "norm_label": "composite()"
     },
     {
       "label": "z()",
       "file_type": "code",
       "source_file": "worker/src/mcp_grade.ts",
-      "source_location": "L426",
+      "source_location": "L438",
       "id": "src_mcp_grade_z",
       "community": 80,
       "norm_label": "z()"
@@ -8590,16 +8599,16 @@
       "label": "letter()",
       "file_type": "code",
       "source_file": "worker/src/mcp_grade.ts",
-      "source_location": "L428",
+      "source_location": "L440",
       "id": "src_mcp_grade_letter",
-      "community": 181,
+      "community": 80,
       "norm_label": "letter()"
     },
     {
       "label": "GRADE_COLOR",
       "file_type": "code",
       "source_file": "worker/src/mcp_grade.ts",
-      "source_location": "L443",
+      "source_location": "L455",
       "id": "src_mcp_grade_grade_color",
       "community": 80,
       "norm_label": "grade_color"
@@ -8608,16 +8617,16 @@
       "label": "seedRegistryGrades()",
       "file_type": "code",
       "source_file": "worker/src/mcp_grade.ts",
-      "source_location": "L455",
+      "source_location": "L467",
       "id": "src_mcp_grade_seedregistrygrades",
-      "community": 204,
+      "community": 5,
       "norm_label": "seedregistrygrades()"
     },
     {
       "label": "gradeMeta()",
       "file_type": "code",
       "source_file": "worker/src/mcp_grade.ts",
-      "source_location": "L492",
+      "source_location": "L504",
       "id": "src_mcp_grade_grademeta",
       "community": 80,
       "norm_label": "grademeta()"
@@ -8626,7 +8635,7 @@
       "label": "persistGrade()",
       "file_type": "code",
       "source_file": "worker/src/mcp_grade.ts",
-      "source_location": "L495",
+      "source_location": "L507",
       "id": "src_mcp_grade_persistgrade",
       "community": 80,
       "norm_label": "persistgrade()"
@@ -8635,16 +8644,16 @@
       "label": "readGrade()",
       "file_type": "code",
       "source_file": "worker/src/mcp_grade.ts",
-      "source_location": "L498",
+      "source_location": "L510",
       "id": "src_mcp_grade_readgrade",
-      "community": 204,
+      "community": 203,
       "norm_label": "readgrade()"
     },
     {
       "label": "GRADE_ORDER",
       "file_type": "code",
       "source_file": "worker/src/mcp_grade.ts",
-      "source_location": "L505",
+      "source_location": "L517",
       "id": "src_mcp_grade_grade_order",
       "community": 80,
       "norm_label": "grade_order"
@@ -8653,7 +8662,7 @@
       "label": "gradeRank()",
       "file_type": "code",
       "source_file": "worker/src/mcp_grade.ts",
-      "source_location": "L506",
+      "source_location": "L518",
       "id": "src_mcp_grade_graderank",
       "community": 203,
       "norm_label": "graderank()"
@@ -8662,7 +8671,7 @@
       "label": "diffTools()",
       "file_type": "code",
       "source_file": "worker/src/mcp_grade.ts",
-      "source_location": "L508",
+      "source_location": "L520",
       "id": "src_mcp_grade_difftools",
       "community": 203,
       "norm_label": "difftools()"
@@ -8671,7 +8680,7 @@
       "label": "recordGrade()",
       "file_type": "code",
       "source_file": "worker/src/mcp_grade.ts",
-      "source_location": "L523",
+      "source_location": "L535",
       "id": "src_mcp_grade_recordgrade",
       "community": 203,
       "norm_label": "recordgrade()"
@@ -8680,7 +8689,7 @@
       "label": "notifyMonitorSubscribers()",
       "file_type": "code",
       "source_file": "worker/src/mcp_grade.ts",
-      "source_location": "L604",
+      "source_location": "L616",
       "id": "src_mcp_grade_notifymonitorsubscribers",
       "community": 80,
       "norm_label": "notifymonitorsubscribers()"
@@ -8689,7 +8698,7 @@
       "label": "regradeWatched()",
       "file_type": "code",
       "source_file": "worker/src/mcp_grade.ts",
-      "source_location": "L621",
+      "source_location": "L633",
       "id": "src_mcp_grade_regradewatched",
       "community": 5,
       "norm_label": "regradewatched()"
@@ -8698,7 +8707,7 @@
       "label": "reputationFeed()",
       "file_type": "code",
       "source_file": "worker/src/mcp_grade.ts",
-      "source_location": "L672",
+      "source_location": "L684",
       "id": "src_mcp_grade_reputationfeed",
       "community": 203,
       "norm_label": "reputationfeed()"
@@ -8707,7 +8716,7 @@
       "label": "gradeBadgeSvg()",
       "file_type": "code",
       "source_file": "worker/src/mcp_grade.ts",
-      "source_location": "L684",
+      "source_location": "L696",
       "id": "src_mcp_grade_gradebadgesvg",
       "community": 80,
       "norm_label": "gradebadgesvg()"
@@ -8716,16 +8725,16 @@
       "label": "gradePageHtml()",
       "file_type": "code",
       "source_file": "worker/src/mcp_grade.ts",
-      "source_location": "L701",
+      "source_location": "L713",
       "id": "src_mcp_grade_gradepagehtml",
-      "community": 71,
+      "community": 80,
       "norm_label": "gradepagehtml()"
     },
     {
       "label": "gradeHomeHtml()",
       "file_type": "code",
       "source_file": "worker/src/mcp_grade.ts",
-      "source_location": "L881",
+      "source_location": "L893",
       "id": "src_mcp_grade_gradehomehtml",
       "community": 80,
       "norm_label": "gradehomehtml()"
@@ -8734,7 +8743,7 @@
       "label": "mcpLeaderboardHtml()",
       "file_type": "code",
       "source_file": "worker/src/mcp_grade.ts",
-      "source_location": "L933",
+      "source_location": "L945",
       "id": "src_mcp_grade_mcpleaderboardhtml",
       "community": 35,
       "norm_label": "mcpleaderboardhtml()"
@@ -8826,7 +8835,7 @@
       "source_file": "worker/src/mcp_oauth.ts",
       "source_location": "L161",
       "id": "src_mcp_oauth_refreshpkcetoken",
-      "community": 181,
+      "community": 2,
       "norm_label": "refreshpkcetoken()"
     },
     {
@@ -8889,7 +8898,7 @@
       "source_file": "worker/src/mcp_oracle.ts",
       "source_location": "L93",
       "id": "src_mcp_oracle_gradefor",
-      "community": 204,
+      "community": 203,
       "norm_label": "gradefor()"
     },
     {
@@ -8934,7 +8943,7 @@
       "source_file": "worker/src/mcp_proxy.ts",
       "source_location": "L1",
       "id": "src_mcp_proxy",
-      "community": 181,
+      "community": 2,
       "norm_label": "mcp_proxy.ts"
     },
     {
@@ -8943,7 +8952,7 @@
       "source_file": "worker/src/mcp_proxy.ts",
       "source_location": "L27",
       "id": "src_mcp_proxy_env",
-      "community": 181,
+      "community": 2,
       "norm_label": "env"
     },
     {
@@ -8952,7 +8961,7 @@
       "source_file": "worker/src/mcp_proxy.ts",
       "source_location": "L66",
       "id": "src_mcp_proxy_strip_req_headers",
-      "community": 181,
+      "community": 2,
       "norm_label": "strip_req_headers"
     },
     {
@@ -8961,7 +8970,7 @@
       "source_file": "worker/src/mcp_proxy.ts",
       "source_location": "L82",
       "id": "src_mcp_proxy_strip_res_headers",
-      "community": 181,
+      "community": 2,
       "norm_label": "strip_res_headers"
     },
     {
@@ -8970,7 +8979,7 @@
       "source_file": "worker/src/mcp_proxy.ts",
       "source_location": "L89",
       "id": "src_mcp_proxy_getfreshupstreamtoken",
-      "community": 181,
+      "community": 2,
       "norm_label": "getfreshupstreamtoken()"
     },
     {
@@ -8979,7 +8988,7 @@
       "source_file": "worker/src/mcp_proxy.ts",
       "source_location": "L145",
       "id": "src_mcp_proxy_mcpproxyhandler",
-      "community": 181,
+      "community": 2,
       "norm_label": "mcpproxyhandler()"
     },
     {
@@ -8988,7 +8997,7 @@
       "source_file": "worker/src/mcp_proxy.ts",
       "source_location": "L379",
       "id": "src_mcp_proxy_mcpindexhtml",
-      "community": 71,
+      "community": 2,
       "norm_label": "mcpindexhtml()"
     },
     {
@@ -8997,7 +9006,7 @@
       "source_file": "worker/src/mcp_proxy.ts",
       "source_location": "L447",
       "id": "src_mcp_proxy_listmcpproxies",
-      "community": 181,
+      "community": 2,
       "norm_label": "listmcpproxies()"
     },
     {
@@ -9924,7 +9933,7 @@
       "source_file": "worker/src/scheduled.ts",
       "source_location": "L383",
       "id": "src_scheduled_addseedstores",
-      "community": 5,
+      "community": 178,
       "norm_label": "addseedstores()"
     },
     {
@@ -9933,7 +9942,7 @@
       "source_file": "worker/src/scheduled.ts",
       "source_location": "L430",
       "id": "src_scheduled_addgradeservers",
-      "community": 5,
+      "community": 178,
       "norm_label": "addgradeservers()"
     },
     {
@@ -9951,14 +9960,23 @@
       "source_file": "worker/src/scheduled.ts",
       "source_location": "L499",
       "id": "src_scheduled_regradecorpus",
-      "community": 5,
+      "community": 178,
       "norm_label": "regradecorpus()"
+    },
+    {
+      "label": "seedRegistry()",
+      "file_type": "code",
+      "source_file": "worker/src/scheduled.ts",
+      "source_location": "L540",
+      "id": "src_scheduled_seedregistry",
+      "community": 5,
+      "norm_label": "seedregistry()"
     },
     {
       "label": "runSeedNow()",
       "file_type": "code",
       "source_file": "worker/src/scheduled.ts",
-      "source_location": "L539",
+      "source_location": "L557",
       "id": "src_scheduled_runseednow",
       "community": 5,
       "norm_label": "runseednow()"
@@ -10149,7 +10167,7 @@
       "source_file": "worker/src/slug.ts",
       "source_location": "L1",
       "id": "src_slug",
-      "community": 72,
+      "community": 176,
       "norm_label": "slug.ts"
     },
     {
@@ -10158,7 +10176,7 @@
       "source_file": "worker/src/slug.ts",
       "source_location": "L12",
       "id": "src_slug_slugfromurl",
-      "community": 72,
+      "community": 176,
       "norm_label": "slugfromurl()"
     },
     {
@@ -10248,7 +10266,7 @@
       "source_file": "worker/src/stripe.ts",
       "source_location": "L482",
       "id": "src_stripe_createdirectoryverifiedcheckout",
-      "community": 144,
+      "community": 178,
       "norm_label": "createdirectoryverifiedcheckout()"
     },
     {
@@ -10257,7 +10275,7 @@
       "source_file": "worker/src/stripe.ts",
       "source_location": "L533",
       "id": "src_stripe_createfixcheckout",
-      "community": 144,
+      "community": 176,
       "norm_label": "createfixcheckout()"
     },
     {
@@ -10266,7 +10284,7 @@
       "source_file": "worker/src/stripe.ts",
       "source_location": "L571",
       "id": "src_stripe_createmanagedconnectioncheckout",
-      "community": 144,
+      "community": 178,
       "norm_label": "createmanagedconnectioncheckout()"
     },
     {
@@ -10275,7 +10293,7 @@
       "source_file": "worker/src/stripe.ts",
       "source_location": "L607",
       "id": "src_stripe_createdeepauditcheckout",
-      "community": 144,
+      "community": 178,
       "norm_label": "createdeepauditcheckout()"
     },
     {
@@ -10284,7 +10302,7 @@
       "source_file": "worker/src/stripe.ts",
       "source_location": "L633",
       "id": "src_stripe_createmonitorcheckout",
-      "community": 180,
+      "community": 178,
       "norm_label": "createmonitorcheckout()"
     },
     {
@@ -10293,7 +10311,7 @@
       "source_file": "worker/src/stripe.ts",
       "source_location": "L659",
       "id": "src_stripe_createsessionresponse",
-      "community": 144,
+      "community": 178,
       "norm_label": "createsessionresponse()"
     },
     {
@@ -10302,7 +10320,7 @@
       "source_file": "worker/src/stripe.ts",
       "source_location": "L678",
       "id": "src_stripe_safejson",
-      "community": 144,
+      "community": 178,
       "norm_label": "safejson()"
     },
     {
@@ -11571,7 +11589,7 @@
       "source_file": "worker/test/mcp_oracle.test.ts",
       "source_location": "L26",
       "id": "test_mcp_oracle_test_post",
-      "community": 180,
+      "community": 204,
       "norm_label": "post()"
     },
     {
@@ -11607,7 +11625,7 @@
       "source_file": "worker/test/money-path.test.ts",
       "source_location": "L1",
       "id": "test_money_path_test",
-      "community": 61,
+      "community": 180,
       "norm_label": "money-path.test.ts"
     },
     {
@@ -26565,9 +26583,9 @@
       "source_file": "worker/src/connect_hub.ts",
       "source_location": "L11",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_connect_hub",
-      "target": "src_mcp_grade",
-      "confidence_score": 1.0
+      "target": "src_mcp_grade"
     },
     {
       "relation": "imports",
@@ -26576,9 +26594,9 @@
       "source_file": "worker/src/connect_hub.ts",
       "source_location": "L11",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_connect_hub",
-      "target": "src_mcp_grade_category_names",
-      "confidence_score": 1.0
+      "target": "src_mcp_grade_category_names"
     },
     {
       "relation": "imports",
@@ -26587,9 +26605,9 @@
       "source_file": "worker/src/connect_hub.ts",
       "source_location": "L11",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_connect_hub",
-      "target": "src_mcp_grade_categoryslug",
-      "confidence_score": 1.0
+      "target": "src_mcp_grade_categoryslug"
     },
     {
       "relation": "imports_from",
@@ -30666,6 +30684,17 @@
       "source_file": "worker/src/index.ts",
       "source_location": "L12",
       "weight": 1.0,
+      "source": "worker_src_index_ts_src_index",
+      "target": "src_scheduled_seedregistry",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "worker/src/index.ts",
+      "source_location": "L12",
+      "weight": 1.0,
       "confidence_score": 1.0,
       "source": "worker_src_index_ts_src_index",
       "target": "src_scheduled_submitseoindexnow"
@@ -31971,6 +32000,16 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "worker/src/mcp_grade.ts",
+      "source_location": "L252",
+      "weight": 1.0,
+      "source": "src_mcp_grade",
+      "target": "src_mcp_grade_reltime",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "worker/src/mcp_grade.ts",
       "source_location": "L544",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -32448,6 +32487,17 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "worker/src/mcp_grade.ts",
+      "source_location": "L739",
+      "weight": 1.0,
+      "source": "src_mcp_grade_gradepagehtml",
+      "target": "src_mcp_grade_reltime",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "worker/src/mcp_grade.ts",
       "source_location": "L548",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -32639,6 +32689,17 @@
       "source_location": "L299",
       "weight": 1.0,
       "source": "src_scheduled_scheduledhandler",
+      "target": "src_mcp_grade_seedregistrygrades"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "worker/src/scheduled.ts",
+      "source_location": "L548",
+      "weight": 1.0,
+      "source": "src_scheduled_seedregistry",
       "target": "src_mcp_grade_seedregistrygrades"
     },
     {
@@ -35264,6 +35325,16 @@
       "confidence_score": 1.0,
       "source": "src_scheduled",
       "target": "src_scheduled_scheduledhandler"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "worker/src/scheduled.ts",
+      "source_location": "L540",
+      "weight": 1.0,
+      "source": "src_scheduled",
+      "target": "src_scheduled_seedregistry",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -43255,5 +43326,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "04299061ddc786123e7930bb4dd9e7557facf8e3"
+  "built_at_commit": "aeb375d1c78959705791cb6a9dd8f4c42d320021"
 }

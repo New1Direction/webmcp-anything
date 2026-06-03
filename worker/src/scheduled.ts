@@ -550,6 +550,23 @@ export async function seedRegistry(c: any): Promise<Response> {
 }
 
 /**
+ * Admin-gated STATIC package scan seeding. POST /api/v1/admin/seed-packages?n=<count>
+ * Walks the registry for npm-package (stdio) servers and statically grades them —
+ * growing the corpus past the remotely-reachable set. Loop it to cover the registry.
+ */
+export async function seedPackages(c: any): Promise<Response> {
+  const env: Env = c.env;
+  const token = c.req.header("x-admin-token");
+  if (!env.ADMIN_TOKEN || token !== env.ADMIN_TOKEN) {
+    return c.json({ error: "admin only" }, 401);
+  }
+  const n = Math.min(Math.max(parseInt(c.req.query("n") || "12", 10) || 12, 1), 20);
+  const { seedRegistryPackages } = await import("./mcp_pkg");
+  const r = await seedRegistryPackages(env, n);
+  return c.json({ ok: true, scanned: r.scanned, seeded: r.seeded, next_cursor: r.nextCursor, done: !r.nextCursor });
+}
+
+/**
  * Admin-gated manual trigger. POST /api/v1/admin/seed-now with
  * `x-admin-token: <ADMIN_TOKEN>`. Runs the same logic as the cron and
  * returns the per-store report as JSON for quick verification.

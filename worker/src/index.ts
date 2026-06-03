@@ -9,7 +9,7 @@ import { landingHtml } from "./landing";
 import { dashboardHtml } from "./dashboard";
 import { directoryHtml } from "./directory";
 import { ogSvg } from "./og";
-import { scheduledHandler, runSeedNow, addSeedStores, submitSeoIndexNow, addGradeServers, regradeCorpus, seedRegistry } from "./scheduled";
+import { scheduledHandler, runSeedNow, addSeedStores, submitSeoIndexNow, addGradeServers, regradeCorpus, seedRegistry, seedPackages } from "./scheduled";
 import { githubStart, githubCallback, logout, me, issueOwnKey } from "./oauth";
 import {
   getProviders,
@@ -417,6 +417,16 @@ app.get("/mcp/grade/:host", async (c) => {
   const host = c.req.param("host");
   const origin = new URL(c.req.url).origin;
   const { readGrade, scoreMcpServer, recordGrade, gradePageHtml } = await import("./mcp_grade");
+  // Package (stdio) servers: never probe — read the static scan, or run it on demand.
+  if (host.startsWith("npm:")) {
+    let pr = await readGrade(c.env as any, host);
+    if (!pr) {
+      const { scoreMcpPackage } = await import("./mcp_pkg");
+      try { pr = await scoreMcpPackage(host.slice(4)); await recordGrade(c.env as any, pr); } catch {}
+    }
+    if (!pr) return c.notFound();
+    return c.html(gradePageHtml(pr, origin));
+  }
   let r = await readGrade(c.env as any, host);
   if (!r) {
     // Not cached — grade the conventional endpoint (or an explicit ?url=).
@@ -1599,6 +1609,7 @@ app.post("/api/v1/admin/seo-indexnow", (c) => submitSeoIndexNow(c as any));
 app.post("/api/v1/admin/grade-servers", (c) => addGradeServers(c as any));
 app.post("/api/v1/admin/regrade-corpus", (c) => regradeCorpus(c as any));
 app.post("/api/v1/admin/seed-registry", (c) => seedRegistry(c as any));
+app.post("/api/v1/admin/seed-packages", (c) => seedPackages(c as any));
 
 // Default export — Cloudflare Workers expects `fetch` and (since we added
 // crons) `scheduled` as named handlers on the default export.
