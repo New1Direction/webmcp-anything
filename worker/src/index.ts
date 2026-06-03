@@ -413,6 +413,21 @@ app.get("/mcp/grade/:host/badge.svg", async (c) => {
     : `<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" width="190" height="44" role="img"><rect width="190" height="44" rx="10" fill="#11111c" stroke="#26263a"/><text x="12" y="27" font-family="sans-serif" font-size="11" fill="#8a8aa8">not yet graded · wmcp.sh</text></svg>`;
   return c.body(svg, 200, { "content-type": "image/svg+xml; charset=utf-8", "cache-control": "public, max-age=3600" });
 });
+// Shareable 1200×630 "report card" image.
+app.get("/mcp/grade/:host/card.svg", async (c) => {
+  const host = c.req.param("host");
+  const { readGrade, gradeCardSvg, scoreMcpServer, recordGrade } = await import("./mcp_grade");
+  let r = await readGrade(c.env as any, host);
+  if (!r) {
+    try {
+      if (host.startsWith("npm:")) { const { scoreMcpPackage } = await import("./mcp_pkg"); r = await scoreMcpPackage(host.slice(4)); }
+      else r = await scoreMcpServer(`https://${host}/mcp`);
+      if (r) await recordGrade(c.env as any, r);
+    } catch {}
+  }
+  if (!r) return c.notFound();
+  return c.body(gradeCardSvg(r), 200, { "content-type": "image/svg+xml; charset=utf-8", "cache-control": "public, max-age=3600" });
+});
 app.get("/mcp/grade/:host", async (c) => {
   const host = c.req.param("host");
   const origin = new URL(c.req.url).origin;

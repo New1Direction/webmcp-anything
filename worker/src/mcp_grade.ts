@@ -711,13 +711,54 @@ export function gradeBadgeSvg(r: GradeResult): string {
 </svg>`;
 }
 
+// ---- shareable "report card" (1200×630 social card / OG image) ----
+export function gradeCardSvg(r: GradeResult): string {
+  const c = GRADE_COLOR[r.grade] || "#8a8aa8";
+  const esc = (s: string) => String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  const FONT = "-apple-system,BlinkMacSystemFont,Inter,Segoe UI,Helvetica,Arial,sans-serif";
+  const isPkg = r.host.startsWith("npm:");
+  const rawName = r.title || (isPkg ? r.host.slice(4) : r.host);
+  const name = esc(rawName.length > 30 ? rawName.slice(0, 29) + "…" : rawName);
+  const kind = isPkg ? "npm package · static audit" : r.auth_required ? "remote · OAuth-protected" : "remote server";
+  const cat = esc(r.category || "");
+  const dims: Array<[string, string]> = [["Spec", "spec"], ["Security", "security"], ["Reliability", "reliability"], ["Maintenance", "maintenance"], ["Hygiene", "hygiene"], ["Transparency", "transparency"]];
+  const present = dims.filter(([, k]) => r.sub[k]);
+  const barColor = (s: number) => (s >= 80 ? "#4ade80" : s >= 60 ? "#ffcf7a" : "#f87171");
+  const bars = present.map(([label, k], i) => {
+    const s = r.sub[k].score;
+    const y = 250 + i * 56;
+    const w = Math.max(6, Math.round((s / 100) * 360));
+    return `<text x="64" y="${y - 8}" font-family="${FONT}" font-size="20" font-weight="600" fill="#c9c9e0">${esc(label)}</text>
+    <text x="500" y="${y - 8}" text-anchor="end" font-family="${FONT}" font-size="20" font-weight="800" fill="${barColor(s)}">${s}</text>
+    <rect x="64" y="${y}" width="436" height="12" rx="6" fill="#1b1b2a"/>
+    <rect x="64" y="${y}" width="${Math.min(436, Math.round((s / 100) * 436))}" height="12" rx="6" fill="${barColor(s)}"/>`;
+  }).join("\n");
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="MCP Trust Grade ${esc(r.grade)} for ${name}">
+  <defs><radialGradient id="g" cx="18%" cy="0%" r="90%"><stop offset="0%" stop-color="#1a1408"/><stop offset="60%" stop-color="#0c0c14"/></radialGradient></defs>
+  <rect width="1200" height="630" fill="url(#g)"/>
+  <rect x="8" y="8" width="1184" height="614" rx="22" fill="none" stroke="#26263a" stroke-width="2"/>
+  <text x="64" y="92" font-family="${FONT}" font-size="22" font-weight="800" fill="#8a8aa8" letter-spacing="2">MCP TRUST GRADE · WMCP.SH</text>
+  <text x="64" y="168" font-family="${FONT}" font-size="58" font-weight="900" fill="#ececf5">${name}</text>
+  <text x="64" y="208" font-family="${FONT}" font-size="22" font-weight="600" fill="#8a8aa8">${esc(kind)}${cat ? `  ·  ${cat}` : ""}${r.tools_count ? `  ·  ${r.tools_count} tools` : ""}</text>
+  ${bars}
+  <rect x="838" y="150" width="298" height="298" rx="28" fill="${c}"/>
+  <text x="987" y="340" text-anchor="middle" font-family="${FONT}" font-size="180" font-weight="900" fill="#0c0c14">${esc(r.grade)}</text>
+  <text x="987" y="408" text-anchor="middle" font-family="${FONT}" font-size="34" font-weight="800" fill="#0c0c14">${r.score}/100</text>
+  <text x="64" y="566" font-family="${FONT}" font-size="22" font-weight="600" fill="#c9c9e0">Independently audited — free &amp; identical whether or not the operator pays.</text>
+  <text x="64" y="598" font-family="${FONT}" font-size="20" fill="#8a8aa8">Grade any MCP server at wmcp.sh/mcp/grade</text>
+</svg>`;
+}
+
 // ---- grade report page ----
 export function gradePageHtml(r: GradeResult, origin: string): string {
   const c = GRADE_COLOR[r.grade] || "#8a8aa8";
   const esc = (s: string) => String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   const eh = encodeURIComponent(r.host);
   const badgeUrl = `${origin}/mcp/grade/${eh}/badge.svg`;
+  const cardUrl = `${origin}/mcp/grade/${eh}/card.svg`;
   const reportUrl = `${origin}/mcp/grade/${eh}`;
+  const tweet = `https://twitter.com/intent/tweet?text=${encodeURIComponent(`${r.title || r.host} scored ${r.grade} (${r.score}/100) on the independent MCP trust audit:`)}&url=${encodeURIComponent(reportUrl)}`;
   const subRow = (key: string, label: string) => {
     const s = r.sub[key]; if (!s) return "";
     return `<div class="sub">
@@ -769,6 +810,12 @@ export function gradePageHtml(r: GradeResult, origin: string): string {
 <title>${esc(r.host)} — MCP Trust Grade ${r.grade} | wmcp.sh</title>
 <meta name="description" content="Independent MCP trust grade for ${esc(r.host)}: ${r.grade} (${r.score}/100) across spec conformance, security, reliability, tool hygiene, and transparency — then continuously watched by wmcp.sh for drift & rug-pulls."/>
 <link rel="canonical" href="${origin}/mcp/grade/${encodeURIComponent(r.host)}"/>
+<meta property="og:type" content="website"/>
+<meta property="og:title" content="${esc(r.title || r.host)} — MCP Trust Grade ${r.grade} (${r.score}/100)"/>
+<meta property="og:description" content="Independent MCP trust audit by wmcp.sh — free and identical whether or not the operator pays."/>
+<meta property="og:image" content="${origin}/mcp/grade/${eh}/card.svg"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="${origin}/mcp/grade/${eh}/card.svg"/>
 <script type="application/ld+json">${jsonld}</script>
 <style>
   :root{--bg:#07070d;--card:#16161f;--bg2:#11111c;--border:#26263a;--text:#ececf5;--muted:#8a8aa8;--dim:#6a6a88;--accent:#ff9e2c;--accent2:#ffcf7a;--green:#4ade80;--red:#f87171}
@@ -844,6 +891,18 @@ export function gradePageHtml(r: GradeResult, origin: string): string {
     <a class="btn btn-s" href="/mcp/grade">Grade another server</a>
   </div>
   <p class="muted" style="font-size:.85rem;margin-top:10px">We re-grade <b>${esc(r.host)}</b> on a schedule and alert your Slack/webhook the moment its tools change or its grade drops — rug-pull insurance for the connection.</p>
+
+  <div class="embed">
+    <h3>Share this report card</h3>
+    <p class="muted" style="font-size:.85rem">A 1200×630 card with the grade + audit — drop it in a post, Slack, or your repo.</p>
+    <div style="margin:10px 0;max-width:600px"><img src="${cardUrl}" alt="MCP Trust report card — ${esc(r.host)} grade ${r.grade}" style="width:100%;border:1px solid var(--border);border-radius:12px"/></div>
+    <div class="cta" style="margin-top:8px">
+      <a class="btn btn-p" target="_blank" rel="noopener" href="${tweet}">Share on X</a>
+      <a class="btn btn-s" target="_blank" rel="noopener" href="${cardUrl}">Open card image</a>
+      <button class="btn btn-s cpy" data-t="cardlink">Copy report link</button>
+    </div>
+    <pre class="snip" id="cardlink" style="display:none">${reportUrl}</pre>
+  </div>
 
   <div class="embed" id="embed">
     <h3>Embed this grade</h3>
