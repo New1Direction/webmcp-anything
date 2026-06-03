@@ -344,6 +344,93 @@ export async function scoreMcpPyPiPackage(rawName: string): Promise<GradeResult>
   return r;
 }
 
+/** Grade a GitHub-hosted MCP server directly from its repo (for servers not on
+ *  npm/pypi — e.g. headroom). Uses the GitHub API for metadata + jsdelivr for source. */
+export async function scoreMcpGitHubRepo(owner: string, repo: string): Promise<GradeResult> {
+  const host = `gh:${owner}/${repo}`;
+  const r: GradeResult = {
+    url: `https://github.com/${owner}/${repo}`, host, checked_at: Date.now(),
+    reachable: false, auth_required: false, grade: "F", score: 0, sub: {}, findings: [],
+    tools_count: 0, title: repo, kind: "package",
+  };
+  const gm = await getJson(`https://api.github.com/repos/${owner}/${repo}`);
+  if (!gm || gm.message === "Not Found" || !gm.full_name) {
+    r.findings.push({ id: "pkg_missing", severity: "fail", detail: "GitHub repository not found." });
+    r.sub = { spec: z(20), security: z(30), maintenance: z(20), hygiene: z(15), transparency: z(15) };
+    r.category = deriveCategory([], repo, "");
+    return r;
+  }
+  const stars = gm.stargazers_count || 0;
+  const license = gm.license?.spdx_id && gm.license.spdx_id !== "NOASSERTION" ? gm.license.spdx_id : "";
+  const desc = String(gm.description || "");
+  const topics: string[] = gm.topics || [];
+  const ageDays = gm.pushed_at ? Math.floor((Date.now() - new Date(gm.pushed_at).getTime()) / 86400000) : 9999;
+  r.title = gm.name || repo;
+
+  const { source, sampled } = await scanGitHubSource(owner, repo, /\.(py|pyi|ts|tsx|js|mjs|rs)$/);
+  const blob = `${source} ${desc} ${topics.join(" ")}`;
+  const isMcp = /modelcontextprotocol|@modelcontextprotocol|fastmcp|mcp[_-]?server|navigator\.modelContext|\bmcp\b/i.test(blob);
+  const toolNames = new Set<string>();
+  let m: RegExpExecArray | null;
+  while ((m = PY_TOOL.exec(source)) && toolNames.size < 30) if (m[1]) toolNames.add(m[1]);
+  while ((m = TOOL_DEF.exec(source)) && toolNames.size < 30) toolNames.add(m[1]);
+  const toolHits = (source.match(/@(?:mcp|server|app)\.tool|register_tool\(|add_tool\(|server\.tool\(|registerTool\(/g) || []).length;
+  const toolCount = Math.max(toolNames.size, toolHits);
+  r.tools_count = toolCount;
+  if (toolNames.size) r.tools_preview = [...toolNames].slice(0, 18).map((n) => ({ name: n.slice(0, 64), desc: "" }));
+
+  const injHit = INJ.test(source), secretPath = SECRET.test(source), hardcoded = HARDCODED.test(source), danger = DANGER.test(source) || PY_DANGER.test(source);
+
+  let sec = 90; const secNotes: string[] = [];
+  if (sampled.length) {
+    if (hardcoded) { sec = Math.min(sec, 5); secNotes.push("⚠ hardcoded API-key-shaped secret in source"); }
+    if (injHit) { sec = Math.min(sec, 15); secNotes.push("⚠ prompt-injection markup in source"); }
+    if (secretPath) { sec = Math.min(sec, 25); secNotes.push("⚠ references sensitive file paths / secrets"); }
+    if (danger) { sec = Math.min(sec, 65); secNotes.push("uses eval/exec/subprocess (review for unsanitized input)"); }
+    if (sec >= 90) secNotes.push("no high-risk patterns in sampled source");
+    secNotes.push(`scanned ${sampled.length} source file${sampled.length === 1 ? "" : "s"}`);
+  } else { sec = 50; secNotes.push("source not retrievable — graded on repo metadata only"); }
+
+  let spec = 35; const specNotes: string[] = [];
+  if (isMcp) { spec += 40; specNotes.push("✓ MCP server signals in source/metadata"); } else specNotes.push("no clear MCP signals found");
+  if (toolCount) { spec += 25; specNotes.push(`✓ ${toolCount} tool(s) detected`); } else specNotes.push("no tools detected in sampled source");
+  spec = clamp(spec);
+
+  let maint = 50; const maintNotes: string[] = [];
+  if (ageDays < 60) { maint = 92; maintNotes.push("pushed within 60 days"); }
+  else if (ageDays < 365) { maint = 74; maintNotes.push(`last push ~${Math.round(ageDays / 30)}mo ago`); }
+  else { maint = 38; maintNotes.push(`stale — last push ~${Math.round(ageDays / 365)}y ago`); }
+  maintNotes.push(`${stars.toLocaleString()} stars`);
+
+  let hyg = 55; const hygNotes: string[] = [];
+  if (license) { hyg += 20; hygNotes.push(`${license} license`); }
+  if (!gm.fork) { hyg += 10; hygNotes.push("original (not a fork)"); }
+  hyg = clamp(hyg);
+
+  let trans = 55; const transNotes: string[] = ["✓ public GitHub repo"];
+  if (license) { trans += 25; transNotes.push(`✓ ${license} license`); } else transNotes.push("no detected license");
+  if (stars >= 100) { trans += 12; transNotes.push("established (100+ stars)"); }
+  trans = clamp(trans);
+
+  r.sub = {
+    spec: { score: spec, weight: 20, notes: specNotes },
+    security: { score: sec, weight: 30, notes: secNotes },
+    maintenance: { score: maint, weight: 20, notes: maintNotes },
+    hygiene: { score: hyg, weight: 15, notes: hygNotes },
+    transparency: { score: trans, weight: 15, notes: transNotes },
+  };
+  r.score = clamp(Object.values(r.sub).reduce((a, s) => a + (s.score * s.weight) / 100, 0));
+  if (injHit || hardcoded) r.score = Math.min(r.score, 55);
+  if (!isMcp) r.score = Math.min(r.score, 60); // not clearly an MCP server
+  r.grade = letter(r.score);
+  r.reachable = true;
+  if (injHit) r.findings.push({ id: "tool_poisoning", severity: "fail", owasp: "MCP01", detail: "Prompt-injection markup found in source." });
+  if (hardcoded) r.findings.push({ id: "secret_exfil", severity: "fail", owasp: "MCP08", detail: "Hardcoded secret found in source." });
+  r.findings.push({ id: "pkg", severity: "info", detail: `Static analysis of github.com/${owner}/${repo} (${stars.toLocaleString()} stars). Stdio/source-distributed — no remote endpoint; runtime behavior not measured.` });
+  r.category = deriveCategory([...toolNames].map((n) => ({ name: n })), repo, `${desc} ${topics.join(" ")}`);
+  return r;
+}
+
 /**
  * Walk the registry for npm-package servers (the ~15k stdio entries we can't reach
  * remotely) and statically grade them. Separate cursor so it doesn't fight the
