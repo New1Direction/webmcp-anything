@@ -1,16 +1,16 @@
 # Graph Report - webmcp-anything  (2026-06-03)
 
 ## Corpus Check
-- 271 files · ~552,088 words
+- 271 files · ~552,245 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1824 nodes · 2611 edges · 208 communities (188 shown, 20 thin omitted)
+- 1825 nodes · 2616 edges · 205 communities (185 shown, 20 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 26 edges (avg confidence: 0.59)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `c9a3d8c2`
+- Built from commit: `560cefc6`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -126,13 +126,10 @@
 - [[_COMMUNITY_Community 195|Community 195]]
 - [[_COMMUNITY_Community 196|Community 196]]
 - [[_COMMUNITY_Community 199|Community 199]]
-- [[_COMMUNITY_Community 200|Community 200]]
 - [[_COMMUNITY_Community 201|Community 201]]
 - [[_COMMUNITY_Community 202|Community 202]]
-- [[_COMMUNITY_Community 203|Community 203]]
 - [[_COMMUNITY_Community 204|Community 204]]
 - [[_COMMUNITY_Community 205|Community 205]]
-- [[_COMMUNITY_Community 206|Community 206]]
 - [[_COMMUNITY_Community 207|Community 207]]
 
 ## God Nodes (most connected - your core abstractions)
@@ -148,6 +145,8 @@
 10. `dropPageHtml()` - 16 edges
 
 ## Surprising Connections (you probably didn't know these)
+- `mcpIndexHtml()` --calls--> `esc()`  [INFERRED]
+  worker/src/mcp_proxy.ts → worker/src/drops_seo.ts
 - `Tool` --uses--> `Tool`  [INFERRED]
   sdks/python/wmcp/anthropic.py → sdks/python/wmcp/client.py
 - `Tool` --uses--> `Tool`  [INFERRED]
@@ -156,13 +155,11 @@
   worker/src/provider_routes.ts → worker/src/anthropic_oauth.ts
 - `connectHubHtml()` --calls--> `esc()`  [INFERRED]
   worker/src/connect_hub.ts → worker/src/drops_seo.ts
-- `mcpProxyHandler()` --calls--> `checkAgentAllowed()`  [INFERRED]
-  worker/src/mcp_proxy.ts → worker/src/control.ts
 
 ## Import Cycles
 - None detected.
 
-## Communities (208 total, 20 thin omitted)
+## Communities (205 total, 20 thin omitted)
 
 ### Community 0 - "Community 0"
 Cohesion: 0.05
@@ -445,16 +442,16 @@ Cohesion: 0.33
 Nodes (5): _comment, description, homepage, name, servers
 
 ### Community 71 - "Community 71"
-Cohesion: 0.23
-Nodes (16): fill(), comparisonHtml(), conversionBlock(), dropPageHtml(), dropsIndexHtml(), dropsIndexUrl(), esc(), fieldsFor() (+8 more)
+Cohesion: 0.25
+Nodes (15): fill(), comparisonHtml(), conversionBlock(), dropPageHtml(), dropsIndexHtml(), dropsIndexUrl(), esc(), fieldsFor() (+7 more)
 
 ### Community 72 - "Community 72"
 Cohesion: 0.13
 Nodes (24): AlertEnv, fireAlert(), checkAdmin(), deriveSlug(), Env, featureListing(), getDirectoryState(), listSubmissions() (+16 more)
 
 ### Community 73 - "Community 73"
-Cohesion: 0.13
-Nodes (13): AFFILIATE, affiliateButtons(), AffiliateNet, esc(), Article, ARTICLE_SLUGS, ArticleFaq, articleHtml() (+5 more)
+Cohesion: 0.33
+Nodes (5): AFFILIATE, affiliateButtons(), AffiliateNet, esc(), buy()
 
 ### Community 74 - "Community 74"
 Cohesion: 0.40
@@ -477,16 +474,16 @@ Cohesion: 0.60
 Nodes (4): badgeHandler(), Env, PILL_INDEXED(), PILL_VERIFIED()
 
 ### Community 80 - "Community 80"
-Cohesion: 0.10
-Nodes (23): blockedTargetReason(), callMcp(), CATEGORIES, DriftOutcome, Env, finalizeSseLimited(), Finding, GRADE_COLOR (+15 more)
+Cohesion: 0.08
+Nodes (30): blockedTargetReason(), callMcp(), CATEGORIES, composite(), diffTools(), DriftOutcome, Env, finalizeSseLimited() (+22 more)
 
 ### Community 81 - "Community 81"
 Cohesion: 0.60
 Nodes (4): embedHtml(), Env, escapeHtml(), verifyEmbedHandler()
 
 ### Community 144 - "Community 144"
-Cohesion: 0.20
-Nodes (20): b64url(), ensureMcpClient(), Env, exchangePkceCode(), generatePkceVerifier(), McpClientRecord, pkceChallengeS256(), TokenResponse (+12 more)
+Cohesion: 0.15
+Nodes (24): b64url(), ensureMcpClient(), Env, exchangePkceCode(), generatePkceVerifier(), McpClientRecord, pkceChallengeS256(), TokenResponse (+16 more)
 
 ### Community 174 - "Community 174"
 Cohesion: 0.22
@@ -533,32 +530,20 @@ Cohesion: 0.33
 Nodes (5): Don't, LAUNCH A — QuickCatch (fire when the extension is approved), LAUNCH B — wmcp.sh (live now, launch any day), Launch-day checklist (either launch), Product Hunt launch kit
 
 ### Community 199 - "Community 199"
-Cohesion: 0.23
-Nodes (8): baseCss(), CacheEntry, escapeHtml(), hostnameOf(), notFoundHtml(), PROVIDER_BADGE, relTime(), uHtml()
-
-### Community 200 - "Community 200"
-Cohesion: 0.32
-Nodes (9): blogIndexHtml(), blogPostHtml(), escapeHtml(), escapeJson(), footerHtml(), navHtml(), BLOG_POSTS, BLOG_SLUGS (+1 more)
+Cohesion: 0.13
+Nodes (18): ARTICLE_SLUGS, blogIndexHtml(), blogPostHtml(), escapeHtml(), escapeJson(), footerHtml(), navHtml(), BLOG_POSTS (+10 more)
 
 ### Community 202 - "Community 202"
-Cohesion: 0.16
-Nodes (15): connKey(), Env, hasManagedConnection(), isActive(), listManagedConnections(), refreshPkceToken(), Env, getFreshUpstreamToken() (+7 more)
-
-### Community 203 - "Community 203"
-Cohesion: 0.20
-Nodes (7): composite(), diffTools(), gradeRank(), recordGrade(), reputationFeed(), goodTool, MockOpts
+Cohesion: 0.21
+Nodes (12): connKey(), Env, hasManagedConnection(), isActive(), listManagedConnections(), refreshPkceToken(), Env, getFreshUpstreamToken() (+4 more)
 
 ### Community 204 - "Community 204"
-Cohesion: 0.22
-Nodes (12): readGrade(), Env, gradeFor(), gradeSummary(), jerr(), jrpc(), oracleHandler(), recommendation() (+4 more)
+Cohesion: 0.14
+Nodes (17): readGrade(), Env, gradeFor(), gradeSummary(), jerr(), jrpc(), oracleHandler(), recommendation() (+9 more)
 
 ### Community 205 - "Community 205"
-Cohesion: 0.16
-Nodes (15): articlesIndexHtml(), directoryHtml(), badgeHubHtml(), baseDomain(), COLOR, computeMcpSecurityReport(), family(), FINDING_EXCLUDE (+7 more)
-
-### Community 206 - "Community 206"
-Cohesion: 0.31
-Nodes (5): decide(), Env, gradeForVerify(), verifyMcpServer(), VerifyVerdict
+Cohesion: 0.10
+Nodes (23): Article, ArticleFaq, articleHtml(), ARTICLES, articleSchema(), articlesIndexHtml(), bySlug, relatedHtml() (+15 more)
 
 ## Knowledge Gaps
 - **701 isolated node(s):** `actions`, `HERE`, `FIXTURES`, `ETHEREUM_FEEDS`, `actions` (+696 more)
