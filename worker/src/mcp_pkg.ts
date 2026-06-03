@@ -221,8 +221,9 @@ export async function seedRegistryPackages(env: any, max = 12): Promise<{ seeded
     if (!page) break;
     for (const s of page.servers || []) {
       const pkgs: any[] = s?.packages || [];
-      const npm = pkgs.find((p) => (p.registry_type === "npm" || p.registry_name === "npm") && p.name);
-      if (npm?.name && targets.length < max) targets.push(npm.name);
+      const npm = pkgs.find((p) => /^npm$/i.test(String(p.registry_type || p.registry_name || p.registryType || "")));
+      const nm = npm && String(npm.identifier || npm.name || "").trim();
+      if (nm && !targets.includes(nm) && targets.length < max) targets.push(nm);
     }
     nextCursor = page?.metadata?.nextCursor || "";
     cur = nextCursor;
