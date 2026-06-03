@@ -786,24 +786,33 @@ async function run(){
 // single KV.list (no per-host get); falls back to a bounded get for any key
 // missing metadata (pre-metadata grades backfill as the cron re-grades).
 export async function mcpLeaderboardHtml(env: Env, origin: string): Promise<string> {
-  const list = await env.CACHE.list({ prefix: "grade:", limit: 1000 });
+  // Paginate the full grade set (KV.list caps at 1000/call) so the ranking is
+  // the true top across ALL graded servers, not an arbitrary first 1000.
   const rows: Array<{ host: string; grade: string; score: number; checked_at?: number; tools_count?: number }> = [];
-  let gets = 0;
-  for (const k of list.keys) {
-    const host = k.name.slice("grade:".length);
-    let m = k.metadata as any;
-    if (!m || typeof m.score !== "number") {
-      if (gets < 80) {
-        gets++;
-        try { const raw = await env.CACHE.get(k.name); if (raw) { const g = JSON.parse(raw); m = { grade: g.grade, score: g.score, checked_at: g.checked_at, tools_count: g.tools_count }; } } catch {}
+  let gets = 0, pages = 0;
+  let cursor: string | undefined;
+  do {
+    const list: any = await env.CACHE.list({ prefix: "grade:", limit: 1000, cursor });
+    for (const k of list.keys) {
+      const host = k.name.slice("grade:".length);
+      let m = k.metadata as any;
+      if (!m || typeof m.score !== "number") {
+        if (gets < 80) {
+          gets++;
+          try { const raw = await env.CACHE.get(k.name); if (raw) { const g = JSON.parse(raw); m = { grade: g.grade, score: g.score, checked_at: g.checked_at, tools_count: g.tools_count }; } } catch {}
+        }
       }
+      if (m && typeof m.score === "number") rows.push({ host, grade: m.grade, score: m.score, checked_at: m.checked_at, tools_count: m.tools_count });
     }
-    if (m && typeof m.score === "number") rows.push({ host, grade: m.grade, score: m.score, checked_at: m.checked_at, tools_count: m.tools_count });
-  }
+    cursor = list.list_complete ? undefined : list.cursor;
+    pages++;
+  } while (cursor && pages < 8);
   rows.sort((a, b) => b.score - a.score || a.host.localeCompare(b.host));
+  const total = rows.length;
+  const shown = rows.slice(0, 250); // cap the page weight; total still reported
 
   const esc = (s: string) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" } as any)[c]);
-  const body = rows.map((r, i) => {
+  const body = shown.map((r, i) => {
     const color = GRADE_COLOR[r.grade] || "#8a8aa8";
     const when = r.checked_at ? new Date(r.checked_at).toISOString().slice(0, 10) : "—";
     return `<tr>
@@ -816,7 +825,7 @@ export async function mcpLeaderboardHtml(env: Env, origin: string): Promise<stri
     </tr>`;
   }).join("\n");
 
-  const count = rows.length;
+  const count = total;
   const ld = {
     "@context": "https://schema.org", "@type": "Dataset",
     name: "MCP Trust Leaderboard", description: "Independent A–F trust grades for MCP servers, continuously watched for drift and rug-pulls.",
@@ -851,7 +860,7 @@ ${uiNav(origin)}
   ${count ? `<section style="padding-top:10px"><table class="tbl">
     <thead><tr><th class="num">#</th><th>Grade</th><th>MCP server</th><th class="num">Score</th><th class="num">Tools</th><th>Checked</th></tr></thead>
     <tbody>${body}</tbody>
-  </table></section>` : `<div class="empty">No servers graded yet. <a href="${origin}/mcp/grade">Grade the first one →</a></div>`}
+  </table>${total > shown.length ? `<p class="muted" style="margin-top:12px;font-size:.85rem">Showing the top ${shown.length} by score of ${total.toLocaleString()} graded servers. Every graded server stays in the continuous drift watch.</p>` : ""}</section>` : `<div class="empty">No servers graded yet. <a href="${origin}/mcp/grade">Grade the first one →</a></div>`}
   <footer>Grades are free and identical whether or not the operator pays. Methodology: <a href="${origin}/mcp/grade">/mcp/grade</a>. Add the oracle to your agent at <code>${origin}/mcp/trust</code>.</footer>
 </div>
 </body></html>`;
