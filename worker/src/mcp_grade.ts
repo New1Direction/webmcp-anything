@@ -34,6 +34,9 @@ export interface GradeResult {
   findings: Finding[];
   tools_count: number;
   tools_hash?: string;
+  title?: string;                                   // serverInfo.name — what the server calls itself
+  category?: string;                                // derived category (for browsing/filtering the leaderboard)
+  tools_preview?: { name: string; desc: string }[]; // a sample of the tools + what each does
   hard_fail?: string;
   latency_ms?: number;
   transport?: "streamable-http" | "sse"; // how we reached it (null/absent = unreachable)
@@ -219,6 +222,29 @@ function finalizeSseLimited(r: GradeResult): GradeResult {
   return r;
 }
 
+// Derive a browsable category from a server's tools + name + host. First match
+// wins, so order specific→broad. Heuristic, but enough to make the board navigable.
+const CATEGORIES: Array<[string, RegExp]> = [
+  ["Developer Tools", /github|gitlab|\bgit\b|repo|commit|pull.?request|\bci\b|build|lint|npm|package|compiler|debug/i],
+  ["Database", /\bsql\b|postgres|mysql|mongo|sqlite|redis|database|\bdb\b|\btable\b|schema|supabase/i],
+  ["Cloud & DevOps", /\baws\b|\bgcp\b|azure|cloudflare|kubernetes|docker|terraform|vercel|netlify|deploy|infra|datadog|sentry/i],
+  ["Finance & Crypto", /payment|stripe|invoice|crypto|wallet|\btoken\b|defi|coin|stock|trading|\bbank\b|paypal|treasury|ledger/i],
+  ["Maps & Geo", /\bmap\b|\bgeo|location|address|coordinate|nominatim|\bosm\b|weather|distance|routing/i],
+  ["Productivity", /calendar|gmail|\bemail\b|notion|\btodo\b|\btask\b|\bnote\b|slack|linear|jira|asana|schedule|reminder|trello/i],
+  ["AI & ML", /\bllm\b|embedding|\bgpt\b|\brag\b|inference|vector|fine.?tune|huggingface|openai|anthropic/i],
+  ["Docs & Knowledge", /\bdocs?\b|wiki|knowledge|pubmed|arxiv|\bpaper|encyclopedia|reference|deepwiki|context7|readme/i],
+  ["Commerce", /\bshop|product|\bcart\b|\border\b|ecommerce|\bstore\b|catalog|inventory|checkout|shopify/i],
+  ["Social & Comms", /twitter|discord|telegram|\bsms\b|whatsapp|\bpost\b|\btweet\b|\bchat\b|mastodon/i],
+  ["Search", /\bsearch|\bquery\b|lookup|retriev|\bfind\b|web_search|serp/i],
+  ["Web & Scraping", /scrape|crawl|\bfetch\b|browse|\bhtml\b|webpage|playwright|puppeteer|screenshot/i],
+  ["Government & Data", /\bgov\b|census|statistics|\bfec\b|nhtsa|clinicaltrials|eurostat|registry|dataset|open.?data/i],
+];
+function deriveCategory(tools: any[], host: string, title: string): string {
+  const blob = `${title} ${host} ${tools.map((t) => `${t?.name || ""} ${t?.description || ""}`).join(" ")}`.toLowerCase();
+  for (const [cat, re] of CATEGORIES) if (re.test(blob)) return cat;
+  return "Other";
+}
+
 // ---- the grader ----
 export async function scoreMcpServer(rawUrl: string, opts: { fast?: boolean } = {}): Promise<GradeResult> {
   const url = rawUrl.trim();
@@ -228,6 +254,7 @@ export async function scoreMcpServer(rawUrl: string, opts: { fast?: boolean } = 
     url, host, checked_at: Date.now(), reachable: false, auth_required: false,
     grade: "F", score: 0, sub: {}, findings: [], tools_count: 0,
   };
+  r.category = deriveCategory([], host, ""); // default from host; refined once tools are seen
 
   // Hard gate: plaintext HTTP.
   let u: URL;
@@ -303,6 +330,16 @@ export async function scoreMcpServer(rawUrl: string, opts: { fast?: boolean } = 
   // ---- Tools analysis (Security 30% static half + Hygiene 15%) ----
   const tools = Array.isArray(toolsJson?.tools) ? toolsJson.tools : [];
   r.tools_count = tools.length;
+  r.title = init.json?.result?.serverInfo?.name || undefined;
+  if (tools.length) {
+    r.tools_preview = tools.slice(0, 18).map((t: any) => ({
+      name: String(t.name || "").slice(0, 64),
+      desc: String(t.description || "").replace(/\s+/g, " ").trim().slice(0, 150),
+    }));
+    r.category = deriveCategory(tools, r.host, r.title || "");
+  } else {
+    r.category = deriveCategory([], r.host, r.title || "");
+  }
   if (tools.length) {
     const norm = JSON.stringify(tools.map((t: any) => ({ n: t.name, d: t.description, s: t.inputSchema, a: t.annotations })));
     r.tools_hash = await sha256(norm);
@@ -450,7 +487,7 @@ export async function seedRegistryGrades(
 // Lightweight metadata on the grade key so the leaderboard reads the whole set
 // in one KV.list call (no per-host get). Kept well under the 1KB metadata cap.
 export function gradeMeta(r: GradeResult) {
-  return { grade: r.grade, score: r.score, checked_at: r.checked_at, tools_count: r.tools_count, url: r.url };
+  return { grade: r.grade, score: r.score, checked_at: r.checked_at, tools_count: r.tools_count, url: r.url, category: r.category };
 }
 export async function persistGrade(env: Env, r: GradeResult): Promise<void> {
   await env.CACHE.put(`grade:${r.host}`, JSON.stringify(r), { expirationTtl: 30 * 86400, metadata: gradeMeta(r) });
@@ -674,6 +711,13 @@ export function gradePageHtml(r: GradeResult, origin: string): string {
   const findingsHtml = r.findings.length
     ? `<div class="findings"><h3>Findings</h3>${r.findings.map((f) => `<div class="f f-${f.severity}"><span class="fb">${f.severity.toUpperCase()}</span>${f.owasp ? `<span class="owasp">${f.owasp}</span>` : ""} ${esc(f.detail)}</div>`).join("")}</div>`
     : `<div class="findings"><h3>Findings</h3><div class="f f-info">No blocking issues found in the static + spec checks.</div></div>`;
+  const toolsHtml = (r.tools_preview && r.tools_preview.length)
+    ? `<div class="tools"><h3>What it offers <span class="dim">— ${r.tools_count} tool${r.tools_count === 1 ? "" : "s"}${r.category ? ` · ${esc(r.category)}` : ""}</span></h3>
+        <div class="tgrid">${r.tools_preview.map((t) => `<div class="tcard"><code>${esc(t.name)}</code>${t.desc ? `<p>${esc(t.desc)}</p>` : ""}</div>`).join("")}</div>
+        ${r.tools_count > r.tools_preview.length ? `<p class="dim" style="margin:8px 0 0">+${r.tools_count - r.tools_preview.length} more tool${r.tools_count - r.tools_preview.length === 1 ? "" : "s"}</p>` : ""}</div>`
+    : r.auth_required
+      ? `<div class="tools"><h3>What it offers</h3><p class="muted" style="font-size:.88rem">Auth-protected — its tools can't be enumerated without credentials.${r.category ? ` Category: <b>${esc(r.category)}</b>.` : ""}</p></div>`
+      : "";
   const driftDays = r.tools_hash_since ? Math.floor((r.checked_at - r.tools_hash_since) / 86400000) : 0;
   const watchedSince = r.tools_hash_since ? new Date(r.tools_hash_since).toISOString().slice(0, 10) : null;
   const attest = r.drift_count
@@ -735,6 +779,11 @@ export function gradePageHtml(r: GradeResult, origin: string): string {
   .bflaky{margin-top:12px;color:#ffcf7a;font-size:.85rem}.bflaky code{background:var(--bg2);padding:1px 5px;border-radius:5px}
   .bok{margin-top:12px;color:#bdf0cd;font-size:.85rem}
   .bnote{margin:10px 0 0;color:var(--muted);font-size:.8rem}
+  .tools{margin-top:24px}.tools h3{margin:0 0 12px;font-size:1rem}.tools .dim{font-weight:400}
+  .tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+  .tcard{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:11px 13px}
+  .tcard code{background:transparent;padding:0;color:var(--accent2);font-size:.85rem;font-weight:700;word-break:break-word}
+  .tcard p{margin:6px 0 0;color:var(--muted);font-size:.82rem;line-height:1.45}
   .findings{margin-top:24px}.findings h3{margin:0 0 10px}
   .f{padding:10px 12px;border-radius:10px;margin-bottom:8px;font-size:.88rem;background:var(--bg2);border:1px solid var(--border)}
   .fb{font-size:.68rem;font-weight:800;letter-spacing:.08em;padding:2px 6px;border-radius:6px;margin-right:6px;background:#0c0c14}
@@ -763,6 +812,7 @@ export function gradePageHtml(r: GradeResult, origin: string): string {
     </div>
   </div>
   ${attest}
+  ${toolsHtml}
   ${subRow("spec", "Spec conformance")}
   ${subRow("security", "Security (OWASP MCP)")}
   ${subRow("reliability", "Reliability / performance")}
@@ -880,7 +930,7 @@ async function run(){
 export async function mcpLeaderboardHtml(env: Env, origin: string): Promise<string> {
   // Paginate the full grade set (KV.list caps at 1000/call) so the ranking is
   // the true top across ALL graded servers, not an arbitrary first 1000.
-  const rows: Array<{ host: string; grade: string; score: number; checked_at?: number; tools_count?: number }> = [];
+  const rows: Array<{ host: string; grade: string; score: number; checked_at?: number; tools_count?: number; category?: string }> = [];
   let gets = 0, pages = 0;
   let cursor: string | undefined;
   do {
@@ -891,10 +941,10 @@ export async function mcpLeaderboardHtml(env: Env, origin: string): Promise<stri
       if (!m || typeof m.score !== "number") {
         if (gets < 80) {
           gets++;
-          try { const raw = await env.CACHE.get(k.name); if (raw) { const g = JSON.parse(raw); m = { grade: g.grade, score: g.score, checked_at: g.checked_at, tools_count: g.tools_count }; } } catch {}
+          try { const raw = await env.CACHE.get(k.name); if (raw) { const g = JSON.parse(raw); m = { grade: g.grade, score: g.score, checked_at: g.checked_at, tools_count: g.tools_count, category: g.category }; } } catch {}
         }
       }
-      if (m && typeof m.score === "number") rows.push({ host, grade: m.grade, score: m.score, checked_at: m.checked_at, tools_count: m.tools_count });
+      if (m && typeof m.score === "number") rows.push({ host, grade: m.grade, score: m.score, checked_at: m.checked_at, tools_count: m.tools_count, category: m.category });
     }
     cursor = list.list_complete ? undefined : list.cursor;
     pages++;
@@ -920,15 +970,19 @@ export async function mcpLeaderboardHtml(env: Env, origin: string): Promise<stri
   const body = shown.map((r, i) => {
     const color = GRADE_COLOR[r.grade] || "#8a8aa8";
     const when = r.checked_at ? new Date(r.checked_at).toISOString().slice(0, 10) : "—";
-    return `<tr>
+    const cat = r.category || "Other";
+    return `<tr data-cat="${esc(cat)}">
       <td class="rank">${i + 1}</td>
       <td><span class="g" style="color:${color};border-color:${color}55;background:${color}14">${esc(r.grade)}</span></td>
       <td><a class="host" href="${origin}/mcp/grade/${encodeURIComponent(r.host)}">${esc(r.host)}</a></td>
+      <td><span class="cat">${esc(cat)}</span></td>
       <td class="num">${r.score}</td>
       <td class="num dim">${r.tools_count ?? "—"}</td>
       <td class="dim">${when}</td>
     </tr>`;
   }).join("\n");
+  const cats = Array.from(new Set(shown.map((r) => r.category || "Other"))).sort();
+  const chips = `<div class="catfilter"><button class="chip on" data-c="">All</button>${cats.map((ct) => `<button class="chip" data-c="${esc(ct)}">${esc(ct)}</button>`).join("")}</div>`;
 
   const count = total;
   const ld = {
@@ -949,6 +1003,11 @@ export async function mcpLeaderboardHtml(env: Env, origin: string): Promise<stri
   .g{display:inline-block;min-width:32px;text-align:center;font-weight:800;border:1px solid;border-radius:7px;padding:3px 8px;font-size:.82rem}
   table.tbl td .g{margin:0}
   a.host{text-decoration:none;font-weight:600;color:var(--text)} a.host:hover{color:var(--accent2)}
+  .cat{display:inline-block;font-size:.78rem;color:var(--muted);background:var(--bg2);border:1px solid var(--border);border-radius:999px;padding:2px 9px;white-space:nowrap}
+  .catfilter{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px}
+  .chip{background:var(--bg2);border:1px solid var(--border);color:var(--muted);border-radius:999px;padding:6px 13px;font-size:.82rem;cursor:pointer;font-family:inherit}
+  .chip:hover{color:var(--text)}
+  .chip.on{background:var(--accent);color:#2a1500;border-color:var(--accent);font-weight:700}
   .empty{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:32px;text-align:center;color:var(--muted)}
 </style></head><body>
 ${uiNav(origin)}
@@ -962,13 +1021,20 @@ ${uiNav(origin)}
       <a class="btn btn-ghost" href="${origin}/webmcp">WebMCP →</a>
     </div>
   </header>
-  ${count ? `<section style="padding-top:10px"><table class="tbl">
-    <thead><tr><th class="num">#</th><th>Grade</th><th>MCP server</th><th class="num">Score</th><th class="num">Tools</th><th>Checked</th></tr></thead>
+  ${count ? `<section style="padding-top:10px">${chips}<table class="tbl">
+    <thead><tr><th class="num">#</th><th>Grade</th><th>MCP server</th><th>Category</th><th class="num">Score</th><th class="num">Tools</th><th>Checked</th></tr></thead>
     <tbody>${body}</tbody>
   </table>${total > shown.length ? `<p class="muted" style="margin-top:12px;font-size:.85rem">Showing the top ${shown.length} operators (one entry each, their best-graded server) of ${total.toLocaleString()} graded servers. Every graded server stays in the continuous drift watch.</p>` : ""}</section>` : `<div class="empty">No servers graded yet. <a href="${origin}/mcp/grade">Grade the first one →</a></div>`}
   <p style="margin-top:18px"><a class="btn btn-ghost" href="${origin}/reports/state-of-mcp-security-2026">📊 Read the State of MCP Security report</a> <a class="btn btn-ghost" href="${origin}/mcp/badges">Get your trust badge →</a></p>
   ${adSlot()}
   <footer>Grades are free and identical whether or not the operator pays. Methodology: <a href="${origin}/mcp/grade">/mcp/grade</a>. Add the oracle to your agent at <code>${origin}/mcp/trust</code>.</footer>
 </div>
+<script>
+(function(){
+  var chips=document.querySelectorAll('.catfilter .chip'), rows=document.querySelectorAll('tbody tr[data-cat]');
+  function apply(c){ var n=0; rows.forEach(function(r){ var show=(!c||r.getAttribute('data-cat')===c); r.style.display=show?'':'none'; if(show)n++; r.querySelector('.rank').textContent=show?n:''; }); }
+  chips.forEach(function(b){ b.addEventListener('click',function(){ chips.forEach(function(x){x.classList.remove('on');}); b.classList.add('on'); apply(b.getAttribute('data-c')); }); });
+})();
+</script>
 </body></html>`;
 }
