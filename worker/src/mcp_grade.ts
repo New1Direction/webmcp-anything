@@ -484,7 +484,8 @@ export async function seedRegistryGrades(
   let seeded = 0;
   await Promise.all(
     servers.map(async (s) => {
-      const remotes: any[] = s?.remotes || [];
+      const srv = s?.server || s; // registry wraps entries as {server, _meta} since 2025-12-11
+      const remotes: any[] = srv?.remotes || [];
       const remote = remotes.find((r) => r.type === "streamable-http") || remotes.find((r) => r.type === "sse") || remotes[0];
       if (!remote?.url) return; // skip local/package-only servers
       try {
