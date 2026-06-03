@@ -1,16 +1,16 @@
 # Graph Report - webmcp-anything  (2026-06-03)
 
 ## Corpus Check
-- 271 files · ~552,245 words
+- 271 files · ~554,001 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1825 nodes · 2616 edges · 205 communities (185 shown, 20 thin omitted)
+- 1829 nodes · 2635 edges · 207 communities (188 shown, 19 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 26 edges (avg confidence: 0.59)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `560cefc6`
+- Built from commit: `5b87527b`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -126,8 +126,10 @@
 - [[_COMMUNITY_Community 195|Community 195]]
 - [[_COMMUNITY_Community 196|Community 196]]
 - [[_COMMUNITY_Community 199|Community 199]]
+- [[_COMMUNITY_Community 200|Community 200]]
 - [[_COMMUNITY_Community 201|Community 201]]
 - [[_COMMUNITY_Community 202|Community 202]]
+- [[_COMMUNITY_Community 203|Community 203]]
 - [[_COMMUNITY_Community 204|Community 204]]
 - [[_COMMUNITY_Community 205|Community 205]]
 - [[_COMMUNITY_Community 207|Community 207]]
@@ -151,15 +153,15 @@
   sdks/python/wmcp/anthropic.py → sdks/python/wmcp/client.py
 - `Tool` --uses--> `Tool`  [INFERRED]
   sdks/python/wmcp/openai.py → sdks/python/wmcp/client.py
-- `providerStart()` --calls--> `anthropicStart()`  [INFERRED]
-  worker/src/provider_routes.ts → worker/src/anthropic_oauth.ts
 - `connectHubHtml()` --calls--> `esc()`  [INFERRED]
   worker/src/connect_hub.ts → worker/src/drops_seo.ts
+- `gradePageHtml()` --calls--> `esc()`  [INFERRED]
+  worker/src/mcp_grade.ts → worker/src/drops_seo.ts
 
 ## Import Cycles
 - None detected.
 
-## Communities (205 total, 20 thin omitted)
+## Communities (207 total, 19 thin omitted)
 
 ### Community 0 - "Community 0"
 Cohesion: 0.05
@@ -170,8 +172,8 @@ Cohesion: 0.25
 Nodes (15): clean_hosts(), confirm_shopify(), http_get(), http_post_json(), load_seed_hosts(), main(), Any, bool (+7 more)
 
 ### Community 2 - "Community 2"
-Cohesion: 0.15
-Nodes (23): Env, githubCallback(), githubStart(), issueOwnKey(), logout(), me(), resolveOrCreateUser(), b64urlDecode() (+15 more)
+Cohesion: 0.32
+Nodes (9): blogIndexHtml(), blogPostHtml(), escapeHtml(), escapeJson(), footerHtml(), navHtml(), BLOG_POSTS, BLOG_SLUGS (+1 more)
 
 ### Community 3 - "Community 3"
 Cohesion: 0.04
@@ -182,8 +184,8 @@ Cohesion: 0.09
 Nodes (43): arr(), buildTools(), classify(), clip(), collectVariants(), detect(), detect2(), eventOffers() (+35 more)
 
 ### Community 5 - "Community 5"
-Cohesion: 0.17
-Nodes (22): regradeWatched(), seedRegistryGrades(), addGradeServers(), addSeedStores(), cacheKey(), DEFAULT_STORES, Env, gradeManualSeed() (+14 more)
+Cohesion: 0.21
+Nodes (19): regradeWatched(), seedRegistryGrades(), cacheKey(), DEFAULT_STORES, Env, gradeManualSeed(), normalizeUrl(), pickStores() (+11 more)
 
 ### Community 6 - "Community 6"
 Cohesion: 0.20
@@ -222,8 +224,8 @@ Cohesion: 0.08
 Nodes (23): 1. Bing IndexNow (5 min) — already automated, 2. Bing Webmaster Tools (10 min), 3. Google Search Console (10 min), 4. Official MCP Registry (`modelcontextprotocol/registry`) — **as a REMOTE server, no npm package**, 5. Anthropic Connectors Directory (longest review — start NOW), Asset A — `server.json` (official registry, REMOTE server), Asset B — ready-to-paste listing copy (use for every directory), Asset C — awesome-mcp-servers PR line (punkpeye format) (+15 more)
 
 ### Community 15 - "Community 15"
-Cohesion: 0.19
-Nodes (10): BehaviorRecord, BehaviorSummary, Env, KEY(), pct(), readBehavior(), recordToolCall(), summarizeBehavior() (+2 more)
+Cohesion: 0.12
+Nodes (15): BehaviorSummary, diffTools(), gradeRank(), GradeResult, readGrade(), recordGrade(), reputationFeed(), gradeFor() (+7 more)
 
 ### Community 16 - "Community 16"
 Cohesion: 0.16
@@ -238,8 +240,8 @@ Cohesion: 0.24
 Nodes (16): clean_and_normalize(), harvest_pulsemcp_secondary(), harvest_registry(), http_get(), http_post_json(), main(), Any, float (+8 more)
 
 ### Community 19 - "Community 19"
-Cohesion: 0.21
-Nodes (17): AgentControl, AUDIT(), AuditEntry, checkAgentAllowed(), CTL(), Env, getControl(), getUsage() (+9 more)
+Cohesion: 0.12
+Nodes (26): BehaviorRecord, Env, KEY(), pct(), readBehavior(), recordToolCall(), summarizeBehavior(), ToolStat (+18 more)
 
 ### Community 20 - "Community 20"
 Cohesion: 0.17
@@ -298,8 +300,8 @@ Cohesion: 0.29
 Nodes (12): b64urlDecode(), b64urlEncode(), claimStart(), claimVerify(), ctEqual(), Env, extractVerifyTokens(), fetchHtml() (+4 more)
 
 ### Community 35 - "Community 35"
-Cohesion: 0.16
-Nodes (13): adSlot(), CAT_LABEL, connectHubHtml(), CATEGORY_NAMES, categorySlug(), mcpLeaderboardHtml(), base64urlEncode(), bridgeDescriptor() (+5 more)
+Cohesion: 0.18
+Nodes (11): adSlot(), CAT_LABEL, connectHubHtml(), CATEGORY_NAMES, base64urlEncode(), bridgeDescriptor(), slim(), SlimTool (+3 more)
 
 ### Community 36 - "Community 36"
 Cohesion: 0.27
@@ -402,8 +404,8 @@ Cohesion: 0.29
 Nodes (6): `actions` (optional), Adapter contract, `detect(ctx) → null | DetectionContext`, `extract(ctx) → { tools, product, variants? }`, Headers / fetch etiquette, What "good" looks like
 
 ### Community 61 - "Community 61"
-Cohesion: 0.13
-Nodes (20): Action, AuthCtx, bearer(), Bindings, gate(), KeyRecord, Plan, PLAN_LIMITS (+12 more)
+Cohesion: 0.18
+Nodes (16): Action, AuthCtx, bearer(), Bindings, gate(), KeyRecord, Plan, PLAN_LIMITS (+8 more)
 
 ### Community 62 - "Community 62"
 Cohesion: 0.29
@@ -446,12 +448,12 @@ Cohesion: 0.25
 Nodes (15): fill(), comparisonHtml(), conversionBlock(), dropPageHtml(), dropsIndexHtml(), dropsIndexUrl(), esc(), fieldsFor() (+7 more)
 
 ### Community 72 - "Community 72"
-Cohesion: 0.13
-Nodes (24): AlertEnv, fireAlert(), checkAdmin(), deriveSlug(), Env, featureListing(), getDirectoryState(), listSubmissions() (+16 more)
+Cohesion: 0.19
+Nodes (14): AlertEnv, fireAlert(), captureDirectorySubmission(), Env, sanitize(), SubmitBody, validEmail(), validUrl() (+6 more)
 
 ### Community 73 - "Community 73"
-Cohesion: 0.33
-Nodes (5): AFFILIATE, affiliateButtons(), AffiliateNet, esc(), buy()
+Cohesion: 0.13
+Nodes (13): AFFILIATE, affiliateButtons(), AffiliateNet, esc(), Article, ARTICLE_SLUGS, ArticleFaq, articleHtml() (+5 more)
 
 ### Community 74 - "Community 74"
 Cohesion: 0.40
@@ -474,16 +476,16 @@ Cohesion: 0.60
 Nodes (4): badgeHandler(), Env, PILL_INDEXED(), PILL_VERIFIED()
 
 ### Community 80 - "Community 80"
-Cohesion: 0.08
-Nodes (30): blockedTargetReason(), callMcp(), CATEGORIES, composite(), diffTools(), DriftOutcome, Env, finalizeSseLimited() (+22 more)
+Cohesion: 0.10
+Nodes (24): blockedTargetReason(), callMcp(), CATEGORIES, composite(), DriftOutcome, Env, finalizeSseLimited(), Finding (+16 more)
 
 ### Community 81 - "Community 81"
 Cohesion: 0.60
 Nodes (4): embedHtml(), Env, escapeHtml(), verifyEmbedHandler()
 
 ### Community 144 - "Community 144"
-Cohesion: 0.15
-Nodes (24): b64url(), ensureMcpClient(), Env, exchangePkceCode(), generatePkceVerifier(), McpClientRecord, pkceChallengeS256(), TokenResponse (+16 more)
+Cohesion: 0.06
+Nodes (60): anthropicExchange(), anthropicStart(), bytesToBase64Url(), Env, generatePkce(), randomState(), requireUser(), b64url() (+52 more)
 
 ### Community 174 - "Community 174"
 Cohesion: 0.22
@@ -494,28 +496,28 @@ Cohesion: 0.27
 Nodes (16): LOCALIZED_LANGS, alternates(), Calc, calcUrl(), css(), esc(), funnelScript(), gradingCalculatorHtml() (+8 more)
 
 ### Community 176 - "Community 176"
-Cohesion: 0.36
-Nodes (9): deriveCategory(), SubScore, clamp(), getJson(), getText(), scoreMcpPackage(), seedRegistryPackages(), z() (+1 more)
+Cohesion: 0.40
+Nodes (13): deriveCategory(), letter(), clamp(), getJson(), getText(), ghFromUrls(), scanGitHubSource(), scoreMcpGitHubRepo() (+5 more)
 
 ### Community 177 - "Community 177"
 Cohesion: 0.24
 Nodes (9): BestLoc, BESTOF_I18N, GLOSS_I18N, GlossLoc, NEn, SHORT_LIST, WHAT_IS, FaqT (+1 more)
 
 ### Community 178 - "Community 178"
-Cohesion: 0.11
-Nodes (30): issueKey(), revokeKey(), app, Bindings, HTML_HEADERS, Variables, landingHtml(), EVENTS (+22 more)
+Cohesion: 0.18
+Nodes (18): revokeKey(), track(), slugFromUrl(), createCheckout(), createDeepAuditCheckout(), createDirectoryVerifiedCheckout(), createFixCheckout(), createManagedConnectionCheckout() (+10 more)
 
 ### Community 179 - "Community 179"
 Cohesion: 0.29
 Nodes (6): 1) Show HN (Hacker News) — biggest same-day dev traffic, 2) Reddit — the free calculator (value-first, no hard sell), 3) X / Twitter — quick thread, 4) Top 5 directory submissions (Track A, wmcp.sh, live now), 5) The one paid push that's deliverable today, Post today — ready-to-paste traffic for the buy path
 
 ### Community 180 - "Community 180"
-Cohesion: 0.34
-Nodes (10): fire(), checkoutCompleted(), CtxOpts, envMock(), EnvOverrides, kvMock(), makeCtx(), signStripe() (+2 more)
+Cohesion: 0.31
+Nodes (12): issueKey(), stripeWebhook(), fire(), checkoutCompleted(), CtxOpts, envMock(), EnvOverrides, kvMock() (+4 more)
 
 ### Community 181 - "Community 181"
-Cohesion: 0.46
-Nodes (7): anthropicExchange(), anthropicStart(), bytesToBase64Url(), Env, generatePkce(), randomState(), requireUser()
+Cohesion: 0.42
+Nodes (9): checkAdmin(), deriveSlug(), Env, featureListing(), getDirectoryState(), listSubmissions(), unfeatureListing(), unverifyListing() (+1 more)
 
 ### Community 183 - "Community 183"
 Cohesion: 0.12
@@ -530,35 +532,47 @@ Cohesion: 0.33
 Nodes (5): Don't, LAUNCH A — QuickCatch (fire when the extension is approved), LAUNCH B — wmcp.sh (live now, launch any day), Launch-day checklist (either launch), Product Hunt launch kit
 
 ### Community 199 - "Community 199"
-Cohesion: 0.13
-Nodes (18): ARTICLE_SLUGS, blogIndexHtml(), blogPostHtml(), escapeHtml(), escapeJson(), footerHtml(), navHtml(), BLOG_POSTS (+10 more)
+Cohesion: 0.23
+Nodes (8): baseCss(), CacheEntry, escapeHtml(), hostnameOf(), notFoundHtml(), PROVIDER_BADGE, relTime(), uHtml()
+
+### Community 200 - "Community 200"
+Cohesion: 0.40
+Nodes (4): proxyExecuteGate(), DAY, kvWith(), mkEnv()
 
 ### Community 202 - "Community 202"
-Cohesion: 0.21
-Nodes (12): connKey(), Env, hasManagedConnection(), isActive(), listManagedConnections(), refreshPkceToken(), Env, getFreshUpstreamToken() (+4 more)
+Cohesion: 0.43
+Nodes (6): connKey(), Env, hasManagedConnection(), isActive(), listManagedConnections(), handleNonPlanCheckout()
+
+### Community 203 - "Community 203"
+Cohesion: 0.40
+Nodes (3): EVENTS, FunnelEvent, MetricsEnv
 
 ### Community 204 - "Community 204"
-Cohesion: 0.14
-Nodes (17): readGrade(), Env, gradeFor(), gradeSummary(), jerr(), jrpc(), oracleHandler(), recommendation() (+9 more)
+Cohesion: 0.22
+Nodes (10): Env, gradeSummary(), jerr(), jrpc(), oracleHandler(), recommendation(), SUPPORTED, textResult() (+2 more)
 
 ### Community 205 - "Community 205"
-Cohesion: 0.10
-Nodes (23): Article, ArticleFaq, articleHtml(), ARTICLES, articleSchema(), articlesIndexHtml(), bySlug, relatedHtml() (+15 more)
+Cohesion: 0.15
+Nodes (18): articlesIndexHtml(), directoryHtml(), categorySlug(), mcpLeaderboardHtml(), badgeHubHtml(), baseDomain(), COLOR, computeMcpSecurityReport() (+10 more)
+
+### Community 207 - "Community 207"
+Cohesion: 0.14
+Nodes (12): dashboardHtml(), app, Bindings, HTML_HEADERS, Variables, landingHtml(), ogSvg(), addGradeServers() (+4 more)
 
 ## Knowledge Gaps
 - **701 isolated node(s):** `actions`, `HERE`, `FIXTURES`, `ETHEREUM_FEEDS`, `actions` (+696 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **20 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **19 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `resolveAuth()` connect `Community 61` to `Community 2`, `Community 34`, `Community 202`, `Community 178`, `Community 180`, `Community 24`?**
-  _High betweenness centrality (0.005) - this node is a cross-community bridge._
 - **Why does `LOCALIZED_LANGS` connect `Community 175` to `Community 5`, `Community 52`, `Community 13`, `Community 199`?**
+  _High betweenness centrality (0.008) - this node is a cross-community bridge._
+- **Why does `mcpProxyHandler()` connect `Community 19` to `Community 202`, `Community 15`, `Community 144`, `Community 176`, `Community 180`?**
+  _High betweenness centrality (0.007) - this node is a cross-community bridge._
+- **Why does `resolveAuth()` connect `Community 61` to `Community 34`, `Community 202`, `Community 144`, `Community 178`, `Community 180`, `Community 24`?**
   _High betweenness centrality (0.005) - this node is a cross-community bridge._
-- **Why does `providerStart()` connect `Community 144` to `Community 178`, `Community 2`, `Community 181`?**
-  _High betweenness centrality (0.004) - this node is a cross-community bridge._
 - **Are the 12 inferred relationships involving `Tool` (e.g. with `Any` and `str`) actually correct?**
   _`Tool` has 12 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 6 inferred relationships involving `WmcpClient` (e.g. with `Any` and `bool`) actually correct?**

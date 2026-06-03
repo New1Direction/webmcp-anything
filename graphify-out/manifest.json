@@ -375,8 +375,8 @@
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/drops_seo.ts": {
-    "mtime": 1780472261.8501039,
-    "ast_hash": "bda403bac246c98b435576b7f3741370",
+    "mtime": 1780517229.7030814,
+    "ast_hash": "a806db51d34f3181456e18c175bd9b3d",
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/engine.ts": {
@@ -500,8 +500,8 @@
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/index.ts": {
-    "mtime": 1780513267.206901,
-    "ast_hash": "05b23197b4abd7aad90ac5c0d554e881",
+    "mtime": 1780517538.6633236,
+    "ast_hash": "e022de896f3e8cf9d18acc4094d9ffc2",
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/integration_airtable.ts": {
@@ -815,8 +815,8 @@
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/u.ts": {
-    "mtime": 1780510653.2374907,
-    "ast_hash": "9b1b5ef60a4de67f956ffbf08753c385",
+    "mtime": 1780517229.6971998,
+    "ast_hash": "ead25f7e1ea082f3e8615969a3b7514e",
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/use_case_agent_commerce.ts": {
@@ -1255,23 +1255,23 @@
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/extension/icons/icon.svg": {
-    "mtime": 1780394172.2905898,
-    "ast_hash": "5633bf74b8d532c551742e8cecaeac28",
+    "mtime": 1780516739.942014,
+    "ast_hash": "37ebce323c9a20056742a91af9cbe938",
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/extension/icons/icon128.png": {
-    "mtime": 1780394139.6760726,
-    "ast_hash": "d91798b0aa34fb90865a36c4c43e5975",
+    "mtime": 1780516740.0035598,
+    "ast_hash": "44f2ed43b937b320179e2a27fc1d54ff",
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/extension/icons/icon16.png": {
-    "mtime": 1780394139.7106266,
-    "ast_hash": "6e86153dae7dc2cdbf650a29dc41052b",
+    "mtime": 1780516739.9722335,
+    "ast_hash": "8438b607930f2acc724019b3d6d30e67",
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/extension/icons/icon48.png": {
-    "mtime": 1780394139.6949031,
-    "ast_hash": "f43a2fea37a415cd000782f33356bd7d",
+    "mtime": 1780516739.9881806,
+    "ast_hash": "ed4f50457235050e588d765ab5ab6904",
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/launch/assets/social-preview.png": {
@@ -1360,8 +1360,8 @@
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/tools.ts": {
-    "mtime": 1780445370.1520607,
-    "ast_hash": "1a30bae672e2e557b7c98a3440c7b3b4",
+    "mtime": 1780517229.706884,
+    "ast_hash": "36d59d7a353402a8ba5e8dae0785c97e",
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/test/tools.test.ts": {
@@ -1440,8 +1440,8 @@
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/ui.ts": {
-    "mtime": 1780515007.8470116,
-    "ast_hash": "c5b37a1501e82e2f7000479586266506",
+    "mtime": 1780517229.7094004,
+    "ast_hash": "8312a58c8114672ccc8e880b605ffe1e",
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/launch/coverage_agent_report_2026-06.md": {
@@ -1500,8 +1500,13 @@
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/mcp_pkg.ts": {
-    "mtime": 1780513026.1323204,
-    "ast_hash": "0051b55786d83c4628e748f75cde780f",
+    "mtime": 1780517511.597151,
+    "ast_hash": "d9237650afc7e22b3e4b7a1c1263d27c",
+    "semantic_hash": ""
+  },
+  "/Users/alexhearts/webmcp-anything/extension/icons/quickcatch.svg": {
+    "mtime": 1780516676.1350124,
+    "ast_hash": "37ebce323c9a20056742a91af9cbe938",
     "semantic_hash": ""
   }
 }

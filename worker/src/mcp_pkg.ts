@@ -220,12 +220,13 @@ function ghFromUrls(info: any): { owner: string; repo: string } | null {
 }
 
 /** Pull a bounded sample of source from a GitHub repo via jsdelivr (no clone). */
-async function scanGitHubSource(owner: string, repo: string, exts: RegExp): Promise<{ source: string; sampled: string[] }> {
+async function scanGitHubSource(owner: string, repo: string, exts: RegExp): Promise<{ source: string; sampled: string[]; ref: string; versions: number }> {
   let source = "", sampled: string[] = [];
   const meta = await getJson(`https://data.jsdelivr.com/v1/packages/gh/${owner}/${repo}`);
+  const versions = meta?.versions?.length || 0;
   const ref = meta?.versions?.[0]?.version || meta?.tags?.latest || "HEAD";
   const tree = await getJson(`https://data.jsdelivr.com/v1/packages/gh/${owner}/${repo}@${ref}`);
-  if (!tree?.files) return { source, sampled };
+  if (!tree?.files) return { source, sampled, ref, versions };
   const flat: string[] = [];
   const walk = (nodes: any[], prefix: string) => { for (const n of nodes || []) { if (n.type === "directory") walk(n.files, `${prefix}${n.name}/`); else flat.push(`${prefix}${n.name}`); } };
   walk(tree.files, "");
@@ -238,7 +239,7 @@ async function scanGitHubSource(owner: string, repo: string, exts: RegExp): Prom
     const txt = await getText(`https://cdn.jsdelivr.net/gh/${owner}/${repo}@${ref}/${f}`);
     if (txt) { source += "\n" + txt.slice(0, 80_000); sampled.push(f); }
   }
-  return { source, sampled };
+  return { source, sampled, ref, versions };
 }
 
 /** Grade a PyPI package as a (stdio) MCP server from its metadata + GitHub source. */
@@ -353,21 +354,24 @@ export async function scoreMcpGitHubRepo(owner: string, repo: string): Promise<G
     reachable: false, auth_required: false, grade: "F", score: 0, sub: {}, findings: [],
     tools_count: 0, title: repo, kind: "package",
   };
-  const gm = await getJson(`https://api.github.com/repos/${owner}/${repo}`);
-  if (!gm || gm.message === "Not Found" || !gm.full_name) {
-    r.findings.push({ id: "pkg_missing", severity: "fail", detail: "GitHub repository not found." });
+  // GitHub API gives stars/license/recency, but the worker's shared IP gets
+  // rate-limited (60/hr unauth). So treat it as a bonus, not a requirement — the
+  // real signal (source + release history) comes from jsdelivr, which isn't limited.
+  const gm = (await getJson(`https://api.github.com/repos/${owner}/${repo}`)) || {};
+  const apiOk = !!gm.full_name;
+  const { source, sampled, versions } = await scanGitHubSource(owner, repo, /\.(py|pyi|ts|tsx|js|mjs|rs)$/);
+  if (!apiOk && !sampled.length && !versions) {
+    r.findings.push({ id: "pkg_missing", severity: "fail", detail: "GitHub repository not found or has no published source." });
     r.sub = { spec: z(20), security: z(30), maintenance: z(20), hygiene: z(15), transparency: z(15) };
     r.category = deriveCategory([], repo, "");
     return r;
   }
   const stars = gm.stargazers_count || 0;
-  const license = gm.license?.spdx_id && gm.license.spdx_id !== "NOASSERTION" ? gm.license.spdx_id : "";
+  const license = apiOk && gm.license?.spdx_id && gm.license.spdx_id !== "NOASSERTION" ? gm.license.spdx_id : "";
   const desc = String(gm.description || "");
   const topics: string[] = gm.topics || [];
-  const ageDays = gm.pushed_at ? Math.floor((Date.now() - new Date(gm.pushed_at).getTime()) / 86400000) : 9999;
-  r.title = gm.name || repo;
-
-  const { source, sampled } = await scanGitHubSource(owner, repo, /\.(py|pyi|ts|tsx|js|mjs|rs)$/);
+  const ageDays = gm.pushed_at ? Math.floor((Date.now() - new Date(gm.pushed_at).getTime()) / 86400000) : (versions >= 3 ? 60 : 9999);
+  r.title = (apiOk && gm.name) || repo;
   const blob = `${source} ${desc} ${topics.join(" ")}`;
   const isMcp = /modelcontextprotocol|@modelcontextprotocol|fastmcp|mcp[_-]?server|navigator\.modelContext|\bmcp\b/i.test(blob);
   const toolNames = new Set<string>();
@@ -397,18 +401,19 @@ export async function scoreMcpGitHubRepo(owner: string, repo: string): Promise<G
   spec = clamp(spec);
 
   let maint = 50; const maintNotes: string[] = [];
-  if (ageDays < 60) { maint = 92; maintNotes.push("pushed within 60 days"); }
-  else if (ageDays < 365) { maint = 74; maintNotes.push(`last push ~${Math.round(ageDays / 30)}mo ago`); }
-  else { maint = 38; maintNotes.push(`stale — last push ~${Math.round(ageDays / 365)}y ago`); }
-  maintNotes.push(`${stars.toLocaleString()} stars`);
+  if (gm.pushed_at && ageDays < 60) { maint = 92; maintNotes.push("pushed within 60 days"); }
+  else if (gm.pushed_at && ageDays < 365) { maint = 74; maintNotes.push(`last push ~${Math.round(ageDays / 30)}mo ago`); }
+  else if (versions >= 5) { maint = 80; maintNotes.push(`${versions} releases — actively versioned`); }
+  else if (gm.pushed_at) { maint = 38; maintNotes.push(`stale — last push ~${Math.round(ageDays / 365)}y ago`); }
+  if (apiOk) maintNotes.push(`${stars.toLocaleString()} stars`); else if (versions) maintNotes.push(`${versions} published releases`);
 
   let hyg = 55; const hygNotes: string[] = [];
   if (license) { hyg += 20; hygNotes.push(`${license} license`); }
-  if (!gm.fork) { hyg += 10; hygNotes.push("original (not a fork)"); }
+  if (apiOk && !gm.fork) { hyg += 10; hygNotes.push("original (not a fork)"); }
   hyg = clamp(hyg);
 
   let trans = 55; const transNotes: string[] = ["✓ public GitHub repo"];
-  if (license) { trans += 25; transNotes.push(`✓ ${license} license`); } else transNotes.push("no detected license");
+  if (license) { trans += 25; transNotes.push(`✓ ${license} license`); } else transNotes.push(apiOk ? "no detected license" : "license/stars unavailable (GitHub API rate-limited) — graded on source + releases");
   if (stars >= 100) { trans += 12; transNotes.push("established (100+ stars)"); }
   trans = clamp(trans);
 
@@ -426,7 +431,7 @@ export async function scoreMcpGitHubRepo(owner: string, repo: string): Promise<G
   r.reachable = true;
   if (injHit) r.findings.push({ id: "tool_poisoning", severity: "fail", owasp: "MCP01", detail: "Prompt-injection markup found in source." });
   if (hardcoded) r.findings.push({ id: "secret_exfil", severity: "fail", owasp: "MCP08", detail: "Hardcoded secret found in source." });
-  r.findings.push({ id: "pkg", severity: "info", detail: `Static analysis of github.com/${owner}/${repo} (${stars.toLocaleString()} stars). Stdio/source-distributed — no remote endpoint; runtime behavior not measured.` });
+  r.findings.push({ id: "pkg", severity: "info", detail: `Static analysis of github.com/${owner}/${repo}${apiOk ? ` (${stars.toLocaleString()} stars)` : ""}. Stdio/source-distributed — no remote endpoint; runtime behavior not measured.` });
   r.category = deriveCategory([...toolNames].map((n) => ({ name: n })), repo, `${desc} ${topics.join(" ")}`);
   return r;
 }
