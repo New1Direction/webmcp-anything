@@ -150,21 +150,25 @@ app.get("/api/v1/health", (c) =>
 app.get("/favicon.ico", (c) => c.redirect("/favicon.svg", 302));
 
 app.get("/api/v1/stats/public", async (c) => {
-  const raw = await c.env.CACHE.get("stats:total_cached");
-  const cached_urls = raw ? parseInt(raw, 10) || 0 : 0;
-  // Live count of graded MCP servers (grade:* keys) — social proof that grows
-  // itself via the cron registry land-grab. Paginated + capped; response cached.
-  let graded_servers = 0;
-  try {
+  // True counts straight from KV (paginated) so the homepage matches the
+  // directory + leaderboard. Response cached 10m, so the list cost is amortized.
+  const countPrefix = async (prefix: string, maxPages: number): Promise<number> => {
+    let n = 0, pages = 0;
     let cursor: string | undefined;
-    let pages = 0;
     do {
-      const r: any = await c.env.CACHE.list({ prefix: "grade:", limit: 1000, cursor });
-      graded_servers += r.keys.length;
+      const r: any = await c.env.CACHE.list({ prefix, limit: 1000, cursor });
+      n += r.keys.length;
       cursor = r.list_complete ? undefined : r.cursor;
       pages++;
-    } while (cursor && pages < 5);
-  } catch {}
+    } while (cursor && pages < maxPages);
+    return n;
+  };
+  let cached_urls = 0, graded_servers = 0;
+  try { cached_urls = await countPrefix("seen:", 8); } catch {
+    const raw = await c.env.CACHE.get("stats:total_cached");
+    cached_urls = raw ? parseInt(raw, 10) || 0 : 0;
+  }
+  try { graded_servers = await countPrefix("grade:", 8); } catch {}
   return c.json({ cached_urls, graded_servers }, 200, {
     "cache-control": "public, max-age=600, s-maxage=600",
   });
