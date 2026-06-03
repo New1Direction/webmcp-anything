@@ -302,6 +302,13 @@ app.get("/mcp/set/:id", async (c) => {
 
 // ---- Independent MCP trust grade (free, public). Registered BEFORE the
 // /mcp/:provider proxy so "grade" isn't swallowed as a provider id. ----
+// The MCP Trust Leaderboard — public ranking of every graded server (the moat).
+app.get("/mcp/leaderboard", async (c) => {
+  const { mcpLeaderboardHtml } = await import("./mcp_grade");
+  const html = await mcpLeaderboardHtml(c.env as any, new URL(c.req.url).origin);
+  return new Response(html, { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=900, s-maxage=900" } });
+});
+
 app.get("/mcp/grade", async (c) => {
   const { gradeHomeHtml } = await import("./mcp_grade");
   return c.html(gradeHomeHtml(new URL(c.req.url).origin));
@@ -1359,6 +1366,14 @@ app.get("/api/v1/webmcp", async (c) => {
   if (!r.ok) return c.json({ error: "extract_failed", url }, 502);
   const { bridgeDescriptor } = await import("./webmcp_bridge");
   return c.json(bridgeDescriptor(url, r.payload.tools || [], new URL(c.req.url).origin));
+});
+// The WebMCP hub — markets the one-line shim + frames wmcp.sh as the default
+// WebMCP supplier (land-grab the in-browser side of the standard).
+app.get("/webmcp", async (c) => {
+  const { webmcpHubHtml } = await import("./webmcp_bridge");
+  return new Response(webmcpHubHtml(new URL(c.req.url).origin), {
+    headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=900, s-maxage=900" },
+  });
 });
 // Hosted WebMCP shim: <script src="/webmcp/<b64url>.js"> → navigator.modelContext.
 app.get("/webmcp/:enc", async (c) => {

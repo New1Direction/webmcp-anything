@@ -377,6 +377,9 @@ export function llmsTxt(origin: string): string {
 ## Start here
 
 - [Homepage](${origin}/): one-paragraph pitch + live demo
+- [The MCP hub](${origin}/connect): connect (OAuth-vaulted), grade, and build MCP servers in one place
+- [MCP Trust Leaderboard](${origin}/mcp/leaderboard): independent A–F trust grades for MCP servers, continuously watched for drift
+- [WebMCP](${origin}/webmcp): one line makes any site agent-ready via navigator.modelContext (dual-emits as MCP)
 - [Agent-ready (cornerstone)](${origin}/agent-ready): canonical guide on making your site work with AI agents
 - [Engineering blog](${origin}/blog): ${blogCount} long-form posts on MCP, edge architecture, OAuth, e-commerce parsing, oracle adapters
 - [Directory](${origin}/directory): every URL the community has turned into MCP tools — ${blogCount > 0 ? "verified badges + featured placement available" : "open submission"}
@@ -619,6 +622,16 @@ export async function sitemapXml(env: any, origin: string): Promise<string> {
   </url>
   <url>
     <loc>${origin}/mcp/grade</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>${origin}/mcp/leaderboard</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>${origin}/webmcp</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
