@@ -1,16 +1,16 @@
 # Graph Report - worker  (2026-06-03)
 
 ## Corpus Check
-- 175 files · ~312,685 words
+- 176 files · ~313,382 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 874 nodes · 1503 edges · 120 communities (118 shown, 2 thin omitted)
+- 880 nodes · 1509 edges · 121 communities (118 shown, 3 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 4 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `7ccbc840`
+- Built from commit: `04bc93eb`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -52,6 +52,7 @@
 - [[_COMMUNITY_Community 34|Community 34]]
 - [[_COMMUNITY_Community 35|Community 35]]
 - [[_COMMUNITY_Community 94|Community 94]]
+- [[_COMMUNITY_Community 119|Community 119]]
 - [[_COMMUNITY_Community 120|Community 120]]
 
 ## God Nodes (most connected - your core abstractions)
@@ -81,15 +82,15 @@
 ## Import Cycles
 - None detected.
 
-## Communities (120 total, 2 thin omitted)
+## Communities (121 total, 3 thin omitted)
 
 ### Community 0 - "Community 0"
-Cohesion: 0.05
-Nodes (68): Action, AuthCtx, bearer(), Bindings, consume(), gate(), issueKey(), KeyRecord (+60 more)
+Cohesion: 0.06
+Nodes (60): Action, AuthCtx, Bindings, consume(), gate(), issueKey(), KeyRecord, Plan (+52 more)
 
 ### Community 1 - "Community 1"
-Cohesion: 0.10
-Nodes (30): cacheKey(), CRYPTO_ADAPTERS, EngineEnv, ExecResult, executeCapturedTool(), executeTool(), listCapturedTools(), normalizeUrl() (+22 more)
+Cohesion: 0.06
+Nodes (51): bearer(), resolveAuth(), b64urlDecode(), b64urlEncode(), claimStart(), claimVerify(), ctEqual(), Env (+43 more)
 
 ### Community 2 - "Community 2"
 Cohesion: 0.06
@@ -101,15 +102,15 @@ Nodes (13): deriveCategory(), letter(), clamp(), getJson(), getText(), ghFromUrl
 
 ### Community 4 - "Community 4"
 Cohesion: 0.06
-Nodes (33): LANGS, BEST_DEFS, BestDef, BESTOF, CAT_ORDER, COMBO_SETS, COMBO_STORES, COMBOS (+25 more)
+Nodes (27): BEST_DEFS, BestDef, BESTOF, CAT_ORDER, COMBO_SETS, COMBO_STORES, COMBOS, CURATED (+19 more)
 
 ### Community 5 - "Community 5"
 Cohesion: 0.09
-Nodes (24): blockedTargetReason(), callMcp(), CATEGORIES, composite(), DriftOutcome, Env, finalizeSseLimited(), Finding (+16 more)
+Nodes (25): blockedTargetReason(), callMcp(), CATEGORIES, composite(), DriftOutcome, Env, finalizeSseLimited(), Finding (+17 more)
 
 ### Community 6 - "Community 6"
-Cohesion: 0.13
-Nodes (24): AlertEnv, fireAlert(), checkAdmin(), deriveSlug(), Env, featureListing(), getDirectoryState(), listSubmissions() (+16 more)
+Cohesion: 0.42
+Nodes (9): checkAdmin(), deriveSlug(), Env, featureListing(), getDirectoryState(), listSubmissions(), unfeatureListing(), unverifyListing() (+1 more)
 
 ### Community 7 - "Community 7"
 Cohesion: 0.09
@@ -120,8 +121,8 @@ Cohesion: 0.16
 Nodes (13): integrationAirtableHtml(), integrationAnthropicHtml(), integrationDiscordHtml(), integrationGithubHtml(), integrationGoogleHtml(), integrationLinearHtml(), integrationNotionHtml(), integrationOpenaiHtml() (+5 more)
 
 ### Community 9 - "Community 9"
-Cohesion: 0.17
-Nodes (22): regradeWatched(), seedRegistryGrades(), addGradeServers(), addSeedStores(), cacheKey(), DEFAULT_STORES, Env, gradeManualSeed() (+14 more)
+Cohesion: 0.09
+Nodes (35): AlertEnv, fireAlert(), captureDirectorySubmission(), Env, sanitize(), SubmitBody, validEmail(), validUrl() (+27 more)
 
 ### Community 10 - "Community 10"
 Cohesion: 0.20
@@ -160,8 +161,8 @@ Cohesion: 0.21
 Nodes (9): ARTICLE_SLUGS, baseCss(), CacheEntry, escapeHtml(), hostnameOf(), notFoundHtml(), PROVIDER_BADGE, relTime() (+1 more)
 
 ### Community 19 - "Community 19"
-Cohesion: 0.31
-Nodes (5): decide(), Env, gradeForVerify(), verifyMcpServer(), VerifyVerdict
+Cohesion: 0.19
+Nodes (9): gradeRank(), readGrade(), recordGrade(), reputationFeed(), decide(), Env, gradeForVerify(), verifyMcpServer() (+1 more)
 
 ### Community 20 - "Community 20"
 Cohesion: 0.21
@@ -209,11 +210,11 @@ Nodes (6): adSlot(), CAT_LABEL, connectHubHtml(), CATEGORY_NAMES, categorySlug()
 
 ### Community 31 - "Community 31"
 Cohesion: 0.29
-Nodes (12): b64urlDecode(), b64urlEncode(), claimStart(), claimVerify(), ctEqual(), Env, extractVerifyTokens(), fetchHtml() (+4 more)
+Nodes (6): LANGS, DROP_PAGES, DROP_SLUGS, dropUrl(), isLocalizable(), LOCALIZABLE_SLUGS
 
 ### Community 32 - "Community 32"
-Cohesion: 0.17
-Nodes (9): BehaviorSummary, diffTools(), gradeRank(), GradeResult, readGrade(), recordGrade(), reputationFeed(), goodTool (+1 more)
+Cohesion: 0.22
+Nodes (5): BehaviorSummary, diffTools(), GradeResult, goodTool, MockOpts
 
 ### Community 33 - "Community 33"
 Cohesion: 0.60
@@ -230,22 +231,22 @@ Nodes (6): Flow, inferSchema(), safeJson(), synthesizeFromFlows(), SynthResult, 
 ## Knowledge Gaps
 - **200 isolated node(s):** `name`, `version`, `private`, `description`, `type` (+195 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **2 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **3 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `LOCALIZED_LANGS` connect `Community 14` to `Community 9`, `Community 18`, `Community 11`, `Community 4`?**
-  _High betweenness centrality (0.033) - this node is a cross-community bridge._
-- **Why does `mcpProxyHandler()` connect `Community 10` to `Community 0`, `Community 32`, `Community 2`, `Community 3`, `Community 15`?**
+- **Why does `LOCALIZED_LANGS` connect `Community 14` to `Community 4`, `Community 9`, `Community 11`, `Community 18`, `Community 31`?**
   _High betweenness centrality (0.032) - this node is a cross-community bridge._
-- **Why does `resolveAuth()` connect `Community 0` to `Community 1`, `Community 2`, `Community 31`?**
+- **Why does `mcpProxyHandler()` connect `Community 10` to `Community 0`, `Community 2`, `Community 3`, `Community 15`, `Community 19`?**
+  _High betweenness centrality (0.032) - this node is a cross-community bridge._
+- **Why does `resolveAuth()` connect `Community 1` to `Community 0`, `Community 2`?**
   _High betweenness centrality (0.017) - this node is a cross-community bridge._
 - **What connects `name`, `version`, `private` to the rest of the system?**
   _200 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 0` be split into smaller, more focused modules?**
-  _Cohesion score 0.054647599591419814 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.060126582278481014 - nodes in this community are weakly interconnected._
 - **Should `Community 1` be split into smaller, more focused modules?**
-  _Cohesion score 0.09915966386554621 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.06253652834599649 - nodes in this community are weakly interconnected._
 - **Should `Community 2` be split into smaller, more focused modules?**
   _Cohesion score 0.06086956521739131 - nodes in this community are weakly interconnected._
