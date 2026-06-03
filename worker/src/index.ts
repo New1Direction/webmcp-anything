@@ -436,7 +436,7 @@ app.get("/mcp/grade/:host", async (c) => {
   const { readGrade, scoreMcpServer, recordGrade, gradePageHtml } = await import("./mcp_grade");
   // Package / source (stdio) servers: never probe — read the static scan, or run it on demand.
   if (host.startsWith("npm:") || host.startsWith("pypi:") || host.startsWith("gh:")) {
-    let pr = await readGrade(c.env as any, host);
+    let pr = c.req.query("fresh") === "1" ? null : await readGrade(c.env as any, host);
     if (!pr) {
       const mod = await import("./mcp_pkg");
       try {
