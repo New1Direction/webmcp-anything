@@ -2470,6 +2470,438 @@ export const ARTICLES: Article[] = [
     ],
     related: ["best-gyarados-pokemon-cards", "shining-gyarados-card-value", "best-pokemon-cards-to-invest-2026"],
   },
+
+  {
+    slug: "best-sylveon-pokemon-cards",
+    title: "Best Sylveon Pokémon Cards (Most Valuable, 2026) | wmcp.sh",
+    desc: "The best and most valuable Sylveon Pokémon cards — VMAX alt art, Prismatic ex SIR, rainbow GX, V alt art — with the cheapest raw and PSA 10 copies on eBay.",
+    h1: "Best Sylveon Pokémon Cards",
+    dek: "The Evolving Skies alt arts and Prismatic chase — and where to buy each.",
+    updated: "June 2026",
+    readMins: 6,
+    bodyHtml:
+      p(`Sylveon is one of the most popular Eeveelutions, and its best cards are genuinely valuable. Here are the ones worth owning — with the cheapest raw copy and the cheapest PSA 10 on eBay for each.`) +
+      h2("1. Sylveon VMAX Alternate Art (Evolving Skies, 2021)") +
+      p(`The headline — the Sylveon VMAX alt art is one of the most beautiful Eeveelution chases from the same beloved set as Moonbreon.`) +
+      cardLinks("Pokemon Sylveon VMAX alternate art Evolving Skies") +
+      h2("2. Sylveon ex Special Illustration Rare (Prismatic Evolutions)") +
+      p(`The modern chase — Sylveon's SIR from the Eeveelution-themed Prismatic Evolutions set rides the same mania that made the Umbreon ex explode.`) +
+      cardLinks("Pokemon Sylveon ex special illustration rare Prismatic Evolutions") +
+      h2("3. Sylveon GX Rainbow Rare") +
+      p(`The rainbow secret Sylveon GX is a popular, attainable hold with classic full-art appeal.`) +
+      cardLinks("Pokemon Sylveon GX rainbow") +
+      h2("4. Sylveon V Alternate Art (Evolving Skies)") +
+      p(`The more affordable Evolving Skies chase — gorgeous art at a fraction of the VMAX price.`) +
+      cardLinks("Pokemon Sylveon V alternate art Evolving Skies") +
+      h2("Raw or PSA 10?") +
+      p(`Raw is the affordable way to collect; a PSA 10 commands a premium and is the store of value for the alt arts and SIR. Buying raw to grade? Read <a href="/guides/how-to-grade-pokemon-cards">how to grade</a> and check the <a href="/tools/pokemon-grading-calculator">grading calculator</a>. Prismatic sells out fast — catch it with <a href="/">QuickCatch</a>. See the full <a href="/guides/best-eeveelution-cards">Eeveelution ranking</a>.`),
+    faqs: [
+      { q: "What is the most valuable Sylveon card?", a: "The Sylveon VMAX alternate art (Evolving Skies) and the Prismatic Evolutions Sylveon ex SIR are the most valuable, especially in PSA 10." },
+      { q: "Is Sylveon a popular card to collect?", a: "Very — Sylveon is one of the most loved Eeveelutions, and its Evolving Skies alt arts and Prismatic Evolutions SIR have strong, durable demand." },
+    ],
+    related: ["are-sylveon-cards-worth-money", "best-eeveelution-cards", "best-umbreon-pokemon-cards"],
+  },
+
+  {
+    slug: "are-sylveon-cards-worth-money",
+    title: "Are Sylveon Cards Worth Money? (2026 Value Guide) | wmcp.sh",
+    desc: "Are Sylveon Pokémon cards worth money? Which Sylveon cards hold value — VMAX alt art, Prismatic ex SIR, rainbow GX — raw vs graded, with cheapest copies and PSA 10s on eBay.",
+    h1: "Are Sylveon Cards Worth Money?",
+    dek: "Which Sylveon cards actually hold value — and which are just nice to own.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Sylveon rides the devoted Eeveelution fanbase, which keeps its best cards valuable — but most are common. Here's the breakdown.`) +
+      h2("The ones that hold value") +
+      p(`The blue-chips are the <a href="/guides/best-sylveon-pokemon-cards">Evolving Skies VMAX alt art</a> and the Prismatic Evolutions Sylveon ex SIR — both with deep Eeveelution demand.`) +
+      cardLinks("Pokemon Sylveon VMAX alternate art Evolving Skies") +
+      h2("Strong mid-tier") +
+      p(`The Sylveon V alt art and rainbow Sylveon GX hold solid value without the headline price — good entry points.`) +
+      cardLinks("Pokemon Sylveon ex special illustration rare Prismatic Evolutions") +
+      h2("Nice to own, not investments") +
+      p(`Common holos, promos, and recent bulk Sylveons are great for a collection but won't appreciate much. Buy those for love of the card.`) +
+      h2("Raw vs graded for value") +
+      p(`For the alt arts and SIR, a PSA 10 is the real store of value. Holding raw copies worth grading? Read <a href="/guides/how-to-grade-pokemon-cards">how to grade</a> and run the <a href="/tools/pokemon-grading-calculator">grading calculator</a>. Selling? See <a href="/guides/where-to-sell-pokemon-cards">where to sell</a>.`),
+    faqs: [
+      { q: "Are Sylveon cards a good investment?", a: "The best are — the Evolving Skies VMAX alt art and Prismatic Evolutions ex SIR have durable Eeveelution demand. The V alt art and rainbow GX are strong mid-tier holds. Common holos won't appreciate much." },
+      { q: "Which Sylveon card is worth the most?", a: "The Sylveon VMAX alternate art (Evolving Skies) and the Prismatic Evolutions Sylveon ex SIR lead, especially in PSA 10." },
+    ],
+    related: ["best-sylveon-pokemon-cards", "best-eeveelution-cards", "best-cards-in-prismatic-evolutions"],
+  },
+
+  {
+    slug: "best-glaceon-pokemon-cards",
+    title: "Best Glaceon Pokémon Cards (Most Valuable, 2026) | wmcp.sh",
+    desc: "The best and most valuable Glaceon Pokémon cards — VMAX alt art, Prismatic ex SIR, V alt art, Glaceon GX — with the cheapest raw and PSA 10 copies on eBay.",
+    h1: "Best Glaceon Pokémon Cards",
+    dek: "The Evolving Skies alt arts and Prismatic chase — and where to buy each.",
+    updated: "June 2026",
+    readMins: 6,
+    bodyHtml:
+      p(`Glaceon is a fan-favorite Eeveelution with strong modern cards. Here are its best — with the cheapest raw copy and the cheapest PSA 10 on eBay for each.`) +
+      h2("1. Glaceon VMAX Alternate Art (Evolving Skies, 2021)") +
+      p(`The headline — the Glaceon VMAX alt art is a beautiful, sought-after chase from the same set as Moonbreon.`) +
+      cardLinks("Pokemon Glaceon VMAX alternate art Evolving Skies") +
+      h2("2. Glaceon ex Special Illustration Rare (Prismatic Evolutions)") +
+      p(`The modern chase — Glaceon's SIR from the Eeveelution-themed Prismatic Evolutions set.`) +
+      cardLinks("Pokemon Glaceon ex special illustration rare Prismatic Evolutions") +
+      h2("3. Glaceon V Alternate Art (Evolving Skies)") +
+      p(`The more affordable Evolving Skies chase — great art at a lower entry point.`) +
+      cardLinks("Pokemon Glaceon V alternate art Evolving Skies") +
+      h2("4. Glaceon GX (Ultra Prism, 2018)") +
+      p(`The Glaceon GX, including the rainbow secret rare, is a solid, attainable modern hold.`) +
+      cardLinks("Pokemon Glaceon GX Ultra Prism") +
+      h2("Raw or PSA 10?") +
+      p(`Raw is the affordable way to collect; a PSA 10 is the store of value for the alt arts and SIR. Buying raw to grade? Read <a href="/guides/how-to-grade-pokemon-cards">how to grade</a> and check the <a href="/tools/pokemon-grading-calculator">grading calculator</a>. See the full <a href="/guides/best-eeveelution-cards">Eeveelution ranking</a>.`),
+    faqs: [
+      { q: "What is the most valuable Glaceon card?", a: "The Glaceon VMAX alternate art (Evolving Skies) and the Prismatic Evolutions Glaceon ex SIR are the most valuable, especially in PSA 10." },
+      { q: "Is Glaceon a good card to collect?", a: "Yes — as a popular Eeveelution, its Evolving Skies alt arts and Prismatic Evolutions SIR carry strong, durable demand." },
+    ],
+    related: ["are-glaceon-cards-worth-money", "best-eeveelution-cards", "best-leafeon-pokemon-cards"],
+  },
+
+  {
+    slug: "are-glaceon-cards-worth-money",
+    title: "Are Glaceon Cards Worth Money? (2026 Value Guide) | wmcp.sh",
+    desc: "Are Glaceon Pokémon cards worth money? Which Glaceon cards hold value — VMAX alt art, Prismatic ex SIR, V alt art — raw vs graded, with cheapest copies and PSA 10s on eBay.",
+    h1: "Are Glaceon Cards Worth Money?",
+    dek: "Which Glaceon cards actually hold value — and which are just nice to own.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Glaceon shares the Eeveelution fanbase that keeps its best cards valuable — but most are common. Here's the breakdown.`) +
+      h2("The ones that hold value") +
+      p(`The blue-chips are the <a href="/guides/best-glaceon-pokemon-cards">Evolving Skies VMAX alt art</a> and the Prismatic Evolutions Glaceon ex SIR.`) +
+      cardLinks("Pokemon Glaceon VMAX alternate art Evolving Skies") +
+      h2("Strong mid-tier") +
+      p(`The Glaceon V alt art and Glaceon GX (Ultra Prism) hold solid value — good entry points.`) +
+      cardLinks("Pokemon Glaceon ex special illustration rare Prismatic Evolutions") +
+      h2("Nice to own, not investments") +
+      p(`Common holos, promos, and recent bulk Glaceons are great for a collection but won't appreciate much.`) +
+      h2("Raw vs graded for value") +
+      p(`For the alt arts and SIR, a PSA 10 is the real store of value. Read <a href="/guides/how-to-grade-pokemon-cards">how to grade</a> and run the <a href="/tools/pokemon-grading-calculator">grading calculator</a>. Selling? See <a href="/guides/where-to-sell-pokemon-cards">where to sell</a>.`),
+    faqs: [
+      { q: "Are Glaceon cards a good investment?", a: "The best are — the Evolving Skies VMAX alt art and Prismatic Evolutions ex SIR have durable demand. The V alt art and Ultra Prism GX are strong mid-tier holds. Common holos won't appreciate much." },
+      { q: "Which Glaceon card is worth the most?", a: "The Glaceon VMAX alternate art (Evolving Skies) and the Prismatic Evolutions Glaceon ex SIR lead, especially in PSA 10." },
+    ],
+    related: ["best-glaceon-pokemon-cards", "best-eeveelution-cards", "best-cards-in-prismatic-evolutions"],
+  },
+
+  {
+    slug: "best-leafeon-pokemon-cards",
+    title: "Best Leafeon Pokémon Cards (Most Valuable, 2026) | wmcp.sh",
+    desc: "The best and most valuable Leafeon Pokémon cards — VMAX alt art, Prismatic ex SIR, V alt art, Leafeon GX — with the cheapest raw and PSA 10 copies on eBay.",
+    h1: "Best Leafeon Pokémon Cards",
+    dek: "The Evolving Skies alt arts and Prismatic chase — and where to buy each.",
+    updated: "June 2026",
+    readMins: 6,
+    bodyHtml:
+      p(`Leafeon is a beloved Eeveelution with strong modern cards. Here are its best — with the cheapest raw copy and the cheapest PSA 10 on eBay for each.`) +
+      h2("1. Leafeon VMAX Alternate Art (Evolving Skies, 2021)") +
+      p(`The headline — the Leafeon VMAX alt art is a gorgeous chase from the same set as Moonbreon.`) +
+      cardLinks("Pokemon Leafeon VMAX alternate art Evolving Skies") +
+      h2("2. Leafeon ex Special Illustration Rare (Prismatic Evolutions)") +
+      p(`The modern chase — Leafeon's SIR from the Eeveelution-themed Prismatic Evolutions set.`) +
+      cardLinks("Pokemon Leafeon ex special illustration rare Prismatic Evolutions") +
+      h2("3. Leafeon V Alternate Art (Evolving Skies)") +
+      p(`The more affordable Evolving Skies chase — great art at a lower price.`) +
+      cardLinks("Pokemon Leafeon V alternate art Evolving Skies") +
+      h2("4. Leafeon GX (Ultra Prism, 2018)") +
+      p(`The Leafeon GX, including the rainbow secret rare, is a solid, attainable modern hold.`) +
+      cardLinks("Pokemon Leafeon GX Ultra Prism") +
+      h2("Raw or PSA 10?") +
+      p(`Raw is the affordable way to collect; a PSA 10 is the store of value for the alt arts and SIR. Buying raw to grade? Read <a href="/guides/how-to-grade-pokemon-cards">how to grade</a> and check the <a href="/tools/pokemon-grading-calculator">grading calculator</a>. See the full <a href="/guides/best-eeveelution-cards">Eeveelution ranking</a>.`),
+    faqs: [
+      { q: "What is the most valuable Leafeon card?", a: "The Leafeon VMAX alternate art (Evolving Skies) and the Prismatic Evolutions Leafeon ex SIR are the most valuable, especially in PSA 10." },
+      { q: "Is Leafeon a good card to collect?", a: "Yes — as a popular Eeveelution, its Evolving Skies alt arts and Prismatic Evolutions SIR carry strong, durable demand." },
+    ],
+    related: ["are-leafeon-cards-worth-money", "best-eeveelution-cards", "best-glaceon-pokemon-cards"],
+  },
+
+  {
+    slug: "are-leafeon-cards-worth-money",
+    title: "Are Leafeon Cards Worth Money? (2026 Value Guide) | wmcp.sh",
+    desc: "Are Leafeon Pokémon cards worth money? Which Leafeon cards hold value — VMAX alt art, Prismatic ex SIR, V alt art — raw vs graded, with cheapest copies and PSA 10s on eBay.",
+    h1: "Are Leafeon Cards Worth Money?",
+    dek: "Which Leafeon cards actually hold value — and which are just nice to own.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Leafeon shares the Eeveelution fanbase that keeps its best cards valuable — but most are common. Here's the breakdown.`) +
+      h2("The ones that hold value") +
+      p(`The blue-chips are the <a href="/guides/best-leafeon-pokemon-cards">Evolving Skies VMAX alt art</a> and the Prismatic Evolutions Leafeon ex SIR.`) +
+      cardLinks("Pokemon Leafeon VMAX alternate art Evolving Skies") +
+      h2("Strong mid-tier") +
+      p(`The Leafeon V alt art and Leafeon GX (Ultra Prism) hold solid value — good entry points.`) +
+      cardLinks("Pokemon Leafeon ex special illustration rare Prismatic Evolutions") +
+      h2("Nice to own, not investments") +
+      p(`Common holos, promos, and recent bulk Leafeons are great for a collection but won't appreciate much.`) +
+      h2("Raw vs graded for value") +
+      p(`For the alt arts and SIR, a PSA 10 is the real store of value. Read <a href="/guides/how-to-grade-pokemon-cards">how to grade</a> and run the <a href="/tools/pokemon-grading-calculator">grading calculator</a>. Selling? See <a href="/guides/where-to-sell-pokemon-cards">where to sell</a>.`),
+    faqs: [
+      { q: "Are Leafeon cards a good investment?", a: "The best are — the Evolving Skies VMAX alt art and Prismatic Evolutions ex SIR have durable demand. The V alt art and Ultra Prism GX are strong mid-tier holds. Common holos won't appreciate much." },
+      { q: "Which Leafeon card is worth the most?", a: "The Leafeon VMAX alternate art (Evolving Skies) and the Prismatic Evolutions Leafeon ex SIR lead, especially in PSA 10." },
+    ],
+    related: ["best-leafeon-pokemon-cards", "best-eeveelution-cards", "best-cards-in-prismatic-evolutions"],
+  },
+
+  {
+    slug: "best-vaporeon-pokemon-cards",
+    title: "Best Vaporeon Pokémon Cards (Most Valuable, 2026) | wmcp.sh",
+    desc: "The best and most valuable Vaporeon Pokémon cards — Evolving Skies V alt art, Prismatic ex SIR, Jungle holo — with the cheapest raw and PSA 10 copies on eBay.",
+    h1: "Best Vaporeon Pokémon Cards",
+    dek: "The Jungle classic, the modern chases — and where to buy each.",
+    updated: "June 2026",
+    readMins: 6,
+    bodyHtml:
+      p(`Vaporeon is one of the original Kanto Eeveelutions and a long-time fan favorite. Here are its best cards — with the cheapest raw copy and the cheapest PSA 10 on eBay for each.`) +
+      h2("1. Vaporeon V Alternate Art (Evolving Skies, 2021)") +
+      p(`The headline modern chase — the Vaporeon V alt art is a beautiful card from the same beloved set as Moonbreon.`) +
+      cardLinks("Pokemon Vaporeon V alternate art Evolving Skies") +
+      h2("2. Vaporeon ex Special Illustration Rare (Prismatic Evolutions)") +
+      p(`The newest chase — Vaporeon's SIR from the Eeveelution-themed Prismatic Evolutions set.`) +
+      cardLinks("Pokemon Vaporeon ex special illustration rare Prismatic Evolutions") +
+      h2("3. Jungle Vaporeon Holo (1999)") +
+      p(`The vintage classic — the Jungle set holo Vaporeon is a nostalgic must-have, with 1st Edition copies worth more than Unlimited.`) +
+      cardLinks("Pokemon Jungle Vaporeon holo 1999") +
+      h2("Raw or PSA 10?") +
+      p(`Raw is the affordable way to collect; a PSA 10 is the store of value for the alt art and vintage holo. Buying raw to grade? Read <a href="/guides/how-to-grade-pokemon-cards">how to grade</a> and check the <a href="/tools/pokemon-grading-calculator">grading calculator</a>. See the full <a href="/guides/best-eeveelution-cards">Eeveelution ranking</a>.`),
+    faqs: [
+      { q: "What is the most valuable Vaporeon card?", a: "The Vaporeon V alternate art (Evolving Skies) and the Prismatic Evolutions Vaporeon ex SIR lead the modern cards; the Jungle holo is the top vintage Vaporeon." },
+      { q: "Is the Jungle Vaporeon worth money?", a: "Yes — as a 1999 vintage holo it carries nostalgia value, with 1st Edition copies worth more than Unlimited and PSA 10s commanding the biggest premium." },
+    ],
+    related: ["are-vaporeon-cards-worth-money", "best-eeveelution-cards", "best-jolteon-pokemon-cards"],
+  },
+
+  {
+    slug: "are-vaporeon-cards-worth-money",
+    title: "Are Vaporeon Cards Worth Money? (2026 Value Guide) | wmcp.sh",
+    desc: "Are Vaporeon Pokémon cards worth money? Which Vaporeon cards hold value — Evolving Skies V alt art, Prismatic ex SIR, Jungle holo — raw vs graded, with cheapest copies and PSA 10s on eBay.",
+    h1: "Are Vaporeon Cards Worth Money?",
+    dek: "Which Vaporeon cards actually hold value — and which are just nice to own.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Vaporeon's place among the original Eeveelutions keeps it collected — but most of its cards are common. Here's the breakdown.`) +
+      h2("The ones that hold value") +
+      p(`The blue-chips are the <a href="/guides/best-vaporeon-pokemon-cards">Evolving Skies V alt art</a>, the Prismatic Evolutions Vaporeon ex SIR, and the vintage Jungle holo (1st Edition).`) +
+      cardLinks("Pokemon Vaporeon V alternate art Evolving Skies") +
+      h2("Nice to own, not investments") +
+      p(`Common holos, promos, and recent bulk Vaporeons are great for a collection but won't appreciate much. Buy those for love of the card.`) +
+      cardLinks("Pokemon Vaporeon ex special illustration rare Prismatic Evolutions") +
+      h2("Raw vs graded for value") +
+      p(`For the alt art, SIR, and vintage holo, a PSA 10 is the real store of value. Read <a href="/guides/how-to-grade-pokemon-cards">how to grade</a> and run the <a href="/tools/pokemon-grading-calculator">grading calculator</a>. Selling? See <a href="/guides/where-to-sell-pokemon-cards">where to sell</a>.`),
+    faqs: [
+      { q: "Are Vaporeon cards a good investment?", a: "The best are — the Evolving Skies V alt art, Prismatic Evolutions ex SIR, and 1st Edition Jungle holo have durable Eeveelution demand. Common holos won't appreciate much." },
+      { q: "Which Vaporeon card is worth the most?", a: "The Evolving Skies Vaporeon V alt art and Prismatic Evolutions Vaporeon ex SIR lead the modern cards, especially in PSA 10." },
+    ],
+    related: ["best-vaporeon-pokemon-cards", "best-eeveelution-cards", "best-cards-in-prismatic-evolutions"],
+  },
+
+  {
+    slug: "best-jolteon-pokemon-cards",
+    title: "Best Jolteon Pokémon Cards (Most Valuable, 2026) | wmcp.sh",
+    desc: "The best and most valuable Jolteon Pokémon cards — Evolving Skies V alt art, Prismatic ex SIR, Jungle holo — with the cheapest raw and PSA 10 copies on eBay.",
+    h1: "Best Jolteon Pokémon Cards",
+    dek: "The Jungle classic, the modern chases — and where to buy each.",
+    updated: "June 2026",
+    readMins: 6,
+    bodyHtml:
+      p(`Jolteon is one of the original Kanto Eeveelutions and a perennial fan favorite. Here are its best cards — with the cheapest raw copy and the cheapest PSA 10 on eBay for each.`) +
+      h2("1. Jolteon V Alternate Art (Evolving Skies, 2021)") +
+      p(`The headline modern chase — the Jolteon V alt art is a striking card from the same beloved set as Moonbreon.`) +
+      cardLinks("Pokemon Jolteon V alternate art Evolving Skies") +
+      h2("2. Jolteon ex Special Illustration Rare (Prismatic Evolutions)") +
+      p(`The newest chase — Jolteon's SIR from the Eeveelution-themed Prismatic Evolutions set.`) +
+      cardLinks("Pokemon Jolteon ex special illustration rare Prismatic Evolutions") +
+      h2("3. Jungle Jolteon Holo (1999)") +
+      p(`The vintage classic — the Jungle set holo Jolteon is a nostalgic must-have, with 1st Edition copies worth more than Unlimited.`) +
+      cardLinks("Pokemon Jungle Jolteon holo 1999") +
+      h2("Raw or PSA 10?") +
+      p(`Raw is the affordable way to collect; a PSA 10 is the store of value for the alt art and vintage holo. Buying raw to grade? Read <a href="/guides/how-to-grade-pokemon-cards">how to grade</a> and check the <a href="/tools/pokemon-grading-calculator">grading calculator</a>. See the full <a href="/guides/best-eeveelution-cards">Eeveelution ranking</a>.`),
+    faqs: [
+      { q: "What is the most valuable Jolteon card?", a: "The Jolteon V alternate art (Evolving Skies) and the Prismatic Evolutions Jolteon ex SIR lead the modern cards; the Jungle holo is the top vintage Jolteon." },
+      { q: "Is the Jungle Jolteon worth money?", a: "Yes — as a 1999 vintage holo it carries nostalgia value, with 1st Edition copies worth more than Unlimited and PSA 10s commanding the biggest premium." },
+    ],
+    related: ["are-jolteon-cards-worth-money", "best-eeveelution-cards", "best-flareon-pokemon-cards"],
+  },
+
+  {
+    slug: "are-jolteon-cards-worth-money",
+    title: "Are Jolteon Cards Worth Money? (2026 Value Guide) | wmcp.sh",
+    desc: "Are Jolteon Pokémon cards worth money? Which Jolteon cards hold value — Evolving Skies V alt art, Prismatic ex SIR, Jungle holo — raw vs graded, with cheapest copies and PSA 10s on eBay.",
+    h1: "Are Jolteon Cards Worth Money?",
+    dek: "Which Jolteon cards actually hold value — and which are just nice to own.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Jolteon's place among the original Eeveelutions keeps it collected — but most of its cards are common. Here's the breakdown.`) +
+      h2("The ones that hold value") +
+      p(`The blue-chips are the <a href="/guides/best-jolteon-pokemon-cards">Evolving Skies V alt art</a>, the Prismatic Evolutions Jolteon ex SIR, and the vintage Jungle holo (1st Edition).`) +
+      cardLinks("Pokemon Jolteon V alternate art Evolving Skies") +
+      h2("Nice to own, not investments") +
+      p(`Common holos, promos, and recent bulk Jolteons are great for a collection but won't appreciate much. Buy those for love of the card.`) +
+      cardLinks("Pokemon Jolteon ex special illustration rare Prismatic Evolutions") +
+      h2("Raw vs graded for value") +
+      p(`For the alt art, SIR, and vintage holo, a PSA 10 is the real store of value. Read <a href="/guides/how-to-grade-pokemon-cards">how to grade</a> and run the <a href="/tools/pokemon-grading-calculator">grading calculator</a>. Selling? See <a href="/guides/where-to-sell-pokemon-cards">where to sell</a>.`),
+    faqs: [
+      { q: "Are Jolteon cards a good investment?", a: "The best are — the Evolving Skies V alt art, Prismatic Evolutions ex SIR, and 1st Edition Jungle holo have durable Eeveelution demand. Common holos won't appreciate much." },
+      { q: "Which Jolteon card is worth the most?", a: "The Evolving Skies Jolteon V alt art and Prismatic Evolutions Jolteon ex SIR lead the modern cards, especially in PSA 10." },
+    ],
+    related: ["best-jolteon-pokemon-cards", "best-eeveelution-cards", "best-cards-in-prismatic-evolutions"],
+  },
+
+  {
+    slug: "best-flareon-pokemon-cards",
+    title: "Best Flareon Pokémon Cards (Most Valuable, 2026) | wmcp.sh",
+    desc: "The best and most valuable Flareon Pokémon cards — Evolving Skies V alt art, Prismatic ex SIR, Jungle holo — with the cheapest raw and PSA 10 copies on eBay.",
+    h1: "Best Flareon Pokémon Cards",
+    dek: "The Jungle classic, the modern chases — and where to buy each.",
+    updated: "June 2026",
+    readMins: 6,
+    bodyHtml:
+      p(`Flareon is one of the original Kanto Eeveelutions and a beloved fire type. Here are its best cards — with the cheapest raw copy and the cheapest PSA 10 on eBay for each.`) +
+      h2("1. Flareon V Alternate Art (Evolving Skies, 2021)") +
+      p(`The headline modern chase — the Flareon V alt art is a gorgeous card from the same beloved set as Moonbreon.`) +
+      cardLinks("Pokemon Flareon V alternate art Evolving Skies") +
+      h2("2. Flareon ex Special Illustration Rare (Prismatic Evolutions)") +
+      p(`The newest chase — Flareon's SIR from the Eeveelution-themed Prismatic Evolutions set.`) +
+      cardLinks("Pokemon Flareon ex special illustration rare Prismatic Evolutions") +
+      h2("3. Jungle Flareon Holo (1999)") +
+      p(`The vintage classic — the Jungle set holo Flareon is a nostalgic must-have, with 1st Edition copies worth more than Unlimited.`) +
+      cardLinks("Pokemon Jungle Flareon holo 1999") +
+      h2("Raw or PSA 10?") +
+      p(`Raw is the affordable way to collect; a PSA 10 is the store of value for the alt art and vintage holo. Buying raw to grade? Read <a href="/guides/how-to-grade-pokemon-cards">how to grade</a> and check the <a href="/tools/pokemon-grading-calculator">grading calculator</a>. See the full <a href="/guides/best-eeveelution-cards">Eeveelution ranking</a>.`),
+    faqs: [
+      { q: "What is the most valuable Flareon card?", a: "The Flareon V alternate art (Evolving Skies) and the Prismatic Evolutions Flareon ex SIR lead the modern cards; the Jungle holo is the top vintage Flareon." },
+      { q: "Is the Jungle Flareon worth money?", a: "Yes — as a 1999 vintage holo it carries nostalgia value, with 1st Edition copies worth more than Unlimited and PSA 10s commanding the biggest premium." },
+    ],
+    related: ["are-flareon-cards-worth-money", "best-eeveelution-cards", "best-vaporeon-pokemon-cards"],
+  },
+
+  {
+    slug: "are-flareon-cards-worth-money",
+    title: "Are Flareon Cards Worth Money? (2026 Value Guide) | wmcp.sh",
+    desc: "Are Flareon Pokémon cards worth money? Which Flareon cards hold value — Evolving Skies V alt art, Prismatic ex SIR, Jungle holo — raw vs graded, with cheapest copies and PSA 10s on eBay.",
+    h1: "Are Flareon Cards Worth Money?",
+    dek: "Which Flareon cards actually hold value — and which are just nice to own.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Flareon's place among the original Eeveelutions keeps it collected — but most of its cards are common. Here's the breakdown.`) +
+      h2("The ones that hold value") +
+      p(`The blue-chips are the <a href="/guides/best-flareon-pokemon-cards">Evolving Skies V alt art</a>, the Prismatic Evolutions Flareon ex SIR, and the vintage Jungle holo (1st Edition).`) +
+      cardLinks("Pokemon Flareon V alternate art Evolving Skies") +
+      h2("Nice to own, not investments") +
+      p(`Common holos, promos, and recent bulk Flareons are great for a collection but won't appreciate much. Buy those for love of the card.`) +
+      cardLinks("Pokemon Flareon ex special illustration rare Prismatic Evolutions") +
+      h2("Raw vs graded for value") +
+      p(`For the alt art, SIR, and vintage holo, a PSA 10 is the real store of value. Read <a href="/guides/how-to-grade-pokemon-cards">how to grade</a> and run the <a href="/tools/pokemon-grading-calculator">grading calculator</a>. Selling? See <a href="/guides/where-to-sell-pokemon-cards">where to sell</a>.`),
+    faqs: [
+      { q: "Are Flareon cards a good investment?", a: "The best are — the Evolving Skies V alt art, Prismatic Evolutions ex SIR, and 1st Edition Jungle holo have durable Eeveelution demand. Common holos won't appreciate much." },
+      { q: "Which Flareon card is worth the most?", a: "The Evolving Skies Flareon V alt art and Prismatic Evolutions Flareon ex SIR lead the modern cards, especially in PSA 10." },
+    ],
+    related: ["best-flareon-pokemon-cards", "best-eeveelution-cards", "best-cards-in-prismatic-evolutions"],
+  },
+
+  {
+    slug: "best-eevee-pokemon-cards",
+    title: "Best Eevee Pokémon Cards (Most Valuable, 2026) | wmcp.sh",
+    desc: "The best and most valuable Eevee Pokémon cards — Prismatic ex SIR, Evolving Skies special art, Jungle holo, beloved promos — with the cheapest raw and PSA 10 copies on eBay.",
+    h1: "Best Eevee Pokémon Cards",
+    dek: "The heart of the Eeveelution craze — and where to buy each, raw or PSA 10.",
+    updated: "June 2026",
+    readMins: 6,
+    bodyHtml:
+      p(`Eevee is the adorable hub of the entire Eeveelution craze, and while most Eevee cards are common, a few are genuinely sought-after. Here are the best — with the cheapest raw copy and the cheapest PSA 10 on eBay for each.`) +
+      h2("1. Eevee Special Illustration Rare (Prismatic Evolutions)") +
+      p(`The headline modern chase — Eevee's SIR from the Eeveelution-themed Prismatic Evolutions set is the centerpiece Eevee card of the era.`) +
+      cardLinks("Pokemon Eevee special illustration rare Prismatic Evolutions") +
+      h2("2. Eevee Special/Full Art (Evolving Skies, 2021)") +
+      p(`Evolving Skies — the great Eeveelution set — gave Eevee a beautiful special art that pairs perfectly with the alt-art evolutions.`) +
+      cardLinks("Pokemon Eevee Evolving Skies full art") +
+      h2("3. Jungle Eevee (1999)") +
+      p(`The vintage starting point — the original Jungle-era Eevee is a nostalgic pickup, especially in high grade.`) +
+      cardLinks("Pokemon Jungle Eevee 1999") +
+      h2("4. Eevee Promos") +
+      p(`Eevee has a long line of beloved promos (movie, anniversary, and collaboration cards) — affordable, collectible, and great display pieces.`) +
+      cardLinks("Pokemon Eevee promo holo") +
+      h2("Raw or PSA 10?") +
+      p(`Most Eevee cards are affordable — raw is perfect for collecting, and PSA 10 makes sense mainly for the SIR and special arts. Buying raw to grade? Check the <a href="/tools/pokemon-grading-calculator">grading calculator</a> first. Then explore where each evolution leads in the <a href="/guides/best-eeveelution-cards">Eeveelution ranking</a>.`),
+    faqs: [
+      { q: "What is the most valuable Eevee card?", a: "The Prismatic Evolutions Eevee SIR is the top modern Eevee card; older special arts and the Evolving Skies Eevee are also sought-after. Most other Eevee cards are common and affordable." },
+      { q: "Are Eevee cards worth collecting?", a: "Yes — Eevee is the hub of the hugely popular Eeveelution lineup, and while most cards are affordable, the special illustration rares and special arts hold real value." },
+    ],
+    related: ["are-eevee-cards-worth-money", "best-eeveelution-cards", "best-cards-in-prismatic-evolutions"],
+  },
+
+  {
+    slug: "are-eevee-cards-worth-money",
+    title: "Are Eevee Cards Worth Money? (2026 Value Guide) | wmcp.sh",
+    desc: "Are Eevee Pokémon cards worth money? Which Eevee cards hold value — Prismatic ex SIR, Evolving Skies special art, vintage holos — raw vs graded, with cheapest copies and PSA 10s on eBay.",
+    h1: "Are Eevee Cards Worth Money?",
+    dek: "Which Eevee cards actually hold value — and which are just nice to own.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Eevee is everywhere, so most Eevee cards are common — but a handful are genuinely valuable thanks to the Eeveelution craze. Here's the breakdown.`) +
+      h2("The ones that hold value") +
+      p(`The strongest is the <a href="/guides/best-eevee-pokemon-cards">Prismatic Evolutions Eevee SIR</a>, with the Evolving Skies special art and select promos behind it.`) +
+      cardLinks("Pokemon Eevee special illustration rare Prismatic Evolutions") +
+      h2("Nice to own, not investments") +
+      p(`The vast majority of Eevee cards — common holos, countless promos, recent bulk — are affordable and great for collecting, but won't appreciate. Eevee's value is mostly in its evolutions.`) +
+      cardLinks("Pokemon Eevee Evolving Skies full art") +
+      h2("Where the real Eeveelution value is") +
+      p(`If you want value, the evolutions carry it: <a href="/guides/umbreon-vmax-alt-art-worth-it">Umbreon (Moonbreon)</a>, <a href="/guides/espeon-gold-star-pokemon-card">Espeon Gold Star</a>, and the Prismatic SIRs. See the full <a href="/guides/best-eeveelution-cards">Eeveelution ranking</a>. To grade, run the <a href="/tools/pokemon-grading-calculator">grading calculator</a>; to sell, see <a href="/guides/where-to-sell-pokemon-cards">where to sell</a>.`),
+    faqs: [
+      { q: "Are Eevee cards a good investment?", a: "A few are — the Prismatic Evolutions Eevee SIR and Evolving Skies special art hold value. But most Eevee cards are common; the real Eeveelution value is in the evolutions like Umbreon and Espeon." },
+      { q: "Which Eevee card is worth the most?", a: "The Prismatic Evolutions Eevee special illustration rare is the most valuable Eevee card, especially in PSA 10." },
+    ],
+    related: ["best-eevee-pokemon-cards", "best-eeveelution-cards", "best-umbreon-pokemon-cards"],
+  },
+
+  {
+    slug: "best-eeveelution-cards",
+    title: "Best Eeveelution Cards Ranked (Most Valuable, 2026) | wmcp.sh",
+    desc: "The best and most valuable Eeveelution cards ranked — Umbreon (Moonbreon), Espeon Gold Star, Sylveon, Glaceon, Leafeon, Vaporeon, Jolteon, Flareon — with cheapest raw and PSA 10 on eBay.",
+    h1: "Best Eeveelution Cards (Ranked)",
+    dek: "All eight evolutions ranked by value — and where to buy each.",
+    updated: "June 2026",
+    readMins: 8,
+    bodyHtml:
+      p(`The Eeveelutions are the most collected family in Pokémon — Evolving Skies and Prismatic Evolutions turned them into blue-chip chases. Here's every evolution ranked by its top card's value, with the cheapest raw copy and the cheapest PSA 10 on eBay for each.`) +
+      h2("1. Umbreon — Moonbreon (the king)") +
+      p(`The Umbreon VMAX alt art ("Moonbreon") is the most valuable Eeveelution card and one of the most famous modern cards, period. Full list: <a href="/guides/best-umbreon-pokemon-cards">best Umbreon cards</a>.`) +
+      cardLinks("Pokemon Umbreon VMAX alternate art Evolving Skies") +
+      h2("2. Espeon — the Gold Star grail") +
+      p(`The Espeon Gold Star (POP Series 5) is the vintage Eeveelution grail, and the Prismatic ex SIR leads its modern cards. Full list: <a href="/guides/best-espeon-pokemon-cards">best Espeon cards</a>.`) +
+      cardLinks("Pokemon Espeon Gold Star POP Series 5") +
+      h2("3. Sylveon") +
+      p(`The Sylveon VMAX alt art and Prismatic ex SIR lead one of the most popular Eeveelutions. Full list: <a href="/guides/best-sylveon-pokemon-cards">best Sylveon cards</a>.`) +
+      cardLinks("Pokemon Sylveon VMAX alternate art Evolving Skies") +
+      h2("4. Glaceon") +
+      p(`The Glaceon VMAX alt art and Prismatic ex SIR are the top chases. Full list: <a href="/guides/best-glaceon-pokemon-cards">best Glaceon cards</a>.`) +
+      cardLinks("Pokemon Glaceon VMAX alternate art Evolving Skies") +
+      h2("5. Leafeon") +
+      p(`The Leafeon VMAX alt art and Prismatic ex SIR carry the value. Full list: <a href="/guides/best-leafeon-pokemon-cards">best Leafeon cards</a>.`) +
+      cardLinks("Pokemon Leafeon VMAX alternate art Evolving Skies") +
+      h2("6. Vaporeon") +
+      p(`The Evolving Skies V alt art and Prismatic ex SIR lead the original water Eeveelution. Full list: <a href="/guides/best-vaporeon-pokemon-cards">best Vaporeon cards</a>.`) +
+      cardLinks("Pokemon Vaporeon V alternate art Evolving Skies") +
+      h2("7. Jolteon") +
+      p(`The Evolving Skies V alt art and Prismatic ex SIR are the top Jolteon cards. Full list: <a href="/guides/best-jolteon-pokemon-cards">best Jolteon cards</a>.`) +
+      cardLinks("Pokemon Jolteon V alternate art Evolving Skies") +
+      h2("8. Flareon") +
+      p(`The Evolving Skies V alt art and Prismatic ex SIR lead the fire Eeveelution. Full list: <a href="/guides/best-flareon-pokemon-cards">best Flareon cards</a>.`) +
+      cardLinks("Pokemon Flareon V alternate art Evolving Skies") +
+      h2("And the hub: Eevee") +
+      p(`Eevee itself anchors the family — see the <a href="/guides/best-eevee-pokemon-cards">best Eevee cards</a>. The two sets to know are <a href="/guides/is-prismatic-evolutions-worth-it">Prismatic Evolutions</a> (the Eeveelution-themed modern set) and Evolving Skies. Both sell out — catch restocks with <a href="/">QuickCatch</a>, and grade with the <a href="/tools/pokemon-grading-calculator">grading calculator</a>.`),
+    faqs: [
+      { q: "What is the most valuable Eeveelution card?", a: "The Umbreon VMAX alternate art ('Moonbreon') from Evolving Skies is the most valuable Eeveelution card. The Espeon Gold Star is the top vintage Eeveelution grail." },
+      { q: "Which set has the best Eeveelution cards?", a: "Evolving Skies (the alt-art Vs and VMAXes, including Moonbreon) and Prismatic Evolutions (the Eeveelution-themed special set with ex SIRs for each evolution) are the two key modern sets." },
+    ],
+    related: ["best-umbreon-pokemon-cards", "best-espeon-pokemon-cards", "best-cards-in-prismatic-evolutions"],
+  },
 ];
 
 export const ARTICLE_SLUGS = ARTICLES.map((a) => a.slug);
