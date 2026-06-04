@@ -10,7 +10,7 @@
 // Positioning: "static scanners read the label; wmcp.sh tasted the food."
 
 import { readBehavior, summarizeBehavior, type BehaviorSummary } from "./behavior";
-import { uiCss, uiNav, emailCapture } from "./ui";
+import { uiCss, uiNav, emailCapture, monitorUpsell } from "./ui";
 import { adSlot } from "./ads";
 
 type Env = { CACHE: KVNamespace; KEYS?: KVNamespace };
@@ -1125,7 +1125,8 @@ ${uiNav(origin)}
     <thead><tr><th class="num">#</th><th>Grade</th><th>MCP server</th><th>Category</th><th class="num">Score</th><th class="num">Tools</th><th>Checked</th></tr></thead>
     <tbody>${body}</tbody>
   </table>${total > shown.length ? `<p class="muted" style="margin-top:12px;font-size:.85rem">Showing the top ${shown.length} operators (one entry each, their best-graded server) of ${total.toLocaleString()} graded servers. Every graded server stays in the continuous drift watch.</p>` : ""}</section>` : `<div class="empty">No servers graded yet. <a href="${origin}/mcp/grade">Grade the first one →</a></div>`}
-  ${emailCapture("Get grade-drop & rug-pull alerts", "We watch every server here and email you the moment one you care about changes its tools or drops a grade. Free.", "mcp-watch")}
+  ${monitorUpsell(origin)}
+  ${emailCapture("MCP security briefing", "The biggest grade drops, fresh rug-pulls, and what changed across the ecosystem — a periodic email. Free.", "mcp-watch")}
   <p style="margin-top:18px"><a class="btn btn-ghost" href="${origin}/reports/state-of-mcp-security-2026">📊 Read the State of MCP Security report</a> <a class="btn btn-ghost" href="${origin}/mcp/badges">Get your trust badge →</a></p>
   ${adSlot()}
   <footer>Grades are free and identical whether or not the operator pays. Methodology: <a href="${origin}/mcp/grade">/mcp/grade</a>. Add the oracle to your agent at <code>${origin}/mcp/trust</code>.</footer>

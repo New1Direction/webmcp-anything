@@ -119,6 +119,27 @@ export function emailCapture(label: string, sublabel: string, pkg: string): stri
 <script>(function(){var s=document.currentScript,w=s.previousElementSibling;var e=w.querySelector('.ecap-e'),b=w.querySelector('.ecap-b'),m=w.querySelector('.ecap-m');function go(){var v=(e.value||'').trim();if(v.indexOf('@')<1){m.style.color='#ff5c7c';m.textContent='Enter a valid email.';return;}b.disabled=true;b.textContent='…';fetch('/api/v1/leads',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email:v,package:${JSON.stringify(pkg)},use_case:location.pathname})}).then(function(){m.style.color='#4ade80';m.textContent='Got it — you are on the list.';e.value='';b.textContent='Done';}).catch(function(){m.style.color='#ff5c7c';m.textContent='Try again.';b.disabled=false;b.textContent='Notify me';});}b.addEventListener('click',go);e.addEventListener('keydown',function(ev){if(ev.key==='Enter')go();});})();</script>`;
 }
 
+// Paid continuous-monitoring upsell band. Self-wiring (mirrors emailCapture):
+// URL + email inline, optional Slack/webhook via prompt → POSTs the live
+// /api/v1/mcp/monitor/checkout and redirects to Stripe. Grades stay free; this
+// sells the live watch on a specific connection. 503 = STRIPE_PRICE_MONITOR unset.
+export function monitorUpsell(origin: string): string {
+  return `<div class="mupsell" style="background:rgba(255,158,44,.06);border:1px solid rgba(255,158,44,.35);border-radius:14px;padding:18px 20px;margin:24px 0">
+  <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">
+    <span style="font-weight:800;font-size:1.06rem">Rug-pull insurance for a server your agent depends on</span>
+    <span style="color:var(--muted);font-size:.82rem">paid · webhook + email · cancel anytime</span>
+  </div>
+  <div style="color:var(--muted);font-size:.9rem;margin:5px 0 12px;max-width:640px">Pick one server and we re-grade it continuously — the instant its tools change or its grade drops we fire a Slack/webhook alert <b>and</b> email you, before your agent calls a tool that wasn't there yesterday. The grade itself is always free; this is the live watch on a connection you can't afford to have rug-pulled.</div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;max-width:640px">
+    <input type="url" class="mu-u" placeholder="https://mcp.example.com/mcp" style="flex:2;min-width:240px;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:11px 14px;font-size:.92rem"/>
+    <input type="email" class="mu-e" placeholder="you@company.com" style="flex:1;min-width:180px;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:11px 14px;font-size:.92rem"/>
+    <button class="btn btn-primary mu-b" type="button">Start monitoring →</button>
+  </div>
+  <div class="mu-m" style="font-size:.85rem;margin-top:8px;min-height:1em"></div>
+</div>
+<script>(function(){var s=document.currentScript,w=s.previousElementSibling;var u=w.querySelector('.mu-u'),e=w.querySelector('.mu-e'),b=w.querySelector('.mu-b'),m=w.querySelector('.mu-m');function go(){var v=(u.value||'').trim(),em=(e.value||'').trim();if(!/^https?:\\/\\//.test(v)){m.style.color='#ff5c7c';m.textContent='Enter the server URL (https://…).';u.focus();return;}if(em.indexOf('@')<1){m.style.color='#ff5c7c';m.textContent='Enter a valid email for the receipt.';e.focus();return;}var wh=(prompt('Optional https Slack-compatible webhook for instant alerts (blank = email only):')||'').trim();if(wh&&!/^https:\\/\\//.test(wh)){m.style.color='#ff5c7c';m.textContent='Webhook must be an https URL — try again.';return;}b.disabled=true;b.textContent='…';var body={url:v,email:em};if(wh)body.alert_url=wh;fetch('/api/v1/mcp/monitor/checkout',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}).then(function(r){return r.json().catch(function(){return{};}).then(function(d){return{s:r.status,d:d};});}).then(function(x){if(x.d&&x.d.url){location.href=x.d.url;return;}b.disabled=false;b.textContent='Start monitoring →';m.style.color='#ff5c7c';m.textContent=x.s===503?'Not switched on yet — check back soon.':('Could not start checkout: '+((x.d&&x.d.error)||x.s));}).catch(function(){b.disabled=false;b.textContent='Start monitoring →';m.style.color='#ff5c7c';m.textContent='Network error — try again.';});}b.addEventListener('click',go);e.addEventListener('keydown',function(ev){if(ev.key==='Enter')go();});u.addEventListener('keydown',function(ev){if(ev.key==='Enter')go();});})();</script>`;
+}
+
 export function uiNav(origin: string, opts: { get?: boolean } = {}): string {
   const get = opts.get === false
     ? ""
