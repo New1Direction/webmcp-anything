@@ -711,6 +711,204 @@ export const ARTICLES: Article[] = [
     ],
     related: ["how-to-get-pokemon-restock-alerts", "pokemon-center-restock-times", "best-pokemon-booster-boxes-2026"],
   },
+
+  {
+    slug: "is-surging-sparks-worth-it",
+    title: "Is Surging Sparks Worth Buying in 2026? (Pull Rates & Verdict) | wmcp.sh",
+    desc: "Is the Surging Sparks booster box or ETB worth buying? Chase cards (Pikachu ex SIR), what to expect when you rip, retail vs resale, and the honest verdict.",
+    h1: "Is Surging Sparks Worth Buying?",
+    dek: "Pikachu ex SIR, the rip-value math, and whether to buy.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Surging Sparks is the set rippers chase, almost entirely because of one card. Here's the honest read.`) +
+      h2("The chase cards") +
+      p(`<b>Pikachu ex (special illustration rare)</b> is the headline — one of the most expensive modern chase cards, and it single-handedly lifts the set's expected value to open. Latias ex and the Alolan SIRs back it up.`) +
+      buy("Pokemon Surging Sparks Pikachu ex special illustration rare", "See the chase card on eBay:") +
+      h2("Rip or hold?") +
+      p(`Because one card carries the value, Surging Sparks is more of a <b>ripper's box</b> than a sealed hold — you're buying lottery tickets on the Pikachu. Most boxes return solid mid hits without it. Don't buy expecting the chase; buy for the rip.`) +
+      buy("Pokemon Surging Sparks Booster Box") +
+      h2("Verdict") +
+      p(`Worth it if you want the highest single-card ceiling per box to rip. If you want a specific card, buy the single — cheaper than chasing it. Compare prices to retail with the <a href="/tools/pokemon-resale-calculator">resale calculator</a> and catch it at MSRP with <a href="/">QuickCatch</a>. See how it stacks up in <a href="/guides/pokemon-151-vs-surging-sparks-vs-prismatic">151 vs Surging Sparks vs Prismatic</a>.`),
+    faqs: [
+      { q: "What is the best card in Surging Sparks?", a: "Pikachu ex (special illustration rare) is the headline chase and one of the most valuable modern cards; it drives most of the set's value." },
+      { q: "Is Surging Sparks good to rip?", a: "Yes — it has the highest single-card ceiling per box of the recent sets (Pikachu ex SIR), making it the strongest rip-for-value choice. For a specific card, buy the single instead." },
+    ],
+    related: ["pokemon-151-vs-surging-sparks-vs-prismatic", "best-pokemon-booster-boxes-2026", "sealed-vs-singles-pokemon"],
+  },
+
+  {
+    slug: "is-stellar-crown-worth-it",
+    title: "Is Stellar Crown Worth Buying? (Terapagos, Pull Rates) | wmcp.sh",
+    desc: "Is the Stellar Crown booster box or ETB worth it? Chase cards (Terapagos ex, ACE SPEC), value to rip vs hold, retail vs resale, and the verdict.",
+    h1: "Is Stellar Crown Worth Buying?",
+    dek: "Terapagos, ACE SPECs, and where it sits on value.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Stellar Crown is a quieter set than the marquee releases, which can make it a sensible mid-budget pick. Here's the read.`) +
+      h2("The chase cards") +
+      p(`<b>Terapagos ex</b> headlines, with the set's special illustration rares and the returning <b>ACE SPEC</b> cards keeping singles demand healthy. No single card dominates the way Pikachu does in Surging Sparks, so value is spread.`) +
+      buy("Pokemon Stellar Crown Booster Box") +
+      h2("Rip or hold?") +
+      p(`Box prices typically sit below the marquee sets, and the spread-out value makes it a reasonable rip. Sealed appreciation is more modest than special sets — it's not the first box to hoard, but it's fair value.`) +
+      h2("Verdict") +
+      p(`A solid mid-budget pick if Prismatic and 151 are priced out of range. Want a specific card? Buy the single. Check any price against retail with the <a href="/tools/pokemon-resale-calculator">resale calculator</a>, and catch restocks at MSRP with <a href="/">QuickCatch</a>. Full ranking: <a href="/guides/best-pokemon-booster-boxes-2026">best booster boxes</a>.`),
+    faqs: [
+      { q: "What is the best card in Stellar Crown?", a: "Terapagos ex headlines, alongside the set's special illustration rares and ACE SPEC cards. Value is spread rather than concentrated in one card." },
+      { q: "Is Stellar Crown worth buying?", a: "It's a reasonable mid-budget pick — box prices sit below the marquee sets and value is spread. Sealed appreciation is more modest than special sets like Prismatic Evolutions." },
+    ],
+    related: ["best-pokemon-booster-boxes-2026", "best-pokemon-elite-trainer-boxes-2026", "sealed-vs-singles-pokemon"],
+  },
+
+  {
+    slug: "is-twilight-masquerade-worth-it",
+    title: "Is Twilight Masquerade Worth Buying? (Bloodmoon Ursaluna) | wmcp.sh",
+    desc: "Is the Twilight Masquerade booster box worth it? The Bloodmoon Ursaluna ex chase, Ogerpon cards, rip vs hold, retail vs resale, and the verdict.",
+    h1: "Is Twilight Masquerade Worth Buying?",
+    dek: "Bloodmoon Ursaluna, Ogerpon, and whether to rip or hold.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Twilight Masquerade is carried by one standout chase card and a popular cast. Here's the honest take.`) +
+      h2("The chase cards") +
+      p(`<b>Bloodmoon Ursaluna ex</b> is the headline — a hugely popular, high-value chase. The Ogerpon variants and the Carmine/Kieran trainer special-arts add real singles demand.`) +
+      buy("Pokemon Bloodmoon Ursaluna ex", "See the chase card on eBay:") +
+      h2("Rip or hold?") +
+      p(`Strong cast + a marquee chase make it both fun to rip and reasonable to hold. Like most sets, an average box returns mid hits without the Ursaluna — buy for the chance, not the expectation.`) +
+      buy("Pokemon Twilight Masquerade Booster Box") +
+      h2("Verdict") +
+      p(`Worth it — good rip value and a desirable chase. For the specific card you want, buy the single (cheaper than chasing). Compare against retail with the <a href="/tools/pokemon-resale-calculator">resale calculator</a> and catch sealed at MSRP with <a href="/">QuickCatch</a>.`),
+    faqs: [
+      { q: "What is the best card in Twilight Masquerade?", a: "Bloodmoon Ursaluna ex is the headline chase — popular and high-value. The Ogerpon variants and trainer special-arts also drive singles demand." },
+      { q: "Is Twilight Masquerade worth ripping?", a: "Yes — a strong cast plus a marquee chase (Bloodmoon Ursaluna) make it good rip value. For a specific card, buying the single is cheaper." },
+    ],
+    related: ["best-pokemon-booster-boxes-2026", "best-pokemon-cards-to-invest-2026", "sealed-vs-singles-pokemon"],
+  },
+
+  {
+    slug: "is-paldean-fates-worth-it",
+    title: "Is Paldean Fates Worth Buying? (Shiny Charizard ex) | wmcp.sh",
+    desc: "Is Paldean Fates worth it? The shiny-focused special set — Shiny Charizard ex, baby shinies, hit density, ETB vs box, retail vs resale, and the verdict.",
+    h1: "Is Paldean Fates Worth Buying?",
+    dek: "A shiny special set — high hit density and the Charizard chase.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Paldean Fates is a <b>special set</b> (think Shining Fates) built around shiny Pokémon — so it plays differently from a standard expansion.`) +
+      h2("The chase cards") +
+      p(`<b>Shiny Charizard ex</b> is the headline chase, with a deep shiny "treasure" subset and shiny baby Pokémon driving broad demand. Special sets are hit-dense by design — that's why they cost more per pack.`) +
+      buy("Pokemon Paldean Fates Shiny Charizard ex", "See the chase on eBay:") +
+      h2("Rip or hold?") +
+      p(`High hit density makes it fun to rip, and the short special-set print window supports sealed appreciation — both work. The ETB and the bundle SKUs are the common entry points.`) +
+      buy("Pokemon Paldean Fates Elite Trainer Box") +
+      h2("Verdict") +
+      p(`Worth it for shiny collectors and as a sealed hold (special-set scarcity). Buy at retail — special sets command premiums fast. Use the <a href="/tools/pokemon-resale-calculator">resale calculator</a> and <a href="/">QuickCatch</a> to avoid the markup. Compare with <a href="/guides/is-prismatic-evolutions-worth-it">Prismatic Evolutions</a>.`),
+    faqs: [
+      { q: "What is the best card in Paldean Fates?", a: "Shiny Charizard ex is the headline chase, backed by a deep shiny 'treasure' subset and shiny baby Pokémon." },
+      { q: "Is Paldean Fates a special set?", a: "Yes — it's a shiny-focused special set (like Shining Fates), which means higher hit density, a higher price per pack, and a shorter print window that supports sealed appreciation." },
+    ],
+    related: ["is-prismatic-evolutions-worth-it", "best-pokemon-elite-trainer-boxes-2026", "best-pokemon-cards-to-invest-2026"],
+  },
+
+  {
+    slug: "is-shrouded-fable-worth-it",
+    title: "Is Shrouded Fable Worth Buying? (Pecharunt, ACE SPEC) | wmcp.sh",
+    desc: "Is Shrouded Fable worth it? The compact special set — Pecharunt ex, ACE SPEC cards, high hit density, ETB value, retail vs resale, and the verdict.",
+    h1: "Is Shrouded Fable Worth Buying?",
+    dek: "A compact, hit-dense special set — and how to play it.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Shrouded Fable is a smaller <b>special set</b> — fewer cards, higher hit density per pack. Here's the read.`) +
+      h2("The chase cards") +
+      p(`<b>Pecharunt ex</b> headlines, alongside special illustration rares of Fezandipiti and Munkidori and the returning <b>ACE SPEC</b> cards. A compact set means a higher chance of hitting something good per pack.`) +
+      buy("Pokemon Shrouded Fable Booster Box") +
+      h2("Rip or hold?") +
+      p(`The compact, hit-dense design makes it satisfying to rip, and the special-set print window helps sealed hold value. The ETB is the popular SKU.`) +
+      buy("Pokemon Shrouded Fable Elite Trainer Box") +
+      h2("Verdict") +
+      p(`Worth it as a fun, hit-dense rip and a reasonable sealed hold. Buy at retail — special sets spike fast. Check markups with the <a href="/tools/pokemon-resale-calculator">resale calculator</a> and catch restocks with <a href="/">QuickCatch</a>.`),
+    faqs: [
+      { q: "What is the best card in Shrouded Fable?", a: "Pecharunt ex headlines, with special illustration rares of Fezandipiti and Munkidori and ACE SPEC cards rounding out the chases." },
+      { q: "Is Shrouded Fable worth buying?", a: "Yes — as a compact special set it's hit-dense (good to rip) and the short print window supports sealed value. Buy at retail to avoid the special-set premium." },
+    ],
+    related: ["is-paldean-fates-worth-it", "best-pokemon-elite-trainer-boxes-2026", "sealed-vs-singles-pokemon"],
+  },
+
+  {
+    slug: "is-temporal-forces-worth-it",
+    title: "Is Temporal Forces Worth Buying? (Pull Rates & Verdict) | wmcp.sh",
+    desc: "Is the Temporal Forces booster box worth it? Chase cards (Iron Crown, Walking Wake, special-art trainers), rip vs hold, retail vs resale, and the verdict.",
+    h1: "Is Temporal Forces Worth Buying?",
+    dek: "The Paradox chases, ACE SPECs, and where it sits on value.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Temporal Forces leans on the Paradox Pokémon and a strong trainer lineup. Here's the honest read.`) +
+      h2("The chase cards") +
+      p(`The set's <b>special illustration rares</b> — Paradox Pokémon like Iron Crown and Walking Wake, plus desirable special-art trainers — carry the value, with ACE SPEC cards adding playability demand. Value is spread rather than one-card-dominated.`) +
+      buy("Pokemon Temporal Forces Booster Box") +
+      h2("Rip or hold?") +
+      p(`Spread value + competitive playability make it a reasonable rip, especially for players. Sealed appreciation is modest versus special sets.`) +
+      h2("Verdict") +
+      p(`Fair value, especially if you play — buy singles for specific cards, sealed for the rip. Compare to retail with the <a href="/tools/pokemon-resale-calculator">resale calculator</a> and catch it at MSRP with <a href="/">QuickCatch</a>. See the <a href="/guides/best-pokemon-booster-boxes-2026">full box ranking</a>.`),
+    faqs: [
+      { q: "What is the best card in Temporal Forces?", a: "The Paradox special illustration rares (e.g. Iron Crown, Walking Wake) and special-art trainers carry the set; value is spread rather than concentrated in one card." },
+      { q: "Is Temporal Forces worth buying?", a: "Fair value — strong for players thanks to ACE SPECs and competitive cards. Sealed appreciation is modest compared to special sets." },
+    ],
+    related: ["is-paradox-rift-worth-it", "best-pokemon-booster-boxes-2026", "sealed-vs-singles-pokemon"],
+  },
+
+  {
+    slug: "is-paradox-rift-worth-it",
+    title: "Is Paradox Rift Worth Buying? (Roaring Moon, Verdict) | wmcp.sh",
+    desc: "Is the Paradox Rift booster box worth it? Chase cards (Roaring Moon ex, Iron Valiant), rip vs hold, retail vs resale, and the honest verdict.",
+    h1: "Is Paradox Rift Worth Buying?",
+    dek: "Roaring Moon, the Paradox SIRs, and the value read.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Paradox Rift is an older Scarlet & Violet set whose chases have had time to settle. Here's the read.`) +
+      h2("The chase cards") +
+      p(`<b>Roaring Moon ex</b> is the standout chase, with Iron Valiant and the set's special illustration rares backing it. As an older set, prices have matured — useful for predictable value.`) +
+      buy("Pokemon Paradox Rift Roaring Moon ex", "See the chase on eBay:") +
+      h2("Rip or hold?") +
+      p(`Now that it's out of the spotlight, sealed can be a calmer hold and singles are easier to price. Rip value is fine but it's no longer the hyped box.`) +
+      buy("Pokemon Paradox Rift Booster Box") +
+      h2("Verdict") +
+      p(`A reasonable buy if you like Roaring Moon or want a set whose prices have settled. Buy the single for a specific card. Check value with the <a href="/tools/pokemon-resale-calculator">resale calculator</a>; older sets are less restock-constrained, so resale gaps are smaller.`),
+    faqs: [
+      { q: "What is the best card in Paradox Rift?", a: "Roaring Moon ex is the standout chase, with Iron Valiant and the set's special illustration rares behind it." },
+      { q: "Is Paradox Rift still worth buying?", a: "Yes, as a more settled, predictable buy — it's an older set so prices have matured. Good if you like Roaring Moon or want less volatility than a brand-new release." },
+    ],
+    related: ["is-temporal-forces-worth-it", "best-pokemon-cards-to-invest-2026", "best-pokemon-booster-boxes-2026"],
+  },
+
+  {
+    slug: "best-cards-in-pokemon-151",
+    title: "Best Cards in Pokémon 151 (Most Valuable & Worth It) | wmcp.sh",
+    desc: "The best and most valuable cards in Pokémon 151 — Charizard ex, the Kanto special illustration rares, Mew ex — and whether the set is worth buying.",
+    h1: "Best Cards in Pokémon 151",
+    dek: "The chase cards, what they're worth, and whether 151 is worth buying.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Pokémon 151 reimagines the original Kanto roster, and demand from lapsed collectors keeps it among the most liquid modern sets. Here are the cards that matter.`) +
+      h2("The top chase cards") +
+      p(`<b>Charizard ex (special illustration rare)</b> is the headline, with the Kanto-starter SIRs (Venusaur, Blastoise), <b>Mew ex</b>, and the gold/hyper rares right behind. Kanto nostalgia gives these unusually deep, durable demand.`) +
+      buy("Pokemon 151 Charizard ex special illustration rare", "See chase prices on eBay:") +
+      h2("Is 151 worth buying?") +
+      p(`Yes — it's one of the safest sealed holds (broad, evergreen demand, very liquid), and fun to rip. The Ultra Premium Collection and bundles are the most-chased SKUs.`) +
+      buy("Pokemon 151 Ultra Premium Collection") +
+      h2("Buy it right") +
+      p(`151 restocks but sells fast. Buy at retail — compare any listing with the <a href="/tools/pokemon-resale-calculator">resale calculator</a> and catch restocks with <a href="/">QuickCatch</a>. See how it compares in <a href="/guides/pokemon-151-vs-surging-sparks-vs-prismatic">151 vs Surging Sparks vs Prismatic</a>.`),
+    faqs: [
+      { q: "What is the best card in Pokémon 151?", a: "Charizard ex (special illustration rare) is the headline, followed by the Venusaur/Blastoise SIRs, Mew ex, and the gold/hyper rares. Kanto nostalgia drives deep demand." },
+      { q: "Is Pokémon 151 worth buying?", a: "Yes — it's one of the safest, most liquid sealed holds thanks to broad evergreen Kanto demand, and it's fun to rip. The UPC and bundles are the most-chased SKUs." },
+    ],
+    related: ["pokemon-151-vs-surging-sparks-vs-prismatic", "best-pokemon-cards-to-invest-2026", "best-pokemon-elite-trainer-boxes-2026"],
+  },
 ];
 
 export const ARTICLE_SLUGS = ARTICLES.map((a) => a.slug);
