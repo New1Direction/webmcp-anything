@@ -94,6 +94,23 @@ app.get("/drops", async (c) => {
   const { dropsIndexHtml } = await import("./drops_seo");
   return c.html(dropsIndexHtml(new URL(c.req.url).origin, "en"));
 });
+// Agent-skills vertical (net-new SEO TAM: "agent skills", "<x> skill for claude").
+app.get("/skills", async (c) => {
+  const { skillsIndexHtml } = await import("./skills_seo");
+  return c.html(skillsIndexHtml(new URL(c.req.url).origin));
+});
+app.get("/skills/category/:cat", async (c) => {
+  const { skillsIndexHtml, categoryBySlug } = await import("./skills_seo");
+  const cat = categoryBySlug(c.req.param("cat"));
+  if (!cat) return c.notFound();
+  return c.html(skillsIndexHtml(new URL(c.req.url).origin, cat));
+});
+app.get("/skills/:slug", async (c) => {
+  const { skillBySlug, skillPageHtml } = await import("./skills_seo");
+  const s = skillBySlug(c.req.param("slug"));
+  if (!s) return c.notFound();
+  return c.html(skillPageHtml(new URL(c.req.url).origin, s));
+});
 app.get("/drops/:a", async (c) => {
   const a = c.req.param("a");
   const { DROP_PAGES, dropPageHtml, dropsIndexHtml, LOCALIZED_LANGS } = await import("./drops_seo");
