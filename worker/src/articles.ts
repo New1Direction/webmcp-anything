@@ -3071,6 +3071,234 @@ export const ARTICLES: Article[] = [
     ],
     related: ["best-lucario-pokemon-cards", "lucario-lv-x-card-value", "best-pokemon-cards-to-invest-2026"],
   },
+
+  {
+    slug: "best-lorcana-cards",
+    title: "Best Disney Lorcana Cards (Most Valuable, 2026) | wmcp.sh",
+    desc: "The best and most valuable Disney Lorcana cards — Mickey Brave Little Tailor, Elsa Spirit of Winter, Maleficent Monstrous Dragon and more Enchanted chases — with the cheapest raw and graded copies on eBay.",
+    h1: "Best Disney Lorcana Cards",
+    dek: "The Enchanted chases that lead the game — and where to buy each.",
+    updated: "June 2026",
+    readMins: 8,
+    bodyHtml:
+      p(`Disney Lorcana exploded since its 2023 launch, and its <a href="/guides/what-are-enchanted-cards-lorcana">Enchanted cards</a> — the rare alternate-art chases — are the ones that hold real value. Here are the best across the game, with the cheapest raw copy and the cheapest graded (PSA 10) copy on eBay for each.`) +
+      h2("1. Mickey Mouse – Brave Little Tailor (Enchanted, The First Chapter)") +
+      p(`The grail. As the iconic Enchanted from Lorcana's first set — printed before the game blew up — Mickey Brave Little Tailor is the most valuable and recognizable card in the hobby.`) +
+      cardLinks("Disney Lorcana Mickey Mouse Brave Little Tailor enchanted") +
+      h2("2. Elsa – Spirit of Winter (Enchanted, The First Chapter)") +
+      p(`A First Chapter Enchanted of one of Disney's most popular characters — gorgeous art and deep, durable demand.`) +
+      cardLinks("Disney Lorcana Elsa Spirit of Winter enchanted") +
+      h2("3. Maleficent – Monstrous Dragon (Enchanted, The First Chapter)") +
+      p(`The dragon-form Maleficent Enchanted is a fan-favorite chase and one of the most striking cards in the game.`) +
+      cardLinks("Disney Lorcana Maleficent Monstrous Dragon enchanted") +
+      h2("4. Stitch – Rock Star (Enchanted, The First Chapter)") +
+      p(`Stitch's enormous fanbase makes the Rock Star Enchanted one of the most chased character cards in Lorcana.`) +
+      cardLinks("Disney Lorcana Stitch Rock Star enchanted") +
+      h2("5. Mickey Mouse – Wayward Sorcerer (Enchanted, Rise of the Floodborn)") +
+      p(`The Fantasia-inspired Mickey Enchanted from set 2 is a top chase with classic Disney appeal.`) +
+      cardLinks("Disney Lorcana Mickey Mouse Wayward Sorcerer enchanted") +
+      h2("6. Aurora – Dreaming Guardian (Enchanted, The First Chapter)") +
+      p(`A beautiful First Chapter Enchanted that remains a sought-after early chase.`) +
+      cardLinks("Disney Lorcana Aurora Dreaming Guardian enchanted") +
+      h2("Raw or graded?") +
+      p(`Raw is the affordable way to collect; a graded PSA 10 (or CGC/BGS) commands a premium and is the store of value for the First Chapter grails. The earliest set's Enchanteds are worth the most — they were printed before Lorcana's demand spiked. Explore by character: <a href="/guides/best-mickey-mouse-lorcana-cards">Mickey</a>, <a href="/guides/best-elsa-lorcana-cards">Elsa</a>, <a href="/guides/best-stitch-lorcana-cards">Stitch</a>, <a href="/guides/best-maleficent-lorcana-cards">Maleficent</a>. New to value? See <a href="/guides/are-lorcana-cards-worth-money">are Lorcana cards worth money</a>.`),
+    faqs: [
+      { q: "What is the most valuable Disney Lorcana card?", a: "Mickey Mouse – Brave Little Tailor (Enchanted) from The First Chapter is the most valuable, especially graded — it's the iconic chase from Lorcana's first, smallest-printed set. Elsa – Spirit of Winter and Maleficent – Monstrous Dragon follow." },
+      { q: "Which Lorcana cards hold value?", a: "The Enchanted rarity cards — especially from The First Chapter, which was printed before the game's demand exploded. Common through Legendary cards are mostly affordable; Enchanteds are the chases that appreciate." },
+    ],
+    related: ["what-are-enchanted-cards-lorcana", "are-lorcana-cards-worth-money", "best-mickey-mouse-lorcana-cards"],
+  },
+
+  {
+    slug: "what-are-enchanted-cards-lorcana",
+    title: "What Are Enchanted Cards in Lorcana? (Chase Rarity) | wmcp.sh",
+    desc: "Enchanted cards are Disney Lorcana's rarest chase — alternate full-art versions. What they are, how rare they are, why they're valuable, and the cheapest copies on eBay.",
+    h1: "What Are Enchanted Cards in Lorcana?",
+    dek: "The rarest chase rarity — what they are and why they're worth the most.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`If you're collecting Disney Lorcana, "Enchanted" is the word that matters. Here's what Enchanted cards are and why they drive the secondary market.`) +
+      h2("What they are") +
+      p(`Enchanted cards are special <b>alternate full-art versions</b> of existing cards — extended, borderless artwork with a distinctive foil treatment. They sit above the standard rarities (Common, Uncommon, Rare, Super Rare, Legendary) as the premium chase.`) +
+      h2("How rare they are") +
+      p(`Enchanted cards are pulled far less often than even Legendaries — roughly one per case-level quantity of packs, depending on the set. That scarcity is exactly why they carry the value.`) +
+      h2("Why First Chapter Enchanteds are worth the most") +
+      p(`Lorcana's debut set, <b>The First Chapter</b>, was printed before the game exploded in popularity — so its Enchanted cards (like Mickey – Brave Little Tailor) are the scarcest and most valuable of all.`) +
+      cardLinks("Disney Lorcana Mickey Mouse Brave Little Tailor enchanted") +
+      h2("Buying Enchanteds") +
+      p(`Raw copies are the accessible way in; graded (PSA/CGC/BGS) is the store of value for the top chases. See the <a href="/guides/best-lorcana-cards">best Lorcana cards</a> and the full <a href="/guides/lorcana-rarity-guide">Lorcana rarity guide</a>.`),
+    faqs: [
+      { q: "What is an Enchanted card in Lorcana?", a: "An Enchanted card is a rare alternate full-art version of an existing Lorcana card — borderless, extended artwork with special foiling. It's the premium chase rarity, above Common, Uncommon, Rare, Super Rare, and Legendary." },
+      { q: "How rare are Enchanted Lorcana cards?", a: "Very — they're pulled far less often than Legendaries (roughly one per case-level quantity of packs, varying by set), which is why they hold the most value, especially from The First Chapter." },
+    ],
+    related: ["best-lorcana-cards", "lorcana-rarity-guide", "are-lorcana-cards-worth-money"],
+  },
+
+  {
+    slug: "lorcana-rarity-guide",
+    title: "Disney Lorcana Rarity Guide (Common to Enchanted) | wmcp.sh",
+    desc: "A guide to Disney Lorcana card rarities — Common, Uncommon, Rare, Super Rare, Legendary, and Enchanted — what each looks like, how rare it is, and which are worth money.",
+    h1: "Disney Lorcana Rarity Guide",
+    dek: "Every rarity explained — and which ones are actually worth money.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Lorcana's rarities run from everyday commons to ultra-rare chases. Here's the ladder and where the value actually sits.`) +
+      h2("The standard rarities") +
+      p(`<b>Common</b> (filled circle), <b>Uncommon</b> (filled triangle), <b>Rare</b> (filled square), <b>Super Rare</b> (filled pentagon), and <b>Legendary</b> (six-sided gem) make up the base set. Rarity is marked by the symbol at the bottom of the card. Legendaries are the top standard pulls and the most desirable of the non-chase cards.`) +
+      h2("Enchanted — the chase") +
+      p(`<b>Enchanted</b> cards are the premium alternate full-art chases that sit above everything else — see <a href="/guides/what-are-enchanted-cards-lorcana">what Enchanted cards are</a>. These are where the real money is.`) +
+      cardLinks("Disney Lorcana enchanted card") +
+      h2("Foils and special treatments") +
+      p(`Most cards also come in a <b>foil (cold-foil) variant</b> pulled in addition to the non-foil, and newer sets have introduced additional special rarities and promo treatments — but Enchanted remains the headline chase.`) +
+      h2("Which are worth money?") +
+      p(`Enchanteds (especially First Chapter) and sought-after Legendaries hold value; commons through rares are mostly for play and set-building. Full breakdown: <a href="/guides/are-lorcana-cards-worth-money">are Lorcana cards worth money</a>.`),
+    faqs: [
+      { q: "What are the rarities in Disney Lorcana?", a: "Common, Uncommon, Rare, Super Rare, and Legendary make up the standard rarities (shown by the symbol at the bottom of the card), with Enchanted as the rare alternate-art chase above them. Most cards also have a foil variant." },
+      { q: "What is the rarest Lorcana card type?", a: "Enchanted cards are the rarest and most valuable — alternate full-art versions pulled far less often than Legendaries, especially from The First Chapter." },
+    ],
+    related: ["what-are-enchanted-cards-lorcana", "best-lorcana-cards", "are-lorcana-cards-worth-money"],
+  },
+
+  {
+    slug: "are-lorcana-cards-worth-money",
+    title: "Are Disney Lorcana Cards Worth Money? (2026 Value Guide) | wmcp.sh",
+    desc: "Are Disney Lorcana cards worth money? Which Lorcana cards hold value — First Chapter Enchanteds vs commons — raw vs graded, and the cheapest copies and PSA 10s on eBay.",
+    h1: "Are Disney Lorcana Cards Worth Money?",
+    dek: "Which Lorcana cards actually hold value — and which are just for playing.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Disney Lorcana grew fast, and some cards are genuinely valuable — but most aren't. Here's how the values break down.`) +
+      h2("The ones that hold value") +
+      p(`The blue-chips are the <a href="/guides/what-are-enchanted-cards-lorcana">Enchanted cards</a> from <b>The First Chapter</b> — printed before the game exploded, so they're the scarcest and most valuable. Mickey – Brave Little Tailor leads.`) +
+      cardLinks("Disney Lorcana Mickey Mouse Brave Little Tailor enchanted") +
+      h2("Strong mid-tier") +
+      p(`Enchanteds from later sets and popular Legendaries (especially of beloved characters like Stitch and Elsa) hold solid value without the grail price — good entry points.`) +
+      cardLinks("Disney Lorcana Stitch Rock Star enchanted") +
+      h2("Nice to own, not investments") +
+      p(`Commons, uncommons, rares, and most foils are mainly for play and deck-building — they won't appreciate. Lorcana's value is concentrated in the Enchanteds.`) +
+      h2("Raw vs graded for value") +
+      p(`For the top Enchanteds, a graded PSA 10 (or CGC) is the real store of value and removes condition risk. Lorcana's foiling can show edge wear, so high grades are scarcer than they look. See the <a href="/guides/best-lorcana-cards">best Lorcana cards</a> to compare.`),
+    faqs: [
+      { q: "Are Disney Lorcana cards a good investment?", a: "The First Chapter Enchanted cards are — they're scarce and have durable demand. Later-set Enchanteds and popular Legendaries are solid mid-tier holds. Commons through rares are mostly for play and won't appreciate." },
+      { q: "Which Lorcana cards are worth the most?", a: "The First Chapter Enchanteds — led by Mickey Mouse – Brave Little Tailor, Elsa – Spirit of Winter, and Maleficent – Monstrous Dragon — are worth the most, especially graded." },
+    ],
+    related: ["best-lorcana-cards", "what-are-enchanted-cards-lorcana", "lorcana-rarity-guide"],
+  },
+
+  {
+    slug: "best-mickey-mouse-lorcana-cards",
+    title: "Best Mickey Mouse Lorcana Cards (Most Valuable, 2026) | wmcp.sh",
+    desc: "The best and most valuable Mickey Mouse Disney Lorcana cards — Brave Little Tailor, Wayward Sorcerer, Detective — with the cheapest raw and graded copies on eBay.",
+    h1: "Best Mickey Mouse Lorcana Cards",
+    dek: "The Brave Little Tailor grail and the Mickey chases — and where to buy each.",
+    updated: "June 2026",
+    readMins: 6,
+    bodyHtml:
+      p(`As the face of Disney, Mickey Mouse anchors some of Lorcana's most valuable cards. Here are the best, with the cheapest raw copy and the cheapest graded (PSA 10) copy on eBay for each.`) +
+      h2("1. Mickey Mouse – Brave Little Tailor (Enchanted, The First Chapter)") +
+      p(`The grail — the most valuable card in Lorcana, a First Chapter Enchanted printed before the game took off.`) +
+      cardLinks("Disney Lorcana Mickey Mouse Brave Little Tailor enchanted") +
+      h2("2. Mickey Mouse – Wayward Sorcerer (Enchanted, Rise of the Floodborn)") +
+      p(`The Fantasia-inspired Mickey Enchanted from set 2 — a top chase with classic Disney appeal.`) +
+      cardLinks("Disney Lorcana Mickey Mouse Wayward Sorcerer enchanted") +
+      h2("3. Mickey Mouse – Detective (The First Chapter)") +
+      p(`A popular non-Enchanted Mickey from the first set — an affordable, characterful pickup.`) +
+      cardLinks("Disney Lorcana Mickey Mouse Detective") +
+      h2("Raw or graded?") +
+      p(`Raw is the affordable way to collect; a graded PSA 10 is the store of value for the Enchanteds, especially Brave Little Tailor. See the full <a href="/guides/best-lorcana-cards">best Lorcana cards</a> and <a href="/guides/what-are-enchanted-cards-lorcana">what Enchanted cards are</a>.`),
+    faqs: [
+      { q: "What is the most valuable Mickey Mouse Lorcana card?", a: "Mickey Mouse – Brave Little Tailor (Enchanted, The First Chapter) is the most valuable — it's the iconic grail of the entire game, especially graded." },
+      { q: "Are Mickey Mouse Lorcana cards worth money?", a: "The Enchanted versions are — Brave Little Tailor and Wayward Sorcerer hold strong value. Standard Mickey cards like Detective are affordable collectibles." },
+    ],
+    related: ["best-lorcana-cards", "best-elsa-lorcana-cards", "are-lorcana-cards-worth-money"],
+  },
+
+  {
+    slug: "best-elsa-lorcana-cards",
+    title: "Best Elsa Lorcana Cards (Most Valuable, 2026) | wmcp.sh",
+    desc: "The best and most valuable Elsa Disney Lorcana cards — Spirit of Winter, Snow Queen and more — with the cheapest raw and graded copies on eBay.",
+    h1: "Best Elsa Lorcana Cards",
+    dek: "The Spirit of Winter chase and the Elsa favorites — and where to buy each.",
+    updated: "June 2026",
+    readMins: 6,
+    bodyHtml:
+      p(`Elsa is one of Lorcana's most popular characters, and her best cards are top chases. Here they are, with the cheapest raw copy and the cheapest graded (PSA 10) copy on eBay for each.`) +
+      h2("1. Elsa – Spirit of Winter (Enchanted, The First Chapter)") +
+      p(`The headline — a First Chapter Enchanted of Frozen's star, and one of the most valuable cards in the game.`) +
+      cardLinks("Disney Lorcana Elsa Spirit of Winter enchanted") +
+      h2("2. Elsa – Snow Queen (Enchanted, The First Chapter)") +
+      p(`Another beloved First Chapter Elsa Enchanted — a strong chase in its own right.`) +
+      cardLinks("Disney Lorcana Elsa Snow Queen enchanted") +
+      h2("3. Elsa – Spirit of Winter (Super Rare / Legendary)") +
+      p(`The standard versions of Elsa's strongest cards are affordable, playable, and great for collectors who don't need the Enchanted.`) +
+      cardLinks("Disney Lorcana Elsa Spirit of Winter") +
+      h2("Raw or graded?") +
+      p(`Raw is the affordable way to collect; a graded PSA 10 is the store of value for the Enchanteds. See the full <a href="/guides/best-lorcana-cards">best Lorcana cards</a> and <a href="/guides/are-lorcana-cards-worth-money">are Lorcana cards worth money</a>.`),
+    faqs: [
+      { q: "What is the most valuable Elsa Lorcana card?", a: "Elsa – Spirit of Winter (Enchanted, The First Chapter) is the most valuable Elsa card, especially graded, followed by Elsa – Snow Queen (Enchanted)." },
+      { q: "Are Elsa Lorcana cards worth money?", a: "The Enchanted versions are — Spirit of Winter and Snow Queen hold strong value thanks to Elsa's popularity. Standard Elsa cards are affordable, playable collectibles." },
+    ],
+    related: ["best-lorcana-cards", "best-mickey-mouse-lorcana-cards", "best-stitch-lorcana-cards"],
+  },
+
+  {
+    slug: "best-stitch-lorcana-cards",
+    title: "Best Stitch Lorcana Cards (Most Valuable, 2026) | wmcp.sh",
+    desc: "The best and most valuable Stitch Disney Lorcana cards — Rock Star, Carefree Surfer, New Dog — with the cheapest raw and graded copies on eBay.",
+    h1: "Best Stitch Lorcana Cards",
+    dek: "The Rock Star chase and the Stitch favorites — and where to buy each.",
+    updated: "June 2026",
+    readMins: 6,
+    bodyHtml:
+      p(`Stitch has one of the biggest fanbases in Disney, which makes his Lorcana cards some of the most chased in the game. Here are the best, with the cheapest raw copy and the cheapest graded (PSA 10) copy on eBay for each.`) +
+      h2("1. Stitch – Rock Star (Enchanted, The First Chapter)") +
+      p(`The headline — a First Chapter Enchanted of everyone's favorite experiment, and a top-tier chase.`) +
+      cardLinks("Disney Lorcana Stitch Rock Star enchanted") +
+      h2("2. Stitch – Carefree Surfer (The First Chapter)") +
+      p(`A popular and powerful Stitch card from the first set — playable and collectible.`) +
+      cardLinks("Disney Lorcana Stitch Carefree Surfer") +
+      h2("3. Stitch – New Dog (The First Chapter)") +
+      p(`An affordable, characterful Stitch that's a fan favorite for collectors.`) +
+      cardLinks("Disney Lorcana Stitch New Dog") +
+      h2("Raw or graded?") +
+      p(`Raw is the affordable way to collect; a graded PSA 10 is the store of value for the Rock Star Enchanted. See the full <a href="/guides/best-lorcana-cards">best Lorcana cards</a> and <a href="/guides/what-are-enchanted-cards-lorcana">what Enchanted cards are</a>.`),
+    faqs: [
+      { q: "What is the most valuable Stitch Lorcana card?", a: "Stitch – Rock Star (Enchanted, The First Chapter) is the most valuable Stitch card, especially graded — Stitch's huge fanbase keeps demand high." },
+      { q: "Are Stitch Lorcana cards worth money?", a: "The Rock Star Enchanted is genuinely valuable. Standard Stitch cards like Carefree Surfer and New Dog are affordable, popular collectibles." },
+    ],
+    related: ["best-lorcana-cards", "best-elsa-lorcana-cards", "best-maleficent-lorcana-cards"],
+  },
+
+  {
+    slug: "best-maleficent-lorcana-cards",
+    title: "Best Maleficent Lorcana Cards (Most Valuable, 2026) | wmcp.sh",
+    desc: "The best and most valuable Maleficent Disney Lorcana cards — Monstrous Dragon, Biding Her Time, Sorcerer's Apprentice — with the cheapest raw and graded copies on eBay.",
+    h1: "Best Maleficent Lorcana Cards",
+    dek: "The Monstrous Dragon chase and the Maleficent favorites — and where to buy each.",
+    updated: "June 2026",
+    readMins: 6,
+    bodyHtml:
+      p(`Maleficent is Lorcana's signature villain, and her dragon-form Enchanted is one of the game's most striking chases. Here are the best Maleficent cards, with the cheapest raw copy and the cheapest graded (PSA 10) copy on eBay for each.`) +
+      h2("1. Maleficent – Monstrous Dragon (Enchanted, The First Chapter)") +
+      p(`The headline — a First Chapter Enchanted depicting Maleficent's dragon form, and one of the most valuable and dramatic cards in the game.`) +
+      cardLinks("Disney Lorcana Maleficent Monstrous Dragon enchanted") +
+      h2("2. Maleficent – Biding Her Time (The First Chapter)") +
+      p(`A powerful, popular Maleficent from the first set — playable and collectible.`) +
+      cardLinks("Disney Lorcana Maleficent Biding Her Time") +
+      h2("3. Maleficent – Sorcerer's Apprentice") +
+      p(`Another strong Maleficent card for villain fans — affordable and characterful.`) +
+      cardLinks("Disney Lorcana Maleficent Sorcerer's Apprentice") +
+      h2("Raw or graded?") +
+      p(`Raw is the affordable way to collect; a graded PSA 10 is the store of value for the Monstrous Dragon Enchanted. See the full <a href="/guides/best-lorcana-cards">best Lorcana cards</a> and <a href="/guides/are-lorcana-cards-worth-money">are Lorcana cards worth money</a>.`),
+    faqs: [
+      { q: "What is the most valuable Maleficent Lorcana card?", a: "Maleficent – Monstrous Dragon (Enchanted, The First Chapter) is the most valuable, especially graded — its dramatic dragon-form art makes it a standout chase." },
+      { q: "Are Maleficent Lorcana cards worth money?", a: "The Monstrous Dragon Enchanted is genuinely valuable. Standard Maleficent cards like Biding Her Time are affordable, popular collectibles for villain fans." },
+    ],
+    related: ["best-lorcana-cards", "best-stitch-lorcana-cards", "are-lorcana-cards-worth-money"],
+  },
 ];
 
 export const ARTICLE_SLUGS = ARTICLES.map((a) => a.slug);
