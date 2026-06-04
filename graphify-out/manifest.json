@@ -55,17 +55,17 @@
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/extension/background.bundle.js": {
-    "mtime": 1780585567.7374382,
+    "mtime": 1780588699.841953,
     "ast_hash": "24ae6c2b192868ad6231df9c9e0917ce",
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/extension/background.js": {
-    "mtime": 1780585430.6666737,
+    "mtime": 1780588699.8422055,
     "ast_hash": "72a0b91016bfd1b43e75bc7063a04e01",
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/extension/content.js": {
-    "mtime": 1780585447.5031586,
+    "mtime": 1780588699.8425064,
     "ast_hash": "7df888ea9cb3361ab5c6ea2e0373be11",
     "semantic_hash": ""
   },
@@ -75,17 +75,17 @@
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/extension/manifest.json": {
-    "mtime": 1780585559.5064013,
+    "mtime": 1780588699.84275,
     "ast_hash": "d96025294d414b02f8ee299be4357360",
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/extension/options.js": {
-    "mtime": 1780585538.2972596,
+    "mtime": 1780588699.8434396,
     "ast_hash": "1b8450708797edcc6617e680ddd180af",
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/extension/popup.js": {
-    "mtime": 1780585493.899183,
+    "mtime": 1780588699.8436143,
     "ast_hash": "183f30d2a70705598a2a625cb746a7ea",
     "semantic_hash": ""
   },
@@ -375,7 +375,7 @@
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/drops_seo.ts": {
-    "mtime": 1780586394.2871435,
+    "mtime": 1780588699.8516383,
     "ast_hash": "a8d19a76ea4b092768bc286082cd884d",
     "semantic_hash": ""
   },
@@ -500,8 +500,8 @@
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/index.ts": {
-    "mtime": 1780584672.2975388,
-    "ast_hash": "db045a3a21ee16790f8a0ae1a48fee63",
+    "mtime": 1780588699.8531108,
+    "ast_hash": "0b4872d371cd82ff5857a17581683aa0",
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/integration_airtable.ts": {
@@ -635,7 +635,7 @@
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/landing.ts": {
-    "mtime": 1780582856.192302,
+    "mtime": 1780588699.8537853,
     "ast_hash": "adfa792e635f3186be2321c12df55c7c",
     "semantic_hash": ""
   },
@@ -660,8 +660,8 @@
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/mcp_grade.ts": {
-    "mtime": 1780582449.2513814,
-    "ast_hash": "50bfd91a2478fb7d3f9d63b0634a79ea",
+    "mtime": 1780588699.8540976,
+    "ast_hash": "8961ac220002e48daec655742b063d68",
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/mcp_oauth.ts": {
@@ -800,7 +800,7 @@
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/stripe.ts": {
-    "mtime": 1780584636.3873372,
+    "mtime": 1780588699.8544252,
     "ast_hash": "e612435e85f37cd85f7432e50e29348d",
     "semantic_hash": ""
   },
@@ -815,8 +815,8 @@
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/u.ts": {
-    "mtime": 1780582449.2561338,
-    "ast_hash": "943e4b7a9e7f0ae6391b9655ca3a3bc1",
+    "mtime": 1780588699.8549354,
+    "ast_hash": "71ecdf61917e1fe56714da93ac5c60a5",
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/use_case_agent_commerce.ts": {
@@ -955,7 +955,7 @@
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/test/drops_seo_pages.test.ts": {
-    "mtime": 1780585116.3093014,
+    "mtime": 1780588699.8551145,
     "ast_hash": "e591872fd922bb526e0724667063175d",
     "semantic_hash": ""
   },
@@ -1100,7 +1100,7 @@
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/extension/options.html": {
-    "mtime": 1780585510.3949783,
+    "mtime": 1780588699.8432918,
     "ast_hash": "9e6375c4cd01e5185eb132e6a64991c6",
     "semantic_hash": ""
   },
@@ -1360,12 +1360,12 @@
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/tools.ts": {
-    "mtime": 1780585036.7954407,
+    "mtime": 1780588699.8547275,
     "ast_hash": "5b7aec31cdcf60d96609b4c78263dda6",
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/test/tools.test.ts": {
-    "mtime": 1780585141.7845082,
+    "mtime": 1780588699.8555229,
     "ast_hash": "700763f65f279c14ad781aaa55d801ce",
     "semantic_hash": ""
   },
@@ -1540,18 +1540,28 @@
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/test/quickcatch.test.ts": {
-    "mtime": 1780584750.5559905,
+    "mtime": 1780588699.8552957,
     "ast_hash": "5f3ee3d03d03e8fa1a457b5fb14b6e7c",
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/launch/drop-calendar-distribution.md": {
-    "mtime": 1780586245.5150096,
+    "mtime": 1780588699.850989,
     "ast_hash": "fc3ab8baeb757a127816bb8039ea010a",
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/launch/webmcp-and-me-distribution.md": {
-    "mtime": 1780582912.6985562,
+    "mtime": 1780588699.8511028,
     "ast_hash": "5d365fa0142f38688da8d5dbc568c259",
+    "semantic_hash": ""
+  },
+  "/Users/alexhearts/webmcp-anything/worker/src/skills_seo.ts": {
+    "mtime": 1780588699.8542097,
+    "ast_hash": "fc07ea234dd5ba11547fc6806778339a",
+    "semantic_hash": ""
+  },
+  "/Users/alexhearts/webmcp-anything/worker/test/skills_seo.test.ts": {
+    "mtime": 1780588699.8553889,
+    "ast_hash": "239d7e45c3e69e9d848c10926d8bbd86",
     "semantic_hash": ""
   }
 }
