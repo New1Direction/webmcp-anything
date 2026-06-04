@@ -1,16 +1,16 @@
 # Graph Report - worker  (2026-06-03)
 
 ## Corpus Check
-- 176 files · ~323,105 words
+- 176 files · ~324,967 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 881 nodes · 1515 edges · 122 communities (119 shown, 3 thin omitted)
+- 884 nodes · 1522 edges · 118 communities (115 shown, 3 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 4 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `54ab29e3`
+- Built from commit: `b307744f`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -38,14 +38,10 @@
 - [[_COMMUNITY_Community 20|Community 20]]
 - [[_COMMUNITY_Community 21|Community 21]]
 - [[_COMMUNITY_Community 22|Community 22]]
-- [[_COMMUNITY_Community 23|Community 23]]
 - [[_COMMUNITY_Community 24|Community 24]]
 - [[_COMMUNITY_Community 25|Community 25]]
-- [[_COMMUNITY_Community 26|Community 26]]
-- [[_COMMUNITY_Community 27|Community 27]]
 - [[_COMMUNITY_Community 28|Community 28]]
 - [[_COMMUNITY_Community 29|Community 29]]
-- [[_COMMUNITY_Community 30|Community 30]]
 - [[_COMMUNITY_Community 31|Community 31]]
 - [[_COMMUNITY_Community 32|Community 32]]
 - [[_COMMUNITY_Community 33|Community 33]]
@@ -83,19 +79,19 @@
 ## Import Cycles
 - None detected.
 
-## Communities (122 total, 3 thin omitted)
+## Communities (118 total, 3 thin omitted)
 
 ### Community 0 - "Community 0"
-Cohesion: 0.07
-Nodes (50): issueKey(), Plan, revokeKey(), connKey(), Env, hasManagedConnection(), isActive(), listManagedConnections() (+42 more)
+Cohesion: 0.05
+Nodes (68): Action, AuthCtx, bearer(), Bindings, gate(), issueKey(), KeyRecord, Plan (+60 more)
 
 ### Community 1 - "Community 1"
-Cohesion: 0.05
-Nodes (62): Action, AuthCtx, bearer(), Bindings, consume(), gate(), KeyRecord, PLAN_LIMITS (+54 more)
+Cohesion: 0.10
+Nodes (31): consume(), cacheKey(), CRYPTO_ADAPTERS, EngineEnv, ExecResult, executeCapturedTool(), executeTool(), listCapturedTools() (+23 more)
 
 ### Community 2 - "Community 2"
-Cohesion: 0.11
-Nodes (30): b64url(), ensureMcpClient(), Env, exchangePkceCode(), generatePkceVerifier(), McpClientRecord, pkceChallengeS256(), refreshPkceToken() (+22 more)
+Cohesion: 0.10
+Nodes (32): CAT_LABEL, CATEGORY_NAMES, b64url(), ensureMcpClient(), Env, exchangePkceCode(), generatePkceVerifier(), McpClientRecord (+24 more)
 
 ### Community 3 - "Community 3"
 Cohesion: 0.40
@@ -138,16 +134,16 @@ Cohesion: 0.11
 Nodes (18): A) Buy the domain, A) Create a Stripe account, B) Add it as a zone, B) Create products + prices, C) Bind the worker to the domain, C) Configure the webhook, Cost estimate (real numbers), D) Set the secrets (+10 more)
 
 ### Community 13 - "Community 13"
-Cohesion: 0.14
-Nodes (12): AFFILIATE, affiliateButtons(), AffiliateNet, esc(), Article, ArticleFaq, articleHtml(), ARTICLES (+4 more)
+Cohesion: 0.05
+Nodes (50): adSlot(), AFFILIATE, affiliateButtons(), AffiliateNet, ebayUrl(), esc(), rawAndPsa(), Article (+42 more)
 
 ### Community 14 - "Community 14"
 Cohesion: 0.29
 Nodes (15): LOCALIZED_LANGS, alternates(), Calc, calcUrl(), css(), esc(), funnelScript(), gradingCalculatorHtml() (+7 more)
 
 ### Community 15 - "Community 15"
-Cohesion: 0.19
-Nodes (10): BehaviorRecord, BehaviorSummary, Env, KEY(), pct(), readBehavior(), recordToolCall(), summarizeBehavior() (+2 more)
+Cohesion: 0.29
+Nodes (8): BehaviorRecord, Env, KEY(), pct(), readBehavior(), recordToolCall(), summarizeBehavior(), ToolStat
 
 ### Community 16 - "Community 16"
 Cohesion: 0.12
@@ -158,28 +154,24 @@ Cohesion: 0.25
 Nodes (15): fill(), comparisonHtml(), conversionBlock(), dropPageHtml(), dropsIndexHtml(), dropsIndexUrl(), esc(), fieldsFor() (+7 more)
 
 ### Community 18 - "Community 18"
-Cohesion: 0.21
-Nodes (9): ARTICLE_SLUGS, baseCss(), CacheEntry, escapeHtml(), hostnameOf(), notFoundHtml(), PROVIDER_BADGE, relTime() (+1 more)
+Cohesion: 0.14
+Nodes (17): blogIndexHtml(), blogPostHtml(), escapeHtml(), escapeJson(), footerHtml(), navHtml(), BLOG_POSTS, BLOG_SLUGS (+9 more)
 
 ### Community 19 - "Community 19"
 Cohesion: 0.31
 Nodes (5): decide(), Env, gradeForVerify(), verifyMcpServer(), VerifyVerdict
 
 ### Community 20 - "Community 20"
-Cohesion: 0.25
-Nodes (14): gradeRank(), readGrade(), recordGrade(), reputationFeed(), Env, gradeFor(), gradeSummary(), jerr() (+6 more)
+Cohesion: 0.21
+Nodes (11): Env, gradeFor(), gradeSummary(), jerr(), jrpc(), oracleHandler(), recommendation(), SUPPORTED (+3 more)
 
 ### Community 21 - "Community 21"
 Cohesion: 0.18
 Nodes (7): drafts, OUT, posts, ROOT, seen, stripFrontmatter(), synthDescription()
 
 ### Community 22 - "Community 22"
-Cohesion: 0.21
-Nodes (13): articlesIndexHtml(), directoryHtml(), captureLandingHtml(), Flow, inferSchema(), safeJson(), synthesizeFromFlows(), SynthResult (+5 more)
-
-### Community 23 - "Community 23"
-Cohesion: 0.32
-Nodes (9): blogIndexHtml(), blogPostHtml(), escapeHtml(), escapeJson(), footerHtml(), navHtml(), BLOG_POSTS, BLOG_SLUGS (+1 more)
+Cohesion: 0.29
+Nodes (12): b64urlDecode(), b64urlEncode(), claimStart(), claimVerify(), ctEqual(), Env, extractVerifyTokens(), fetchHtml() (+4 more)
 
 ### Community 24 - "Community 24"
 Cohesion: 0.24
@@ -189,14 +181,6 @@ Nodes (7): Env, getLeads(), getLeadsResponse(), Lead, recentDays(), scoreLead(),
 Cohesion: 0.33
 Nodes (6): agentReadyApiHtml(), agentReadyVerticalHtml(), VerticalChromeOpts, agentReadyDocsHtml(), agentReadySaasHtml(), agentReadyShopifyHtml()
 
-### Community 26 - "Community 26"
-Cohesion: 0.19
-Nodes (10): baseDomain(), COLOR, computeMcpSecurityReport(), family(), FINDING_EXCLUDE, FINDING_LABELS, FindingFreq, McpReportStats (+2 more)
-
-### Community 27 - "Community 27"
-Cohesion: 0.33
-Nodes (7): base64urlEncode(), bridgeDescriptor(), slim(), SlimTool, webmcpHubHtml(), webmcpShimJs(), tools
-
 ### Community 28 - "Community 28"
 Cohesion: 0.24
 Nodes (9): BestLoc, BESTOF_I18N, GLOSS_I18N, GlossLoc, NEn, SHORT_LIST, WHAT_IS, FaqT (+1 more)
@@ -205,17 +189,13 @@ Nodes (9): BestLoc, BESTOF_I18N, GLOSS_I18N, GlossLoc, NEn, SHORT_LIST, WHAT_IS,
 Cohesion: 0.29
 Nodes (6): Architecture, Deploy, Endpoints, Local dev, Notes & limits, WebMCP Anything — Worker
 
-### Community 30 - "Community 30"
-Cohesion: 0.27
-Nodes (6): adSlot(), CAT_LABEL, connectHubHtml(), CATEGORY_NAMES, categorySlug(), mcpLeaderboardHtml()
-
 ### Community 31 - "Community 31"
 Cohesion: 0.29
 Nodes (6): LANGS, DROP_PAGES, DROP_SLUGS, dropUrl(), isLocalizable(), LOCALIZABLE_SLUGS
 
 ### Community 32 - "Community 32"
-Cohesion: 0.29
-Nodes (3): diffTools(), goodTool, MockOpts
+Cohesion: 0.17
+Nodes (9): BehaviorSummary, diffTools(), gradeRank(), GradeResult, readGrade(), recordGrade(), reputationFeed(), goodTool (+1 more)
 
 ### Community 33 - "Community 33"
 Cohesion: 0.60
@@ -243,15 +223,15 @@ _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `LOCALIZED_LANGS` connect `Community 14` to `Community 4`, `Community 9`, `Community 11`, `Community 18`, `Community 31`?**
   _High betweenness centrality (0.033) - this node is a cross-community bridge._
-- **Why does `mcpProxyHandler()` connect `Community 2` to `Community 0`, `Community 3`, `Community 10`, `Community 15`, `Community 20`?**
+- **Why does `mcpProxyHandler()` connect `Community 2` to `Community 0`, `Community 32`, `Community 3`, `Community 10`, `Community 15`?**
   _High betweenness centrality (0.032) - this node is a cross-community bridge._
-- **Why does `resolveAuth()` connect `Community 1` to `Community 120`, `Community 0`?**
+- **Why does `resolveAuth()` connect `Community 0` to `Community 120`, `Community 1`, `Community 22`?**
   _High betweenness centrality (0.017) - this node is a cross-community bridge._
 - **What connects `name`, `version`, `private` to the rest of the system?**
   _200 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 0` be split into smaller, more focused modules?**
-  _Cohesion score 0.06915113871635611 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.05418227215980025 - nodes in this community are weakly interconnected._
 - **Should `Community 1` be split into smaller, more focused modules?**
-  _Cohesion score 0.05060882800608828 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.09682539682539683 - nodes in this community are weakly interconnected._
 - **Should `Community 2` be split into smaller, more focused modules?**
-  _Cohesion score 0.11261261261261261 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.0975609756097561 - nodes in this community are weakly interconnected._

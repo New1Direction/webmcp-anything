@@ -1253,6 +1253,124 @@ export const ARTICLES: Article[] = [
     ],
     related: ["best-rayquaza-pokemon-cards", "rayquaza-vmax-alt-art-worth-it", "best-pokemon-cards-to-invest-2026"],
   },
+
+  {
+    slug: "best-umbreon-pokemon-cards",
+    title: "Best Umbreon Pokémon Cards (Most Valuable, 2026) | wmcp.sh",
+    desc: "The best and most valuable Umbreon Pokémon cards — Moonbreon VMAX alt art, Umbreon ex SIR, Gold Star and more — with the cheapest raw and PSA 10 copies on eBay.",
+    h1: "Best Umbreon Pokémon Cards",
+    dek: "Moonbreon, the Gold Star, the new SIR — and where to buy each, raw or PSA 10.",
+    updated: "June 2026",
+    readMins: 7,
+    bodyHtml:
+      p(`Umbreon has one of the most devoted fanbases in all of Pokémon, and its best cards are some of the most valuable in the hobby. Here are the ones worth owning — with the cheapest raw copy and the cheapest PSA 10 on eBay for each.`) +
+      h2("1. Umbreon VMAX Alternate Art — “Moonbreon” (Evolving Skies)") +
+      p(`The most famous modern Pokémon card, full stop. The Umbreon VMAX alt art — nicknamed "Moonbreon" — is the most sought-after card of the Sword & Shield era and a true blue-chip in PSA 10.`) +
+      cardLinks("Pokemon Umbreon VMAX alternate art Evolving Skies") +
+      h2("2. Umbreon Gold Star (EX Unseen Forces, 2005)") +
+      p(`The vintage grail. The Gold Star Umbreon is one of the rarest and most coveted classic cards — extremely valuable in high grade and a centerpiece for serious collectors.`) +
+      cardLinks("Pokemon Umbreon Gold Star EX Unseen Forces") +
+      h2("3. Umbreon ex Special Illustration Rare (Prismatic Evolutions)") +
+      p(`The modern "moonlit" Umbreon SIR from Prismatic Evolutions reignited Umbreon mania and is the headline chase of one of the hottest recent sets.`) +
+      cardLinks("Pokemon Umbreon ex special illustration rare Prismatic Evolutions") +
+      h2("4. Umbreon V Alternate Art (Evolving Skies)") +
+      p(`The far more attainable Evolving Skies chase — gorgeous art, strong demand, and a fraction of the Moonbreon price.`) +
+      cardLinks("Pokemon Umbreon V alternate art Evolving Skies") +
+      h2("5. Umbreon VMAX Rainbow Rare (Evolving Skies)") +
+      p(`The colorful secret VMAX is a popular, lower-cost way to own an Evolving Skies Umbreon without the alt-art premium.`) +
+      cardLinks("Pokemon Umbreon VMAX rainbow rare Evolving Skies") +
+      h2("6. Umbreon Prime (Call of Legends, 2011)") +
+      p(`A beloved older fan-favorite — the Umbreon Prime carries real nostalgia and holds steady value, especially graded.`) +
+      cardLinks("Pokemon Umbreon Prime Call of Legends") +
+      h2("Raw or PSA 10?") +
+      p(`Raw is the affordable way to collect; a PSA 10 commands a major premium and is the better store of value for the grails like Moonbreon and the Gold Star. Buying raw to grade? Read <a href="/guides/how-to-grade-pokemon-cards">how to grade Pokémon cards</a> and check the <a href="/tools/pokemon-grading-calculator">grading calculator</a> first.`) +
+      p(`Prismatic Evolutions (home of the Umbreon ex SIR) sells out fast — catch it at retail with <a href="/">QuickCatch</a>, and see <a href="/guides/best-cards-in-prismatic-evolutions">best cards in Prismatic Evolutions</a>.`),
+    faqs: [
+      { q: "What is the most valuable Umbreon card?", a: "The Umbreon VMAX alternate art (“Moonbreon”) from Evolving Skies is the most valuable modern Umbreon card, while the Umbreon Gold Star (EX Unseen Forces, 2005) is the vintage grail — both peak in PSA 10." },
+      { q: "What is Moonbreon?", a: "“Moonbreon” is the collector nickname for the Umbreon VMAX alternate art from Evolving Skies — the most famous and sought-after card of the Sword & Shield era." },
+    ],
+    related: ["umbreon-vmax-alt-art-worth-it", "umbreon-gold-star-pokemon-card", "are-umbreon-cards-worth-money"],
+  },
+
+  {
+    slug: "umbreon-vmax-alt-art-worth-it",
+    title: "Is Moonbreon Worth It? (Umbreon VMAX Alt Art) | wmcp.sh",
+    desc: "Is the Umbreon VMAX alternate art (“Moonbreon”) from Evolving Skies worth buying? Why it's so valuable, raw vs PSA 10, and the cheapest copies on eBay.",
+    h1: "Is Moonbreon Worth It?",
+    dek: "The most famous modern Pokémon card — and whether to buy raw or graded.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`The Umbreon VMAX alternate art — "Moonbreon" — is the most iconic card of the modern era. Here's the honest read on whether it's worth the money.`) +
+      h2("Why Moonbreon is so valuable") +
+      p(`It's the perfect storm: Umbreon is arguably the most beloved Eeveelution, the art (Umbreon under a full moon) is universally adored, and Evolving Skies is a beloved set that's only getting scarcer. That gives Moonbreon the deepest, most durable demand of any modern card.`) +
+      cardLinks("Pokemon Umbreon VMAX alternate art Evolving Skies") +
+      h2("Raw vs PSA 10") +
+      p(`Raw copies are the affordable entry and display beautifully. A PSA 10 carries a huge premium and behaves like a blue-chip asset — but Moonbreon is notoriously condition-sensitive (centering and edges), so grading a raw copy yourself is a real gamble. Many buyers simply purchase the PSA 10 outright.`) +
+      h2("The affordable alternative") +
+      p(`If Moonbreon is out of range, the <a href="/guides/best-umbreon-pokemon-cards">Umbreon V alternate art</a> from the same set gives you similar art at a fraction of the price:`) +
+      cardLinks("Pokemon Umbreon V alternate art Evolving Skies") +
+      h2("Verdict") +
+      p(`Worth it — it's the single safest modern alt-art hold and the ultimate Umbreon display card. Buy the PSA 10 for value, raw to enjoy it. See <a href="/guides/are-umbreon-cards-worth-money">are Umbreon cards worth money</a> for the full value picture.`),
+    faqs: [
+      { q: "Why is Moonbreon so expensive?", a: "Umbreon is the most beloved Eeveelution, the alternate art is universally adored, and Evolving Skies is a beloved, increasingly scarce set — giving the card the deepest, most durable demand of any modern Pokémon card." },
+      { q: "Should I buy Moonbreon raw or PSA 10?", a: "Buy raw to display it affordably; buy a PSA 10 for a blue-chip store of value. It's condition-sensitive, so grading a raw copy is a gamble — many buyers purchase the PSA 10 directly." },
+    ],
+    related: ["best-umbreon-pokemon-cards", "are-umbreon-cards-worth-money", "is-prismatic-evolutions-worth-it"],
+  },
+
+  {
+    slug: "umbreon-gold-star-pokemon-card",
+    title: "Umbreon Gold Star Card Value (Vintage Grail) | wmcp.sh",
+    desc: "The Umbreon Gold Star from EX Unseen Forces is a vintage Pokémon grail. What makes it so valuable, how to avoid fakes, raw vs PSA 10, and the cheapest copies on eBay.",
+    h1: "Umbreon Gold Star (The Vintage Grail)",
+    dek: "One of the rarest classic Umbreon cards — what it's worth and how to buy safely.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`The Gold Star Umbreon from EX Unseen Forces (2005) is one of the most coveted vintage Pokémon cards. Here's what drives the value and how to buy without getting burned.`) +
+      h2("What makes it a grail") +
+      p(`Gold Star cards were ultra-rare pulls of the era, and Umbreon — paired with Espeon as the most loved Eeveelutions — is among the most desired of them all. Two decades of attrition plus a fanatical fanbase make high-grade copies genuinely scarce and expensive.`) +
+      cardLinks("Pokemon Umbreon Gold Star EX Unseen Forces") +
+      h2("Watch for fakes") +
+      p(`A card this valuable is heavily counterfeited. Buy graded (PSA/CGC/BGS) whenever possible, or learn the tells first — see <a href="/guides/how-to-spot-fake-pokemon-booster-box">how to spot fakes</a> and <a href="/guides/how-to-tell-if-a-pokemon-card-is-rare">how to tell if a card is rare</a>.`) +
+      h2("Raw vs PSA 10") +
+      p(`Raw copies still trade high but carry authenticity and condition risk. A PSA 10 is the safest, most liquid way to own it, and the premium reflects how few survive gem-mint. For vintage at this level, graded is almost always the right call.`) +
+      h2("Verdict") +
+      p(`A true blue-chip — if you can afford it and buy authenticated, it's one of the most durable holds in the hobby. See where it ranks among the <a href="/guides/best-umbreon-pokemon-cards">best Umbreon cards</a> and the <a href="/guides/most-expensive-pokemon-cards">most expensive Pokémon cards</a>.`),
+    faqs: [
+      { q: "How much is an Umbreon Gold Star worth?", a: "It's a high-value vintage grail; prices climb steeply with grade, and gem-mint PSA 10 copies command a large premium because so few survive in top condition. Always price off recent sold comps." },
+      { q: "Is the Umbreon Gold Star faked?", a: "Yes — because it's so valuable it's heavily counterfeited. Buy graded (PSA/CGC/BGS) whenever possible, and learn the authenticity tells before buying raw." },
+    ],
+    related: ["best-umbreon-pokemon-cards", "most-expensive-pokemon-cards", "vintage-pokemon-cards-worth-money"],
+  },
+
+  {
+    slug: "are-umbreon-cards-worth-money",
+    title: "Are Umbreon Cards Worth Money? (2026 Value Guide) | wmcp.sh",
+    desc: "Are Umbreon Pokémon cards worth money? Which Umbreon cards hold value — vintage vs modern, raw vs graded — and the cheapest copies and PSA 10s on eBay.",
+    h1: "Are Umbreon Cards Worth Money?",
+    dek: "Which Umbreon cards actually hold value — and which are just nice to own.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Umbreon's massive fanbase makes it one of the most reliably valuable Pokémon to collect — but not every Umbreon card is an investment. Here's how the values break down.`) +
+      h2("The ones that hold value") +
+      p(`The blue-chips are <a href="/guides/umbreon-vmax-alt-art-worth-it">Moonbreon</a> (the Evolving Skies VMAX alt art), the <a href="/guides/umbreon-gold-star-pokemon-card">Gold Star</a> (vintage grail), and the <a href="/guides/best-cards-in-prismatic-evolutions">Umbreon ex SIR</a> from Prismatic Evolutions. These have the deepest, most durable demand in the hobby.`) +
+      cardLinks("Pokemon Umbreon VMAX alternate art Evolving Skies") +
+      h2("Strong mid-tier") +
+      p(`The Umbreon V alt art, the Evolving Skies rainbow VMAX, and the Umbreon Prime (Call of Legends) hold solid value without the grail price tag — good entry points.`) +
+      cardLinks("Pokemon Umbreon Prime Call of Legends") +
+      h2("Nice to own, not investments") +
+      p(`Common holos, promos, and bulk Umbreon cards are great for a collection but won't appreciate meaningfully. Buy those because you love Umbreon, not to flip.`) +
+      h2("Raw vs graded for value") +
+      p(`For the grails, a PSA 10 is the real store of value — raw carries condition risk. Holding raw copies worth grading? Read <a href="/guides/how-to-grade-pokemon-cards">how to grade</a> and run the <a href="/tools/pokemon-grading-calculator">grading calculator</a>. Selling? See <a href="/guides/where-to-sell-pokemon-cards">where to sell</a>.`),
+    faqs: [
+      { q: "Are Umbreon cards a good investment?", a: "The grails are — Moonbreon (Evolving Skies VMAX alt art), the Gold Star (EX Unseen Forces), and the Prismatic Evolutions Umbreon ex SIR have deep, durable demand. The V alt art and Umbreon Prime are strong mid-tier holds. Common holos won't appreciate much." },
+      { q: "Which Umbreon card is worth the most?", a: "Moonbreon (the Umbreon VMAX alternate art) and the vintage Umbreon Gold Star are the most valuable, especially in PSA 10." },
+    ],
+    related: ["best-umbreon-pokemon-cards", "umbreon-vmax-alt-art-worth-it", "best-pokemon-cards-to-invest-2026"],
+  },
 ];
 
 export const ARTICLE_SLUGS = ARTICLES.map((a) => a.slug);
