@@ -3299,6 +3299,339 @@ export const ARTICLES: Article[] = [
     ],
     related: ["best-lorcana-cards", "best-stitch-lorcana-cards", "are-lorcana-cards-worth-money"],
   },
+
+  {
+    slug: "best-ariel-lorcana-cards",
+    title: "Best Ariel Lorcana Cards (Most Valuable, 2026) | wmcp.sh",
+    desc: "The best and most valuable Ariel Disney Lorcana cards — Spectacular Singer Enchanted and more — with the cheapest raw and graded copies on eBay.",
+    h1: "Best Ariel Lorcana Cards",
+    dek: "The Spectacular Singer chase and the Ariel favorites — and where to buy each.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Ariel is one of Lorcana's most popular heroines, anchoring strong cards across multiple sets. Here are the best, with the cheapest raw copy and the cheapest graded (PSA 10) copy on eBay for each.`) +
+      h2("1. Ariel – Spectacular Singer (Enchanted, The First Chapter)") +
+      p(`The headline — a First Chapter Enchanted of The Little Mermaid's star, and one of Ariel's most valuable cards.`) +
+      cardLinks("Disney Lorcana Ariel Spectacular Singer enchanted") +
+      h2("2. Ariel – On Human Legs (The First Chapter)") +
+      p(`A popular, playable Ariel from the first set — affordable and collectible.`) +
+      cardLinks("Disney Lorcana Ariel On Human Legs") +
+      h2("3. Ariel – Whoseit Collector") +
+      p(`A fan-favorite Ariel for collectors who want her beyond the Enchanted.`) +
+      cardLinks("Disney Lorcana Ariel Whoseit Collector") +
+      h2("Raw or graded?") +
+      p(`Raw is the affordable way to collect; a graded PSA 10 is the store of value for the Enchanted. See the <a href="/guides/best-lorcana-cards">best Lorcana cards</a> and <a href="/guides/are-lorcana-cards-worth-money">are Lorcana cards worth money</a>.`),
+    faqs: [
+      { q: "What is the most valuable Ariel Lorcana card?", a: "Ariel – Spectacular Singer (Enchanted, The First Chapter) is the most valuable, especially graded." },
+      { q: "Are Ariel Lorcana cards worth money?", a: "The Spectacular Singer Enchanted holds real value; standard Ariel cards like On Human Legs are affordable, popular collectibles." },
+    ],
+    related: ["best-lorcana-cards", "best-belle-lorcana-cards", "best-elsa-lorcana-cards"],
+  },
+
+  {
+    slug: "best-belle-lorcana-cards",
+    title: "Best Belle Lorcana Cards (Most Valuable, 2026) | wmcp.sh",
+    desc: "The best and most valuable Belle Disney Lorcana cards — Strange but Special Enchanted and more — with the cheapest raw and graded copies on eBay.",
+    h1: "Best Belle Lorcana Cards",
+    dek: "The Strange but Special chase and the Belle favorites — and where to buy each.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Belle is a beloved Lorcana heroine with one of the game's standout Enchanted cards. Here are the best Belle cards, with the cheapest raw copy and the cheapest graded (PSA 10) copy on eBay for each.`) +
+      h2("1. Belle – Strange but Special (Enchanted, Rise of the Floodborn)") +
+      p(`The headline — a set 2 Enchanted that's one of the most sought-after Belle cards.`) +
+      cardLinks("Disney Lorcana Belle Strange but Special enchanted") +
+      h2("2. Belle – Hidden Archer (The First Chapter)") +
+      p(`A popular, playable Belle from the first set — affordable and collectible.`) +
+      cardLinks("Disney Lorcana Belle Hidden Archer") +
+      h2("3. Belle – Strange but Special (Super Rare)") +
+      p(`The standard version of Belle's signature card — a great pickup without the Enchanted premium.`) +
+      cardLinks("Disney Lorcana Belle Strange but Special") +
+      h2("Raw or graded?") +
+      p(`Raw is the affordable way to collect; a graded PSA 10 is the store of value for the Enchanted. See the <a href="/guides/best-lorcana-cards">best Lorcana cards</a> and <a href="/guides/are-lorcana-cards-worth-money">are Lorcana cards worth money</a>.`),
+    faqs: [
+      { q: "What is the most valuable Belle Lorcana card?", a: "Belle – Strange but Special (Enchanted, Rise of the Floodborn) is the most valuable, especially graded." },
+      { q: "Are Belle Lorcana cards worth money?", a: "The Strange but Special Enchanted holds real value; standard Belle cards like Hidden Archer are affordable, popular collectibles." },
+    ],
+    related: ["best-lorcana-cards", "best-ariel-lorcana-cards", "best-elsa-lorcana-cards"],
+  },
+
+  {
+    slug: "best-genie-lorcana-cards",
+    title: "Best Genie Lorcana Cards (Most Valuable, 2026) | wmcp.sh",
+    desc: "The best and most valuable Genie Disney Lorcana cards — the Enchanted chase, On the Job and more — with the cheapest raw and graded copies on eBay.",
+    h1: "Best Genie Lorcana Cards",
+    dek: "Aladdin's Genie chases — and where to buy each.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Genie is a fan-favorite from Aladdin with strong, characterful Lorcana cards. Here are the best, with the cheapest raw copy and the cheapest graded (PSA 10) copy on eBay for each.`) +
+      h2("1. Genie – the Enchanted chase") +
+      p(`Genie's Enchanted alternate-art card is the top chase for fans — the most valuable Genie in the game.`) +
+      cardLinks("Disney Lorcana Genie enchanted") +
+      h2("2. Genie – On the Job (The First Chapter)") +
+      p(`A popular, powerful Genie from the first set — playable and collectible.`) +
+      cardLinks("Disney Lorcana Genie On the Job") +
+      h2("3. Genie – Wish Fulfilled") +
+      p(`Another beloved Genie card for collectors who want the lamp's resident beyond the Enchanted.`) +
+      cardLinks("Disney Lorcana Genie Wish Fulfilled") +
+      h2("Raw or graded?") +
+      p(`Raw is the affordable way to collect; a graded PSA 10 is the store of value for the Enchanted. See the <a href="/guides/best-lorcana-cards">best Lorcana cards</a> and <a href="/guides/best-aladdin-lorcana-cards">best Aladdin cards</a>.`),
+    faqs: [
+      { q: "What is the most valuable Genie Lorcana card?", a: "Genie's Enchanted (alternate full-art) card is the most valuable, especially graded; standard Genie cards like On the Job are affordable." },
+      { q: "Are Genie Lorcana cards worth money?", a: "The Enchanted Genie holds real value thanks to the character's popularity; standard versions are affordable, playable collectibles." },
+    ],
+    related: ["best-lorcana-cards", "best-aladdin-lorcana-cards", "best-jafar-lorcana-cards"],
+  },
+
+  {
+    slug: "best-aladdin-lorcana-cards",
+    title: "Best Aladdin Lorcana Cards (Most Valuable, 2026) | wmcp.sh",
+    desc: "The best and most valuable Aladdin Disney Lorcana cards — Heroic Outlaw Enchanted, Prince Ali and more — with the cheapest raw and graded copies on eBay.",
+    h1: "Best Aladdin Lorcana Cards",
+    dek: "The Heroic Outlaw chase and the Aladdin favorites — and where to buy each.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Aladdin anchors a strong cast of Lorcana cards. Here are the best, with the cheapest raw copy and the cheapest graded (PSA 10) copy on eBay for each.`) +
+      h2("1. Aladdin – Heroic Outlaw (Enchanted, The First Chapter)") +
+      p(`The headline — a First Chapter Enchanted and the most valuable Aladdin card.`) +
+      cardLinks("Disney Lorcana Aladdin Heroic Outlaw enchanted") +
+      h2("2. Aladdin – Prince Ali (The First Chapter)") +
+      p(`A popular, playable Aladdin from the first set — affordable and collectible.`) +
+      cardLinks("Disney Lorcana Aladdin Prince Ali") +
+      h2("3. Aladdin – Street Rat") +
+      p(`A characterful Aladdin for collectors who want him beyond the Enchanted.`) +
+      cardLinks("Disney Lorcana Aladdin Street Rat") +
+      h2("Raw or graded?") +
+      p(`Raw is the affordable way to collect; a graded PSA 10 is the store of value for the Enchanted. See the <a href="/guides/best-lorcana-cards">best Lorcana cards</a> and <a href="/guides/best-genie-lorcana-cards">best Genie cards</a>.`),
+    faqs: [
+      { q: "What is the most valuable Aladdin Lorcana card?", a: "Aladdin – Heroic Outlaw (Enchanted, The First Chapter) is the most valuable, especially graded." },
+      { q: "Are Aladdin Lorcana cards worth money?", a: "The Heroic Outlaw Enchanted holds real value; standard Aladdin cards like Prince Ali are affordable, popular collectibles." },
+    ],
+    related: ["best-lorcana-cards", "best-genie-lorcana-cards", "best-jafar-lorcana-cards"],
+  },
+
+  {
+    slug: "best-ursula-lorcana-cards",
+    title: "Best Ursula Lorcana Cards (Most Valuable, 2026) | wmcp.sh",
+    desc: "The best and most valuable Ursula Disney Lorcana cards — Power Hungry Enchanted and more — with the cheapest raw and graded copies on eBay.",
+    h1: "Best Ursula Lorcana Cards",
+    dek: "The Power Hungry chase and the Sea Witch favorites — and where to buy each.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Ursula is one of Lorcana's signature villains — she even headlines her own set. Here are her best cards, with the cheapest raw copy and the cheapest graded (PSA 10) copy on eBay for each.`) +
+      h2("1. Ursula – Power Hungry (Enchanted, The First Chapter)") +
+      p(`The headline — a First Chapter Enchanted of the Sea Witch and one of her most valuable cards.`) +
+      cardLinks("Disney Lorcana Ursula Power Hungry enchanted") +
+      h2("2. Ursula – Deceiver of All") +
+      p(`A powerful, popular Ursula for villain fans — playable and collectible.`) +
+      cardLinks("Disney Lorcana Ursula Deceiver of All") +
+      h2("3. Ursula – Sea Witch Queen (Ursula's Return)") +
+      p(`From the set she headlines — a strong, characterful Ursula card.`) +
+      cardLinks("Disney Lorcana Ursula Sea Witch Queen") +
+      h2("Raw or graded?") +
+      p(`Raw is the affordable way to collect; a graded PSA 10 is the store of value for the Enchanted. See the <a href="/guides/best-lorcana-cards">best Lorcana cards</a> and the <a href="/guides/best-cards-in-ursulas-return">best cards in Ursula's Return</a>.`),
+    faqs: [
+      { q: "What is the most valuable Ursula Lorcana card?", a: "Ursula – Power Hungry (Enchanted, The First Chapter) is the most valuable, especially graded." },
+      { q: "Are Ursula Lorcana cards worth money?", a: "The Power Hungry Enchanted holds real value, and Ursula has strong cards across sets including her own Ursula's Return. Standard versions are affordable collectibles." },
+    ],
+    related: ["best-lorcana-cards", "best-jafar-lorcana-cards", "best-cards-in-ursulas-return"],
+  },
+
+  {
+    slug: "best-jafar-lorcana-cards",
+    title: "Best Jafar Lorcana Cards (Most Valuable, 2026) | wmcp.sh",
+    desc: "The best and most valuable Jafar Disney Lorcana cards — the Enchanted chase, Wicked Sorcerer and more — with the cheapest raw and graded copies on eBay.",
+    h1: "Best Jafar Lorcana Cards",
+    dek: "Aladdin's villain chases — and where to buy each.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Jafar is a top Lorcana villain with strong, scheming cards. Here are the best, with the cheapest raw copy and the cheapest graded (PSA 10) copy on eBay for each.`) +
+      h2("1. Jafar – the Enchanted chase") +
+      p(`Jafar's Enchanted alternate-art card is the top chase for villain collectors — the most valuable Jafar in the game.`) +
+      cardLinks("Disney Lorcana Jafar enchanted") +
+      h2("2. Jafar – Wicked Sorcerer (The First Chapter)") +
+      p(`A powerful, popular Jafar from the first set — playable and collectible.`) +
+      cardLinks("Disney Lorcana Jafar Wicked Sorcerer") +
+      h2("3. Jafar – Striking Illusionist") +
+      p(`Another strong Jafar for fans who want the villain beyond the Enchanted.`) +
+      cardLinks("Disney Lorcana Jafar Striking Illusionist") +
+      h2("Raw or graded?") +
+      p(`Raw is the affordable way to collect; a graded PSA 10 is the store of value for the Enchanted. See the <a href="/guides/best-lorcana-cards">best Lorcana cards</a> and <a href="/guides/best-ursula-lorcana-cards">best Ursula cards</a>.`),
+    faqs: [
+      { q: "What is the most valuable Jafar Lorcana card?", a: "Jafar's Enchanted (alternate full-art) card is the most valuable, especially graded; standard Jafar cards like Wicked Sorcerer are affordable." },
+      { q: "Are Jafar Lorcana cards worth money?", a: "The Enchanted Jafar holds real value thanks to villain demand; standard versions are affordable, playable collectibles." },
+    ],
+    related: ["best-lorcana-cards", "best-ursula-lorcana-cards", "best-aladdin-lorcana-cards"],
+  },
+
+  {
+    slug: "best-cards-in-the-first-chapter",
+    title: "Best Cards in Lorcana The First Chapter (Most Valuable) | wmcp.sh",
+    desc: "The best and most valuable cards in Disney Lorcana The First Chapter — Mickey Brave Little Tailor, Elsa, Maleficent and the other Enchanted chases — with cheapest raw and graded copies on eBay.",
+    h1: "Best Cards in The First Chapter",
+    dek: "Lorcana's debut set — the Enchanteds that became the game's grails.",
+    updated: "June 2026",
+    readMins: 7,
+    bodyHtml:
+      p(`The First Chapter is Lorcana's debut set, and because it was printed before the game exploded, its <a href="/guides/what-are-enchanted-cards-lorcana">Enchanted cards</a> are the most valuable in the entire hobby. Here are the top chases, with the cheapest raw and graded (PSA 10) copy on eBay for each.`) +
+      h2("1. Mickey Mouse – Brave Little Tailor (Enchanted)") +
+      p(`The grail — the most valuable card in Lorcana.`) +
+      cardLinks("Disney Lorcana Mickey Mouse Brave Little Tailor enchanted") +
+      h2("2. Elsa – Spirit of Winter (Enchanted)") +
+      p(`A top chase of one of Disney's most popular characters.`) +
+      cardLinks("Disney Lorcana Elsa Spirit of Winter enchanted") +
+      h2("3. Maleficent – Monstrous Dragon (Enchanted)") +
+      p(`The dramatic dragon-form villain Enchanted.`) +
+      cardLinks("Disney Lorcana Maleficent Monstrous Dragon enchanted") +
+      h2("4. Stitch – Rock Star (Enchanted)") +
+      p(`Stitch's huge fanbase makes this a top-tier chase.`) +
+      cardLinks("Disney Lorcana Stitch Rock Star enchanted") +
+      h2("5. Ariel – Spectacular Singer (Enchanted)") +
+      p(`A beloved First Chapter Enchanted and a strong long-term hold.`) +
+      cardLinks("Disney Lorcana Ariel Spectacular Singer enchanted") +
+      h2("Why First Chapter holds value") +
+      p(`It's the scarcest set — smaller print run before Lorcana's demand spiked. Enchanteds are the chases; commons through legendaries are mostly for play. See <a href="/guides/are-lorcana-cards-worth-money">are Lorcana cards worth money</a> and the overall <a href="/guides/best-lorcana-cards">best Lorcana cards</a>.`),
+    faqs: [
+      { q: "What is the best card in Lorcana The First Chapter?", a: "Mickey Mouse – Brave Little Tailor (Enchanted) is the best and most valuable, followed by Elsa – Spirit of Winter and Maleficent – Monstrous Dragon. The set's Enchanteds are the chases." },
+      { q: "Why are First Chapter cards so valuable?", a: "It was Lorcana's debut set, printed before the game exploded in popularity, so it has the smallest supply — making its Enchanted cards the scarcest and most valuable in the game." },
+    ],
+    related: ["best-lorcana-cards", "best-cards-in-rise-of-the-floodborn", "what-are-enchanted-cards-lorcana"],
+  },
+
+  {
+    slug: "best-cards-in-rise-of-the-floodborn",
+    title: "Best Cards in Lorcana Rise of the Floodborn (Most Valuable) | wmcp.sh",
+    desc: "The best and most valuable cards in Disney Lorcana Rise of the Floodborn — Mickey Wayward Sorcerer, Belle Strange but Special and the Enchanted chases — with cheapest raw and graded copies on eBay.",
+    h1: "Best Cards in Rise of the Floodborn",
+    dek: "Lorcana's second set — its top Enchanted chases.",
+    updated: "June 2026",
+    readMins: 6,
+    bodyHtml:
+      p(`Rise of the Floodborn is Lorcana's second set, with a strong slate of <a href="/guides/what-are-enchanted-cards-lorcana">Enchanted</a> chases. Here are the top cards, with the cheapest raw and graded (PSA 10) copy on eBay for each.`) +
+      h2("1. Mickey Mouse – Wayward Sorcerer (Enchanted)") +
+      p(`The Fantasia-inspired Mickey Enchanted — the set's headline chase.`) +
+      cardLinks("Disney Lorcana Mickey Mouse Wayward Sorcerer enchanted") +
+      h2("2. Belle – Strange but Special (Enchanted)") +
+      p(`One of the most sought-after Belle cards and a standout set 2 Enchanted.`) +
+      cardLinks("Disney Lorcana Belle Strange but Special enchanted") +
+      h2("3. The set's other Enchanted chases") +
+      p(`Rise of the Floodborn's remaining Enchanteds round out the chase list — browse them cheapest-first:`) +
+      cardLinks("Disney Lorcana Rise of the Floodborn enchanted") +
+      h2("Verdict") +
+      p(`More available than First Chapter (so generally more affordable), with strong character Enchanteds. See <a href="/guides/best-cards-in-the-first-chapter">best cards in The First Chapter</a> and the overall <a href="/guides/best-lorcana-cards">best Lorcana cards</a>.`),
+    faqs: [
+      { q: "What is the best card in Rise of the Floodborn?", a: "Mickey Mouse – Wayward Sorcerer (Enchanted) is the headline chase, with Belle – Strange but Special (Enchanted) close behind. The set's Enchanteds carry the value." },
+      { q: "Is Rise of the Floodborn worth buying?", a: "Yes — it's more available than The First Chapter, so chases are generally more affordable, and it has strong character Enchanteds. The Enchanteds are where the value sits." },
+    ],
+    related: ["best-lorcana-cards", "best-cards-in-the-first-chapter", "best-cards-in-into-the-inklands"],
+  },
+
+  {
+    slug: "best-cards-in-into-the-inklands",
+    title: "Best Cards in Lorcana Into the Inklands (Most Valuable) | wmcp.sh",
+    desc: "The best and most valuable cards in Disney Lorcana Into the Inklands — Tinker Bell Giant Fairy, Robin Hood Unrivaled Archer and the Enchanted chases — with cheapest raw and graded copies on eBay.",
+    h1: "Best Cards in Into the Inklands",
+    dek: "Lorcana's third set — its top Enchanted chases.",
+    updated: "June 2026",
+    readMins: 6,
+    bodyHtml:
+      p(`Into the Inklands is Lorcana's third set, bringing in new characters and a fresh slate of <a href="/guides/what-are-enchanted-cards-lorcana">Enchanted</a> chases. Here are the top cards, with the cheapest raw and graded (PSA 10) copy on eBay for each.`) +
+      h2("1. Tinker Bell – Giant Fairy (Enchanted)") +
+      p(`A spectacular oversized-art Enchanted and the set's headline chase.`) +
+      cardLinks("Disney Lorcana Tinker Bell Giant Fairy enchanted") +
+      h2("2. Robin Hood – Unrivaled Archer (Enchanted)") +
+      p(`A popular Enchanted of the fan-favorite fox.`) +
+      cardLinks("Disney Lorcana Robin Hood Unrivaled Archer enchanted") +
+      h2("3. The set's other Enchanted chases") +
+      p(`Into the Inklands' remaining Enchanteds round out the chase list — browse them cheapest-first:`) +
+      cardLinks("Disney Lorcana Into the Inklands enchanted") +
+      h2("Verdict") +
+      p(`Strong, distinctive Enchanteds (the oversized Tinker Bell is a standout) at generally accessible prices. See the overall <a href="/guides/best-lorcana-cards">best Lorcana cards</a> and <a href="/guides/are-lorcana-cards-worth-money">are Lorcana cards worth money</a>.`),
+    faqs: [
+      { q: "What is the best card in Into the Inklands?", a: "Tinker Bell – Giant Fairy (Enchanted) is the headline chase thanks to its spectacular oversized art, with Robin Hood – Unrivaled Archer close behind." },
+      { q: "Is Into the Inklands worth buying?", a: "Yes — it has distinctive, sought-after Enchanteds (the oversized Tinker Bell especially) at generally accessible prices. The Enchanteds carry the value." },
+    ],
+    related: ["best-lorcana-cards", "best-cards-in-rise-of-the-floodborn", "best-cards-in-ursulas-return"],
+  },
+
+  {
+    slug: "best-cards-in-ursulas-return",
+    title: "Best Cards in Lorcana Ursula's Return (Most Valuable) | wmcp.sh",
+    desc: "The best and most valuable cards in Disney Lorcana Ursula's Return — the Enchanted chases led by Ursula — with the cheapest raw and graded copies on eBay.",
+    h1: "Best Cards in Ursula's Return",
+    dek: "Lorcana's villain-led fourth set — its top Enchanted chases.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Ursula's Return is Lorcana's fourth set, themed around the Sea Witch's comeback, with a fresh slate of <a href="/guides/what-are-enchanted-cards-lorcana">Enchanted</a> chases. Here are the top cards, with the cheapest raw and graded (PSA 10) copy on eBay for each.`) +
+      h2("1. Ursula – the set's headline chase") +
+      p(`Fittingly, the set's standout Enchanteds center on Ursula — the most sought-after cards here. See more on the <a href="/guides/best-ursula-lorcana-cards">best Ursula cards</a>.`) +
+      cardLinks("Disney Lorcana Ursula Sea Witch Queen") +
+      h2("2. The set's Enchanted chases") +
+      p(`Ursula's Return's Enchanteds are the cards that hold value — browse them cheapest-first:`) +
+      cardLinks("Disney Lorcana Ursula's Return enchanted") +
+      h2("Verdict") +
+      p(`A villain-forward set with strong Ursula chases; like every set, the Enchanteds carry the value while the rest is for play. See the overall <a href="/guides/best-lorcana-cards">best Lorcana cards</a>.`),
+    faqs: [
+      { q: "What is the best card in Ursula's Return?", a: "The set's Ursula-focused Enchanted cards are the most valuable and sought-after, fitting the set's villain theme. The Enchanteds carry the value." },
+      { q: "Is Ursula's Return worth buying?", a: "Yes for Ursula and villain fans — its Enchanted chases hold the value. The rest of the set is mainly for play and deck-building." },
+    ],
+    related: ["best-lorcana-cards", "best-ursula-lorcana-cards", "best-cards-in-into-the-inklands"],
+  },
+
+  {
+    slug: "best-cards-in-shimmering-skies",
+    title: "Best Cards in Lorcana Shimmering Skies (Most Valuable) | wmcp.sh",
+    desc: "The best and most valuable cards in Disney Lorcana Shimmering Skies — the Enchanted chases — with the cheapest raw and graded copies on eBay.",
+    h1: "Best Cards in Shimmering Skies",
+    dek: "Lorcana's fifth set — its top Enchanted chases.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Shimmering Skies is Lorcana's fifth set, with a sky-and-flight theme and a fresh slate of <a href="/guides/what-are-enchanted-cards-lorcana">Enchanted</a> chases. Here are the top cards, with the cheapest raw and graded (PSA 10) copy on eBay for each.`) +
+      h2("The set's headline Enchanteds") +
+      p(`As with every set, the Enchanted alternate-art cards are the chases that hold value — browse the set's Enchanteds cheapest-first:`) +
+      cardLinks("Disney Lorcana Shimmering Skies enchanted") +
+      h2("Strong Legendaries & foils") +
+      p(`Beyond the Enchanteds, the set's most popular Legendaries (especially of beloved characters) are the next tier of demand:`) +
+      cardLinks("Disney Lorcana Shimmering Skies legendary") +
+      h2("Verdict") +
+      p(`A more recent set, so chases are generally accessible. The Enchanteds carry the value; the rest is for play. See the overall <a href="/guides/best-lorcana-cards">best Lorcana cards</a> and <a href="/guides/are-lorcana-cards-worth-money">are Lorcana cards worth money</a>.`),
+    faqs: [
+      { q: "What are the best cards in Shimmering Skies?", a: "The set's Enchanted alternate-art cards are the most valuable chases, followed by its most popular Legendaries. As a more recent set, chases are generally accessible." },
+      { q: "Is Shimmering Skies worth buying?", a: "Yes — its Enchanteds are the value drivers and are generally more affordable than older sets. The rest of the set is mainly for play." },
+    ],
+    related: ["best-lorcana-cards", "best-cards-in-ursulas-return", "best-cards-in-azurite-sea"],
+  },
+
+  {
+    slug: "best-cards-in-azurite-sea",
+    title: "Best Cards in Lorcana Azurite Sea (Most Valuable) | wmcp.sh",
+    desc: "The best and most valuable cards in Disney Lorcana Azurite Sea — the Enchanted chases — with the cheapest raw and graded copies on eBay.",
+    h1: "Best Cards in Azurite Sea",
+    dek: "Lorcana's sixth set — its top Enchanted chases.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Azurite Sea is Lorcana's sixth set, with an oceanic theme and a fresh slate of <a href="/guides/what-are-enchanted-cards-lorcana">Enchanted</a> chases. Here are the top cards, with the cheapest raw and graded (PSA 10) copy on eBay for each.`) +
+      h2("The set's headline Enchanteds") +
+      p(`The Enchanted alternate-art cards are the chases that hold value — browse the set's Enchanteds cheapest-first:`) +
+      cardLinks("Disney Lorcana Azurite Sea enchanted") +
+      h2("Strong Legendaries & foils") +
+      p(`The set's most popular Legendaries (especially of fan-favorite characters) are the next tier of demand:`) +
+      cardLinks("Disney Lorcana Azurite Sea legendary") +
+      h2("Verdict") +
+      p(`A recent set, so chases are generally accessible — a good entry point for newer collectors. The Enchanteds carry the value. See the overall <a href="/guides/best-lorcana-cards">best Lorcana cards</a> and the <a href="/guides/lorcana-rarity-guide">rarity guide</a>.`),
+    faqs: [
+      { q: "What are the best cards in Azurite Sea?", a: "The set's Enchanted alternate-art cards are the most valuable chases, followed by its most popular Legendaries. As a recent set, chases are generally accessible." },
+      { q: "Is Azurite Sea worth buying?", a: "Yes — it's a good entry point for newer collectors, with accessible Enchanted chases. The Enchanteds are where the value sits; the rest is for play." },
+    ],
+    related: ["best-lorcana-cards", "best-cards-in-shimmering-skies", "lorcana-rarity-guide"],
+  },
 ];
 
 export const ARTICLE_SLUGS = ARTICLES.map((a) => a.slug);
