@@ -12,8 +12,16 @@
 // Only hot/unknown ever surface. Everything else is handled automatically.
 // Copy is plain: no em-dashes, no AI tells.
 import { fireAlert } from "./alerts";
+import { sendEmail, emailEnabled } from "./email";
 
-type Env = { KEYS: KVNamespace; LEAD_ALERT_WEBHOOK?: string; ADMIN_TOKEN?: string };
+type Env = {
+  KEYS: KVNamespace; ADMIN_TOKEN?: string;
+  // Hot leads go to whichever of these is set (you need neither a Slack nor a
+  // Discord): OPERATOR_EMAIL = your inbox (via Resend), LEAD_ALERT_WEBHOOK = a
+  // chat webhook. Email is the zero-new-app option.
+  OPERATOR_EMAIL?: string; LEAD_ALERT_WEBHOOK?: string;
+  RESEND_API_KEY?: string; RESEND_FROM?: string;
+};
 
 // Order of checks matters: bounce, then opt-out, then OOO, then cold (so
 // "not interested" beats the "interested" substring), then hot, else unknown.
@@ -82,12 +90,21 @@ export async function handleOutreachReply(c: any): Promise<Response> {
     return c.json({ ok: true, intent, action: "logged" });
   }
   // hot or unknown → surface to the operator with a ready-to-send draft.
+  // Goes to email if OPERATOR_EMAIL is set, the chat webhook if that is set, or
+  // both. No chat app required.
   const draft = suggestReply(intent);
-  fireAlert(
-    env,
-    c.executionCtx || { waitUntil() {} },
-    `HOT reply (${intent}) from ${from}\nsubject: ${subject}\n"${text.slice(0, 220)}"\n\nsuggested reply:\n${draft}`
-  );
+  const ctx = c.executionCtx || { waitUntil() {} };
+  if (env.OPERATOR_EMAIL && emailEnabled(env)) {
+    const esc = (s: string) => String(s).replace(/[&<>]/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" } as any)[ch]);
+    const html =
+      `<p><strong>HOT reply (${intent})</strong> from <a href="mailto:${esc(from)}">${esc(from)}</a></p>` +
+      `<p>Subject: ${esc(subject) || "(none)"}</p>` +
+      `<blockquote style="border-left:3px solid #ff9e2c;padding-left:10px;color:#555">${esc(text.slice(0, 600))}</blockquote>` +
+      `<p><strong>Suggested reply (copy, paste, send):</strong></p>` +
+      `<pre style="white-space:pre-wrap;background:#f6f6f6;padding:12px;border-radius:8px;font-family:inherit">${esc(draft)}</pre>`;
+    ctx.waitUntil(sendEmail(env, { to: env.OPERATOR_EMAIL, subject: `HOT lead: ${from}`, html }).then(() => {}).catch(() => {}));
+  }
+  fireAlert(env, ctx, `HOT reply (${intent}) from ${from}\nsubject: ${subject}\n"${text.slice(0, 220)}"\n\nsuggested reply:\n${draft}`);
   return c.json({ ok: true, intent, action: "notified", draft });
 }
 
