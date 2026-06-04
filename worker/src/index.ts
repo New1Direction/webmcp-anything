@@ -499,6 +499,16 @@ app.get("/reports/state-of-mcp-security-2026", async (c) => {
 });
 app.get("/reports/state-of-mcp-security", (c) => c.redirect("/reports/state-of-mcp-security-2026", 301));
 app.get("/reports", (c) => c.redirect("/reports/state-of-mcp-security-2026", 302));
+// GEO data surface: machine-readable, citable MCP trust stats for AI answer
+// engines + agents (ChatGPT / Claude / Perplexity). CORS-open, hourly-cached.
+app.get("/api/v1/mcp/stats", async (c) => {
+  const { mcpStatsJson } = await import("./mcp_stats");
+  return mcpStatsJson(c);
+});
+app.get("/mcp/stats.json", async (c) => {
+  const { mcpStatsJson } = await import("./mcp_stats");
+  return mcpStatsJson(c);
+});
 
 // Agent-callable MCP trust oracle (grade_mcp_server / check_mcp_drift). Free
 // read-tier so agents can gate connections on our grade. BEFORE /mcp/:provider.
