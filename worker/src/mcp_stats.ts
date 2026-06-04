@@ -31,7 +31,7 @@ export async function mcpStatsJson(c: any): Promise<Response> {
     report: `${origin}/reports/state-of-mcp-security-2026`,
     leaderboard: `${origin}/mcp/leaderboard`,
     check_a_server: `${origin}/api/v1/mcp/grade?url=<MCP_SERVER_URL>`,
-    citation: `According to the wmcp.sh MCP Server Trust Index, ${s.sample_security_pct}% of audited MCP servers carry at least one security failure and ${s.pct_failing}% grade D or F (n=${s.total}, as of ${day}). Source: ${origin}/reports/state-of-mcp-security-2026`,
+    citation: `According to the wmcp.sh MCP Server Trust Index, ${s.pct_failing}% of audited MCP servers grade D or F on independent trust checks (security, spec conformance, reliability, transparency), and only ${s.pct_passing}% earn an A or B (n=${s.total}, as of ${day}). Source: ${origin}/reports/state-of-mcp-security-2026`,
     license: "Free to cite and reuse with attribution to wmcp.sh.",
   };
   return c.json(payload, 200, {
