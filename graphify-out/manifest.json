@@ -55,7 +55,7 @@
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/extension/background.bundle.js": {
-    "mtime": 1780588699.841953,
+    "mtime": 1780588997.1185083,
     "ast_hash": "24ae6c2b192868ad6231df9c9e0917ce",
     "semantic_hash": ""
   },
@@ -375,8 +375,8 @@
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/drops_seo.ts": {
-    "mtime": 1780588699.8516383,
-    "ast_hash": "a8d19a76ea4b092768bc286082cd884d",
+    "mtime": 1780603075.9713507,
+    "ast_hash": "775299a9ada531255327c757ba4ecf8d",
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/engine.ts": {
@@ -500,8 +500,8 @@
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/index.ts": {
-    "mtime": 1780588699.8531108,
-    "ast_hash": "0b4872d371cd82ff5857a17581683aa0",
+    "mtime": 1780603075.9722438,
+    "ast_hash": "63a584c38ef99ec7474d85b33b0d6c07",
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/integration_airtable.ts": {
@@ -660,8 +660,8 @@
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/mcp_grade.ts": {
-    "mtime": 1780588699.8540976,
-    "ast_hash": "8961ac220002e48daec655742b063d68",
+    "mtime": 1780603075.9727795,
+    "ast_hash": "5e20df198ede7a2ad87307eef9a4c5b4",
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/mcp_oauth.ts": {
@@ -815,8 +815,8 @@
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/u.ts": {
-    "mtime": 1780588699.8549354,
-    "ast_hash": "71ecdf61917e1fe56714da93ac5c60a5",
+    "mtime": 1780603075.9736724,
+    "ast_hash": "27f9d67f6c650904a1313aaf8df0583b",
     "semantic_hash": ""
   },
   "/Users/alexhearts/webmcp-anything/worker/src/use_case_agent_commerce.ts": {
@@ -1562,6 +1562,66 @@
   "/Users/alexhearts/webmcp-anything/worker/test/skills_seo.test.ts": {
     "mtime": 1780588699.8553889,
     "ast_hash": "239d7e45c3e69e9d848c10926d8bbd86",
+    "semantic_hash": ""
+  },
+  "/Users/alexhearts/webmcp-anything/worker/src/alternatives_mcpservers.ts": {
+    "mtime": 1780603075.9691894,
+    "ast_hash": "98dbb08d9909f195dc3fbcf51cf52703",
+    "semantic_hash": ""
+  },
+  "/Users/alexhearts/webmcp-anything/worker/src/how_to_nemotron_tools.ts": {
+    "mtime": 1780603075.9717312,
+    "ast_hash": "6551d855f2c36ca11fb8f61b573727b7",
+    "semantic_hash": ""
+  },
+  "/Users/alexhearts/webmcp-anything/worker/src/mcp_stats.ts": {
+    "mtime": 1780603075.9728794,
+    "ast_hash": "ff75523804b859d33f534a9b3a2b7444",
+    "semantic_hash": ""
+  },
+  "/Users/alexhearts/webmcp-anything/worker/src/outreach.ts": {
+    "mtime": 1780603075.973215,
+    "ast_hash": "5525ef89eef10f3a439773228676c092",
+    "semantic_hash": ""
+  },
+  "/Users/alexhearts/webmcp-anything/worker/src/outreach_reply.ts": {
+    "mtime": 1780603075.973452,
+    "ast_hash": "1894d78babf9244eeff112aa20f4d9bf",
+    "semantic_hash": ""
+  },
+  "/Users/alexhearts/webmcp-anything/worker/test/mcp_stats.test.ts": {
+    "mtime": 1780603075.9737792,
+    "ast_hash": "1f7d047de72bf9ffefdd35148e1f1b42",
+    "semantic_hash": ""
+  },
+  "/Users/alexhearts/webmcp-anything/worker/test/outreach.test.ts": {
+    "mtime": 1780603075.9739377,
+    "ast_hash": "7c8e7675c05855e334ea8c9ce7c14111",
+    "semantic_hash": ""
+  },
+  "/Users/alexhearts/webmcp-anything/worker/test/outreach_reply.test.ts": {
+    "mtime": 1780603075.9741232,
+    "ast_hash": "16104ccb965c0b97e6e73c67ccc76200",
+    "semantic_hash": ""
+  },
+  "/Users/alexhearts/webmcp-anything/launch/grade-outbound.md": {
+    "mtime": 1780603075.9681497,
+    "ast_hash": "f846de981fb20532dfa7930af348db98",
+    "semantic_hash": ""
+  },
+  "/Users/alexhearts/webmcp-anything/launch/outreach-flow.html": {
+    "mtime": 1780596674.7091434,
+    "ast_hash": "39d73d025f72fb241781f1f7ca45982a",
+    "semantic_hash": ""
+  },
+  "/Users/alexhearts/webmcp-anything/launch/quickcatch-wave-posts.html": {
+    "mtime": 1780603075.9685125,
+    "ast_hash": "8b61ea1292416470419aa2c08318132a",
+    "semantic_hash": ""
+  },
+  "/Users/alexhearts/webmcp-anything/launch/verified-pitch.md": {
+    "mtime": 1780603075.9688551,
+    "ast_hash": "919f581f96d68c7396575ec8f4c02d2d",
     "semantic_hash": ""
   }
 }
