@@ -46,3 +46,29 @@ export function affiliateButtons(query: string, buyLabel = "Buy it now:"): strin
 }
 
 export const anyAffiliate = (): boolean => AFFILIATE.some((a) => a.tmpl);
+
+/** eBay affiliate URL for a query. cheapest=true sorts Price+Shipping lowest first (_sop=15). */
+export function ebayUrl(query: string, cheapest = false): string {
+  const ebay = AFFILIATE.find((a) => a.label === "eBay");
+  if (!ebay || !ebay.tmpl) return "";
+  let url = ebay.tmpl.replace(/\{q\}/g, encodeURIComponent(query));
+  if (cheapest) url += "&_sop=15";
+  return url;
+}
+
+/**
+ * Two price-check buttons for ONE specific card: the cheapest raw (ungraded)
+ * copy and the cheapest PSA 10, both eBay affiliate links sorted low→high.
+ * Use on single-card content (e.g. the Rayquaza guides). Empty if eBay is dark.
+ */
+export function rawAndPsa(cardName: string, label = "Find this card on eBay:"): string {
+  const raw = ebayUrl(`${cardName} -psa -cgc -bgs -graded`, true);
+  const psa = ebayUrl(`${cardName} psa 10`, true);
+  if (!raw && !psa) return "";
+  return (
+    `<div class="buynow"><span class="buynow-l">${esc(label)}</span><div class="row">` +
+    `<a class="btn btn-ghost" rel="sponsored nofollow noopener" target="_blank" href="${esc(raw)}">Cheapest raw</a>` +
+    `<a class="btn btn-ghost" rel="sponsored nofollow noopener" target="_blank" href="${esc(psa)}">PSA 10</a>` +
+    `</div></div>`
+  );
+}

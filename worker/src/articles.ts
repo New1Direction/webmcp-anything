@@ -8,7 +8,7 @@
 // affiliate clicks, and are worth linking to.
 
 import { uiCss, uiNav } from "./ui";
-import { affiliateButtons } from "./affiliate";
+import { affiliateButtons, rawAndPsa } from "./affiliate";
 
 interface ArticleFaq { q: string; a: string }
 interface Article {
@@ -26,6 +26,8 @@ interface Article {
 
 // ---- small helpers used while authoring (trusted, no escaping needed) -------
 const buy = (q: string, label = "Check live prices on eBay:") => affiliateButtons(q, label);
+// Per-card cheapest-raw + PSA 10 eBay affiliate links (single-card content).
+const cardLinks = (name: string, label = "Find this card on eBay:") => rawAndPsa(name, label);
 const h2 = (t: string) => `<h2>${t}</h2>`;
 const p = (t: string) => `<p>${t}</p>`;
 
@@ -1132,6 +1134,124 @@ export const ARTICLES: Article[] = [
       { q: "Is Shrouded Fable a special set?", a: "Yes — it's a compact special set with fewer cards and higher hit density per pack, built around the Pecharunt ex and Loyal Three chases plus ACE SPEC cards." },
     ],
     related: ["is-shrouded-fable-worth-it", "is-paldean-fates-worth-it", "best-pokemon-cards-to-invest-2026"],
+  },
+
+  {
+    slug: "best-rayquaza-pokemon-cards",
+    title: "Best Rayquaza Pokémon Cards (Most Valuable, 2026) | wmcp.sh",
+    desc: "The best and most valuable Rayquaza Pokémon cards — VMAX alt art, Gold Star, Mega Rayquaza EX and more — with the cheapest raw and PSA 10 copies on eBay.",
+    h1: "Best Rayquaza Pokémon Cards",
+    dek: "The grails, the modern chases, and where to buy each — raw or PSA 10.",
+    updated: "June 2026",
+    readMins: 7,
+    bodyHtml:
+      p(`Rayquaza is one of the most collected Pokémon ever, and its best cards span vintage grails to modern alt-art chases. Here are the ones worth owning — with the cheapest raw copy and the cheapest PSA 10 on eBay for each.`) +
+      h2("1. Rayquaza VMAX Alternate Art (Evolving Skies)") +
+      p(`The crown jewel of modern Rayquaza cards — the "dragon ascending the tower" alt art from Evolving Skies is one of the most iconic and valuable cards of the Sword & Shield era.`) +
+      cardLinks("Pokemon Rayquaza VMAX alternate art Evolving Skies") +
+      h2("2. Rayquaza Gold Star (EX Deoxys, 2005)") +
+      p(`The vintage grail. The Gold Star Rayquaza from EX Deoxys is one of the most desired cards in the hobby — extremely valuable in high grade and a true blue-chip.`) +
+      cardLinks("Pokemon Rayquaza Gold Star EX Deoxys") +
+      h2("3. Rayquaza V Alternate Art (Evolving Skies)") +
+      p(`The alt-art Rayquaza V is the more attainable Evolving Skies chase — gorgeous art, strong demand, and a far lower entry point than the VMAX alt.`) +
+      cardLinks("Pokemon Rayquaza V alternate art Evolving Skies") +
+      h2("4. Mega Rayquaza EX (Roaring Skies, 2015)") +
+      p(`A fan-favorite from the XY era — the Mega Rayquaza EX full arts from Roaring Skies carry strong nostalgia and competitive history.`) +
+      cardLinks("Pokemon Mega Rayquaza EX Roaring Skies") +
+      h2("5. Rayquaza VMAX Rainbow Rare (Evolving Skies)") +
+      p(`The secret rainbow VMAX is the colorful, more affordable Evolving Skies pickup for collectors who want a VMAX without the alt-art price.`) +
+      cardLinks("Pokemon Rayquaza VMAX rainbow rare Evolving Skies") +
+      h2("6. Amazing Rare Rayquaza (Vivid Voltage)") +
+      p(`A budget-friendly modern favorite — the Amazing Rare Rayquaza has unique watercolor-style art and is one of the best-value Rayquaza cards to own.`) +
+      cardLinks("Pokemon Rayquaza amazing rare Vivid Voltage") +
+      h2("Raw or PSA 10?") +
+      p(`Raw is cheaper and fine for collecting; a PSA 10 commands a big premium and is the better store of value for the grails. If you're buying raw to grade, read <a href="/guides/how-to-grade-pokemon-cards">how to grade Pokémon cards</a> first, and weigh it with the <a href="/tools/pokemon-grading-calculator">grading calculator</a>.`) +
+      p(`New sets with Rayquaza cards sell out fast — catch them at retail with <a href="/">QuickCatch</a>.`),
+    faqs: [
+      { q: "What is the most valuable Rayquaza card?", a: "The Rayquaza Gold Star (EX Deoxys, 2005) is the vintage grail and most valuable in high grade, while the Rayquaza VMAX alternate art (Evolving Skies) is the most valuable modern Rayquaza card." },
+      { q: "Which Rayquaza card should I buy?", a: "For value, the Evolving Skies VMAX alt art or the Gold Star. For budget, the Rayquaza V alt art or the Amazing Rare from Vivid Voltage. Buy raw to collect, PSA 10 as a store of value." },
+    ],
+    related: ["rayquaza-vmax-alt-art-worth-it", "rayquaza-gold-star-pokemon-card", "are-rayquaza-cards-worth-money"],
+  },
+
+  {
+    slug: "rayquaza-vmax-alt-art-worth-it",
+    title: "Is the Rayquaza VMAX Alt Art Worth It? (Evolving Skies) | wmcp.sh",
+    desc: "Is the Rayquaza VMAX alternate art from Evolving Skies worth buying? Why it's so valuable, raw vs PSA 10, and the cheapest copies on eBay.",
+    h1: "Is the Rayquaza VMAX Alt Art Worth It?",
+    dek: "The most iconic modern Rayquaza card — and whether to buy raw or graded.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`The Rayquaza VMAX alternate art from Evolving Skies is one of the most beloved Pokémon cards of the modern era. Here's the honest read on whether it's worth it.`) +
+      h2("Why it's so valuable") +
+      p(`Three things stack: Rayquaza is a top-tier fan-favorite, the art (the dragon coiling up the tower at dawn) is widely called one of the best in the hobby, and Evolving Skies is a beloved, increasingly scarce set. That combination gives it deep, durable demand.`) +
+      cardLinks("Pokemon Rayquaza VMAX alternate art Evolving Skies") +
+      h2("Raw vs PSA 10") +
+      p(`Raw copies are the affordable way in and look fantastic in a display. A PSA 10 carries a substantial premium and is the version that behaves like a blue-chip store of value — but condition-sensitive cards like this are a gamble to grade yourself, so many buyers just purchase the PSA 10 outright.`) +
+      h2("The more affordable alternative") +
+      p(`If the VMAX alt is out of range, the <a href="/guides/best-rayquaza-pokemon-cards">Rayquaza V alternate art</a> from the same set gives you similar art energy at a much lower price:`) +
+      cardLinks("Pokemon Rayquaza V alternate art Evolving Skies") +
+      h2("Verdict") +
+      p(`Worth it — it's one of the safest modern alt-art holds and a centerpiece display card. Buy the PSA 10 if you want the store of value; buy raw to enjoy it. Check current prices before you pull the trigger, and see <a href="/guides/are-rayquaza-cards-worth-money">are Rayquaza cards worth money</a>.`),
+    faqs: [
+      { q: "Why is the Rayquaza VMAX alt art so expensive?", a: "Rayquaza is a top fan-favorite, the alternate art is considered one of the best in the hobby, and Evolving Skies is a beloved, increasingly scarce set — together giving the card deep, durable demand." },
+      { q: "Should I buy the Rayquaza VMAX alt art raw or PSA 10?", a: "Buy raw to display it affordably; buy a PSA 10 if you want a blue-chip store of value. Grading it yourself is a gamble since it's condition-sensitive, so many buyers purchase the PSA 10 directly." },
+    ],
+    related: ["best-rayquaza-pokemon-cards", "are-rayquaza-cards-worth-money", "is-prismatic-evolutions-worth-it"],
+  },
+
+  {
+    slug: "rayquaza-gold-star-pokemon-card",
+    title: "Rayquaza Gold Star Card Value (EX Deoxys Grail) | wmcp.sh",
+    desc: "The Rayquaza Gold Star from EX Deoxys is a vintage Pokémon grail. What makes it so valuable, how to spot a fake, raw vs PSA 10, and the cheapest copies on eBay.",
+    h1: "Rayquaza Gold Star (The Vintage Grail)",
+    dek: "One of the most desired cards in the hobby — what it's worth and how to buy safely.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`The Gold Star Rayquaza from EX Deoxys (2005) is one of the most coveted vintage Pokémon cards. Here's what drives the value and how to buy without getting burned.`) +
+      h2("What makes it a grail") +
+      p(`Gold Star cards were ultra-rare pulls (roughly one per booster box in the era), and Rayquaza is the most iconic of the lot. Add 20 years of attrition and a legendary fanbase, and high-grade copies are genuinely scarce and expensive.`) +
+      cardLinks("Pokemon Rayquaza Gold Star EX Deoxys") +
+      h2("Watch for fakes") +
+      p(`A card this valuable is heavily counterfeited. Buy graded (PSA/CGC/BGS) whenever possible, or learn the tells first — see <a href="/guides/how-to-spot-fake-pokemon-booster-box">how to spot fakes</a> and <a href="/guides/how-to-tell-if-a-pokemon-card-is-rare">how to tell if a card is rare</a>.`) +
+      h2("Raw vs PSA 10") +
+      p(`Raw copies still trade high but carry authenticity and condition risk. A PSA 10 is the safest, most liquid way to own it — the premium reflects how few survive in gem-mint shape. For vintage at this level, graded is almost always the right call.`) +
+      h2("Verdict") +
+      p(`A true blue-chip — if you can afford it and buy authenticated, it's one of the most durable holds in the hobby. See where it sits among the <a href="/guides/best-rayquaza-pokemon-cards">best Rayquaza cards</a> and <a href="/guides/most-expensive-pokemon-cards">most expensive Pokémon cards</a>.`),
+    faqs: [
+      { q: "How much is a Rayquaza Gold Star worth?", a: "It's a high-value vintage grail; prices climb steeply with grade, and gem-mint PSA 10 copies command a large premium because so few survive in top condition. Always price off recent sold comps." },
+      { q: "Is the Rayquaza Gold Star often faked?", a: "Yes — because it's so valuable it's heavily counterfeited. Buy graded (PSA/CGC/BGS) whenever possible, and learn the authenticity tells before buying raw." },
+    ],
+    related: ["best-rayquaza-pokemon-cards", "most-expensive-pokemon-cards", "vintage-pokemon-cards-worth-money"],
+  },
+
+  {
+    slug: "are-rayquaza-cards-worth-money",
+    title: "Are Rayquaza Cards Worth Money? (2026 Value Guide) | wmcp.sh",
+    desc: "Are Rayquaza Pokémon cards worth money? Which Rayquaza cards hold value — vintage vs modern, raw vs graded — and the cheapest copies and PSA 10s on eBay.",
+    h1: "Are Rayquaza Cards Worth Money?",
+    dek: "Which Rayquaza cards actually hold value — and which are just nice to own.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Rayquaza's fanbase makes it one of the most reliably collected Pokémon — but not every Rayquaza card is an investment. Here's how the values break down.`) +
+      h2("The ones that hold value") +
+      p(`The blue-chips are the <a href="/guides/rayquaza-gold-star-pokemon-card">Gold Star</a> (vintage grail) and the <a href="/guides/rayquaza-vmax-alt-art-worth-it">Evolving Skies VMAX alt art</a> (modern grail). These have the deepest, most durable demand.`) +
+      cardLinks("Pokemon Rayquaza VMAX alternate art Evolving Skies") +
+      h2("Strong mid-tier") +
+      p(`The Rayquaza V alt art, Mega Rayquaza EX (Roaring Skies), and the Evolving Skies rainbow VMAX hold solid value without the grail price tag — good entry points.`) +
+      cardLinks("Pokemon Mega Rayquaza EX Roaring Skies") +
+      h2("Nice to own, not investments") +
+      p(`Common holos, promos, and bulk Rayquaza cards are great for a collection but won't appreciate meaningfully. Buy those because you like them, not to flip.`) +
+      h2("Raw vs graded for value") +
+      p(`For the grails, a PSA 10 is the real store of value — raw carries condition risk. If you hold raw copies worth grading, read <a href="/guides/how-to-grade-pokemon-cards">how to grade</a> and run the <a href="/tools/pokemon-grading-calculator">grading calculator</a>. Selling? See <a href="/guides/where-to-sell-pokemon-cards">where to sell</a>.`),
+    faqs: [
+      { q: "Are Rayquaza cards a good investment?", a: "The grails are — the Gold Star (EX Deoxys) and the Evolving Skies VMAX alt art have deep, durable demand. The V alt art and Mega Rayquaza EX are strong mid-tier holds. Common holos and promos are nice to own but won't appreciate much." },
+      { q: "Which Rayquaza cards are worth the most?", a: "The Rayquaza Gold Star (vintage) and the Evolving Skies Rayquaza VMAX alternate art (modern) are the most valuable, especially in PSA 10." },
+    ],
+    related: ["best-rayquaza-pokemon-cards", "rayquaza-vmax-alt-art-worth-it", "best-pokemon-cards-to-invest-2026"],
   },
 ];
 

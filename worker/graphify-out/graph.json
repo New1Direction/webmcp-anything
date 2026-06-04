@@ -757,7 +757,7 @@
       "label": "ARTICLE_SLUGS",
       "file_type": "code",
       "source_file": "src/articles.ts",
-      "source_location": "L914",
+      "source_location": "L1138",
       "id": "src_articles_article_slugs",
       "community": 18,
       "norm_label": "article_slugs"
@@ -766,7 +766,7 @@
       "label": "bySlug",
       "file_type": "code",
       "source_file": "src/articles.ts",
-      "source_location": "L915",
+      "source_location": "L1139",
       "id": "src_articles_byslug",
       "community": 13,
       "norm_label": "byslug"
@@ -775,7 +775,7 @@
       "label": "getArticle()",
       "file_type": "code",
       "source_file": "src/articles.ts",
-      "source_location": "L916",
+      "source_location": "L1140",
       "id": "src_articles_getarticle",
       "community": 13,
       "norm_label": "getarticle()"
@@ -784,7 +784,7 @@
       "label": "articleSchema()",
       "file_type": "code",
       "source_file": "src/articles.ts",
-      "source_location": "L918",
+      "source_location": "L1142",
       "id": "src_articles_articleschema",
       "community": 13,
       "norm_label": "articleschema()"
@@ -793,7 +793,7 @@
       "label": "relatedHtml()",
       "file_type": "code",
       "source_file": "src/articles.ts",
-      "source_location": "L952",
+      "source_location": "L1176",
       "id": "src_articles_relatedhtml",
       "community": 13,
       "norm_label": "relatedhtml()"
@@ -802,7 +802,7 @@
       "label": "articleHtml()",
       "file_type": "code",
       "source_file": "src/articles.ts",
-      "source_location": "L961",
+      "source_location": "L1185",
       "id": "src_articles_articlehtml",
       "community": 13,
       "norm_label": "articlehtml()"
@@ -811,7 +811,7 @@
       "label": "articlesIndexHtml()",
       "file_type": "code",
       "source_file": "src/articles.ts",
-      "source_location": "L1059",
+      "source_location": "L1283",
       "id": "src_articles_articlesindexhtml",
       "community": 22,
       "norm_label": "articlesindexhtml()"
@@ -23908,5 +23908,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "c684b27a0e448c3ecec88fde86b3cba654a4b285"
+  "built_at_commit": "54ab29e346e7683997ca971a2d44dee709c2f2a1"
 }
