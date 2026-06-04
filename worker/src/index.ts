@@ -1757,6 +1757,12 @@ app.get("/api/v1/admin/outreach/suppression", async (c) => {
   const { outreachSuppression } = await import("./outreach_reply");
   return outreachSuppression(c);
 });
+// Sending cockpit: a page that loads the live campaign (with your token) and lays
+// each email out with copy buttons + sent-tracking. noindex; useless without token.
+app.get("/admin/outreach", async (c) => {
+  const { outreachSenderHtml } = await import("./outreach_ui");
+  return c.html(outreachSenderHtml(new URL(c.req.url).origin));
+});
 app.post("/api/v1/admin/regrade-corpus", (c) => regradeCorpus(c as any));
 app.post("/api/v1/admin/seed-registry", (c) => seedRegistry(c as any));
 app.post("/api/v1/admin/seed-packages", (c) => seedPackages(c as any));
