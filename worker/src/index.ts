@@ -499,6 +499,16 @@ app.get("/reports/state-of-mcp-security-2026", async (c) => {
 });
 app.get("/reports/state-of-mcp-security", (c) => c.redirect("/reports/state-of-mcp-security-2026", 301));
 app.get("/reports", (c) => c.redirect("/reports/state-of-mcp-security-2026", 302));
+// GEO data surface: machine-readable, citable MCP trust stats for AI answer
+// engines + agents (ChatGPT / Claude / Perplexity). CORS-open, hourly-cached.
+app.get("/api/v1/mcp/stats", async (c) => {
+  const { mcpStatsJson } = await import("./mcp_stats");
+  return mcpStatsJson(c);
+});
+app.get("/mcp/stats.json", async (c) => {
+  const { mcpStatsJson } = await import("./mcp_stats");
+  return mcpStatsJson(c);
+});
 
 // Agent-callable MCP trust oracle (grade_mcp_server / check_mcp_drift). Free
 // read-tier so agents can gate connections on our grade. BEFORE /mcp/:provider.
@@ -1731,6 +1741,22 @@ app.post("/api/v1/admin/seed-now", (c) => runSeedNow(c as any));
 app.post("/api/v1/admin/seed-stores", (c) => addSeedStores(c as any));
 app.post("/api/v1/admin/seo-indexnow", (c) => submitSeoIndexNow(c as any));
 app.post("/api/v1/admin/grade-servers", (c) => addGradeServers(c as any));
+// Outreach campaign generator: turns the live grade graph into ready-to-send
+// personalized rows (CSV/JSON) for the audit (F) + verified (A) segments.
+app.get("/api/v1/admin/outreach", async (c) => {
+  const { outreachCampaign } = await import("./outreach");
+  return outreachCampaign(c);
+});
+// Reply triage: the cold-email platform POSTs replies here; opt-outs auto-suppress,
+// noise is logged, hot leads ping LEAD_ALERT_WEBHOOK with a pre-drafted reply.
+app.post("/api/v1/admin/outreach/reply", async (c) => {
+  const { handleOutreachReply } = await import("./outreach_reply");
+  return handleOutreachReply(c);
+});
+app.get("/api/v1/admin/outreach/suppression", async (c) => {
+  const { outreachSuppression } = await import("./outreach_reply");
+  return outreachSuppression(c);
+});
 app.post("/api/v1/admin/regrade-corpus", (c) => regradeCorpus(c as any));
 app.post("/api/v1/admin/seed-registry", (c) => seedRegistry(c as any));
 app.post("/api/v1/admin/seed-packages", (c) => seedPackages(c as any));

@@ -934,6 +934,15 @@ export function gradePageHtml(r: GradeResult, origin: string): string {
   <div class="method">
     <strong>How this grade is computed.</strong> An open, independent rubric — Spec conformance (20%), Security mapped to the OWASP MCP Top&nbsp;10 (30%), Reliability (20%), Tool hygiene (15%), Transparency (15%) — run by connecting to the server and inspecting its real MCP surface. The grade is free and identical whether or not the operator pays. <span class="dim">v1 uses static + spec signals from a single connection; continuous uptime, real latency, and annotation-truthing (declared <code>readOnly</code> vs observed behavior) layer on via the wmcp.sh proxy.</span>
   </div>
+  <nav class="related" style="margin-top:24px;border-top:1px solid var(--border);padding-top:16px">
+    <h3 style="margin:0 0 8px;font-size:1rem">Explore more MCP servers</h3>
+    <div class="cta">
+      ${r.category ? `<a class="btn btn-s" href="/mcp/leaderboard/${categorySlug(r.category)}">Best ${esc(r.category)} MCP servers, ranked &rarr;</a>` : ""}
+      <a class="btn btn-s" href="/mcp/leaderboard">Full MCP trust leaderboard &rarr;</a>
+      <a class="btn btn-s" href="/reports/state-of-mcp-security-2026">How safe are MCP servers? (the data) &rarr;</a>
+      <a class="btn btn-s" href="/mcp/grade">Grade another server &rarr;</a>
+    </div>
+  </nav>
   <script>
   (function(){
     var url=${JSON.stringify(r.url)};
