@@ -2299,6 +2299,177 @@ export const ARTICLES: Article[] = [
     ],
     related: ["best-venusaur-pokemon-cards", "venusaur-ex-151-worth-it", "best-pokemon-cards-to-invest-2026"],
   },
+
+  {
+    slug: "best-greninja-pokemon-cards",
+    title: "Best Greninja Pokémon Cards (Most Valuable, 2026) | wmcp.sh",
+    desc: "The best and most valuable Greninja Pokémon cards — Ash-Greninja GX, Greninja ex SIR, Greninja BREAK, Greninja-EX — with the cheapest raw and PSA 10 copies on eBay.",
+    h1: "Best Greninja Pokémon Cards",
+    dek: "Ash-Greninja, the modern ex, the BREAK classic — and where to buy each.",
+    updated: "June 2026",
+    readMins: 6,
+    bodyHtml:
+      p(`Greninja is one of the most popular starter-line Pokémon ever — boosted by the anime and Smash Bros. Here are its best cards, with the cheapest raw copy and the cheapest PSA 10 on eBay for each.`) +
+      h2("1. Ash-Greninja GX (Burning Shadows, 2017)") +
+      p(`The icon — Ash-Greninja GX captured the anime's most hyped form and remains the definitive Greninja card. The full art and rainbow secret rare are the top targets. See <a href="/guides/ash-greninja-gx-worth-it">is it worth it</a>.`) +
+      cardLinks("Pokemon Ash Greninja GX Burning Shadows") +
+      h2("2. Greninja ex Special Illustration Rare") +
+      p(`The modern chase — the Greninja ex special illustration rare brings the fan-favorite into the Scarlet & Violet era with striking art and strong demand.`) +
+      cardLinks("Pokemon Greninja ex special illustration rare") +
+      h2("3. Greninja BREAK (BREAKpoint, 2016)") +
+      p(`A competitive classic — Greninja BREAK anchored one of the most beloved decks of its era, and the line (including the fan-favorite art with hidden Froakie & Frogadier) stays in demand.`) +
+      cardLinks("Pokemon Greninja BREAK BREAKpoint") +
+      h2("4. Greninja-EX (Full Art, XY era)") +
+      p(`The XY-era Greninja-EX full arts are popular with collectors who love the original Kalos designs.`) +
+      cardLinks("Pokemon Greninja EX full art") +
+      h2("Raw or PSA 10?") +
+      p(`Raw is the affordable way to collect; a PSA 10 commands a premium and is the better store of value for the rainbow/full arts. Buying raw to grade? Read <a href="/guides/how-to-grade-pokemon-cards">how to grade</a> and check the <a href="/tools/pokemon-grading-calculator">grading calculator</a>.`),
+    faqs: [
+      { q: "What is the most valuable Greninja card?", a: "Ash-Greninja GX (Burning Shadows) is the most iconic and valuable, especially the rainbow secret rare and full art. The modern Greninja ex SIR leads the current-era cards." },
+      { q: "Why is Ash-Greninja so popular?", a: "It's tied to the anime's most-hyped Greninja form and crossed over into Smash Bros., giving it broad appeal beyond just TCG collectors." },
+    ],
+    related: ["ash-greninja-gx-worth-it", "are-greninja-cards-worth-money", "best-pokemon-cards-to-invest-2026"],
+  },
+
+  {
+    slug: "ash-greninja-gx-worth-it",
+    title: "Is Ash-Greninja GX Worth It? (Burning Shadows) | wmcp.sh",
+    desc: "Is the Ash-Greninja GX from Burning Shadows worth buying? Why it's the iconic Greninja card, full art vs rainbow vs raw vs PSA 10, and the cheapest copies on eBay.",
+    h1: "Is Ash-Greninja GX Worth It?",
+    dek: "The definitive Greninja card — which version to buy, raw or graded.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Ash-Greninja GX from Burning Shadows is the card most Greninja fans want. Here's the honest read.`) +
+      h2("Why it's the one") +
+      p(`It captures Ash-Greninja — the anime's most hyped form — and Greninja's popularity spans the TCG, the show, and Smash Bros. That cross-media appeal gives it unusually broad, durable demand.`) +
+      cardLinks("Pokemon Ash Greninja GX Burning Shadows") +
+      h2("Which version?") +
+      p(`There's the standard GX, the <b>full art</b>, and the <b>rainbow secret rare</b> — the rainbow and full art carry the biggest premiums and are the collector targets. There's also an SM-series promo version worth knowing about.`) +
+      h2("Raw vs PSA 10") +
+      p(`Raw is the affordable, great-looking buy. A PSA 10 of the rainbow or full art is the real store of value. Standard copies are common, so grade only the rare versions — run the math with the <a href="/tools/pokemon-grading-calculator">grading calculator</a>.`) +
+      h2("Verdict") +
+      p(`Worth it — it's the definitive Greninja and a cross-media fan icon. Buy the full art or rainbow if you want value; the standard GX is a cheap, fun pickup. See the <a href="/guides/best-greninja-pokemon-cards">best Greninja cards</a>.`),
+    faqs: [
+      { q: "Which Ash-Greninja GX is the most valuable?", a: "The rainbow secret rare and the full art are the most valuable versions, especially in PSA 10. The standard GX is common and inexpensive." },
+      { q: "Is Ash-Greninja GX a good buy?", a: "Yes — it's the definitive Greninja card with cross-media appeal from the anime and Smash Bros. Buy the full art or rainbow for value; the standard GX is a fun, affordable pickup." },
+    ],
+    related: ["best-greninja-pokemon-cards", "are-greninja-cards-worth-money", "best-pokemon-cards-to-invest-2026"],
+  },
+
+  {
+    slug: "are-greninja-cards-worth-money",
+    title: "Are Greninja Cards Worth Money? (2026 Value Guide) | wmcp.sh",
+    desc: "Are Greninja Pokémon cards worth money? Which Greninja cards hold value — Ash-Greninja GX, Greninja ex SIR, Greninja BREAK — raw vs graded, with cheapest copies and PSA 10s on eBay.",
+    h1: "Are Greninja Cards Worth Money?",
+    dek: "Which Greninja cards actually hold value — and which are just nice to own.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Greninja's cross-media popularity keeps its best cards in demand — but most Greninja cards are common. Here's the breakdown.`) +
+      h2("The ones that hold value") +
+      p(`The blue-chips are the rainbow/full art <a href="/guides/ash-greninja-gx-worth-it">Ash-Greninja GX</a> (Burning Shadows) and the modern <a href="/guides/best-greninja-pokemon-cards">Greninja ex SIR</a> — both with durable, fan-driven demand.`) +
+      cardLinks("Pokemon Ash Greninja GX Burning Shadows") +
+      h2("Strong mid-tier") +
+      p(`Greninja BREAK (BREAKpoint), the beloved hidden-art Greninja, and the XY-era Greninja-EX full arts hold solid value — good entry points.`) +
+      cardLinks("Pokemon Greninja BREAK BREAKpoint") +
+      h2("Nice to own, not investments") +
+      p(`Common holos, promos, and recent bulk Greninjas are great for a collection but won't appreciate much. Buy those because you love Greninja, not to flip.`) +
+      h2("Raw vs graded for value") +
+      p(`For the rainbow/full arts and the modern SIR, a PSA 10 is the real store of value. Holding raw copies worth grading? Read <a href="/guides/how-to-grade-pokemon-cards">how to grade</a> and run the <a href="/tools/pokemon-grading-calculator">grading calculator</a>. Selling? See <a href="/guides/where-to-sell-pokemon-cards">where to sell</a>.`),
+    faqs: [
+      { q: "Are Greninja cards a good investment?", a: "The best are — the rainbow/full art Ash-Greninja GX and the modern Greninja ex SIR have durable, cross-media demand. Greninja BREAK and the XY-era EX full arts are strong mid-tier holds. Common holos won't appreciate much." },
+      { q: "Which Greninja card is worth the most?", a: "The rainbow secret rare Ash-Greninja GX (Burning Shadows) is the most valuable, especially in PSA 10." },
+    ],
+    related: ["best-greninja-pokemon-cards", "ash-greninja-gx-worth-it", "best-pokemon-cards-to-invest-2026"],
+  },
+
+  {
+    slug: "best-gyarados-pokemon-cards",
+    title: "Best Gyarados Pokémon Cards (Most Valuable, 2026) | wmcp.sh",
+    desc: "The best and most valuable Gyarados Pokémon cards — Shining Gyarados, Base Set holo, Mega Gyarados EX, Radiant Gyarados — with the cheapest raw and PSA 10 copies on eBay.",
+    h1: "Best Gyarados Pokémon Cards",
+    dek: "The red Shining grail, the Base Set classic — and where to buy each.",
+    updated: "June 2026",
+    readMins: 7,
+    bodyHtml:
+      p(`Gyarados is a fan-favorite with one of the most iconic shiny cards ever made. Here are its best cards — with the cheapest raw copy and the cheapest PSA 10 on eBay for each.`) +
+      h2("1. Shining Gyarados (Neo Revelation, 2001)") +
+      p(`The grail — the red Shining Gyarados is one of the most beloved vintage chase cards, the highlight of the Neo era and a centerpiece in high grade. See its <a href="/guides/shining-gyarados-card-value">value guide</a>.`) +
+      cardLinks("Pokemon Shining Gyarados Neo Revelation") +
+      h2("2. Base Set Gyarados Holo (1999)") +
+      p(`A classic — the Base Set holo Gyarados (#6/102) is a must-have vintage piece, with 1st Edition and Shadowless prints worth far more than Unlimited.`) +
+      cardLinks("Pokemon Gyarados base set holo") +
+      h2("3. Mega Gyarados EX (Ancient Origins, 2015)") +
+      p(`A standout from the XY era — the Mega Gyarados EX full arts are popular with Mega Evolution collectors.`) +
+      cardLinks("Pokemon Mega Gyarados EX Ancient Origins") +
+      h2("4. Radiant Gyarados (Pokémon GO, 2022)") +
+      p(`The shiny Radiant Gyarados from the Pokémon GO set is a popular, affordable modern pickup that nods to the classic red Gyarados.`) +
+      cardLinks("Pokemon Radiant Gyarados Pokemon GO") +
+      h2("5. Gyarados-EX (Full Art, XY era)") +
+      p(`The XY-era Gyarados-EX full arts round out the modern chase list with strong artwork.`) +
+      cardLinks("Pokemon Gyarados EX full art") +
+      h2("Raw or PSA 10?") +
+      p(`Raw is the affordable way to collect; a PSA 10 commands a major premium and is the store of value for the Shining and Base Set grails. Buy graded for vintage to remove authenticity risk — see <a href="/guides/how-to-spot-fake-pokemon-booster-box">how to spot fakes</a>. Buying raw to grade? Read <a href="/guides/how-to-grade-pokemon-cards">how to grade</a> and check the <a href="/tools/pokemon-grading-calculator">grading calculator</a>.`),
+    faqs: [
+      { q: "What is the most valuable Gyarados card?", a: "The Shining Gyarados (Neo Revelation, 2001) — the iconic red Gyarados — is the most valuable, especially in high grade. The 1st Edition Base Set holo is the other top vintage card." },
+      { q: "Is the red Gyarados card worth money?", a: "Yes — the Shining Gyarados is one of the most beloved vintage chase cards and commands strong money graded, with gem-mint PSA 10 copies worth the most." },
+    ],
+    related: ["shining-gyarados-card-value", "are-gyarados-cards-worth-money", "vintage-pokemon-cards-worth-money"],
+  },
+
+  {
+    slug: "shining-gyarados-card-value",
+    title: "Shining Gyarados Card Value (Neo Revelation Grail) | wmcp.sh",
+    desc: "The Shining Gyarados from Neo Revelation is an iconic red-Gyarados grail. What it's worth, how to avoid fakes, raw vs PSA 10, and the cheapest copies on eBay.",
+    h1: "Shining Gyarados (The Red Grail)",
+    dek: "The iconic red Gyarados from 2001 — what it's worth and how to buy safely.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`The Shining Gyarados from Neo Revelation (2001) — the famous red Gyarados — is one of the most beloved vintage Pokémon cards. Here's the value read.`) +
+      h2("Why it's a grail") +
+      p(`"Shining" Pokémon were ultra-rare chase cards of the Neo era, and the red Gyarados (a nod to the shiny Gyarados from the Gen 2 games) is the most iconic of them all. Two decades of attrition plus a huge fanbase make high-grade copies genuinely scarce.`) +
+      cardLinks("Pokemon Shining Gyarados Neo Revelation") +
+      h2("Watch for fakes") +
+      p(`A card this iconic is frequently counterfeited. Buy graded (PSA/CGC/BGS) whenever possible, or learn the tells first — see <a href="/guides/how-to-spot-fake-pokemon-booster-box">how to spot fakes</a> and <a href="/guides/how-to-tell-if-a-pokemon-card-is-rare">how to tell if a card is rare</a>.`) +
+      h2("Raw vs PSA 10") +
+      p(`Raw copies carry condition and authenticity risk. A PSA 10 is the safest, most liquid way to own it, and the premium reflects how few survive gem-mint. For vintage at this level, graded is almost always the right call.`) +
+      h2("The takeaway") +
+      p(`An iconic, attainable-ish vintage grail and a great centerpiece. See where it ranks among the <a href="/guides/best-gyarados-pokemon-cards">best Gyarados cards</a> and other <a href="/guides/vintage-pokemon-cards-worth-money">vintage cards worth money</a>.`),
+    faqs: [
+      { q: "How much is a Shining Gyarados worth?", a: "It's an iconic vintage grail whose value climbs steeply with grade; gem-mint PSA 10 copies command a large premium because so few survive in top condition. Price off recent sold comps." },
+      { q: "Why is the red Gyarados card so popular?", a: "It's an ultra-rare 'Shining' chase from the Neo era that references the famous shiny red Gyarados from the Gen 2 games — a perfect storm of rarity and nostalgia." },
+    ],
+    related: ["best-gyarados-pokemon-cards", "vintage-pokemon-cards-worth-money", "most-expensive-pokemon-cards"],
+  },
+
+  {
+    slug: "are-gyarados-cards-worth-money",
+    title: "Are Gyarados Cards Worth Money? (2026 Value Guide) | wmcp.sh",
+    desc: "Are Gyarados Pokémon cards worth money? Which Gyarados cards hold value — Shining Gyarados, Base Set holo, Mega Gyarados EX — raw vs graded, with cheapest copies and PSA 10s on eBay.",
+    h1: "Are Gyarados Cards Worth Money?",
+    dek: "Which Gyarados cards actually hold value — and which are just nice to own.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Gyarados's fanbase and its iconic red Shining card keep demand strong — but most Gyarados cards are common. Here's how it breaks down.`) +
+      h2("The ones that hold value") +
+      p(`The blue-chips are the <a href="/guides/shining-gyarados-card-value">Shining Gyarados</a> (Neo Revelation) and the 1st Edition / Shadowless <a href="/guides/best-gyarados-pokemon-cards">Base Set holo</a> — genuinely scarce vintage with durable demand.`) +
+      cardLinks("Pokemon Shining Gyarados Neo Revelation") +
+      h2("Strong mid-tier") +
+      p(`The Mega Gyarados EX (Ancient Origins), Radiant Gyarados (Pokémon GO), and XY-era Gyarados-EX full arts hold solid value — good entry points.`) +
+      cardLinks("Pokemon Mega Gyarados EX Ancient Origins") +
+      h2("Nice to own, not investments") +
+      p(`Common holos, promos, and recent bulk Gyarados are great for a collection but won't appreciate much. Buy those for love of the card, not to flip.`) +
+      h2("Raw vs graded for value") +
+      p(`For the vintage grails, a PSA 10 is the real store of value and removes authenticity risk. Holding raw copies worth grading? Read <a href="/guides/how-to-grade-pokemon-cards">how to grade</a> and run the <a href="/tools/pokemon-grading-calculator">grading calculator</a>. Selling? See <a href="/guides/where-to-sell-pokemon-cards">where to sell</a>.`),
+    faqs: [
+      { q: "Are Gyarados cards a good investment?", a: "The vintage grails are — the Shining Gyarados and the 1st Edition/Shadowless Base Set holo have durable demand. Mega Gyarados EX and Radiant Gyarados are strong mid-tier holds. Common holos won't appreciate much." },
+      { q: "Which Gyarados card is worth the most?", a: "The Shining Gyarados (Neo Revelation) — the iconic red Gyarados — is the most valuable, especially in PSA 10, followed by the 1st Edition Base Set holo." },
+    ],
+    related: ["best-gyarados-pokemon-cards", "shining-gyarados-card-value", "best-pokemon-cards-to-invest-2026"],
+  },
 ];
 
 export const ARTICLE_SLUGS = ARTICLES.map((a) => a.slug);
