@@ -818,8 +818,8 @@ export function gradePageHtml(r: GradeResult, origin: string): string {
   }).replace(/</g, "\\u003c").replace(/>/g, "\\u003e").replace(/&/g, "\\u0026"); // <script> breakout guard (host is attacker-influenceable)
   return `<!doctype html><html lang="en"><head>
 <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>${esc(r.host)} — MCP Trust Grade ${r.grade} | wmcp.sh</title>
-<meta name="description" content="Independent MCP trust grade for ${esc(r.host)}: ${r.grade} (${r.score}/100) across spec conformance, security, reliability, tool hygiene, and transparency — then continuously watched by wmcp.sh for drift & rug-pulls."/>
+<title>${esc(r.host)} MCP server — safe to use? Trust grade ${r.grade} | wmcp.sh</title>
+<meta name="description" content="Is the ${esc(r.host)} MCP server safe? Independent trust grade ${r.grade} (${r.score}/100) across spec conformance, security, reliability, tool hygiene, and transparency — check it before connecting to Claude, Cursor, or VS Code. Continuously watched by wmcp.sh for drift & rug-pulls."/>
 <link rel="canonical" href="${origin}/mcp/grade/${encodeURIComponent(r.host)}"/>
 <meta property="og:type" content="website"/>
 <meta property="og:title" content="${esc(r.title || r.host)} — MCP Trust Grade ${r.grade} (${r.score}/100)"/>
@@ -1077,11 +1077,11 @@ export async function mcpLeaderboardHtml(env: Env, origin: string, category?: st
 
   const count = total;
   const canonical = activeCat ? `${origin}/mcp/leaderboard/${categorySlug(activeCat)}` : `${origin}/mcp/leaderboard`;
-  const pageTitle = activeCat ? `Best ${activeCat} MCP servers — ranked by trust grade | wmcp.sh` : `MCP Trust Leaderboard — independent A–F grades for ${count} servers | wmcp.sh`;
+  const pageTitle = activeCat ? `Best ${activeCat} MCP servers — ranked by trust grade | wmcp.sh` : `Best MCP Servers — the independent trust directory & leaderboard (${count} ranked, A–F) | wmcp.sh`;
   const pageDesc = activeCat
     ? `The best ${activeCat} MCP servers, independently graded A–F on security, spec conformance, reliability, and transparency. ${count} ${activeCat} servers ranked, continuously watched for drift.`
-    : `The independent MCP Trust Leaderboard: A–F grades for ${count} MCP servers, scored on spec conformance, OWASP MCP security, reliability, tool hygiene, and transparency, continuously watched for drift and rug-pulls.`;
-  const h1 = activeCat ? `Best ${activeCat} MCP servers` : `MCP Trust Leaderboard`;
+    : `Browse and compare the best MCP servers — an independent directory and list of ${count} servers graded A–F on security, spec conformance, reliability, tool hygiene, and transparency, continuously watched for drift and rug-pulls. The trusted MCP server list.`;
+  const h1 = activeCat ? `Best ${activeCat} MCP servers` : `Best MCP Servers, ranked by trust`;
   const lede = activeCat
     ? `Independent A–F trust grades for ${activeCat} MCP servers — security, spec conformance, reliability, tool hygiene, and transparency, re-checked continuously for drift and rug-pulls. ${count.toLocaleString()} ranked.`
     : `An independent A–F trust grade for every MCP server we have seen — spec conformance, OWASP MCP security, reliability, tool hygiene, and transparency — re-checked continuously for drift and rug-pulls. ${count.toLocaleString()} servers ranked.`;

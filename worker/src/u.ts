@@ -11,6 +11,7 @@
 // /llms.txt, /llms-full.txt, and sitemapXml below.
 import { BLOG_POSTS, BLOG_SLUGS } from "./blog_posts";
 import { DROP_SLUGS, LOCALIZABLE_SLUGS, LOCALIZED_LANGS } from "./drops_seo";
+import { SKILL_SLUGS, SKILL_CATEGORIES, catSlug as skillCatSlug } from "./skills_seo";
 import { ARTICLE_SLUGS } from "./articles";
 import { CATEGORY_NAMES, categorySlug } from "./mcp_grade";
 
@@ -934,6 +935,21 @@ ${LOCALIZABLE_SLUGS.map((slug) => `  <url>
     <changefreq>weekly</changefreq>
     <priority>0.65</priority>
   </url>`).join("\n")}`).join("\n")}
+  <url>
+    <loc>${origin}/skills</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+${SKILL_CATEGORIES.map((c) => `  <url>
+    <loc>${origin}/skills/category/${skillCatSlug(c)}</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>`).join("\n")}
+${SKILL_SLUGS.map((slug) => `  <url>
+    <loc>${origin}/skills/${slug}</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>`).join("\n")}
 ${blogUrlsXml}
 ${gradeUrlsXml}
 ${urlsXml}
