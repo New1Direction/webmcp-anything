@@ -984,6 +984,14 @@ export function articleHtml(origin: string, a: Article): string {
   .related ul{line-height:2}
   table.tbl{margin:14px 0}
   .cta{margin:30px 0;padding:18px 20px;border:1px solid var(--border);border-radius:14px;background:var(--bg2)}
+  .capture{margin:26px 0;padding:18px 20px;border:1px solid var(--accent2);border-radius:14px}
+  .capture strong{font-size:1.05rem}
+  .capture .cap-sub{color:var(--muted);font-size:.9rem;margin:6px 0 12px}
+  .capture .f{display:flex;gap:8px;flex-wrap:wrap}
+  .capture input[type=email]{flex:1;min-width:200px;background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:12px 14px;font-family:inherit;font-size:.95rem}
+  .capture .hp{position:absolute;left:-9999px}
+  .capture button{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#2a1500;font-weight:800;border:0;border-radius:10px;padding:12px 20px;font-family:inherit;font-size:.95rem;cursor:pointer}
+  .capture .msg{font-size:.9rem;margin-top:8px;min-height:1em}
 </style>
 ${articleSchema(origin, a)}
 </head><body>
@@ -1005,6 +1013,17 @@ ${uiNav(origin)}
     and the <a href="/tools/pokemon-resale-calculator">resale calculator</a> tells you when a resale price is worth paying.
   </div>
 
+  <form class="capture lead" data-topic="Pokémon" data-pkg="alerts">
+    <strong>Get free restock + deal alerts.</strong>
+    <p class="cap-sub">We'll email you when hyped sets restock at retail — plus the best live eBay deals worth grabbing. No spam, unsubscribe anytime.</p>
+    <div class="f">
+      <input type="email" placeholder="you@email.com" autocomplete="email" aria-label="Email address" />
+      <input class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
+      <button type="submit">Get alerts</button>
+    </div>
+    <div class="msg" role="status"></div>
+  </form>
+
   <section>
     <h2>FAQ</h2>
     ${a.faqs.map((f) => `<details><summary>${f.q}</summary><div class="a">${f.a}</div></details>`).join("\n    ")}
@@ -1016,6 +1035,24 @@ ${uiNav(origin)}
     <a href="/guides">All guides</a> · <a href="/drops">Restock guides</a> · <a href="/tools">Free tools</a> · <a href="/">wmcp.sh</a>
   </footer>
 </div>
+<script>
+(function(){
+  document.querySelectorAll("form.lead").forEach(function(f){
+    f.addEventListener("submit", function(e){
+      e.preventDefault();
+      var ein=f.querySelector("input[type=email]"), email=(ein.value||"").trim();
+      var msg=f.querySelector(".msg"), topic=f.getAttribute("data-topic")||"Pokémon", pkg=f.getAttribute("data-pkg")||"alerts";
+      if(!email||email.indexOf("@")<0){msg.style.color="#ff5470";msg.textContent="Enter a valid email.";return;}
+      if(f.querySelector(".hp").value){msg.textContent="✓";return;}
+      var b=f.querySelector("button"); if(b){b.disabled=true;}
+      fetch("/api/v1/leads",{method:"POST",headers:{"content-type":"application/json"},
+        body:JSON.stringify({name:email.split("@")[0],email:email,site_url:location.href,package:pkg,use_case:"Guide alerts · "+topic})})
+      .then(function(r){ if(b){b.disabled=false;} if(r.ok){msg.style.color="#4ade80";msg.textContent="You're in — we'll email restock + deal alerts.";ein.value="";}else{msg.style.color="#ff5470";msg.textContent="Hmm, try again.";}})
+      .catch(function(){ if(b){b.disabled=false;} msg.style.color="#ff5470";msg.textContent="Network error — try again.";});
+    });
+  });
+})();
+</script>
 </body></html>`;
 }
 

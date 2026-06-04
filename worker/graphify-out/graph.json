@@ -757,7 +757,7 @@
       "label": "ARTICLE_SLUGS",
       "file_type": "code",
       "source_file": "src/articles.ts",
-      "source_location": "L716",
+      "source_location": "L914",
       "id": "src_articles_article_slugs",
       "community": 18,
       "norm_label": "article_slugs"
@@ -766,7 +766,7 @@
       "label": "bySlug",
       "file_type": "code",
       "source_file": "src/articles.ts",
-      "source_location": "L717",
+      "source_location": "L915",
       "id": "src_articles_byslug",
       "community": 13,
       "norm_label": "byslug"
@@ -775,7 +775,7 @@
       "label": "getArticle()",
       "file_type": "code",
       "source_file": "src/articles.ts",
-      "source_location": "L718",
+      "source_location": "L916",
       "id": "src_articles_getarticle",
       "community": 13,
       "norm_label": "getarticle()"
@@ -784,7 +784,7 @@
       "label": "articleSchema()",
       "file_type": "code",
       "source_file": "src/articles.ts",
-      "source_location": "L720",
+      "source_location": "L918",
       "id": "src_articles_articleschema",
       "community": 13,
       "norm_label": "articleschema()"
@@ -793,7 +793,7 @@
       "label": "relatedHtml()",
       "file_type": "code",
       "source_file": "src/articles.ts",
-      "source_location": "L754",
+      "source_location": "L952",
       "id": "src_articles_relatedhtml",
       "community": 13,
       "norm_label": "relatedhtml()"
@@ -802,7 +802,7 @@
       "label": "articleHtml()",
       "file_type": "code",
       "source_file": "src/articles.ts",
-      "source_location": "L763",
+      "source_location": "L961",
       "id": "src_articles_articlehtml",
       "community": 13,
       "norm_label": "articlehtml()"
@@ -811,7 +811,7 @@
       "label": "articlesIndexHtml()",
       "file_type": "code",
       "source_file": "src/articles.ts",
-      "source_location": "L824",
+      "source_location": "L1022",
       "id": "src_articles_articlesindexhtml",
       "community": 22,
       "norm_label": "articlesindexhtml()"
@@ -23908,5 +23908,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "b139681f14df1b907c27d137e204dbf408a3c9c1"
+  "built_at_commit": "c09c1b473ee5b446a2970d5c62ea99407269683a"
 }
