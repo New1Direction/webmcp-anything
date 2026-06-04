@@ -311,8 +311,10 @@ function funnelScript(lang: Lang, alertDone: string): string {
     var email = (ein && ein.value.trim()) || "";
     if (!email || email.indexOf("@") < 0) { email = (window.prompt(MSG.emailPrompt) || "").trim(); }
     if (!email || email.indexOf("@") < 0) return;
-    fetch("/api/v1/stripe/checkout", { method:"POST", headers:{"content-type":"application/json"},
-      body: JSON.stringify({ email: email, plan: plan, origin: location.origin }) })
+    var ep = (plan === "quickcatch") ? "/api/v1/quickcatch/checkout" : "/api/v1/stripe/checkout";
+    var payload = (plan === "quickcatch") ? { email: email } : { email: email, plan: plan, origin: location.origin };
+    fetch(ep, { method:"POST", headers:{"content-type":"application/json"},
+      body: JSON.stringify(payload) })
       .then(function(r){ return r.json(); })
       .then(function(j){ if (j && j.url) location.href = j.url; else alert(MSG.checkoutErr); })
       .catch(function(){ alert(MSG.checkoutErr); });
@@ -351,16 +353,10 @@ function pricingBlock(lang: Lang): string {
     <div class="plans">
       <div class="plan featured">
         <div class="badge2">${esc(P.popular)}</div>
-        <div class="pname">QuickCatch Pro</div>
-        <div class="pprice">$99<span>${esc(P.perMo)}</span></div>
+        <div class="pname">QuickCatch</div>
+        <div class="pprice">$12<span>${esc(P.perMo)}</span></div>
         <p class="pdesc">${esc(P.proDesc)}</p>
-        <button class="btn btn-primary buy" type="button" data-plan="pro">${esc(P.proCta)}</button>
-      </div>
-      <div class="plan">
-        <div class="pname">QuickCatch Reseller</div>
-        <div class="pprice">$299<span>${esc(P.perMo)}</span></div>
-        <p class="pdesc">${esc(P.resellerDesc)}</p>
-        <button class="btn btn-primary buy" type="button" data-plan="reseller">${esc(P.resellerCta)}</button>
+        <button class="btn btn-primary buy" type="button" data-plan="quickcatch">${esc(P.proCta)}</button>
       </div>
     </div>
     <p style="color:var(--muted);font-size:.82rem;margin-top:10px;text-align:center">${esc(P.planFoot)}</p>

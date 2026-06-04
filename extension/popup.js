@@ -202,19 +202,26 @@ async function initWatch(tab) {
   const note = document.getElementById("watch-note");
   if (!btn) return;
 
+  let qcPaid = false;
   function renderWatch(st) {
     btn.classList.remove("on", "caught");
     if (st && st.caught) {
       btn.classList.add("caught");
       btn.textContent = "✓ Caught — check your cart";
-      note.textContent = "It restocked and we added it to your cart.";
+      note.textContent = qcPaid
+        ? "It restocked and we added it to your cart."
+        : "It restocked and we alerted you. QuickCatch auto-adds it to your cart next time.";
     } else if (st && st.watching) {
       btn.classList.add("on");
       btn.textContent = "👀 Watching… tap to stop";
-      note.textContent = "Watching in the background. Close this tab if you want — just keep Chrome open.";
+      note.textContent = qcPaid
+        ? "Watching in the background — we’ll auto-add it to your cart on restock. Keep Chrome open."
+        : "Watching in the background — we’ll alert you on restock. Keep Chrome open.";
     } else {
       btn.textContent = "⚡ Watch this drop";
-      note.textContent = "We watch it in the background and add it to your cart when it restocks. No need to keep the tab open — just keep Chrome running.";
+      note.innerHTML = qcPaid
+        ? "We watch it in the background and add it to your cart the instant it restocks. Just keep Chrome running."
+        : 'Free: we watch one item and alert you on restock. <a href="https://wmcp.sh/quickcatch" target="_blank" rel="noopener" style="color:var(--accent2)">QuickCatch ($12/mo)</a> watches unlimited items and auto-carts them.';
     }
   }
 
@@ -223,6 +230,7 @@ async function initWatch(tab) {
   async function refresh() {
     let st = null;
     try { st = await chrome.runtime.sendMessage({ type: "WATCH_STATUS", url }); } catch {}
+    try { const lic = await chrome.runtime.sendMessage({ type: "QC_LICENSE_STATUS" }); qcPaid = !!(lic && lic.active); } catch {}
     renderWatch(st);
   }
 
@@ -230,8 +238,14 @@ async function initWatch(tab) {
     let st = null;
     try { st = await chrome.runtime.sendMessage({ type: "WATCH_STATUS", url }); } catch {}
     try {
-      if (st && st.watching) await chrome.runtime.sendMessage({ type: "WATCH_STOP", url });
-      else await chrome.runtime.sendMessage({ type: "WATCH_START", url, title });
+      if (st && st.watching) { await chrome.runtime.sendMessage({ type: "WATCH_STOP", url }); }
+      else {
+        const res = await chrome.runtime.sendMessage({ type: "WATCH_START", url, title });
+        if (res && res.paywall) {
+          note.innerHTML = 'Free watches one item at a time. <a href="https://wmcp.sh/quickcatch" target="_blank" rel="noopener" style="color:var(--accent2)">Upgrade to QuickCatch — $12/mo</a> for unlimited watches + auto-cart.';
+          return;
+        }
+      }
     } catch {
       note.textContent = "Couldn't reach the watcher — reload the extension.";
       return;

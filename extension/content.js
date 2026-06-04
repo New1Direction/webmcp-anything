@@ -220,9 +220,31 @@ async function qcResume() {
   await qcRefreshSelectors();
   await qcWaitForBuyBox(9000); // let client-rendered stores paint the buy box
   if (!qcInStock()) return;    // not actually buyable yet — background keeps polling
-  const btn = qcAddButton();
-  if (btn) { try { btn.scrollIntoView({ block: "center" }); btn.click(); } catch {} }
+  // Auto-add-to-cart is the paid QuickCatch ($12/mo) feature. Free tier gets the
+  // restock alert (notification + this opened tab) and carts manually.
+  let paid = false;
+  try { const r = await chrome.runtime.sendMessage({ type: "QC_IS_PAID" }); paid = !!(r && r.paid); } catch {}
+  if (paid) {
+    const btn = qcAddButton();
+    if (btn) { try { btn.scrollIntoView({ block: "center" }); btn.click(); } catch {} }
+  } else {
+    qcUpgradeBanner();
+  }
   try { chrome.runtime.sendMessage({ type: "WATCH_CAUGHT", url: location.href }); } catch {}
+}
+// Free-tier nudge shown on the opened restock tab: it's back, you were alerted,
+// and auto-cart is one upgrade away. Non-blocking, dismissable, no layout shift.
+function qcUpgradeBanner() {
+  try {
+    if (document.getElementById("qc-upgrade")) return;
+    const d = document.createElement("div");
+    d.id = "qc-upgrade";
+    d.style.cssText = "position:fixed;z-index:2147483647;left:50%;top:14px;transform:translateX(-50%);max-width:92vw;background:#13131a;color:#ececf5;border:1px solid rgba(255,158,44,.5);border-radius:12px;padding:12px 16px;font:600 14px/1.4 -apple-system,system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.45)";
+    d.innerHTML = '🎯 It’s back in stock! You were alerted. <a href="https://wmcp.sh/quickcatch" target="_blank" rel="noopener" style="color:#ffcf7a;text-decoration:underline">Upgrade to QuickCatch ($12/mo)</a> and we’ll auto-add it to your cart next time. <span id="qc-x" style="cursor:pointer;color:#8a8aa8;margin-left:8px">✕</span>';
+    document.documentElement.appendChild(d);
+    const x = d.querySelector("#qc-x"); if (x) x.addEventListener("click", () => d.remove());
+    setTimeout(() => d.remove(), 15000);
+  } catch {}
 }
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", () => qcResume(), { once: true });
 else qcResume();

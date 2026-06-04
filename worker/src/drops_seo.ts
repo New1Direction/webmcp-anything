@@ -457,6 +457,12 @@ const SET_DEFS: SetDef[] = [
   { name: "Pokémon GO Elite Trainer Box", slug: "pokemon-go-etb-restock", where: POKEMON_STORES, blurb: "The Pokémon GO Elite Trainer Box stays in demand for its crossover cards and restocks vanish quickly. QuickCatch watches the page and adds it to your cart the moment it returns." },
   { name: "Crown Zenith Elite Trainer Box", slug: "crown-zenith-etb-restock", where: POKEMON_STORES, blurb: "The Crown Zenith Elite Trainer Box remains a top seller for its Galarian Gallery cards. QuickCatch watches the product page and carts the ETB the second stock returns." },
   { name: "Pokémon Booster Box Case", slug: "pokemon-booster-box-case-restock", where: "Pokémon Center, Costco, Sam's Club", blurb: "A booster box case (multiple sealed boxes) is the bulk buy distributors and serious collectors chase. QuickCatch watches the product page and adds it to your cart the moment it restocks." },
+  // 2026 Mega Evolution era waves — pre-seeded ahead of release so they rank for
+  // "<set> restock" before the drop. Dates: Pitch Black Jul 17, Storm Emerald
+  // Sep 1, 30th Celebration Sep 18 (see launch/drop-calendar-distribution.md).
+  { name: "Pitch Black Elite Trainer Box", slug: "pitch-black-restock", where: POKEMON_STORES, blurb: "Pitch Black (ME05) drops July 17, 2026 — a dark-themed Mega Evolution set whose Elite Trainer Box will sell out the day it lands. QuickCatch watches the product page and adds it to your cart the moment it restocks, so you grab it at retail instead of resale." },
+  { name: "Storm Emerald Elite Trainer Box", slug: "storm-emerald-restock", where: POKEMON_STORES, blurb: "Storm Emerald (ME06) lands September 1, 2026 in the Mega Evolution era, and the Elite Trainer Box will clear out at every restock. QuickCatch watches the page and carts the box the second stock returns, so you are at checkout before it sells out again." },
+  { name: "30th Celebration", slug: "30th-celebration-restock", where: POKEMON_STORES, blurb: "The 30th Celebration set (September 18, 2026) is the all-foil anniversary release — the biggest, most chased product of the year, gone in seconds and restocking for months. QuickCatch watches the product page and adds it to your cart the instant it is back, so you pay retail, not anniversary-hype resale." },
 ];
 
 const SETS: DropPage[] = SET_DEFS.map(setPage);
@@ -1164,9 +1170,12 @@ ${body}
       if (!email || email.indexOf("@") < 0) { email = (window.prompt(MSG.emailPrompt) || "").trim(); }
       if (!email || email.indexOf("@") < 0) return;
       var orig = b.textContent; b.disabled = true; b.textContent = "…";
+      // QuickCatch consumer tier ($12) → its own checkout; API plans → the plan checkout.
+      var ep = (plan === "quickcatch") ? "/api/v1/quickcatch/checkout" : "/api/v1/stripe/checkout";
+      var payload = (plan === "quickcatch") ? { email: email } : { email: email, plan: plan, origin: location.origin };
       try {
-        var r = await fetch("/api/v1/stripe/checkout", { method:"POST", headers:{"content-type":"application/json"},
-          body: JSON.stringify({ email: email, plan: plan, origin: location.origin }) });
+        var r = await fetch(ep, { method:"POST", headers:{"content-type":"application/json"},
+          body: JSON.stringify(payload) });
         var j = await r.json();
         if (j && j.url) { window.location.href = j.url; return; }
         throw new Error((j && j.error) || "err");
@@ -1225,8 +1234,11 @@ function conversionBlock(topic: string, ui: L["ui"]): string {
   </div>`;
 }
 
-// Live paid-plan block. Buttons POST to /api/v1/stripe/checkout (handled by the
-// shell script) and redirect to the cs_live URL. Pro $99/mo, Reseller $299/mo.
+// Live consumer block. The collector funnel sells the $12/mo QuickCatch tier
+// (NOT the developer API plans) — the button POSTs /api/v1/quickcatch/checkout
+// {email} and redirects to the cs_live URL. Free restock alerts live in the
+// capture above; this is the "actually catch it" upgrade. Positioned against the
+// $500–3000 reseller bots: same catch, a fraction of the price, your own browser.
 function pricingBlock(lang: Lang): string {
   const P = PRICING[lang];
   return `
@@ -1235,16 +1247,10 @@ function pricingBlock(lang: Lang): string {
     <div class="plans">
       <div class="plan featured">
         <div class="badge2">${esc(P.popular)}</div>
-        <div class="pname">QuickCatch Pro</div>
-        <div class="pprice">$99<span>${esc(P.perMo)}</span></div>
+        <div class="pname">QuickCatch</div>
+        <div class="pprice">$12<span>${esc(P.perMo)}</span></div>
         <p class="pdesc">${esc(P.proDesc)}</p>
-        <button class="btn btn-primary buy" type="button" data-plan="pro">${esc(P.proCta)}</button>
-      </div>
-      <div class="plan">
-        <div class="pname">QuickCatch Reseller</div>
-        <div class="pprice">$299<span>${esc(P.perMo)}</span></div>
-        <p class="pdesc">${esc(P.resellerDesc)}</p>
-        <button class="btn btn-primary buy" type="button" data-plan="reseller">${esc(P.resellerCta)}</button>
+        <button class="btn btn-primary buy" type="button" data-plan="quickcatch">${esc(P.proCta)}</button>
       </div>
     </div>
     <p class="pfoot">${esc(P.planFoot)}</p>
@@ -1381,9 +1387,8 @@ export function dropPageHtml(origin: string, p: DropPage, lang: Lang = "en"): st
     "@context": "https://schema.org", "@type": "SoftwareApplication", name: "QuickCatch",
     applicationCategory: "BrowserApplication", operatingSystem: "Chrome", url: STORE_URL,
     offers: [
-      { "@type": "Offer", price: "0", priceCurrency: "USD", name: "QuickCatch (free)" },
-      { "@type": "Offer", price: "99", priceCurrency: "USD", name: "QuickCatch Pro" },
-      { "@type": "Offer", price: "299", priceCurrency: "USD", name: "QuickCatch Reseller" },
+      { "@type": "Offer", price: "0", priceCurrency: "USD", name: "QuickCatch (free) — restock alerts" },
+      { "@type": "Offer", price: "12", priceCurrency: "USD", name: "QuickCatch — auto-cart + bot-blocked stores" },
     ],
   };
   const head = `<title>${esc(f.title)}</title>

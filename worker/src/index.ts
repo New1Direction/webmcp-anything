@@ -32,6 +32,9 @@ import {
   createManagedConnectionCheckout,
   createDeepAuditCheckout,
   createMonitorCheckout,
+  createQuickCatchCheckout,
+  verifyQuickCatch,
+  quickCatchActivate,
 } from "./stripe";
 import { listManagedConnections } from "./connections";
 import { track } from "./metrics";
@@ -1523,6 +1526,11 @@ app.post("/api/v1/agent/control", async (c) => {
 // MCP trust-authority monetization SKUs (sold off the grade page).
 app.post("/api/v1/mcp/deep-audit/checkout", async (c) => createDeepAuditCheckout(c as any));
 app.post("/api/v1/mcp/monitor/checkout", async (c) => createMonitorCheckout(c as any));
+// QuickCatch consumer tier ($12/mo): checkout, post-pay license activation, and
+// the extension's entitlement check.
+app.post("/api/v1/quickcatch/checkout", async (c) => createQuickCatchCheckout(c as any));
+app.get("/api/v1/quickcatch/verify", async (c) => verifyQuickCatch(c as any));
+app.get("/quickcatch/activate", async (c) => quickCatchActivate(c as any));
 
 // ===== WebMCP↔MCP dual-emit bridge — one extraction, BOTH protocols =====
 // Free distribution wedge: every emitted shim routes its live tool-calls through
