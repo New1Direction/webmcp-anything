@@ -757,7 +757,7 @@
       "label": "ARTICLE_SLUGS",
       "file_type": "code",
       "source_file": "src/articles.ts",
-      "source_location": "L397",
+      "source_location": "L559",
       "id": "src_articles_article_slugs",
       "community": 18,
       "norm_label": "article_slugs"
@@ -766,7 +766,7 @@
       "label": "bySlug",
       "file_type": "code",
       "source_file": "src/articles.ts",
-      "source_location": "L398",
+      "source_location": "L560",
       "id": "src_articles_byslug",
       "community": 13,
       "norm_label": "byslug"
@@ -775,7 +775,7 @@
       "label": "getArticle()",
       "file_type": "code",
       "source_file": "src/articles.ts",
-      "source_location": "L399",
+      "source_location": "L561",
       "id": "src_articles_getarticle",
       "community": 13,
       "norm_label": "getarticle()"
@@ -784,7 +784,7 @@
       "label": "articleSchema()",
       "file_type": "code",
       "source_file": "src/articles.ts",
-      "source_location": "L401",
+      "source_location": "L563",
       "id": "src_articles_articleschema",
       "community": 13,
       "norm_label": "articleschema()"
@@ -793,7 +793,7 @@
       "label": "relatedHtml()",
       "file_type": "code",
       "source_file": "src/articles.ts",
-      "source_location": "L435",
+      "source_location": "L597",
       "id": "src_articles_relatedhtml",
       "community": 13,
       "norm_label": "relatedhtml()"
@@ -802,7 +802,7 @@
       "label": "articleHtml()",
       "file_type": "code",
       "source_file": "src/articles.ts",
-      "source_location": "L444",
+      "source_location": "L606",
       "id": "src_articles_articlehtml",
       "community": 13,
       "norm_label": "articlehtml()"
@@ -811,7 +811,7 @@
       "label": "articlesIndexHtml()",
       "file_type": "code",
       "source_file": "src/articles.ts",
-      "source_location": "L505",
+      "source_location": "L667",
       "id": "src_articles_articlesindexhtml",
       "community": 22,
       "norm_label": "articlesindexhtml()"
@@ -14337,9 +14337,9 @@
       "source_file": "src/flows2api.ts",
       "source_location": "L20",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_flows2api",
-      "target": "src_flows2api_capturelandinghtml",
-      "confidence_score": 1.0
+      "target": "src_flows2api_capturelandinghtml"
     },
     {
       "relation": "contains",
@@ -14408,9 +14408,9 @@
       "source_file": "src/flows2api.ts",
       "source_location": "L17",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_flows2api",
-      "target": "src_ui",
-      "confidence_score": 1.0
+      "target": "src_ui"
     },
     {
       "relation": "imports",
@@ -14419,9 +14419,9 @@
       "source_file": "src/flows2api.ts",
       "source_location": "L17",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_flows2api",
-      "target": "src_ui_uicss",
-      "confidence_score": 1.0
+      "target": "src_ui_uicss"
     },
     {
       "relation": "imports",
@@ -14430,9 +14430,9 @@
       "source_file": "src/flows2api.ts",
       "source_location": "L17",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_flows2api",
-      "target": "src_ui_uinav",
-      "confidence_score": 1.0
+      "target": "src_ui_uinav"
     },
     {
       "relation": "calls",
@@ -23908,5 +23908,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "8d0a26b9860e54dec23855738a5bc4500d83415f"
+  "built_at_commit": "42a045e6a77bcf230b1538bc15a8201f45eed6ee"
 }

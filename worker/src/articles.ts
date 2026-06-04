@@ -554,6 +554,163 @@ export const ARTICLES: Article[] = [
     ],
     related: ["pokemon-center-restock-times", "best-pokemon-booster-boxes-2026", "how-much-is-a-pokemon-booster-box"],
   },
+
+  {
+    slug: "how-to-grade-pokemon-cards",
+    title: "How to Grade Pokémon Cards (PSA, CGC) — Step by Step 2026 | wmcp.sh",
+    desc: "How to grade Pokémon cards in 2026 — the submission process for PSA and CGC, what it costs, turnaround times, and how to decide if a card is worth grading.",
+    h1: "How to Grade Pokémon Cards (Step by Step)",
+    dek: "The submission process, real costs, and how to decide if a card is worth it.",
+    updated: "June 2026",
+    readMins: 6,
+    bodyHtml:
+      p(`Grading can multiply a card's value — or cost more than the card is worth. Here's the actual process and how to decide.`) +
+      h2("1. Decide if it's worth grading") +
+      p(`Grading only pays if (graded value − raw value − grading cost) is positive, and that assumes you hit a high grade. Run the numbers first with the <a href="/tools/pokemon-grading-calculator">grading calculator</a>. Low-value cards rarely justify the fee.`) +
+      h2("2. Pick a grader") +
+      p(`PSA carries the highest resale premium for Pokémon; CGC is cheaper/faster for mid-value cards; Beckett is best for high-end vintage. Full comparison: <a href="/guides/psa-vs-cgc-vs-beckett-pokemon">PSA vs CGC vs Beckett</a>.`) +
+      h2("3. Pre-screen + protect") +
+      p(`Inspect centering, corners, edges, and surface under good light — those are what the grade keys on. Sleeve + semi-rigid holder (card saver) each card before shipping.`) +
+      h2("4. Submit + ship") +
+      p(`Create a submission on the grader's site, pick a service tier (price/turnaround scale with declared value), print the form, and ship insured. Turnaround swings with demand.`) +
+      h2("5. Sell into the right market") +
+      p(`Graded slabs realize the most on eBay (deepest comp history). Check what your card's grade actually sells for before you commit:`) +
+      buy("PSA 10 Pokemon card", "See graded comps on eBay:"),
+    faqs: [
+      { q: "How much does it cost to grade a Pokémon card?", a: "It varies by grader and service tier (which scale with the card's declared value and desired turnaround). Always check that graded-minus-raw-minus-fee is positive before submitting." },
+      { q: "Is it worth grading my Pokémon cards?", a: "Only when the graded value exceeds the raw value plus the grading cost — and that assumes a top grade. Run it through a grading calculator first; low-value cards usually aren't worth it." },
+    ],
+    related: ["psa-vs-cgc-vs-beckett-pokemon", "best-pokemon-cards-to-invest-2026", "where-to-sell-pokemon-cards"],
+  },
+
+  {
+    slug: "most-expensive-pokemon-cards",
+    title: "The Most Expensive Pokémon Cards (2026) — and Why | wmcp.sh",
+    desc: "The most expensive Pokémon cards ever sold and what drives their value — from the Pikachu Illustrator and 1st Edition Charizard to today's modern chase cards.",
+    h1: "The Most Expensive Pokémon Cards",
+    dek: "The grails, what they sell for, and what actually drives the price.",
+    updated: "June 2026",
+    readMins: 6,
+    bodyHtml:
+      p(`A handful of Pokémon cards trade for six and seven figures. Here's what's at the top and the levers behind the prices.`) +
+      h2("The all-time grails") +
+      p(`The <b>Pikachu Illustrator</b> (a 1998 promo given to illustration-contest winners) is the most valuable Pokémon card, with high-grade copies selling for millions. The <b>1st Edition Base Set Charizard</b> in PSA 10 is the iconic blue-chip. Trophy/no-rarity promos round out the top tier.`) +
+      h2("Modern chase cards") +
+      p(`You don't need a grail to spend real money — top special-illustration rares from current sets (e.g. Umbreon ex) trade for hundreds to thousands graded.`) +
+      buy("Pokemon Umbreon ex special illustration rare", "See chase card prices on eBay:") +
+      h2("What actually drives the price") +
+      p(`Scarcity (print run / promo status), grade (a PSA 10 vs 9 can be a multiple), iconic character (Charizard/Eeveelutions), and provenance. Reprints and population growth push prices down — which is why grade and edition matter so much.`) +
+      h2("Before you chase one") +
+      p(`Buy graded for the grails (removes the grading gamble), and always price off sold comps. If you're buying raw to grade, read <a href="/guides/how-to-grade-pokemon-cards">how to grade</a> first.`),
+    faqs: [
+      { q: "What is the most expensive Pokémon card?", a: "The Pikachu Illustrator promo is the most valuable, with top-grade copies selling for millions. The 1st Edition Base Set Charizard (PSA 10) is the iconic blue-chip behind it." },
+      { q: "What makes a Pokémon card expensive?", a: "Scarcity (print run / promo status), grade, iconic character, and provenance. Reprints and rising graded populations push prices down." },
+    ],
+    related: ["best-pokemon-cards-to-invest-2026", "vintage-pokemon-cards-worth-money", "how-to-tell-if-a-pokemon-card-is-rare"],
+  },
+
+  {
+    slug: "how-to-store-pokemon-cards",
+    title: "How to Store Pokémon Cards (Protect Their Value) | wmcp.sh",
+    desc: "How to store Pokémon cards properly — sleeves, toploaders, binders, and graded slabs — plus the humidity, light, and handling mistakes that destroy value.",
+    h1: "How to Store Pokémon Cards Properly",
+    dek: "Sleeves, toploaders, binders, slabs — and the mistakes that quietly destroy value.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`A mint card is only worth mint money if it stays that way. Here's the protection ladder, cheapest to most.`) +
+      h2("The protection ladder") +
+      p(`<b>Penny sleeve</b> (every card you care about) → <b>toploader or card saver</b> (valuable singles) → <b>binder with side-loading pages</b> (collections you flip through) → <b>graded slab</b> (high-value, permanent). Match the protection to the value.`) +
+      buy("Pokemon card sleeves toploaders", "Storage supplies on eBay:") +
+      h2("The mistakes that destroy value") +
+      p(`Sunlight (fades ink), humidity (warps + curls — silica packs help), top-loading binder pages (cards slip out), rubber bands (dents), and bare-finger handling on the surface. For sealed product, keep it out of heat and don't stack heavy.`) +
+      h2("Graded cards") +
+      p(`Slabs are durable but still scratch — sleeve them (slab sleeves exist) and store upright, out of direct light. If you're deciding whether to grade in the first place, see <a href="/guides/how-to-grade-pokemon-cards">how to grade</a>.`),
+    faqs: [
+      { q: "How should I store valuable Pokémon cards?", a: "Penny sleeve every card you care about, then a toploader or card saver for valuable singles, a side-loading binder for collections, and graded slabs for the highest value — all out of sunlight and humidity." },
+      { q: "Do Pokémon cards lose value if stored badly?", a: "Yes — sunlight fading, humidity warping, dents from rubber bands, and surface handling all lower the grade and the price. Proper sleeving/storage preserves value." },
+    ],
+    related: ["how-to-grade-pokemon-cards", "sealed-vs-singles-pokemon", "where-to-sell-pokemon-cards"],
+  },
+
+  {
+    slug: "vintage-pokemon-cards-worth-money",
+    title: "Vintage Pokémon Cards Worth Money (How to Spot Them) | wmcp.sh",
+    desc: "Which vintage Pokémon cards are worth money — Base Set, 1st Edition, Shadowless, and WOTC-era cards — and how to spot the valuable ones in an old collection.",
+    h1: "Vintage Pokémon Cards Worth Money",
+    dek: "Base Set, 1st Edition, Shadowless — how to spot the valuable ones in an old binder.",
+    updated: "June 2026",
+    readMins: 6,
+    bodyHtml:
+      p(`Got an old Pokémon collection? A few cards could be worth real money. Here's what to look for.`) +
+      h2("1st Edition") +
+      p(`Look for the small <b>"Edition 1" stamp</b> on the left of the card art. 1st Edition WOTC-era cards (1999–2000) — especially holos like Charizard, Blastoise, Venusaur — are the most valuable vintage.`) +
+      h2("Shadowless") +
+      p(`Early Base Set cards printed <b>without the drop-shadow</b> on the right of the art box are "Shadowless" — rarer than the later "Unlimited" print and worth more.`) +
+      h2("WOTC era + holos") +
+      p(`Anything with the <b>WOTC</b> (Wizards of the Coast) logo and a holofoil image from Base Set, Jungle, Fossil, or the early sets is worth checking. Condition is everything at this age.`) +
+      h2("Confirm value with sold comps") +
+      p(`Vintage prices swing hard on condition and edition — check what your exact card actually sells for:`) +
+      buy("1st edition base set Pokemon holo", "See vintage comps on eBay:") +
+      p(`If a vintage holo is clean, it's often worth <a href="/guides/how-to-grade-pokemon-cards">grading</a> before selling.`),
+    faqs: [
+      { q: "Which old Pokémon cards are worth money?", a: "1st Edition WOTC holos (1999–2000), Shadowless Base Set cards, and clean holos from Base/Jungle/Fossil — especially Charizard. Condition and edition drive the price." },
+      { q: "How do I know if my Pokémon card is 1st Edition?", a: "Look for the small 'Edition 1' stamp on the left side of the card art. Shadowless cards lack the drop-shadow on the right of the art box." },
+    ],
+    related: ["most-expensive-pokemon-cards", "how-to-tell-if-a-pokemon-card-is-rare", "how-to-grade-pokemon-cards"],
+  },
+
+  {
+    slug: "how-to-start-collecting-pokemon-cards",
+    title: "How to Start Collecting Pokémon Cards (2026 Beginner Guide) | wmcp.sh",
+    desc: "A beginner's guide to collecting Pokémon cards in 2026 — pick a goal, where to buy, sealed vs singles, how to protect them, and how to avoid overpaying.",
+    h1: "How to Start Collecting Pokémon Cards",
+    dek: "Pick a goal, buy smart, protect it — without overpaying.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`New to the hobby? Here's how to start without wasting money.`) +
+      h2("1. Pick a goal") +
+      p(`Collecting is more fun (and cheaper) with a focus: a favorite Pokémon, a specific set, master-set completion, or investing. Your goal decides what you buy.`) +
+      h2("2. Sealed or singles?") +
+      p(`Want specific cards? Buy singles — almost always cheaper than chasing them in packs (<a href="/guides/sealed-vs-singles-pokemon">here's the math</a>). Want the fun of opening? Buy sealed.`) +
+      buy("Pokemon booster bundle", "Starter sealed on eBay:") +
+      h2("3. Buy at the right price") +
+      p(`Buy sealed at retail, not resale — <a href="/guides/best-places-to-buy-pokemon-cards-online">where to buy</a> covers the venues. Hot sets sell out fast; <a href="/">QuickCatch</a> catches restocks at MSRP so you don't overpay scalpers, and the <a href="/tools/pokemon-resale-calculator">resale calculator</a> checks any markup.`) +
+      h2("4. Protect it") +
+      p(`Sleeve + toploader the cards you care about from day one — see <a href="/guides/how-to-store-pokemon-cards">how to store cards</a>. A dinged corner can halve a card's value.`),
+    faqs: [
+      { q: "How do I start collecting Pokémon cards?", a: "Pick a goal (a favorite Pokémon, a set, or investing), decide sealed vs singles based on that goal, buy at retail rather than resale, and protect your cards with sleeves and toploaders from the start." },
+      { q: "Should beginners buy sealed or singles?", a: "Singles if you want specific cards (cheaper than packs); sealed if you want the experience of opening. Either way, buy at retail to avoid the resale premium." },
+    ],
+    related: ["best-places-to-buy-pokemon-cards-online", "sealed-vs-singles-pokemon", "how-to-store-pokemon-cards"],
+  },
+
+  {
+    slug: "why-do-pokemon-cards-sell-out",
+    title: "Why Do Pokémon Cards Sell Out So Fast? (And How to Get Them) | wmcp.sh",
+    desc: "Why Pokémon cards sell out in seconds — print cycles, scalpers, and bots — and how to actually buy sealed at retail instead of paying resale.",
+    h1: "Why Do Pokémon Cards Sell Out So Fast?",
+    dek: "Print cycles, scalpers, and bots — and how to actually get them at retail.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`If you've watched a set vanish in seconds, you're not imagining it. Here's why — and what actually works.`) +
+      h2("Demand outruns print") +
+      p(`Hyped sets (especially special sets) see demand far above the at-retail supply in any given drop. Retailers restock in waves, and each wave clears almost instantly.`) +
+      h2("Scalpers and bots") +
+      p(`Resellers run automated checkout tools to grab inventory the second it's listed, then flip it above MSRP. That's why a manual refresh rarely wins — you're racing software.`) +
+      h2("How to actually get them at retail") +
+      p(`Fight automation with automation, the honest way: a tool that watches the product page and <b>carts it the instant it restocks</b> so you check out at MSRP. That's <a href="/">QuickCatch</a> — it works in your browser, in the background, even on sites that block bots. See the <a href="/guides/how-to-get-pokemon-restock-alerts">restock-alert guide</a> for why notifications alone are too slow.`) +
+      h2("Or buy now and skip the wait") +
+      p(`Don't want to chase it? The secondary market always has stock at a premium — check it against retail with the <a href="/tools/pokemon-resale-calculator">resale calculator</a> first:`) +
+      buy("Pokemon Prismatic Evolutions Booster Box", "See current prices on eBay:"),
+    faqs: [
+      { q: "Why do Pokémon cards sell out so fast?", a: "Demand for hyped sets far exceeds the at-retail supply in each drop, and resellers use automated checkout bots to grab inventory the moment it's listed — so manual refreshing rarely wins." },
+      { q: "How do I buy Pokémon cards before they sell out?", a: "Use a tool that auto-carts the moment a product restocks (like QuickCatch) instead of racing a notification, and watch the official retailers where sealed restocks at MSRP." },
+    ],
+    related: ["how-to-get-pokemon-restock-alerts", "pokemon-center-restock-times", "best-pokemon-booster-boxes-2026"],
+  },
 ];
 
 export const ARTICLE_SLUGS = ARTICLES.map((a) => a.slug);
