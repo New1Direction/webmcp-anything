@@ -2015,6 +2015,118 @@ export const ARTICLES: Article[] = [
     ],
     related: ["best-espeon-pokemon-cards", "espeon-gold-star-pokemon-card", "best-cards-in-prismatic-evolutions"],
   },
+
+  {
+    slug: "best-gengar-pokemon-cards",
+    title: "Best Gengar Pokémon Cards (Most Valuable, 2026) | wmcp.sh",
+    desc: "The best and most valuable Gengar Pokémon cards — Gengar VMAX alt art, Fossil holo, Gengar & Mimikyu GX, Gengar GX — with the cheapest raw and PSA 10 copies on eBay.",
+    h1: "Best Gengar Pokémon Cards",
+    dek: "The Fusion Strike chase, the Fossil classic — and where to buy each, raw or PSA 10.",
+    updated: "June 2026",
+    readMins: 7,
+    bodyHtml:
+      p(`Gengar is one of the most beloved Pokémon in the hobby, and its cards range from a 1999 classic to one of the most popular modern alt arts. Here are the best — with the cheapest raw copy and the cheapest PSA 10 on eBay for each.`) +
+      h2("1. Gengar VMAX Alternate Art (Fusion Strike, 2021)") +
+      p(`The headline modern chase — the Fusion Strike Gengar VMAX alt art (the ghostly hand reaching out) is one of the most loved cards of its era. See <a href="/guides/gengar-vmax-alt-art-worth-it">is it worth it</a>.`) +
+      cardLinks("Pokemon Gengar VMAX alternate art Fusion Strike") +
+      h2("2. Fossil Gengar Holo (1999)") +
+      p(`The vintage icon — the first holographic Gengar (#5/62 from Fossil) is a must-have classic, with 1st Edition copies worth far more than Unlimited. See its <a href="/guides/fossil-gengar-card-value">value guide</a>.`) +
+      cardLinks("Pokemon Fossil Gengar holo 1999") +
+      h2("3. Gengar & Mimikyu GX (Team Up, 2019)") +
+      p(`The spooky Tag Team — the Gengar & Mimikyu GX alternate/full art is a fan-favorite and a popular high-grade target.`) +
+      cardLinks("Pokemon Gengar Mimikyu GX Team Up") +
+      h2("4. Gengar GX (Shining Legends, 2017)") +
+      p(`The Shining Legends Gengar GX, especially the rainbow secret rare, is a strong, attainable modern hold.`) +
+      cardLinks("Pokemon Gengar GX Shining Legends") +
+      h2("5. Gengar VMAX (Fusion Strike — regular & secret)") +
+      p(`Beyond the alt art, the standard and rainbow secret Gengar VMAX are popular, lower-cost ways to own a Fusion Strike Gengar.`) +
+      cardLinks("Pokemon Gengar VMAX Fusion Strike") +
+      h2("Raw or PSA 10?") +
+      p(`Raw is the affordable way to collect; a PSA 10 commands a premium and is the better store of value for the alt art and vintage holo. Buy graded for vintage to remove authenticity risk — see <a href="/guides/how-to-spot-fake-pokemon-booster-box">how to spot fakes</a>. Buying raw to grade? Read <a href="/guides/how-to-grade-pokemon-cards">how to grade</a> and check the <a href="/tools/pokemon-grading-calculator">grading calculator</a>.`),
+    faqs: [
+      { q: "What is the most valuable Gengar card?", a: "The Gengar VMAX alternate art (Fusion Strike) is the most valuable modern Gengar, while the 1st Edition Fossil holo is the top vintage card — both peak in PSA 10." },
+      { q: "Which Gengar card should I buy?", a: "For modern, the Fusion Strike VMAX alt art or the Gengar & Mimikyu GX. For vintage, the Fossil holo (1st Edition if you can). Buy raw to collect, PSA 10 as a store of value." },
+    ],
+    related: ["gengar-vmax-alt-art-worth-it", "fossil-gengar-card-value", "are-gengar-cards-worth-money"],
+  },
+
+  {
+    slug: "gengar-vmax-alt-art-worth-it",
+    title: "Is the Gengar VMAX Alt Art Worth It? (Fusion Strike) | wmcp.sh",
+    desc: "Is the Gengar VMAX alternate art from Fusion Strike worth buying? Why it's so popular, raw vs PSA 10, and the cheapest copies on eBay.",
+    h1: "Is the Gengar VMAX Alt Art Worth It?",
+    dek: "The standout modern Gengar chase — raw or graded?",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`The Gengar VMAX alternate art from Fusion Strike is one of the most popular modern Pokémon cards. Here's the honest read.`) +
+      h2("Why it's so popular") +
+      p(`Gengar is a top-tier fan-favorite, the art (a ghostly hand reaching out of the dark) is widely loved, and Fusion Strike is a beloved set. That combination gives the card deep, durable demand.`) +
+      cardLinks("Pokemon Gengar VMAX alternate art Fusion Strike") +
+      h2("Raw vs PSA 10") +
+      p(`Raw copies are the affordable entry and look fantastic. A PSA 10 carries a solid premium — but since Fusion Strike is a large mainline set, the multiple is more modest than on scarce cards. Raw is a smart collector buy.`) +
+      h2("Verdict") +
+      p(`Worth it — it's one of the safest modern alt-art holds and a centerpiece display card, especially for ghost-type fans. Buy the PSA 10 for value, raw to enjoy it. See the <a href="/guides/best-gengar-pokemon-cards">best Gengar cards</a> and <a href="/guides/are-gengar-cards-worth-money">are Gengar cards worth money</a>. (Fellow Fusion Strike chase: the <a href="/guides/best-mew-pokemon-cards">Mew VMAX alt art</a>.)`),
+    faqs: [
+      { q: "Why is the Gengar VMAX alt art so popular?", a: "Gengar is a top fan-favorite, the alternate art is widely loved, and Fusion Strike is a beloved set — together giving the card deep, durable collector demand." },
+      { q: "Should I buy the Gengar VMAX alt art raw or PSA 10?", a: "Buy raw to display it affordably; buy a PSA 10 for a better store of value, though the premium is modest since Fusion Strike is a large mainline set." },
+    ],
+    related: ["best-gengar-pokemon-cards", "are-gengar-cards-worth-money", "best-mew-pokemon-cards"],
+  },
+
+  {
+    slug: "fossil-gengar-card-value",
+    title: "Fossil Gengar Card Value (1999 Holo) | wmcp.sh",
+    desc: "The 1999 Fossil Gengar holo is a vintage classic. How to tell 1st Edition vs Unlimited, what it's worth, fakes, raw vs PSA 10, and the cheapest copies on eBay.",
+    h1: "Fossil Gengar (1999 Holo)",
+    dek: "The first holographic Gengar — how to tell the prints and what each is worth.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`The Fossil Gengar (#5/62) was the first holographic Gengar card and remains a vintage must-have. Here's the value read.`) +
+      h2("Why it's a classic") +
+      p(`Released in the 1999 Fossil set, it's the original holo of one of the franchise's most popular Pokémon — nostalgia plus Gengar's enduring fandom keep demand strong decades later.`) +
+      cardLinks("Pokemon Fossil Gengar holo 1999") +
+      h2("1st Edition vs Unlimited") +
+      p(`Look for the <b>"Edition 1" stamp</b> to the lower-left of the art — 1st Edition Fossil Gengar is far scarcer and worth substantially more than the common Unlimited print. Both are the same artwork.`) +
+      cardLinks("Pokemon Fossil Gengar 1st edition") +
+      h2("Watch for fakes & grade it") +
+      p(`Popular vintage holos are frequently faked. Buy graded (PSA/CGC/BGS) or learn the tells — see <a href="/guides/how-to-spot-fake-pokemon-booster-box">how to spot fakes</a> and <a href="/guides/how-to-tell-if-a-pokemon-card-is-rare">how to tell if a card is rare</a>. A PSA 10 1st Edition is the real store of value.`) +
+      h2("The takeaway") +
+      p(`An accessible, iconic vintage holo — a great entry into 1999-era cards. See where it ranks among the <a href="/guides/best-gengar-pokemon-cards">best Gengar cards</a> and <a href="/guides/vintage-pokemon-cards-worth-money">vintage cards worth money</a>.`),
+    faqs: [
+      { q: "How much is a Fossil Gengar worth?", a: "It's an accessible vintage holo whose value climbs with grade and edition — 1st Edition copies are worth substantially more than Unlimited, and gem-mint PSA 10s command the biggest premium. Price off recent sold comps." },
+      { q: "How do I know if my Fossil Gengar is 1st Edition?", a: "Look for the small 'Edition 1' stamp to the lower-left of the artwork. No stamp means it's the more common Unlimited print." },
+    ],
+    related: ["best-gengar-pokemon-cards", "vintage-pokemon-cards-worth-money", "charizard-1st-edition-base-set-value"],
+  },
+
+  {
+    slug: "are-gengar-cards-worth-money",
+    title: "Are Gengar Cards Worth Money? (2026 Value Guide) | wmcp.sh",
+    desc: "Are Gengar Pokémon cards worth money? Which Gengar cards hold value — Fossil holo, Gengar VMAX alt art, Gengar & Mimikyu GX — raw vs graded, with cheapest copies and PSA 10s on eBay.",
+    h1: "Are Gengar Cards Worth Money?",
+    dek: "Which Gengar cards actually hold value — and which are just nice to own.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Gengar's huge fanbase keeps its best cards in demand — but most Gengar cards are common. Here's how the values break down.`) +
+      h2("The ones that hold value") +
+      p(`The blue-chips are the <a href="/guides/gengar-vmax-alt-art-worth-it">Fusion Strike VMAX alt art</a> (modern) and the 1st Edition <a href="/guides/fossil-gengar-card-value">Fossil holo</a> (vintage) — both with durable, fan-driven demand.`) +
+      cardLinks("Pokemon Gengar VMAX alternate art Fusion Strike") +
+      h2("Strong mid-tier") +
+      p(`The Gengar & Mimikyu GX (Team Up), Gengar GX (Shining Legends), and the secret-rare Gengar VMAX hold solid value without the headline price — good entry points.`) +
+      cardLinks("Pokemon Gengar Mimikyu GX Team Up") +
+      h2("Nice to own, not investments") +
+      p(`Common holos, Halloween/Trick-or-Trade promos, and recent bulk Gengars are great for a collection but won't appreciate much. Buy those because you love Gengar, not to flip.`) +
+      h2("Raw vs graded for value") +
+      p(`For the alt art and vintage holo, a PSA 10 is the real store of value and removes authenticity risk. Holding raw copies worth grading? Read <a href="/guides/how-to-grade-pokemon-cards">how to grade</a> and run the <a href="/tools/pokemon-grading-calculator">grading calculator</a>. Selling? See <a href="/guides/where-to-sell-pokemon-cards">where to sell</a>.`),
+    faqs: [
+      { q: "Are Gengar cards a good investment?", a: "The best are — the Fusion Strike VMAX alt art and the 1st Edition Fossil holo have durable, fan-driven demand. The Gengar & Mimikyu GX and Gengar GX are strong mid-tier holds. Common holos and promos won't appreciate much." },
+      { q: "Which Gengar card is worth the most?", a: "The Gengar VMAX alternate art (Fusion Strike) leads the modern cards, and the 1st Edition Fossil holo is the top vintage Gengar — both peak in PSA 10." },
+    ],
+    related: ["best-gengar-pokemon-cards", "gengar-vmax-alt-art-worth-it", "best-pokemon-cards-to-invest-2026"],
+  },
 ];
 
 export const ARTICLE_SLUGS = ARTICLES.map((a) => a.slug);
