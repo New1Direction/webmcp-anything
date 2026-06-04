@@ -729,6 +729,16 @@ export async function sitemapXml(env: any, origin: string): Promise<string> {
     <priority>0.9</priority>
   </url>
   <url>
+    <loc>${origin}/alternatives/mcpservers-org</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>${origin}/how-to/give-nemotron-3-ultra-tools</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>${origin}/integration/airtable</loc>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
