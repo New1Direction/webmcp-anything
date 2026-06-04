@@ -1529,6 +1529,146 @@ export const ARTICLES: Article[] = [
     ],
     related: ["best-charizard-pokemon-cards", "charizard-1st-edition-base-set-value", "best-pokemon-cards-to-invest-2026"],
   },
+
+  {
+    slug: "best-pikachu-pokemon-cards",
+    title: "Best Pikachu Pokémon Cards (Most Valuable, 2026) | wmcp.sh",
+    desc: "The best and most valuable Pikachu Pokémon cards — Pikachu Illustrator, Surging Sparks ex SIR, Van Gogh promo, Vivid Voltage VMAX — with the cheapest raw and PSA 10 copies on eBay.",
+    h1: "Best Pikachu Pokémon Cards",
+    dek: "From the million-dollar Illustrator to the modern chases — and where to buy each.",
+    updated: "June 2026",
+    readMins: 8,
+    bodyHtml:
+      p(`Pikachu is the face of Pokémon, and its cards range from the most expensive card ever made to affordable fan-favorites. Here are the best — with the cheapest raw copy and the cheapest PSA 10 on eBay for each.`) +
+      h2("1. Pikachu Illustrator (1998 promo)") +
+      p(`The most valuable Pokémon card in existence — a 1998 promo awarded to illustration-contest winners, with only a handful in existence. High-grade copies sell for millions.`) +
+      cardLinks("Pokemon Pikachu Illustrator") +
+      p(`<em>Note: genuine Illustrators are graded (PSA/CGC) — treat any cheap "raw" listing as a proxy or replica, not the real card.</em>`) +
+      h2("2. Pikachu ex Special Illustration Rare (Surging Sparks)") +
+      p(`The headline modern chase — the Pikachu ex SIR from Surging Sparks is one of the most valuable current-era cards and the reason people rip the set. See <a href="/guides/pikachu-ex-surging-sparks-worth-it">is it worth it</a>.`) +
+      cardLinks("Pokemon Pikachu ex special illustration rare Surging Sparks") +
+      h2("3. Van Gogh Pikachu — “Pikachu with Grey Felt Hat” (2023)") +
+      p(`The Pokémon × Van Gogh Museum promo became an instant icon (and a scalping frenzy). One of the most recognizable modern Pikachu cards. See <a href="/guides/van-gogh-pikachu-card-value">its full value guide</a>.`) +
+      cardLinks("Pokemon Pikachu Van Gogh grey felt hat") +
+      h2("4. Pikachu VMAX (Vivid Voltage)") +
+      p(`The chunky G-Max Pikachu VMAX from Vivid Voltage is a modern fan-favorite and a popular PSA 10 target.`) +
+      cardLinks("Pokemon Pikachu VMAX Vivid Voltage") +
+      h2("5. Surfing & Flying Pikachu (classic promos)") +
+      p(`The classic Surfing and Flying Pikachu promos are beloved vintage-flavored pickups that hold steady value, especially graded.`) +
+      cardLinks("Pokemon Surfing Pikachu promo") +
+      h2("6. Base Set Pikachu — Red Cheeks (1999)") +
+      p(`The original Base Set Pikachu is iconic, and the early "Red Cheeks" variant is the collectible one to look for — far more valuable than the common Yellow Cheeks print.`) +
+      cardLinks("Pokemon Pikachu base set red cheeks") +
+      h2("Raw or PSA 10?") +
+      p(`Raw is the affordable way to collect; a PSA 10 commands a major premium and is the real store of value for the grails. For high-value Pikachu, buy graded to remove authenticity risk — see <a href="/guides/how-to-spot-fake-pokemon-booster-box">how to spot fakes</a>. Buying raw to grade? Read <a href="/guides/how-to-grade-pokemon-cards">how to grade</a> and check the <a href="/tools/pokemon-grading-calculator">grading calculator</a> first.`) +
+      p(`Surging Sparks (home of the Pikachu ex SIR) sells out fast — catch it at retail with <a href="/">QuickCatch</a>.`),
+    faqs: [
+      { q: "What is the most valuable Pikachu card?", a: "The Pikachu Illustrator (1998 promo) is the most valuable Pokémon card ever, with only a handful in existence and high-grade copies selling for millions. The Surging Sparks Pikachu ex SIR leads the modern chases." },
+      { q: "Which Pikachu card should I buy?", a: "For value, the Surging Sparks Pikachu ex SIR or a graded Van Gogh promo. For budget, the Vivid Voltage VMAX or classic Surfing/Flying promos. Buy raw to collect, PSA 10 as a store of value." },
+    ],
+    related: ["pikachu-illustrator-card-value", "van-gogh-pikachu-card-value", "pikachu-ex-surging-sparks-worth-it"],
+  },
+
+  {
+    slug: "pikachu-illustrator-card-value",
+    title: "Pikachu Illustrator Card Value (The Most Expensive Card) | wmcp.sh",
+    desc: "The Pikachu Illustrator is the most valuable Pokémon card ever. Its history, why it sells for millions, how to avoid fakes, and graded copies on eBay.",
+    h1: "Pikachu Illustrator (The Most Expensive Card)",
+    dek: "The million-dollar grail — its story, its value, and how to buy safely.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`The Pikachu Illustrator is the most valuable Pokémon card in the world. Here's why — and what to know before going anywhere near one.`) +
+      h2("The story") +
+      p(`It was awarded in 1998 to winners of CoroCoro Comic illustration contests in Japan — never sold in packs. Only a few dozen are known to exist, and the card carries the unique "Illustrator" title (instead of "Trainer") plus a pen/artist icon. That scarcity makes it the ultimate grail.`) +
+      h2("What it's worth") +
+      p(`High-grade copies have sold for millions, setting records for the most expensive Pokémon card ever. Even lower grades command extraordinary sums because so few exist.`) +
+      cardLinks("Pokemon Pikachu Illustrator") +
+      h2("Avoiding fakes") +
+      p(`This is among the most counterfeited cards in existence — <b>genuine copies are graded by PSA/CGC/BGS with provenance</b>. Treat any "raw" or cheap listing as a proxy, replica, or fake. Never buy one ungraded. See <a href="/guides/how-to-tell-if-a-pokemon-card-is-rare">how to tell if a card is rare</a>.`) +
+      h2("The takeaway") +
+      p(`For almost everyone the Illustrator is a museum piece, not a purchase — but it anchors the top of every <a href="/guides/most-expensive-pokemon-cards">most-expensive list</a>. If you want a Pikachu you can actually own, see the <a href="/guides/best-pikachu-pokemon-cards">best Pikachu cards</a>.`),
+    faqs: [
+      { q: "How much is the Pikachu Illustrator worth?", a: "It's the most valuable Pokémon card ever — high-grade copies have sold for millions, and even low grades command extraordinary sums because only a few dozen exist." },
+      { q: "Why is the Pikachu Illustrator so rare?", a: "It was awarded only to winners of 1998 CoroCoro illustration contests in Japan and never sold in packs, so only a few dozen are known to exist." },
+    ],
+    related: ["best-pikachu-pokemon-cards", "most-expensive-pokemon-cards", "are-pikachu-cards-worth-money"],
+  },
+
+  {
+    slug: "van-gogh-pikachu-card-value",
+    title: "Van Gogh Pikachu Card Value (Grey Felt Hat) | wmcp.sh",
+    desc: "The Van Gogh Pikachu (“Pikachu with Grey Felt Hat”) became an instant icon. What it's worth, why it sold out, raw vs PSA 10, and the cheapest copies on eBay.",
+    h1: "Van Gogh Pikachu (Grey Felt Hat)",
+    dek: "The Pokémon × Van Gogh promo that broke the internet — and what it's worth.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`The "Pikachu with Grey Felt Hat" promo — Pikachu reimagined as Van Gogh's self-portrait — became one of the most talked-about cards of the modern era. Here's the value read.`) +
+      h2("Why it blew up") +
+      p(`Released for the Pokémon × Van Gogh Museum collaboration in 2023, demand massively outstripped supply, the promo sold out instantly, and scalping got so severe the museum pulled it from gift shops. That scarcity-by-frenzy gave it lasting collector cachet.`) +
+      cardLinks("Pokemon Pikachu Van Gogh grey felt hat") +
+      h2("Raw vs PSA 10") +
+      p(`Raw copies are the accessible way in and display beautifully. A PSA 10 carries a solid premium thanks to the card's fame and the chaos of its release. Because it's a promo (not a pack-pull), authenticity matters — buy from reputable sellers or graded.`) +
+      h2("Is it worth it?") +
+      p(`Yes as an icon — it's one of the most recognizable modern Pikachu cards and a conversation piece. Just price off recent sold comps; promo prices can be volatile. See the <a href="/guides/best-pikachu-pokemon-cards">best Pikachu cards</a> for alternatives.`),
+    faqs: [
+      { q: "How much is the Van Gogh Pikachu worth?", a: "The 'Pikachu with Grey Felt Hat' promo commands a strong premium thanks to its fame and the chaotic, sold-out release; PSA 10 copies are worth the most. Always price off recent sold comps as values can be volatile." },
+      { q: "Why was the Van Gogh Pikachu so hard to get?", a: "Demand for the 2023 Pokémon × Van Gogh Museum promo massively outstripped supply, it sold out instantly, and scalping was so severe the museum pulled it from gift shops." },
+    ],
+    related: ["best-pikachu-pokemon-cards", "are-pikachu-cards-worth-money", "why-do-pokemon-cards-sell-out"],
+  },
+
+  {
+    slug: "pikachu-ex-surging-sparks-worth-it",
+    title: "Is the Surging Sparks Pikachu ex Worth It? (SIR) | wmcp.sh",
+    desc: "Is the Surging Sparks Pikachu ex special illustration rare worth buying? Why it's the set's top chase, raw vs PSA 10, and the cheapest copies on eBay.",
+    h1: "Is the Surging Sparks Pikachu ex Worth It?",
+    dek: "The top modern Pikachu chase — and whether to buy raw or graded.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`The Pikachu ex special illustration rare from Surging Sparks is the most valuable current-era Pikachu card and the engine behind the whole set. Here's the honest read.`) +
+      h2("Why it's the top chase") +
+      p(`Pikachu is the franchise mascot, the SIR art is a standout, and it's the single card that sets Surging Sparks' expected value — most people ripping the set are chasing exactly this. That concentrated demand makes it one of the most valuable modern cards.`) +
+      cardLinks("Pokemon Pikachu ex special illustration rare Surging Sparks") +
+      h2("Raw vs PSA 10") +
+      p(`Raw is the affordable, great-looking buy. A PSA 10 carries a healthy premium, though because Surging Sparks is a mainline set with a large print run, the PSA 10 multiple is more modest than on scarce cards. For most collectors, raw is the smart pickup.`) +
+      h2("Chase it or buy the single?") +
+      p(`Because the value is so concentrated in this one card, buying the single is almost always cheaper than ripping boxes to hit it — rip only for fun. See <a href="/guides/is-surging-sparks-worth-it">is Surging Sparks worth it</a> and <a href="/guides/best-cards-in-surging-sparks">best cards in Surging Sparks</a>. Catch sealed at retail with <a href="/">QuickCatch</a>.`),
+    faqs: [
+      { q: "Is the Surging Sparks Pikachu ex a good buy?", a: "Yes — it's the top modern Pikachu chase and one of the most valuable current-era cards. Raw is a great-looking, affordable buy; a PSA 10 is a better store of value, though the premium is modest since it's a large mainline set." },
+      { q: "Should I buy the Pikachu ex single or rip Surging Sparks?", a: "Buy the single — the set's value is concentrated in this card, so chasing it in packs is almost always more expensive than just buying it. Rip only for the fun of it." },
+    ],
+    related: ["best-pikachu-pokemon-cards", "is-surging-sparks-worth-it", "best-cards-in-surging-sparks"],
+  },
+
+  {
+    slug: "are-pikachu-cards-worth-money",
+    title: "Are Pikachu Cards Worth Money? (2026 Value Guide) | wmcp.sh",
+    desc: "Are Pikachu Pokémon cards worth money? Which Pikachu cards hold value — vintage grails vs modern chases, raw vs graded — and the cheapest copies and PSA 10s on eBay.",
+    h1: "Are Pikachu Cards Worth Money?",
+    dek: "Which Pikachu cards actually hold value — and which are just nice to own.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Pikachu is everywhere, which means most Pikachu cards are common — but a handful are among the most valuable cards in the hobby. Here's how the values break down.`) +
+      h2("The ones that hold value") +
+      p(`The blue-chips are the <a href="/guides/pikachu-illustrator-card-value">Pikachu Illustrator</a> (the most expensive card ever), trophy/contest promos, and the early <a href="/guides/best-pikachu-pokemon-cards">Base Set Red Cheeks</a> Pikachu. These are genuinely scarce and durable.`) +
+      cardLinks("Pokemon Pikachu Illustrator") +
+      h2("Strong modern holds") +
+      p(`The <a href="/guides/pikachu-ex-surging-sparks-worth-it">Surging Sparks Pikachu ex SIR</a>, the <a href="/guides/van-gogh-pikachu-card-value">Van Gogh promo</a>, and the Vivid Voltage VMAX hold solid value — popular and liquid, good entry points.`) +
+      cardLinks("Pokemon Pikachu ex special illustration rare Surging Sparks") +
+      h2("Nice to own, not investments") +
+      p(`Most Pikachu cards — common holos, countless promos, recent bulk — are great for a collection but won't appreciate. Pikachu's ubiquity means supply is huge. Buy those because you love Pikachu, not to flip.`) +
+      h2("Raw vs graded for value") +
+      p(`For the grails and promos, a PSA 10 is the real store of value and removes authenticity risk. Holding raw copies worth grading? Read <a href="/guides/how-to-grade-pokemon-cards">how to grade</a> and run the <a href="/tools/pokemon-grading-calculator">grading calculator</a>. Selling? See <a href="/guides/where-to-sell-pokemon-cards">where to sell</a>.`),
+    faqs: [
+      { q: "Are Pikachu cards a good investment?", a: "A few are — the Pikachu Illustrator, trophy promos, and Base Set Red Cheeks are genuine grails, and modern chases like the Surging Sparks ex SIR and Van Gogh promo are strong holds. But most Pikachu cards are common and won't appreciate." },
+      { q: "Which Pikachu card is worth the most?", a: "The Pikachu Illustrator (1998 promo) is worth the most — it's the most expensive Pokémon card ever made. Among modern cards, the Surging Sparks Pikachu ex SIR leads." },
+    ],
+    related: ["best-pikachu-pokemon-cards", "pikachu-illustrator-card-value", "best-pokemon-cards-to-invest-2026"],
+  },
 ];
 
 export const ARTICLE_SLUGS = ARTICLES.map((a) => a.slug);
