@@ -1842,6 +1842,179 @@ export const ARTICLES: Article[] = [
     ],
     related: ["best-mew-pokemon-cards", "mew-ex-151-worth-it", "best-pokemon-cards-to-invest-2026"],
   },
+
+  {
+    slug: "best-lugia-pokemon-cards",
+    title: "Best Lugia Pokémon Cards (Most Valuable, 2026) | wmcp.sh",
+    desc: "The best and most valuable Lugia Pokémon cards — Neo Genesis 1st Edition, Lugia V alt art, Shining Lugia, Lugia Legend — with the cheapest raw and PSA 10 copies on eBay.",
+    h1: "Best Lugia Pokémon Cards",
+    dek: "The Neo Genesis grail, the Silver Tempest chase — and where to buy each.",
+    updated: "June 2026",
+    readMins: 7,
+    bodyHtml:
+      p(`Lugia is one of the most beloved Legendary Pokémon, and its cards include a notorious vintage grail and a stunning modern alt art. Here are the best — with the cheapest raw copy and the cheapest PSA 10 on eBay for each.`) +
+      h2("1. Neo Genesis 1st Edition Lugia (2000)") +
+      p(`The grail. The Neo Genesis 1st Edition Lugia (#9/111) is one of the most coveted vintage cards — and infamously hard to find well-centered, which makes high-grade PSA 10 copies extraordinarily valuable.`) +
+      cardLinks("Pokemon Lugia Neo Genesis 1st edition") +
+      h2("2. Lugia V Alternate Art (Silver Tempest, 2022)") +
+      p(`The headline modern chase — the Silver Tempest Lugia V alt art is one of the most popular cards of its era. See <a href="/guides/lugia-v-alt-art-worth-it">is it worth it</a>.`) +
+      cardLinks("Pokemon Lugia V alternate art Silver Tempest") +
+      h2("3. Shining Lugia (Neo Revelation, 2001)") +
+      p(`A classic vintage shiny chase — the original Shining Lugia is a centerpiece for collectors and commands strong money graded.`) +
+      cardLinks("Pokemon Shining Lugia Neo Revelation") +
+      h2("4. Lugia LEGEND (HeartGold SoulSilver, 2010)") +
+      p(`The two-card Lugia LEGEND from the HGSS era is a unique, sought-after collectible — you need both halves to complete it, which adds to the chase.`) +
+      cardLinks("Pokemon Lugia Legend HeartGold SoulSilver") +
+      h2("5. Lugia VSTAR (Silver Tempest, 2022)") +
+      p(`The Lugia VSTAR — including the gold secret rare — is a strong, attainable modern hold from the same beloved set as the V alt art.`) +
+      cardLinks("Pokemon Lugia VSTAR Silver Tempest") +
+      h2("Raw or PSA 10?") +
+      p(`Raw is the affordable way to collect; a PSA 10 commands a major premium — especially the Neo Genesis Lugia, where centering makes gem-mint copies scarce. Buy graded for vintage to remove authenticity risk — see <a href="/guides/how-to-spot-fake-pokemon-booster-box">how to spot fakes</a>. Buying raw to grade? Read <a href="/guides/how-to-grade-pokemon-cards">how to grade</a> and check the <a href="/tools/pokemon-grading-calculator">grading calculator</a>.`),
+    faqs: [
+      { q: "What is the most valuable Lugia card?", a: "The Neo Genesis 1st Edition Lugia (2000) is the most valuable, and it's notoriously hard to find well-centered, so gem-mint PSA 10 copies are extraordinarily valuable. The Silver Tempest Lugia V alt art leads the modern cards." },
+      { q: "Why is the Neo Genesis Lugia so expensive?", a: "It's a coveted vintage card with a famously difficult centering, so high-grade copies are genuinely scarce — driving huge premiums in PSA 9 and especially PSA 10." },
+    ],
+    related: ["lugia-v-alt-art-worth-it", "are-lugia-cards-worth-money", "vintage-pokemon-cards-worth-money"],
+  },
+
+  {
+    slug: "lugia-v-alt-art-worth-it",
+    title: "Is the Lugia V Alt Art Worth It? (Silver Tempest) | wmcp.sh",
+    desc: "Is the Lugia V alternate art from Silver Tempest worth buying? Why it's so popular, raw vs PSA 10, and the cheapest copies on eBay.",
+    h1: "Is the Lugia V Alt Art Worth It?",
+    dek: "The standout modern Lugia chase — raw or graded?",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`The Lugia V alternate art from Silver Tempest is one of the most loved modern Pokémon cards. Here's the honest read on whether it's worth it.`) +
+      h2("Why it's so popular") +
+      p(`Lugia is a top-tier Legendary, the art (Lugia rising over the sea) is widely praised, and Silver Tempest is a beloved set. That combination gives the card deep, durable demand among collectors.`) +
+      cardLinks("Pokemon Lugia V alternate art Silver Tempest") +
+      h2("Raw vs PSA 10") +
+      p(`Raw copies are the affordable entry and display beautifully. A PSA 10 carries a solid premium — but since Silver Tempest is a mainline set with a large print run, the multiple is more modest than on scarce cards. Raw is a smart collector buy.`) +
+      h2("Verdict") +
+      p(`Worth it — it's one of the safest modern alt-art holds and a centerpiece display card. Buy the PSA 10 for value, raw to enjoy it. See the <a href="/guides/best-lugia-pokemon-cards">best Lugia cards</a> and <a href="/guides/are-lugia-cards-worth-money">are Lugia cards worth money</a>.`),
+    faqs: [
+      { q: "Why is the Lugia V alt art so popular?", a: "Lugia is a top Legendary, the alternate art is widely praised, and Silver Tempest is a beloved set — together giving the card deep, durable collector demand." },
+      { q: "Should I buy the Lugia V alt art raw or PSA 10?", a: "Buy raw to display it affordably; buy a PSA 10 for a better store of value, though the premium is modest since Silver Tempest is a large mainline set." },
+    ],
+    related: ["best-lugia-pokemon-cards", "are-lugia-cards-worth-money", "rayquaza-vmax-alt-art-worth-it"],
+  },
+
+  {
+    slug: "are-lugia-cards-worth-money",
+    title: "Are Lugia Cards Worth Money? (2026 Value Guide) | wmcp.sh",
+    desc: "Are Lugia Pokémon cards worth money? Which Lugia cards hold value — vintage grails vs modern chases, raw vs graded — and the cheapest copies and PSA 10s on eBay.",
+    h1: "Are Lugia Cards Worth Money?",
+    dek: "Which Lugia cards actually hold value — and which are just nice to own.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Lugia's fanbase makes it a reliable collector favorite — but values swing hugely between its cards. Here's how it breaks down.`) +
+      h2("The ones that hold value") +
+      p(`The blue-chips are the <a href="/guides/best-lugia-pokemon-cards">Neo Genesis 1st Edition Lugia</a> (the centering-cursed grail) and Shining Lugia — genuinely scarce vintage with durable demand.`) +
+      cardLinks("Pokemon Lugia Neo Genesis 1st edition") +
+      h2("Strong modern holds") +
+      p(`The <a href="/guides/lugia-v-alt-art-worth-it">Silver Tempest Lugia V alt art</a>, Lugia VSTAR, and the HGSS Lugia LEGEND hold solid value — popular and liquid, good entry points.`) +
+      cardLinks("Pokemon Lugia V alternate art Silver Tempest") +
+      h2("Nice to own, not investments") +
+      p(`Common holos, promos, and recent bulk Lugias are great for a collection but won't appreciate much. Buy those for love of the card, not to flip.`) +
+      h2("Raw vs graded for value") +
+      p(`For the vintage grails, a PSA 10 is the real store of value — and centering makes gem-mint Neo Genesis Lugias especially scarce. Holding raw copies worth grading? Read <a href="/guides/how-to-grade-pokemon-cards">how to grade</a> and run the <a href="/tools/pokemon-grading-calculator">grading calculator</a>. Selling? See <a href="/guides/where-to-sell-pokemon-cards">where to sell</a>.`),
+    faqs: [
+      { q: "Are Lugia cards a good investment?", a: "The vintage grails are — the Neo Genesis 1st Edition Lugia and Shining Lugia have durable demand, and the Neo Genesis card's tough centering makes gem-mint copies very scarce. Modern alt arts like the Silver Tempest Lugia V are strong holds. Common holos won't appreciate much." },
+      { q: "Which Lugia card is worth the most?", a: "The Neo Genesis 1st Edition Lugia is worth the most, especially in PSA 10 where centering makes top grades extraordinarily rare." },
+    ],
+    related: ["best-lugia-pokemon-cards", "lugia-v-alt-art-worth-it", "best-pokemon-cards-to-invest-2026"],
+  },
+
+  {
+    slug: "best-espeon-pokemon-cards",
+    title: "Best Espeon Pokémon Cards (Most Valuable, 2026) | wmcp.sh",
+    desc: "The best and most valuable Espeon Pokémon cards — Gold Star, Espeon ex SIR, Evolving Skies alt art, Espeon Prime — with the cheapest raw and PSA 10 copies on eBay.",
+    h1: "Best Espeon Pokémon Cards",
+    dek: "The Eeveelution grails and chases — and where to buy each, raw or PSA 10.",
+    updated: "June 2026",
+    readMins: 7,
+    bodyHtml:
+      p(`Espeon shares the devoted Eeveelution fanbase (and many of the same sets) as Umbreon, and its best cards are genuinely valuable. Here are the ones worth owning — with the cheapest raw copy and the cheapest PSA 10 on eBay for each.`) +
+      h2("1. Espeon Gold Star (POP Series 5, 2007)") +
+      p(`The vintage grail. The Gold Star Espeon was a rare POP Series 5 promo and is one of the most coveted Eeveelution cards — extremely valuable in high grade.`) +
+      cardLinks("Pokemon Espeon Gold Star POP Series 5") +
+      h2("2. Espeon ex Special Illustration Rare (Prismatic Evolutions)") +
+      p(`The modern chase — Espeon's special illustration rare from the Eeveelution-themed Prismatic Evolutions set rides the same mania that made the Umbreon ex SIR explode.`) +
+      cardLinks("Pokemon Espeon ex special illustration rare Prismatic Evolutions") +
+      h2("3. Espeon V / VMAX Alternate Art (Evolving Skies, 2021)") +
+      p(`The Evolving Skies Espeon alt arts are beautiful, sought-after chases from the same beloved set as Moonbreon.`) +
+      cardLinks("Pokemon Espeon V alternate art Evolving Skies") +
+      h2("4. Espeon GX (Burning Shadows, 2017)") +
+      p(`The Espeon GX, including the rainbow secret rare, is a popular and attainable modern hold.`) +
+      cardLinks("Pokemon Espeon GX Burning Shadows") +
+      h2("5. Espeon Prime (Call of Legends, 2011)") +
+      p(`A beloved older fan-favorite that pairs with the Umbreon Prime — strong nostalgia and steady value, especially graded.`) +
+      cardLinks("Pokemon Espeon Prime Call of Legends") +
+      h2("Raw or PSA 10?") +
+      p(`Raw is the affordable way to collect; a PSA 10 commands a premium and is the store of value for the grails like the Gold Star. Buying raw to grade? Read <a href="/guides/how-to-grade-pokemon-cards">how to grade</a> and check the <a href="/tools/pokemon-grading-calculator">grading calculator</a>.`) +
+      p(`Prismatic Evolutions (home of the Espeon ex SIR) sells out fast — catch it at retail with <a href="/">QuickCatch</a>. Espeon fan? See the <a href="/guides/best-umbreon-pokemon-cards">best Umbreon cards</a> too.`),
+    faqs: [
+      { q: "What is the most valuable Espeon card?", a: "The Espeon Gold Star (POP Series 5, 2007) is the vintage grail and most valuable in high grade, while the Prismatic Evolutions Espeon ex SIR leads the modern chases." },
+      { q: "Is there an Espeon card like Moonbreon?", a: "Espeon has its own Evolving Skies alt arts and the Prismatic Evolutions Espeon ex SIR, but no single Espeon card reaches the fame or value of the Umbreon VMAX alt art (Moonbreon)." },
+    ],
+    related: ["espeon-gold-star-pokemon-card", "are-espeon-cards-worth-money", "best-umbreon-pokemon-cards"],
+  },
+
+  {
+    slug: "espeon-gold-star-pokemon-card",
+    title: "Espeon Gold Star Card Value (Vintage Grail) | wmcp.sh",
+    desc: "The Espeon Gold Star from POP Series 5 is a vintage Eeveelution grail. What makes it so valuable, how to avoid fakes, raw vs PSA 10, and the cheapest copies on eBay.",
+    h1: "Espeon Gold Star (The Vintage Grail)",
+    dek: "One of the rarest Eeveelution cards — what it's worth and how to buy safely.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`The Gold Star Espeon from POP Series 5 (2007) is one of the most coveted vintage Eeveelution cards — the Espeon counterpart to the famous Umbreon Gold Star. Here's the value read.`) +
+      h2("What makes it a grail") +
+      p(`POP Series 5 Gold Stars were distributed in tiny numbers through the Pokémon organized-play program, making them far scarcer than booster-pulled cards. Pair that with the fanatical Eeveelution following and high-grade copies are genuinely rare and expensive.`) +
+      cardLinks("Pokemon Espeon Gold Star POP Series 5") +
+      h2("Watch for fakes") +
+      p(`A card this valuable and scarce is heavily counterfeited. Buy graded (PSA/CGC/BGS) whenever possible, or learn the tells first — see <a href="/guides/how-to-spot-fake-pokemon-booster-box">how to spot fakes</a> and <a href="/guides/how-to-tell-if-a-pokemon-card-is-rare">how to tell if a card is rare</a>.`) +
+      h2("Raw vs PSA 10") +
+      p(`Raw copies carry authenticity and condition risk on a card this scarce. A PSA 10 is the safest, most liquid way to own it, and the premium reflects how few survive gem-mint. For vintage at this level, graded is almost always the right call.`) +
+      h2("Verdict") +
+      p(`A true blue-chip Eeveelution grail — if you can afford it and buy authenticated, it's one of the most durable holds in the hobby. See where it ranks among the <a href="/guides/best-espeon-pokemon-cards">best Espeon cards</a>, and its sibling the <a href="/guides/umbreon-gold-star-pokemon-card">Umbreon Gold Star</a>.`),
+    faqs: [
+      { q: "How much is an Espeon Gold Star worth?", a: "It's a high-value vintage grail; prices climb steeply with grade, and gem-mint PSA 10 copies command a large premium because so few of the scarce POP Series 5 promos survive in top condition." },
+      { q: "Is the Espeon Gold Star rarer than the Umbreon Gold Star?", a: "Both are scarce POP Series 5 / EX-era Gold Stars with similar distribution; Umbreon typically commands more on pure popularity, but Espeon is a comparably coveted grail." },
+    ],
+    related: ["best-espeon-pokemon-cards", "umbreon-gold-star-pokemon-card", "vintage-pokemon-cards-worth-money"],
+  },
+
+  {
+    slug: "are-espeon-cards-worth-money",
+    title: "Are Espeon Cards Worth Money? (2026 Value Guide) | wmcp.sh",
+    desc: "Are Espeon Pokémon cards worth money? Which Espeon cards hold value — Gold Star, Espeon ex SIR, Evolving Skies alt art — raw vs graded, with the cheapest copies and PSA 10s on eBay.",
+    h1: "Are Espeon Cards Worth Money?",
+    dek: "Which Espeon cards actually hold value — and which are just nice to own.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Espeon rides the same devoted Eeveelution fanbase as Umbreon, which keeps its best cards valuable — but most Espeon cards are common. Here's the breakdown.`) +
+      h2("The ones that hold value") +
+      p(`The blue-chips are the <a href="/guides/espeon-gold-star-pokemon-card">Espeon Gold Star</a> (vintage grail) and the <a href="/guides/best-espeon-pokemon-cards">Prismatic Evolutions Espeon ex SIR</a> — both with deep Eeveelution demand.`) +
+      cardLinks("Pokemon Espeon Gold Star POP Series 5") +
+      h2("Strong mid-tier") +
+      p(`The Evolving Skies Espeon alt arts, Espeon GX (Burning Shadows), and Espeon Prime (Call of Legends) hold solid value without the grail price — good entry points.`) +
+      cardLinks("Pokemon Espeon ex special illustration rare Prismatic Evolutions") +
+      h2("Nice to own, not investments") +
+      p(`Common holos, promos, and recent bulk Espeons are great for a collection but won't appreciate. Buy those because you love Espeon, not to flip.`) +
+      h2("Raw vs graded for value") +
+      p(`For the grails, a PSA 10 is the real store of value and removes authenticity risk. Holding raw copies worth grading? Read <a href="/guides/how-to-grade-pokemon-cards">how to grade</a> and run the <a href="/tools/pokemon-grading-calculator">grading calculator</a>. Selling? See <a href="/guides/where-to-sell-pokemon-cards">where to sell</a>.`),
+    faqs: [
+      { q: "Are Espeon cards a good investment?", a: "The grails are — the Espeon Gold Star and the Prismatic Evolutions Espeon ex SIR have deep, durable Eeveelution demand. The Evolving Skies alt arts and Espeon Prime are strong mid-tier holds. Common holos won't appreciate much." },
+      { q: "Which Espeon card is worth the most?", a: "The Espeon Gold Star (POP Series 5) is the most valuable, especially in PSA 10, followed by the Prismatic Evolutions Espeon ex special illustration rare." },
+    ],
+    related: ["best-espeon-pokemon-cards", "espeon-gold-star-pokemon-card", "best-cards-in-prismatic-evolutions"],
+  },
 ];
 
 export const ARTICLE_SLUGS = ARTICLES.map((a) => a.slug);
