@@ -392,6 +392,168 @@ export const ARTICLES: Article[] = [
     ],
     related: ["best-pokemon-booster-boxes-2026", "how-much-is-a-pokemon-booster-box", "psa-vs-cgc-vs-beckett-pokemon"],
   },
+
+  {
+    slug: "best-pokemon-cards-to-buy-2026",
+    title: "Best Pokémon Cards to Buy in 2026 (Singles & Sealed) | wmcp.sh",
+    desc: "The Pokémon cards actually worth buying in 2026 — the chase singles holding value, the sealed sets worth stocking, and how to buy at retail instead of resale.",
+    h1: "Best Pokémon Cards to Buy in 2026",
+    dek: "The singles and sealed worth your money this year — and how to buy them right.",
+    updated: "June 2026",
+    readMins: 6,
+    bodyHtml:
+      p(`"Best to buy" depends on your goal — flip, collect, or hold. Here's what's worth buying in 2026 across both singles and sealed, with the honest reasoning.`) +
+      h2("Chase singles holding value") +
+      p(`The Eeveelution special-illustration rares from Prismatic Evolutions — Umbreon ex above all — remain the most-demanded modern singles. For investment, a graded copy is far more liquid than raw.`) +
+      buy("Umbreon ex special illustration rare", "See live single prices on eBay:") +
+      h2("Sealed worth stocking") +
+      p(`Prismatic Evolutions (special-set demand), Pokémon 151 (blue-chip nostalgia), and Surging Sparks (Pikachu ex SIR ceiling) are the strongest sealed picks. See the full ranking in <a href="/guides/best-pokemon-booster-boxes-2026">best booster boxes</a>.`) +
+      buy("Pokemon Prismatic Evolutions Booster Box") +
+      h2("Best value for players") +
+      p(`If you actually play, build from singles and bulk rather than chasing hits in packs — see <a href="/guides/sealed-vs-singles-pokemon">sealed vs singles</a> for the math.`) +
+      h2("Buy at retail, not resale") +
+      p(`Whatever you buy, your entry price is the whole game. Compare any listing against retail with the <a href="/tools/pokemon-resale-calculator">resale calculator</a>, and catch sealed at MSRP with <a href="/">QuickCatch</a> instead of paying the scalper premium.`),
+    faqs: [
+      { q: "What Pokémon cards should I buy in 2026?", a: "For value: graded chase singles (e.g. Umbreon ex SIR) and sealed special sets like Prismatic Evolutions. For playing: singles of the cards you need. The biggest factor is buying at retail rather than resale." },
+      { q: "Are singles or sealed better to buy?", a: "Singles if you want a specific card (cheaper than chasing it in packs); sealed to rip for fun or hold through a print cycle." },
+    ],
+    related: ["best-pokemon-cards-to-invest-2026", "best-pokemon-booster-boxes-2026", "where-to-sell-pokemon-cards"],
+  },
+
+  {
+    slug: "where-to-sell-pokemon-cards",
+    title: "Where to Sell Pokémon Cards in 2026 (Best Prices) | wmcp.sh",
+    desc: "The best places to sell Pokémon cards online in 2026 — eBay vs TCGplayer vs local — how fees compare, and how to get the most for singles, graded slabs, and sealed.",
+    h1: "Where to Sell Pokémon Cards (for the Most Money)",
+    dek: "eBay vs TCGplayer vs local — fees, speed, and which to use for what.",
+    updated: "June 2026",
+    readMins: 6,
+    bodyHtml:
+      p(`Where you sell decides how much you keep. Here's the practical map for singles, graded slabs, and sealed in 2026.`) +
+      h2("eBay — best reach + best for graded/sealed") +
+      p(`eBay has the deepest buyer pool and the best sold-price history, which matters most for graded slabs and sealed product where price discovery is everything. Fees run ~13% but the realized price is usually higher. Check live sold comps before you list.`) +
+      buy("Pokemon graded PSA 10", "Check graded sold prices on eBay:") +
+      h2("TCGplayer — best for singles at volume") +
+      p(`If you're moving lots of singles, TCGplayer's marketplace is built for it (and buyers go there to complete sets). Lower friction for bulk singles than one-off eBay listings.`) +
+      buy("Pokemon singles", "Compare single prices on eBay:") +
+      h2("Local / in-person — fastest, lowest price") +
+      p(`Card shops and shows pay immediately but at a discount to market (they need margin). Good for fast liquidation of bulk; bad for maximizing on chase cards.`) +
+      h2("Get the price right before you sell") +
+      p(`Whatever the venue, price off <em>sold</em> comps, not listed prices. For sealed, the <a href="/tools/pokemon-resale-calculator">resale calculator</a> shows your premium over retail. Graded slabs sell for the most — see <a href="/guides/psa-vs-cgc-vs-beckett-pokemon">which grader</a> the market pays for.`),
+    faqs: [
+      { q: "Where can I sell Pokémon cards for the most money?", a: "eBay generally realizes the highest prices for graded and sealed (deepest buyer pool, best comps), TCGplayer is best for moving singles at volume, and local shops are fastest but pay below market." },
+      { q: "What are eBay's fees for selling Pokémon cards?", a: "Roughly 13% of the sale on trading cards, but the realized price is usually higher than other venues, so net is often better." },
+    ],
+    related: ["best-places-to-buy-pokemon-cards-online", "psa-vs-cgc-vs-beckett-pokemon", "best-pokemon-cards-to-invest-2026"],
+  },
+
+  {
+    slug: "are-pokemon-cards-a-good-investment",
+    title: "Are Pokémon Cards a Good Investment in 2026? (Honest Take) | wmcp.sh",
+    desc: "An honest look at whether Pokémon cards are a good investment in 2026 — what's held value, the real risks (reprints, illiquidity, grading), and how to lower your downside.",
+    h1: "Are Pokémon Cards a Good Investment?",
+    dek: "The honest version — what holds value, what doesn't, and the risks nobody puts in the thumbnail.",
+    updated: "June 2026",
+    readMins: 6,
+    bodyHtml:
+      p(`Short answer: they can be, but they're a volatile, illiquid alternative asset — not a savings account. Here's the honest breakdown.`) +
+      h2("What has actually held value") +
+      p(`Sealed special sets (short print windows + theme demand), blue-chip nostalgia sealed like 151, and graded 10s of marquee chase cards. These are the most consistent performers — see <a href="/guides/best-pokemon-cards-to-invest-2026">best cards to invest in</a>.`) +
+      buy("Pokemon 151 Booster Box", "See sealed prices on eBay:") +
+      h2("The risks nobody mentions") +
+      p(`Reprints can crater a card overnight. Sealed can sit illiquid if a set falls out of favor. Grading is a gamble plus a fee. And the resale premium you pay on day one is pure downside — buy a hyped box at 2× retail and it has to nearly double just to break even.`) +
+      h2("How to lower your downside") +
+      p(`Buy at retail, not resale — that's the single biggest edge. Run listings through the <a href="/tools/pokemon-resale-calculator">resale calculator</a>, and catch sealed at MSRP with <a href="/">QuickCatch</a> so you're not underwater on day one.`),
+    faqs: [
+      { q: "Are Pokémon cards a good investment in 2026?", a: "They can be, but they're volatile and illiquid. Sealed special sets, blue-chip nostalgia sealed, and graded chase singles have held value best. The biggest edge is buying at retail instead of paying the resale premium." },
+      { q: "What's the biggest risk with Pokémon card investing?", a: "Reprints (which can crater a card), illiquidity, grading costs/gambles, and overpaying the resale premium at purchase." },
+    ],
+    related: ["best-pokemon-cards-to-invest-2026", "sealed-vs-singles-pokemon", "where-to-sell-pokemon-cards"],
+  },
+
+  {
+    slug: "japanese-vs-english-pokemon-cards",
+    title: "Japanese vs English Pokémon Cards: Which to Buy? | wmcp.sh",
+    desc: "Japanese vs English Pokémon cards compared — print quality, pull rates, cost, resale, and which to buy depending on whether you collect, rip, or invest.",
+    h1: "Japanese vs English Pokémon Cards",
+    dek: "Print quality, pull rates, cost, resale — which to buy for your goal.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Japanese and English Pokémon cards are different products with different economics. Here's how to choose.`) +
+      h2("Japanese: cheaper to rip, sharper print") +
+      p(`Japanese sealed is usually cheaper per pack, print quality is excellent, and special sets often have strong pull rates. Great for ripping value and for collectors who want the original art.`) +
+      buy("Japanese Pokemon booster box", "See Japanese sealed on eBay:") +
+      h2("English: bigger resale market, wider demand") +
+      p(`English cards have the larger Western buyer pool, so liquidity and resale demand are deeper — generally the better choice for investment and easy reselling.`) +
+      buy("Pokemon English booster box") +
+      h2("Which should you buy?") +
+      `<table class="tbl"><thead><tr><th>Goal</th><th>Pick</th></tr></thead><tbody>` +
+      `<tr><td>Rip for value / collect art</td><td>Japanese</td></tr>` +
+      `<tr><td>Invest / easy resale</td><td>English</td></tr>` +
+      `<tr><td>Graded chase cards</td><td>Either — buy the cheaper raw, grade it</td></tr>` +
+      `</tbody></table>` +
+      p(`Either way, compare against retail with the <a href="/tools/pokemon-resale-calculator">resale calculator</a> before paying a markup.`),
+    faqs: [
+      { q: "Are Japanese Pokémon cards worth more than English?", a: "Usually no — English has the larger Western resale market, so demand and liquidity are deeper. Japanese is cheaper to rip and prized for print quality and original art." },
+      { q: "Should I buy Japanese or English Pokémon cards?", a: "Japanese for ripping value and collecting; English for investment and easy resale." },
+    ],
+    related: ["sealed-vs-singles-pokemon", "best-pokemon-booster-boxes-2026", "are-pokemon-cards-a-good-investment"],
+  },
+
+  {
+    slug: "how-to-tell-if-a-pokemon-card-is-rare",
+    title: "How to Tell if a Pokémon Card Is Rare (2026 Guide) | wmcp.sh",
+    desc: "How to tell if a Pokémon card is rare — the rarity symbols, set numbers, holo/reverse/illustration rares, and which modern cards are actually valuable.",
+    h1: "How to Tell if a Pokémon Card Is Rare",
+    dek: "The rarity symbols, set numbers, and what actually makes a modern card valuable.",
+    updated: "June 2026",
+    readMins: 6,
+    bodyHtml:
+      p(`"Rare" and "valuable" aren't the same thing. Here's how to read a card and tell what you've actually got.`) +
+      h2("1. Check the rarity symbol") +
+      p(`Bottom of the card: a circle (common), diamond (uncommon), or star (rare). Modern sets add tiers above that — double rare (ex), illustration rare, special illustration rare (SIR), and hyper/gold rare. The higher the tier, the scarcer.`) +
+      h2("2. Read the set number") +
+      p(`A number <em>above</em> the set total (e.g. 201/197) is a "secret rare" — pulled beyond the base set, usually the chase cards. Those are where the value concentrates.`) +
+      h2("3. Look for the art style") +
+      p(`Full-art and "alt-art"/illustration rares — where the character spills outside the normal frame — are the most demanded modern cards. The special-illustration rares (SIRs) are typically a set's most valuable pulls.`) +
+      h2("4. Confirm value with sold comps") +
+      p(`Rarity ≠ price. Check what the exact card actually sells for before assuming it's worth money:`) +
+      buy("Pokemon special illustration rare", "Check what it sells for on eBay:") +
+      p(`If it's worth grading, run the math with the <a href="/tools/pokemon-grading-calculator">grading calculator</a> first.`),
+    faqs: [
+      { q: "How do I know if my Pokémon card is rare?", a: "Check the rarity symbol (circle/diamond/star and higher tiers), the set number (a number above the set total is a secret rare), and the art style (full-art / illustration rares are most demanded). Then confirm value with sold comps." },
+      { q: "What is the rarest type of Pokémon card?", a: "In modern sets, special illustration rares (SIRs) and gold/hyper rares are the scarcest and usually the most valuable pulls." },
+    ],
+    related: ["how-to-spot-fake-pokemon-booster-box", "psa-vs-cgc-vs-beckett-pokemon", "best-pokemon-cards-to-invest-2026"],
+  },
+
+  {
+    slug: "how-to-get-pokemon-restock-alerts",
+    title: "How to Get Pokémon Restock Alerts (and Actually Catch Them) | wmcp.sh",
+    desc: "How to get Pokémon restock alerts that actually work — why notifications arrive too late, and how an auto-cart browser tool beats refreshing for sold-out sets.",
+    h1: "How to Get Pokémon Restock Alerts That Actually Work",
+    dek: "Why most alerts arrive too late — and what actually catches a restock.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Restock alerts are everywhere, but most arrive after the item's already gone. Here's why — and what actually works.`) +
+      h2("Why notification alerts arrive too late") +
+      p(`A Discord/email "it's back!" alert has to detect the restock, send the message, and then <em>you</em> have to see it, open the page, and check out — all while the item sells in seconds. By the time you tap the notification, it's usually gone.`) +
+      h2("The fix: react automatically, in the browser") +
+      p(`The only reliable approach is a tool that's already watching the product page and <strong>adds the item to your cart the instant stock flips</strong> — no human in the loop for the slow part. That's what <a href="/">QuickCatch</a> does: it watches the page in the background and carts the restock for you, even on sites that block bots. Close the tab — just keep Chrome open.`) +
+      p(`<a href="https://chromewebstore.google.com/detail/quickcatch/bglmmkpaofofjnpkabfneeemgnjpjejl" rel="nofollow">Get QuickCatch free →</a>`) +
+      h2("Where to watch") +
+      p(`Set it on the official retailers (Pokémon Center, Walmart, Target, Best Buy, Costco) — that's where sealed restocks at MSRP. See the per-set <a href="/drops">restock guides</a> for the exact pages, and <a href="/guides/pokemon-center-restock-times">when restocks tend to happen</a>.`) +
+      h2("If you'd rather just buy now") +
+      p(`Don't want to wait? The secondary market always has stock at a premium — compare it to retail with the <a href="/tools/pokemon-resale-calculator">resale calculator</a> first:`) +
+      buy("Pokemon Prismatic Evolutions Elite Trainer Box", "See it in stock on eBay:"),
+    faqs: [
+      { q: "How do I get notified when Pokémon cards restock?", a: "Notification alerts (Discord/email) usually arrive too late because you still have to react manually. A browser tool that auto-carts the moment stock flips — like QuickCatch — is far more reliable for fast-selling sets." },
+      { q: "What's the best Pokémon restock tracker?", a: "The best approach isn't just a tracker — it's an auto-catcher that adds the item to your cart the instant it restocks, so you're not racing a notification. QuickCatch does this in the browser, in the background." },
+    ],
+    related: ["pokemon-center-restock-times", "best-pokemon-booster-boxes-2026", "how-much-is-a-pokemon-booster-box"],
+  },
 ];
 
 export const ARTICLE_SLUGS = ARTICLES.map((a) => a.slug);
