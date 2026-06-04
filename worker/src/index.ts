@@ -1723,6 +1723,16 @@ app.get("/api/v1/admin/outreach", async (c) => {
   const { outreachCampaign } = await import("./outreach");
   return outreachCampaign(c);
 });
+// Reply triage: the cold-email platform POSTs replies here; opt-outs auto-suppress,
+// noise is logged, hot leads ping LEAD_ALERT_WEBHOOK with a pre-drafted reply.
+app.post("/api/v1/admin/outreach/reply", async (c) => {
+  const { handleOutreachReply } = await import("./outreach_reply");
+  return handleOutreachReply(c);
+});
+app.get("/api/v1/admin/outreach/suppression", async (c) => {
+  const { outreachSuppression } = await import("./outreach_reply");
+  return outreachSuppression(c);
+});
 app.post("/api/v1/admin/regrade-corpus", (c) => regradeCorpus(c as any));
 app.post("/api/v1/admin/seed-registry", (c) => seedRegistry(c as any));
 app.post("/api/v1/admin/seed-packages", (c) => seedPackages(c as any));
