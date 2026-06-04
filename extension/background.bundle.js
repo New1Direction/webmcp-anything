@@ -717,7 +717,54 @@ async function qcPoll() {
 chrome.alarms.onAlarm.addListener((a) => {
   if (a.name === QC_ALARM) qcPoll();
 });
-if (chrome.runtime.onStartup) chrome.runtime.onStartup.addListener(() => qcEnsureAlarm());
+var QC_LIC_KEY = "qc_license";
+var QC_ENT_KEY = "qc_entitlement";
+var QC_ENT_TTL = 12 * 60 * 60 * 1e3;
+var QC_FREE_WATCH_LIMIT = 1;
+async function qcEndpoint() {
+  try {
+    return ((await chrome.storage.local.get("endpoint")).endpoint || "https://wmcp.sh").replace(/\/$/, "");
+  } catch {
+    return "https://wmcp.sh";
+  }
+}
+async function qcLicenseKey() {
+  try {
+    return (await chrome.storage.local.get(QC_LIC_KEY))[QC_LIC_KEY] || "";
+  } catch {
+    return "";
+  }
+}
+async function qcVerifyLicense(force) {
+  const key = await qcLicenseKey();
+  if (!key) {
+    await chrome.storage.local.set({ [QC_ENT_KEY]: { active: false, ts: Date.now() } });
+    return false;
+  }
+  if (!force) {
+    const ent = (await chrome.storage.local.get(QC_ENT_KEY))[QC_ENT_KEY];
+    if (ent && Date.now() - ent.ts < QC_ENT_TTL) return !!ent.active;
+  }
+  try {
+    const ep = await qcEndpoint();
+    const r = await fetch(`${ep}/api/v1/quickcatch/verify?key=${encodeURIComponent(key)}`).then((x) => x.ok ? x.json() : null);
+    const active = !!(r && r.active);
+    await chrome.storage.local.set({ [QC_ENT_KEY]: { active, ts: Date.now() } });
+    return active;
+  } catch {
+    const ent = (await chrome.storage.local.get(QC_ENT_KEY))[QC_ENT_KEY];
+    return !!(ent && ent.active);
+  }
+}
+async function qcIsPaid() {
+  const ent = (await chrome.storage.local.get(QC_ENT_KEY))[QC_ENT_KEY];
+  if (ent && Date.now() - ent.ts < QC_ENT_TTL) return !!ent.active;
+  return await qcVerifyLicense(false);
+}
+if (chrome.runtime.onStartup) chrome.runtime.onStartup.addListener(() => {
+  qcEnsureAlarm();
+  qcVerifyLicense(true);
+});
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   (async () => {
     try {
@@ -756,10 +803,35 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         return;
       }
       if (msg?.type === "WATCH_START") {
+        const norm = qcNorm(msg.url);
+        const all = await qcWatches();
+        const already = !!(all[norm] && all[norm].active);
+        if (!already) {
+          const paid = await qcIsPaid();
+          const activeCount = Object.values(all).filter((w) => w && w.active && !w.caught).length;
+          if (!paid && activeCount >= QC_FREE_WATCH_LIMIT) {
+            sendResponse({ ok: false, paywall: "watch_limit", limit: QC_FREE_WATCH_LIMIT });
+            return;
+          }
+        }
         await qcSaveWatch(msg.url, { active: true, caught: false, opened: false, title: msg.title || "", startedAt: Date.now() });
         await qcEnsureAlarm();
         qcPoll();
         sendResponse({ ok: true, watching: true });
+        return;
+      }
+      if (msg?.type === "QC_IS_PAID") {
+        sendResponse({ ok: true, paid: await qcIsPaid() });
+        return;
+      }
+      if (msg?.type === "QC_LICENSE_STATUS") {
+        sendResponse({ ok: true, hasKey: !!await qcLicenseKey(), active: await qcIsPaid() });
+        return;
+      }
+      if (msg?.type === "QC_SET_LICENSE") {
+        await chrome.storage.local.set({ [QC_LIC_KEY]: String(msg.key || "").trim() });
+        const active = await qcVerifyLicense(true);
+        sendResponse({ ok: true, active });
         return;
       }
       if (msg?.type === "WATCH_STOP") {

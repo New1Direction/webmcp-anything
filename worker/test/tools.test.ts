@@ -14,9 +14,8 @@ describe("free tools", () => {
     // funnel
     expect(html).toContain(STORE());
     expect(html).toContain("/api/v1/leads");
-    expect(html).toContain("/api/v1/stripe/checkout");
-    expect(html).toContain('data-plan="pro"');
-    expect(html).toContain('data-plan="reseller"');
+    expect(html).toContain("/api/v1/quickcatch/checkout");
+    expect(html).toContain('data-plan="quickcatch"');
     // schema
     expect(html).toContain('"@type":"WebApplication"');
     expect(html).toContain('"@type":"FAQPage"');
@@ -39,9 +38,9 @@ describe("free tools", () => {
       expect(html, lang).toContain('hreflang="x-default"');
       // calculator + funnel intact in every locale
       expect(html, lang).toContain('id="o-save"');
-      expect(html, lang).toContain("/api/v1/stripe/checkout");
+      expect(html, lang).toContain("/api/v1/quickcatch/checkout");
       expect(html, lang).toContain("/api/v1/leads");
-      expect(html, lang).toContain('data-plan="reseller"');
+      expect(html, lang).toContain('data-plan="quickcatch"');
       expect(html, lang).toContain('"inLanguage":"' + lang + '"');
     }
   });
@@ -51,9 +50,9 @@ describe("free tools", () => {
     expect(html).toContain('id="raw"');
     expect(html).toContain('id="graded"');
     expect(html).toContain('id="g-roi"');
-    expect(html).toContain("/api/v1/stripe/checkout");
+    expect(html).toContain("/api/v1/quickcatch/checkout");
     expect(html).toContain("/api/v1/leads");
-    expect(html).toContain('data-plan="reseller"');
+    expect(html).toContain('data-plan="quickcatch"');
     expect(html).toContain('"@type":"WebApplication"');
     expect(html).toContain(`<link rel="canonical" href="${origin}/tools/pokemon-grading-calculator" />`);
     expect(TOOL_SLUGS).toContain("pokemon-grading-calculator");

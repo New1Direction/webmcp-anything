@@ -25,15 +25,16 @@ describe("drops SEO pages", () => {
     }
   });
 
-  it("every page sells: Pro + Reseller buy buttons wired to live checkout", () => {
+  it("every page sells the $12 QuickCatch consumer tier wired to live checkout", () => {
     for (const p of DROP_PAGES) {
       const html = dropPageHtml(origin, p);
-      expect(html, p.slug).toContain('data-plan="pro"');
-      expect(html, p.slug).toContain('data-plan="reseller"');
-      expect(html, p.slug).toContain("/api/v1/stripe/checkout");
+      expect(html, p.slug).toContain('data-plan="quickcatch"');
+      expect(html, p.slug).toContain("/api/v1/quickcatch/checkout");
       expect(html, p.slug).toContain('id="pro"'); // pricing section anchor
-      expect(html, p.slug).toContain("$99");
-      expect(html, p.slug).toContain("$299");
+      expect(html, p.slug).toContain("$12");
+      // the collector funnel must NOT push the $99/$299 developer API plans
+      expect(html, p.slug).not.toContain('data-plan="pro"');
+      expect(html, p.slug).not.toContain("$299");
     }
   });
 
@@ -159,14 +160,13 @@ describe("drops SEO localization", () => {
     }
   });
 
-  it("localized pages also sell Pro + Reseller via live checkout", () => {
+  it("localized pages also sell the $12 QuickCatch tier via live checkout", () => {
     const p = DROP_PAGES.find((x) => x.kind === "set")!;
     for (const lang of LOCALIZED_LANGS) {
       const html = dropPageHtml(origin, p, lang as any);
-      expect(html, lang).toContain('data-plan="pro"');
-      expect(html, lang).toContain('data-plan="reseller"');
-      expect(html, lang).toContain("/api/v1/stripe/checkout");
-      expect(html, lang).toContain("$299");
+      expect(html, lang).toContain('data-plan="quickcatch"');
+      expect(html, lang).toContain("/api/v1/quickcatch/checkout");
+      expect(html, lang).toContain("$12");
     }
   });
 

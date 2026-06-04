@@ -31,6 +31,10 @@ type Env = {
   // MCP trust-authority SKUs: one-time deep audit; recurring drift monitoring.
   STRIPE_PRICE_DEEP_AUDIT?: string;
   STRIPE_PRICE_MONITOR?: string;
+  // Consumer QuickCatch tier ($12/mo): the cheap "catch the drop for yourself"
+  // plan for collectors — auto-cart + anti-bot hard sites + unlimited watches in
+  // the browser extension. A license key (not an API key) gates the extension.
+  STRIPE_PRICE_QUICKCATCH?: string;
 };
 
 const STRIPE_API = "https://api.stripe.com/v1";
@@ -337,6 +341,20 @@ export async function stripeWebhook(c: Context<{ Bindings: Env }>) {
         if (host) await c.env.KEYS.delete(`monitorsub:${host}:${sub.id}`);
         return c.json({ ok: true, action: "monitor_removed", host });
       }
+      if (kind === QUICKCATCH_KIND) {
+        // Cancelled consumer sub → deactivate the license (extension falls back
+        // to free alerts on the next verify). Find the key via the sub→key map.
+        const lic = await c.env.KEYS.get(`qcsub:${sub.id}`);
+        if (lic) {
+          const raw = await c.env.KEYS.get(`qclic:${lic}`);
+          if (raw) {
+            const rec = JSON.parse(raw);
+            rec.status = "inactive";
+            await c.env.KEYS.put(`qclic:${lic}`, JSON.stringify(rec), { metadata: { status: "inactive" } });
+          }
+        }
+        return c.json({ ok: true, action: "quickcatch_deactivated" });
+      }
       const user_id = `cust:${sub.customer}`;
       await revokeUserKeys(c.env, user_id);
       return c.json({ ok: true, action: "revoked", user_id });
@@ -468,6 +486,16 @@ async function handleNonPlanCheckout(
       );
     }
     return c.json({ ok: true, action: "monitor_active", host });
+  }
+
+  if (kind === QUICKCATCH_KIND) {
+    // Recurring consumer tier. Activate (or reactivate) the buyer's license key
+    // so the extension unlocks auto-cart + hard sites + unlimited watches.
+    // Idempotent on email. NEVER an API key.
+    const email = obj.customer_email || obj.customer_details?.email || (obj.metadata?.email as string | undefined);
+    const sub_id = (obj.subscription as string) || (obj.id as string) || undefined;
+    if (email) await issueQuickCatchLicense(c.env, email, sub_id);
+    return c.json({ ok: true, action: "quickcatch_active", email });
   }
 
   // Unknown kind → fail-closed: acknowledge the webhook but provision NOTHING.
@@ -654,6 +682,114 @@ export async function createMonitorCheckout(c: Context<{ Bindings: Env }>) {
   form.set("success_url", `${origin}/mcp/grade/${encodeURIComponent(host)}?monitor=ok`);
   form.set("cancel_url", `${origin}/mcp/grade/${encodeURIComponent(host)}?canceled=1`);
   return await createSessionResponse(c, form);
+}
+
+// =================== QuickCatch consumer tier ($12/mo) ===================
+// The cheap collector plan: free = restock alerts; paid = auto-cart, the
+// anti-bot hard sites (Pokémon Center / Walmart / SNKRS / Labubu), unlimited
+// watches. Gated by a LICENSE KEY (qc_…) the browser extension verifies — NOT
+// an API key, so it stays isolated from the developer plan ladder.
+
+const QUICKCATCH_KIND = "quickcatch";
+
+function newQcKey(): string {
+  const rand = Array.from(crypto.getRandomValues(new Uint8Array(18)))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+  return `qc_${rand}`;
+}
+
+// Idempotent on email: one active license per buyer. Writes the verify record
+// (qclic:<key>), the email→key map (recovery + idempotency), and the
+// sub→key map (so a cancellation can find and deactivate it).
+async function issueQuickCatchLicense(
+  env: Env,
+  email: string,
+  sub_id?: string
+): Promise<string> {
+  const lower = email.toLowerCase();
+  const existing = await env.KEYS.get(`qcemail:${lower}`);
+  if (existing) {
+    // Reactivate in case it was previously cancelled, refresh the sub link.
+    const recRaw = await env.KEYS.get(`qclic:${existing}`);
+    if (recRaw) {
+      const rec = JSON.parse(recRaw);
+      rec.status = "active";
+      if (sub_id) rec.sub_id = sub_id;
+      await env.KEYS.put(`qclic:${existing}`, JSON.stringify(rec), { metadata: { status: "active" } });
+      if (sub_id) await env.KEYS.put(`qcsub:${sub_id}`, existing);
+      return existing;
+    }
+  }
+  const key = newQcKey();
+  await env.KEYS.put(
+    `qclic:${key}`,
+    JSON.stringify({ email: lower, sub_id, status: "active", created: Date.now() }),
+    { metadata: { status: "active" } }
+  );
+  await env.KEYS.put(`qcemail:${lower}`, key);
+  if (sub_id) await env.KEYS.put(`qcsub:${sub_id}`, key);
+  return key;
+}
+
+// POST /api/v1/quickcatch/checkout  { email }
+// $12/mo consumer subscription. Email required so we can issue + recover the
+// license. 503 until STRIPE_PRICE_QUICKCATCH is set (fail-closed like every SKU).
+export async function createQuickCatchCheckout(c: Context<{ Bindings: Env }>) {
+  const body = await c.req.json<{ email?: string }>().catch(() => null);
+  if (!body?.email || body.email.indexOf("@") < 1) return c.json({ error: "email_required" }, 400);
+  if (!c.env.STRIPE_SECRET_KEY || !c.env.STRIPE_PRICE_QUICKCATCH) {
+    return c.json({ error: "quickcatch_not_configured" }, 503);
+  }
+  const origin = new URL(c.req.url).origin;
+  const form = new URLSearchParams();
+  form.set("mode", "subscription");
+  form.set("line_items[0][price]", c.env.STRIPE_PRICE_QUICKCATCH);
+  form.set("line_items[0][quantity]", "1");
+  form.set("customer_email", body.email);
+  form.set("allow_promotion_codes", "true");
+  form.set("metadata[kind]", QUICKCATCH_KIND);
+  form.set("metadata[email]", body.email);
+  form.set("subscription_data[metadata][kind]", QUICKCATCH_KIND);
+  form.set("subscription_data[metadata][email]", body.email);
+  form.set("success_url", `${origin}/quickcatch/activate?session_id={CHECKOUT_SESSION_ID}`);
+  form.set("cancel_url", `${origin}/quickcatch?canceled=1`);
+  return await createSessionResponse(c, form);
+}
+
+// GET /api/v1/quickcatch/verify?key=qc_…  → { active } for the extension to gate
+// paid features. Unknown/old keys read inactive (fail-closed).
+export async function verifyQuickCatch(c: Context<{ Bindings: Env }>) {
+  const key = (c.req.query("key") || "").trim();
+  if (!key.startsWith("qc_")) return c.json({ active: false, plan: QUICKCATCH_KIND });
+  const raw = await c.env.KEYS.get(`qclic:${key}`);
+  if (!raw) return c.json({ active: false, plan: QUICKCATCH_KIND });
+  let active = false;
+  try { active = JSON.parse(raw).status === "active"; } catch {}
+  return c.json({ active, plan: QUICKCATCH_KIND });
+}
+
+// GET /quickcatch/activate?session_id=…  — post-checkout landing. Confirms the
+// session is paid, issues/returns the license key (idempotent; mirrors
+// keyByCheckout so it works even before the webhook lands), and shows the buyer
+// their key + how to paste it into the extension.
+export async function quickCatchActivate(c: Context<{ Bindings: Env }>) {
+  const session_id = c.req.query("session_id");
+  const esc = (s: string) => String(s).replace(/[&<>"]/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" } as any)[ch]);
+  const page = (inner: string) => c.html(`<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>QuickCatch — activate</title><body style="font-family:ui-sans-serif,system-ui,sans-serif;background:#13131a;color:#eee;max-width:560px;margin:8vh auto;padding:0 22px;line-height:1.55">${inner}</body>`);
+  if (!session_id) return page(`<h1>QuickCatch</h1><p>Missing session. <a style="color:#ff9e2c" href="/quickcatch">Back</a></p>`);
+  if (!c.env.STRIPE_SECRET_KEY) return page(`<h1>Almost there</h1><p>Billing isn't switched on yet — your subscription is safe; email support and we'll send your key.</p>`);
+  const sRes = await fetch(`${STRIPE_API}/checkout/sessions/${encodeURIComponent(session_id)}`, { headers: { authorization: `Bearer ${c.env.STRIPE_SECRET_KEY}` } });
+  const session: any = await sRes.json();
+  if (!sRes.ok) return page(`<h1>Hmm</h1><p>Couldn't confirm that checkout. Email support with your receipt and we'll sort it.</p>`);
+  if (session.payment_status !== "paid") return page(`<h1>Processing…</h1><p>Payment status: ${esc(session.payment_status || "pending")}. Refresh in a moment.</p>`);
+  const email = session.customer_email || session.customer_details?.email || session.metadata?.email;
+  if (!email) return page(`<h1>Paid ✓</h1><p>We couldn't read your email to issue the key — email support and we'll send it.</p>`);
+  const key = await issueQuickCatchLicense(c.env, email, session.subscription);
+  return page(`<h1>You're in 🎯</h1>
+  <p>QuickCatch is active. Here's your license key — paste it into the extension's <b>Options</b> to unlock auto-cart, the bot-blocked stores, and unlimited watches:</p>
+  <p style="background:#1d1d27;border:1px solid #ff9e2c55;border-radius:10px;padding:14px;font-family:ui-monospace,monospace;font-size:1.05rem;color:#ffcf7a;word-break:break-all">${esc(key)}</p>
+  <p style="color:#9a9aae;font-size:.9rem">Don't have the extension yet? <a style="color:#ff9e2c" href="/">Install QuickCatch</a>, then open its Options and paste the key. Keep this key — you can re-open this page from your receipt anytime.</p>`);
 }
 
 async function createSessionResponse(
