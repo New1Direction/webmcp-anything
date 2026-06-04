@@ -1717,6 +1717,12 @@ app.post("/api/v1/admin/seed-now", (c) => runSeedNow(c as any));
 app.post("/api/v1/admin/seed-stores", (c) => addSeedStores(c as any));
 app.post("/api/v1/admin/seo-indexnow", (c) => submitSeoIndexNow(c as any));
 app.post("/api/v1/admin/grade-servers", (c) => addGradeServers(c as any));
+// Outreach campaign generator: turns the live grade graph into ready-to-send
+// personalized rows (CSV/JSON) for the audit (F) + verified (A) segments.
+app.get("/api/v1/admin/outreach", async (c) => {
+  const { outreachCampaign } = await import("./outreach");
+  return outreachCampaign(c);
+});
 app.post("/api/v1/admin/regrade-corpus", (c) => regradeCorpus(c as any));
 app.post("/api/v1/admin/seed-registry", (c) => seedRegistry(c as any));
 app.post("/api/v1/admin/seed-packages", (c) => seedPackages(c as any));
