@@ -880,6 +880,7 @@ tools = [
       <a href="/dashboard">Get a key</a>
       <a href="/privacy">Privacy</a>
       <a href="https://github.com/New1Direction/webmcp-anything">GitHub ↗</a>
+      <a href="https://alexishearts.substack.com/p/webmcp-and-me">“WebMCP &amp; Me” — a write-up ↗</a>
     </div>
   </div>
   <p class="ftr-tag">Any website → tools an agent can use. QuickCatch is the same wmcp tech, marketed for collectors.</p>
