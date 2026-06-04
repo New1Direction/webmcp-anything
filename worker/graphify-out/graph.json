@@ -784,7 +784,7 @@
       "label": "ARTICLE_SLUGS",
       "file_type": "code",
       "source_file": "src/articles.ts",
-      "source_location": "L1258",
+      "source_location": "L1376",
       "id": "src_articles_article_slugs",
       "community": 13,
       "norm_label": "article_slugs"
@@ -793,7 +793,7 @@
       "label": "bySlug",
       "file_type": "code",
       "source_file": "src/articles.ts",
-      "source_location": "L1259",
+      "source_location": "L1377",
       "id": "src_articles_byslug",
       "community": 13,
       "norm_label": "byslug"
@@ -802,7 +802,7 @@
       "label": "getArticle()",
       "file_type": "code",
       "source_file": "src/articles.ts",
-      "source_location": "L1260",
+      "source_location": "L1378",
       "id": "src_articles_getarticle",
       "community": 13,
       "norm_label": "getarticle()"
@@ -811,7 +811,7 @@
       "label": "articleSchema()",
       "file_type": "code",
       "source_file": "src/articles.ts",
-      "source_location": "L1262",
+      "source_location": "L1380",
       "id": "src_articles_articleschema",
       "community": 13,
       "norm_label": "articleschema()"
@@ -820,7 +820,7 @@
       "label": "relatedHtml()",
       "file_type": "code",
       "source_file": "src/articles.ts",
-      "source_location": "L1296",
+      "source_location": "L1414",
       "id": "src_articles_relatedhtml",
       "community": 13,
       "norm_label": "relatedhtml()"
@@ -829,7 +829,7 @@
       "label": "articleHtml()",
       "file_type": "code",
       "source_file": "src/articles.ts",
-      "source_location": "L1305",
+      "source_location": "L1423",
       "id": "src_articles_articlehtml",
       "community": 13,
       "norm_label": "articlehtml()"
@@ -838,7 +838,7 @@
       "label": "articlesIndexHtml()",
       "file_type": "code",
       "source_file": "src/articles.ts",
-      "source_location": "L1403",
+      "source_location": "L1521",
       "id": "src_articles_articlesindexhtml",
       "community": 13,
       "norm_label": "articlesindexhtml()"
@@ -8510,9 +8510,9 @@
       "source_file": "src/affiliate.ts",
       "source_location": "L51",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_affiliate",
-      "target": "src_affiliate_ebayurl",
-      "confidence_score": 1.0
+      "target": "src_affiliate_ebayurl"
     },
     {
       "relation": "contains",
@@ -8530,9 +8530,9 @@
       "source_file": "src/affiliate.ts",
       "source_location": "L64",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_affiliate",
-      "target": "src_affiliate_rawandpsa",
-      "confidence_score": 1.0
+      "target": "src_affiliate_rawandpsa"
     },
     {
       "relation": "imports_from",
@@ -8574,9 +8574,9 @@
       "source_file": "src/affiliate.ts",
       "source_location": "L69",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_affiliate_rawandpsa",
-      "target": "src_affiliate_esc",
-      "confidence_score": 1.0
+      "target": "src_affiliate_esc"
     },
     {
       "relation": "imports",
@@ -8618,9 +8618,9 @@
       "source_file": "src/affiliate.ts",
       "source_location": "L65",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_affiliate_rawandpsa",
-      "target": "src_affiliate_ebayurl",
-      "confidence_score": 1.0
+      "target": "src_affiliate_ebayurl"
     },
     {
       "relation": "imports",
@@ -8629,9 +8629,9 @@
       "source_file": "src/articles.ts",
       "source_location": "L11",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_articles",
-      "target": "src_affiliate_rawandpsa",
-      "confidence_score": 1.0
+      "target": "src_affiliate_rawandpsa"
     },
     {
       "relation": "calls",
@@ -8640,9 +8640,9 @@
       "source_file": "src/articles.ts",
       "source_location": "L30",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_articles_cardlinks",
-      "target": "src_affiliate_rawandpsa",
-      "confidence_score": 1.0
+      "target": "src_affiliate_rawandpsa"
     },
     {
       "relation": "contains",
@@ -9261,9 +9261,9 @@
       "source_file": "src/articles.ts",
       "source_location": "L30",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_articles",
-      "target": "src_articles_cardlinks",
-      "confidence_score": 1.0
+      "target": "src_articles_cardlinks"
     },
     {
       "relation": "contains",
@@ -24009,5 +24009,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "b307744fd105215ad37be6d45859907904087d49"
+  "built_at_commit": "c82564ae06441ba9ce44a5db12ac0bfceb0f326b"
 }

@@ -1371,6 +1371,164 @@ export const ARTICLES: Article[] = [
     ],
     related: ["best-umbreon-pokemon-cards", "umbreon-vmax-alt-art-worth-it", "best-pokemon-cards-to-invest-2026"],
   },
+
+  {
+    slug: "best-charizard-pokemon-cards",
+    title: "Best Charizard Pokémon Cards (Most Valuable, 2026) | wmcp.sh",
+    desc: "The best and most valuable Charizard Pokémon cards across every era — 1st Edition Base Set, Gold Star, Champion's Path VMAX, 151 ex SIR — with the cheapest raw and PSA 10 copies on eBay.",
+    h1: "Best Charizard Pokémon Cards",
+    dek: "The grails, the modern chases, and where to buy each — raw or PSA 10.",
+    updated: "June 2026",
+    readMins: 9,
+    bodyHtml:
+      p(`Charizard is the most valuable and most collected Pokémon there is — its cards drive the entire hobby. Here are the best across every era, with the cheapest raw copy and the cheapest PSA 10 on eBay for each.`) +
+      h2("1. 1st Edition Base Set Charizard (1999)") +
+      p(`The ultimate grail. The 1st Edition Base Set Charizard (#4/102, with the "Edition 1" stamp) is the most iconic card in the hobby and a six-to-seven-figure card in PSA 10.`) +
+      cardLinks("Pokemon Charizard 1st edition base set") +
+      h2("2. Shadowless Base Set Charizard (1999)") +
+      p(`The next tier down from 1st Edition — Shadowless Base Set Charizard lacks the drop-shadow on the art box and is far rarer than the later Unlimited print.`) +
+      cardLinks("Pokemon Charizard base set shadowless") +
+      h2("3. Charizard Gold Star (EX Dragon Frontiers, 2006)") +
+      p(`The vintage Gold Star grail — an ultra-rare era pull of the most popular Pokémon, extremely valuable in high grade.`) +
+      cardLinks("Pokemon Charizard Gold Star Dragon Frontiers") +
+      h2("4. Shining Charizard (Neo Destiny, 2002)") +
+      p(`A classic chase from the Neo era — the original "shiny" Charizard and a centerpiece for vintage collectors.`) +
+      cardLinks("Pokemon Shining Charizard Neo Destiny") +
+      h2("5. Charizard ex Special Illustration Rare (151, 2023)") +
+      p(`The headline modern chase — the "upside-down" Charizard ex SIR from 151 is one of the most popular cards of the Scarlet & Violet era, riding deep Kanto nostalgia.`) +
+      cardLinks("Pokemon Charizard ex special illustration rare 151") +
+      h2("6. Charizard VMAX Rainbow Rare (Champion's Path, 2020)") +
+      p(`The Champion's Path Charizard VMAX (secret rainbow #74) is one of the most beloved modern Charizards and a hugely popular PSA 10 target.`) +
+      cardLinks("Pokemon Charizard VMAX Champions Path rainbow") +
+      h2("7. Charizard V Alternate Art (Brilliant Stars, 2022)") +
+      p(`"The chair" — the Brilliant Stars Charizard V alt art is one of the most recognizable modern alt arts and a strong, attainable hold.`) +
+      cardLinks("Pokemon Charizard V alternate art Brilliant Stars") +
+      h2("8. Hidden Fates Shiny Charizard GX (2019)") +
+      p(`From the famously chased Hidden Fates set — the shiny Charizard GX (SV49) is one of the most popular sealed-era chases and stays in high demand.`) +
+      cardLinks("Pokemon Hidden Fates Shiny Charizard GX") +
+      h2("9. Charizard ex Tera Special Art (Obsidian Flames, 2023)") +
+      p(`The Tera Charizard ex special art from Obsidian Flames was the set's headline and a modern staple.`) +
+      cardLinks("Pokemon Charizard ex Obsidian Flames special art") +
+      h2("Raw or PSA 10?") +
+      p(`Raw is the affordable way to collect; a PSA 10 commands a major premium and is the real store of value for the grails (1st Edition, Gold Star). For vintage Charizard especially, buy graded to remove authenticity and condition risk — see <a href="/guides/how-to-spot-fake-pokemon-booster-box">how to spot fakes</a>. Buying raw to grade? Read <a href="/guides/how-to-grade-pokemon-cards">how to grade</a> and check the <a href="/tools/pokemon-grading-calculator">grading calculator</a> first.`) +
+      p(`Modern sets with Charizard chases (151, Obsidian Flames, Paldean Fates) sell out fast — catch them at retail with <a href="/">QuickCatch</a>.`),
+    faqs: [
+      { q: "What is the most valuable Charizard card?", a: "The 1st Edition Base Set Charizard (1999, PSA 10) is the most valuable — a six-to-seven-figure grail. The Charizard Gold Star and Shining Charizard are the other top vintage cards; the 151 Charizard ex SIR leads the modern chases." },
+      { q: "Which Charizard card should I buy?", a: "For value, the 1st Edition or Shadowless Base Set or the Gold Star. For modern, the 151 Charizard ex SIR, Champion's Path VMAX, or Brilliant Stars V alt art. Buy raw to collect, PSA 10 as a store of value." },
+    ],
+    related: ["most-expensive-charizard-cards", "charizard-1st-edition-base-set-value", "charizard-ex-151-worth-it"],
+  },
+
+  {
+    slug: "most-expensive-charizard-cards",
+    title: "Most Expensive Charizard Cards Ever (2026) | wmcp.sh",
+    desc: "The most expensive Charizard Pokémon cards ever — 1st Edition Base Set, Gold Star, Shining Charizard, trophy promos — and the cheapest raw and PSA 10 copies on eBay.",
+    h1: "The Most Expensive Charizard Cards",
+    dek: "The grails ranked — and what actually drives the price.",
+    updated: "June 2026",
+    readMins: 6,
+    bodyHtml:
+      p(`Charizard sits at the top of nearly every "most expensive Pokémon card" list. Here are the grails, ranked, and what moves the price.`) +
+      h2("1. 1st Edition Base Set Charizard (PSA 10)") +
+      p(`The king. A gem-mint 1st Edition Base Set Charizard trades for six to seven figures — scarcity, grade, and iconic status all peak here.`) +
+      cardLinks("Pokemon Charizard 1st edition base set") +
+      h2("2. Charizard Gold Star (EX Dragon Frontiers)") +
+      p(`An ultra-rare Gold Star of the most popular Pokémon — one of the most valuable cards of the mid-2000s.`) +
+      cardLinks("Pokemon Charizard Gold Star Dragon Frontiers") +
+      h2("3. Shining Charizard (Neo Destiny)") +
+      p(`The original shiny Charizard — a classic vintage chase that commands strong money in high grade.`) +
+      cardLinks("Pokemon Shining Charizard Neo Destiny") +
+      h2("4. Shadowless Base Set Charizard") +
+      p(`Rarer than Unlimited Base Set and a more attainable way into vintage Charizard than 1st Edition.`) +
+      cardLinks("Pokemon Charizard base set shadowless") +
+      h2("What drives Charizard prices") +
+      p(`Scarcity (print run / edition), grade (a PSA 10 vs 9 can be a multiple), and Charizard's untouchable popularity. Reprints and rising graded populations push modern cards down — which is why vintage editions and gem-mint grades hold value best. Full context: <a href="/guides/most-expensive-pokemon-cards">most expensive Pokémon cards</a>.`),
+    faqs: [
+      { q: "What is the most expensive Charizard card ever sold?", a: "A gem-mint 1st Edition Base Set Charizard (PSA 10) is the most expensive, trading in the six-to-seven-figure range. The Charizard Gold Star and Shining Charizard are the other top vintage grails." },
+      { q: "Why are Charizard cards so expensive?", a: "Scarcity (edition and print run), grade, and Charizard's unmatched popularity. Vintage editions and PSA 10 grades hold value best because supply is genuinely limited." },
+    ],
+    related: ["best-charizard-pokemon-cards", "charizard-1st-edition-base-set-value", "most-expensive-pokemon-cards"],
+  },
+
+  {
+    slug: "charizard-1st-edition-base-set-value",
+    title: "1st Edition Base Set Charizard Value (The Grail) | wmcp.sh",
+    desc: "The 1st Edition Base Set Charizard is the ultimate Pokémon grail. How to spot 1st Edition vs Shadowless vs Unlimited, what it's worth, fakes, and the cheapest raw and PSA 10 on eBay.",
+    h1: "1st Edition Base Set Charizard (The Grail)",
+    dek: "How to tell 1st Edition from Shadowless from Unlimited — and what each is worth.",
+    updated: "June 2026",
+    readMins: 6,
+    bodyHtml:
+      p(`The 1999 Base Set Charizard is the most famous Pokémon card in existence — but its value swings enormously depending on which print you have. Here's how to tell them apart and what they're worth.`) +
+      h2("1st Edition") +
+      p(`Look for the small <b>"Edition 1" stamp</b> on the left of the art. 1st Edition Base Set Charizard is the rarest print and the true grail — six to seven figures in PSA 10.`) +
+      cardLinks("Pokemon Charizard 1st edition base set") +
+      h2("Shadowless") +
+      p(`No 1st Edition stamp, but <b>no drop-shadow</b> on the right of the art box. Shadowless is the second print — much rarer than Unlimited and very valuable in high grade.`) +
+      cardLinks("Pokemon Charizard base set shadowless") +
+      h2("Unlimited") +
+      p(`Has the drop-shadow and no stamp — the most common Base Set print. Still a beautiful, desirable card and the most affordable way to own a Base Set Charizard.`) +
+      cardLinks("Pokemon Charizard base set unlimited") +
+      h2("Watch for fakes — and grade it") +
+      p(`The most faked card in the hobby. Buy graded (PSA/CGC/BGS) whenever possible, and learn the tells — see <a href="/guides/how-to-spot-fake-pokemon-booster-box">how to spot fakes</a> and <a href="/guides/how-to-tell-if-a-pokemon-card-is-rare">how to tell if a card is rare</a>. For a card this valuable, a PSA 10 is the only safe store of value.`) +
+      p(`See where it ranks among the <a href="/guides/best-charizard-pokemon-cards">best Charizard cards</a> and <a href="/guides/vintage-pokemon-cards-worth-money">vintage cards worth money</a>.`),
+    faqs: [
+      { q: "How do I know if my Base Set Charizard is 1st Edition?", a: "Look for the small 'Edition 1' stamp on the left side of the art. No stamp but no drop-shadow on the art box means Shadowless; a drop-shadow with no stamp means the common Unlimited print." },
+      { q: "How much is a 1st Edition Base Set Charizard worth?", a: "It's the ultimate grail — six to seven figures in gem-mint PSA 10, with value dropping steeply by grade. Shadowless and Unlimited prints are worth progressively less. Always price off recent sold comps." },
+    ],
+    related: ["best-charizard-pokemon-cards", "most-expensive-charizard-cards", "vintage-pokemon-cards-worth-money"],
+  },
+
+  {
+    slug: "charizard-ex-151-worth-it",
+    title: "Is the 151 Charizard ex Worth It? (SIR Value) | wmcp.sh",
+    desc: "Is the Pokémon 151 Charizard ex special illustration rare worth buying? Why it's so popular, raw vs PSA 10, and the cheapest copies on eBay.",
+    h1: "Is the 151 Charizard ex Worth It?",
+    dek: "The hottest modern Charizard chase — and whether to buy raw or graded.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`The Charizard ex special illustration rare from Pokémon 151 — the "upside-down" Charizard — is one of the most popular modern cards. Here's the honest read.`) +
+      h2("Why it's so popular") +
+      p(`151 reimagines the original Kanto roster, and Charizard is its crown jewel. The SIR's striking art plus deep nostalgia from lapsed collectors give it broad, liquid demand — it's one of the most traded modern cards.`) +
+      cardLinks("Pokemon Charizard ex special illustration rare 151") +
+      h2("Raw vs PSA 10") +
+      p(`Raw is the affordable, great-looking way in. A PSA 10 carries a healthy premium and is the better store of value — but because 151 reprinted and graded populations are large, the PSA 10 premium is more modest than on scarcer cards. For a modern card like this, raw is often the smart collector buy.`) +
+      h2("Worth it?") +
+      p(`Yes — it's a centerpiece modern Charizard with the safest demand of any current-era card. Buy at retail where you can: 151 restocks but sells fast (catch it with <a href="/">QuickCatch</a>), and compare any price with the <a href="/tools/pokemon-resale-calculator">resale calculator</a>. See <a href="/guides/best-cards-in-pokemon-151">best cards in 151</a>.`),
+    faqs: [
+      { q: "Is the 151 Charizard ex a good buy?", a: "Yes — it's one of the most popular and liquid modern cards thanks to Charizard plus Kanto nostalgia. Raw is a great-looking, affordable buy; a PSA 10 is a better store of value, though the premium is modest since the set reprinted." },
+      { q: "What is the upside-down Charizard card?", a: "It's the collector nickname for the Charizard ex special illustration rare from Pokémon 151, where Charizard is depicted diving head-down — the set's headline chase." },
+    ],
+    related: ["best-charizard-pokemon-cards", "best-cards-in-pokemon-151", "are-charizard-cards-worth-money"],
+  },
+
+  {
+    slug: "are-charizard-cards-worth-money",
+    title: "Are Charizard Cards Worth Money? (2026 Value Guide) | wmcp.sh",
+    desc: "Are Charizard Pokémon cards worth money? Which Charizard cards hold value — vintage vs modern, raw vs graded — and the cheapest copies and PSA 10s on eBay.",
+    h1: "Are Charizard Cards Worth Money?",
+    dek: "Which Charizard cards actually hold value — and which are just nice to own.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Charizard is the most valuable Pokémon to collect — but "Charizard" alone doesn't make a card valuable. Here's how the values actually break down.`) +
+      h2("The ones that hold value") +
+      p(`The blue-chips are the vintage grails: <a href="/guides/charizard-1st-edition-base-set-value">1st Edition / Shadowless Base Set</a>, the <a href="/guides/best-charizard-pokemon-cards">Gold Star</a>, and Shining Charizard. These have the deepest, most durable demand in the entire hobby.`) +
+      cardLinks("Pokemon Charizard 1st edition base set") +
+      h2("Strong modern holds") +
+      p(`The 151 Charizard ex SIR, Champion's Path VMAX, Brilliant Stars V alt art, and Hidden Fates Shiny Charizard GX hold solid value — popular, liquid, and great entry points below grail prices.`) +
+      cardLinks("Pokemon Charizard VMAX Champions Path rainbow") +
+      h2("Nice to own, not investments") +
+      p(`Common holos, promos, and recent bulk Charizards are great for a collection but won't appreciate much — modern reprints keep supply high. Buy those because you love Charizard, not to flip.`) +
+      h2("Raw vs graded for value") +
+      p(`For the grails, a PSA 10 is the real store of value and removes authenticity risk on heavily-faked vintage. Holding raw copies worth grading? Read <a href="/guides/how-to-grade-pokemon-cards">how to grade</a> and run the <a href="/tools/pokemon-grading-calculator">grading calculator</a>. Selling? See <a href="/guides/where-to-sell-pokemon-cards">where to sell</a>.`),
+    faqs: [
+      { q: "Are Charizard cards a good investment?", a: "The vintage grails are — 1st Edition/Shadowless Base Set, the Gold Star, and Shining Charizard have deep, durable demand. Modern cards like the 151 ex SIR and Champion's Path VMAX are strong liquid holds. Common holos and recent promos won't appreciate much." },
+      { q: "Which Charizard cards are worth the most?", a: "The 1st Edition Base Set Charizard is worth the most, followed by the Charizard Gold Star and Shining Charizard — all peaking in PSA 10." },
+    ],
+    related: ["best-charizard-pokemon-cards", "charizard-1st-edition-base-set-value", "best-pokemon-cards-to-invest-2026"],
+  },
 ];
 
 export const ARTICLE_SLUGS = ARTICLES.map((a) => a.slug);
