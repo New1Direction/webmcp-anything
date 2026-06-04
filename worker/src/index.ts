@@ -652,6 +652,20 @@ app.get("/alternatives/pipedream", async (c) => {
     headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=900, s-maxage=900" },
   });
 });
+// Attack mcpservers.org head-on (the MCP-directory competitor).
+app.get("/alternatives/mcpservers-org", async (c) => {
+  const { alternativesMcpserversHtml } = await import("./alternatives_mcpservers");
+  return new Response(alternativesMcpserversHtml(new URL(c.req.url).origin), {
+    headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=900, s-maxage=900" },
+  });
+});
+// Newsjack: NVIDIA Nemotron 3 Ultra (Computex 2026-06) — ride the tool-calling spike.
+app.get("/how-to/give-nemotron-3-ultra-tools", async (c) => {
+  const { howToNemotronToolsHtml } = await import("./how_to_nemotron_tools");
+  return new Response(howToNemotronToolsHtml(new URL(c.req.url).origin), {
+    headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=900, s-maxage=900" },
+  });
+});
 
 // /integration/* — 4 new provider pages, all using integration_template.
 app.get("/integration/airtable", async (c) => {
