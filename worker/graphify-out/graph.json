@@ -784,7 +784,7 @@
       "label": "ARTICLE_SLUGS",
       "file_type": "code",
       "source_file": "src/articles.ts",
-      "source_location": "L1534",
+      "source_location": "L1674",
       "id": "src_articles_article_slugs",
       "community": 13,
       "norm_label": "article_slugs"
@@ -793,7 +793,7 @@
       "label": "bySlug",
       "file_type": "code",
       "source_file": "src/articles.ts",
-      "source_location": "L1535",
+      "source_location": "L1675",
       "id": "src_articles_byslug",
       "community": 13,
       "norm_label": "byslug"
@@ -802,7 +802,7 @@
       "label": "getArticle()",
       "file_type": "code",
       "source_file": "src/articles.ts",
-      "source_location": "L1536",
+      "source_location": "L1676",
       "id": "src_articles_getarticle",
       "community": 13,
       "norm_label": "getarticle()"
@@ -811,7 +811,7 @@
       "label": "articleSchema()",
       "file_type": "code",
       "source_file": "src/articles.ts",
-      "source_location": "L1538",
+      "source_location": "L1678",
       "id": "src_articles_articleschema",
       "community": 13,
       "norm_label": "articleschema()"
@@ -820,7 +820,7 @@
       "label": "relatedHtml()",
       "file_type": "code",
       "source_file": "src/articles.ts",
-      "source_location": "L1572",
+      "source_location": "L1712",
       "id": "src_articles_relatedhtml",
       "community": 13,
       "norm_label": "relatedhtml()"
@@ -829,7 +829,7 @@
       "label": "articleHtml()",
       "file_type": "code",
       "source_file": "src/articles.ts",
-      "source_location": "L1581",
+      "source_location": "L1721",
       "id": "src_articles_articlehtml",
       "community": 13,
       "norm_label": "articlehtml()"
@@ -838,7 +838,7 @@
       "label": "articlesIndexHtml()",
       "file_type": "code",
       "source_file": "src/articles.ts",
-      "source_location": "L1679",
+      "source_location": "L1819",
       "id": "src_articles_articlesindexhtml",
       "community": 13,
       "norm_label": "articlesindexhtml()"
@@ -24009,5 +24009,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "1450b1f7bac98ffbab7171ddad9236054bfecf29"
+  "built_at_commit": "16d425d4be01a84b04e4845b7fbd138fbda72694"
 }

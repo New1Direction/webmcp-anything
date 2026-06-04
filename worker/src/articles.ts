@@ -1669,6 +1669,179 @@ export const ARTICLES: Article[] = [
     ],
     related: ["best-pikachu-pokemon-cards", "pikachu-illustrator-card-value", "best-pokemon-cards-to-invest-2026"],
   },
+
+  {
+    slug: "best-mewtwo-pokemon-cards",
+    title: "Best Mewtwo Pokémon Cards (Most Valuable, 2026) | wmcp.sh",
+    desc: "The best and most valuable Mewtwo Pokémon cards — Mewtwo & Mew GX, Shining Mewtwo, Base Set holo, Mewtwo VSTAR — with the cheapest raw and PSA 10 copies on eBay.",
+    h1: "Best Mewtwo Pokémon Cards",
+    dek: "The vintage chases and modern hits — and where to buy each, raw or PSA 10.",
+    updated: "June 2026",
+    readMins: 7,
+    bodyHtml:
+      p(`Mewtwo is one of the most iconic Legendary Pokémon, and its best cards span the Base Set era to modern alt arts. Here are the ones worth owning — with the cheapest raw copy and the cheapest PSA 10 on eBay for each.`) +
+      h2("1. Mewtwo & Mew GX (Tag Team, Unified Minds, 2019)") +
+      p(`The headline modern Mewtwo card — the Mewtwo & Mew GX alternate/full art from Unified Minds is a fan-favorite Tag Team and a popular high-grade target.`) +
+      cardLinks("Pokemon Mewtwo Mew GX Unified Minds alternate art") +
+      h2("2. Shining Mewtwo (Neo Destiny, 2002)") +
+      p(`The classic vintage chase — the original shiny Mewtwo from Neo Destiny is a centerpiece for collectors and commands strong money in high grade.`) +
+      cardLinks("Pokemon Shining Mewtwo Neo Destiny") +
+      h2("3. Base Set Mewtwo Holo (1999)") +
+      p(`Iconic and accessible — the Base Set holo Mewtwo is a must-have vintage piece, with 1st Edition and Shadowless prints worth far more than Unlimited.`) +
+      cardLinks("Pokemon Mewtwo base set holo") +
+      h2("4. Mewtwo VSTAR (Pokémon GO, 2022)") +
+      p(`The Pokémon GO Mewtwo VSTAR — including the gold secret rare — is a popular modern pickup tied to a beloved crossover set.`) +
+      cardLinks("Pokemon Mewtwo VSTAR Pokemon GO") +
+      h2("5. Mewtwo GX (Shining Legends, 2017)") +
+      p(`The Shining Legends Mewtwo GX, especially the rainbow secret rare, is a strong, attainable modern hold.`) +
+      cardLinks("Pokemon Mewtwo GX Shining Legends") +
+      h2("Raw or PSA 10?") +
+      p(`Raw is the affordable way to collect; a PSA 10 commands a premium and is the better store of value for the vintage chases. Buy graded for vintage to remove authenticity risk — see <a href="/guides/how-to-spot-fake-pokemon-booster-box">how to spot fakes</a>. Buying raw to grade? Read <a href="/guides/how-to-grade-pokemon-cards">how to grade</a> and check the <a href="/tools/pokemon-grading-calculator">grading calculator</a>.`) +
+      p(`Looking for Mew too? See the <a href="/guides/best-mew-pokemon-cards">best Mew cards</a>.`),
+    faqs: [
+      { q: "What is the most valuable Mewtwo card?", a: "Vintage chases like Shining Mewtwo (Neo Destiny) and the 1st Edition Base Set holo are the most valuable in high grade, while the Mewtwo & Mew GX (Unified Minds) leads the modern cards." },
+      { q: "Is the Base Set Mewtwo worth money?", a: "Yes — the Base Set holo Mewtwo is a desirable vintage card, with 1st Edition and Shadowless prints worth far more than the common Unlimited print, especially graded." },
+    ],
+    related: ["are-mewtwo-cards-worth-money", "best-mew-pokemon-cards", "best-pokemon-cards-to-invest-2026"],
+  },
+
+  {
+    slug: "are-mewtwo-cards-worth-money",
+    title: "Are Mewtwo Cards Worth Money? (2026 Value Guide) | wmcp.sh",
+    desc: "Are Mewtwo Pokémon cards worth money? Which Mewtwo cards hold value — vintage vs modern, raw vs graded — and the cheapest copies and PSA 10s on eBay.",
+    h1: "Are Mewtwo Cards Worth Money?",
+    dek: "Which Mewtwo cards actually hold value — and which are just nice to own.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Mewtwo's status as the original Legendary makes it a reliable collector favorite — but not every Mewtwo card is valuable. Here's how it breaks down.`) +
+      h2("The ones that hold value") +
+      p(`The blue-chips are <a href="/guides/best-mewtwo-pokemon-cards">Shining Mewtwo</a> (Neo Destiny) and the 1st Edition / Shadowless Base Set holo — genuinely scarce vintage with durable demand.`) +
+      cardLinks("Pokemon Shining Mewtwo Neo Destiny") +
+      h2("Strong modern holds") +
+      p(`The Mewtwo & Mew GX (Unified Minds), Mewtwo VSTAR (Pokémon GO), and Mewtwo GX (Shining Legends) hold solid value — popular and liquid, good entry points.`) +
+      cardLinks("Pokemon Mewtwo Mew GX Unified Minds alternate art") +
+      h2("Nice to own, not investments") +
+      p(`Common holos, countless promos, and recent bulk Mewtwos are great for a collection but won't appreciate much. Buy those for love of the card, not to flip.`) +
+      h2("Raw vs graded for value") +
+      p(`For the vintage chases, a PSA 10 is the real store of value and removes authenticity risk. Holding raw copies worth grading? Read <a href="/guides/how-to-grade-pokemon-cards">how to grade</a> and run the <a href="/tools/pokemon-grading-calculator">grading calculator</a>. Selling? See <a href="/guides/where-to-sell-pokemon-cards">where to sell</a>.`),
+    faqs: [
+      { q: "Are Mewtwo cards a good investment?", a: "The vintage chases are — Shining Mewtwo and the 1st Edition/Shadowless Base Set holo have durable demand. Modern cards like the Mewtwo & Mew GX and Mewtwo VSTAR are strong liquid holds. Common holos won't appreciate much." },
+      { q: "Which Mewtwo card is worth the most?", a: "Shining Mewtwo (Neo Destiny) and the 1st Edition Base Set holo are the most valuable, especially in PSA 10." },
+    ],
+    related: ["best-mewtwo-pokemon-cards", "best-mew-pokemon-cards", "vintage-pokemon-cards-worth-money"],
+  },
+
+  {
+    slug: "best-mew-pokemon-cards",
+    title: "Best Mew Pokémon Cards (Most Valuable, 2026) | wmcp.sh",
+    desc: "The best and most valuable Mew Pokémon cards — Ancient Mew, Mew ex 151 SIR, Mew VMAX alt art, vintage promos — with the cheapest raw and PSA 10 copies on eBay.",
+    h1: "Best Mew Pokémon Cards",
+    dek: "Ancient Mew, the 151 chase, and the alt arts — and where to buy each.",
+    updated: "June 2026",
+    readMins: 7,
+    bodyHtml:
+      p(`Mew's mystique makes it one of the most collected Pokémon, and its cards range from a nostalgic movie promo to one of the hottest modern chases. Here are the best — with the cheapest raw copy and the cheapest PSA 10 on eBay for each.`) +
+      h2("1. Mew ex Special Illustration Rare (151, 2023)") +
+      p(`The headline modern chase — the Mew ex SIR from Pokémon 151 is one of the most popular current-era cards, riding deep Kanto nostalgia alongside the 151 Charizard. See <a href="/guides/mew-ex-151-worth-it">is it worth it</a>.`) +
+      cardLinks("Pokemon Mew ex special illustration rare 151") +
+      h2("2. Ancient Mew (Movie Promo, 2000)") +
+      p(`A nostalgia icon — the foil "Ancient Mew" promo from Pokémon: The Movie 2000, written in a mysterious ancient script. Hugely recognizable and a sentimental favorite. See its <a href="/guides/ancient-mew-card-value">value guide</a>.`) +
+      cardLinks("Pokemon Ancient Mew promo") +
+      h2("3. Mew VMAX Alternate Art (Fusion Strike, 2021)") +
+      p(`The Mew VMAX alt art from Fusion Strike is a beautiful, sought-after modern chase and a strong PSA 10 target.`) +
+      cardLinks("Pokemon Mew VMAX Fusion Strike alternate art") +
+      h2("4. Mew GX (Dragon Majesty, 2018)") +
+      p(`The Dragon Majesty Mew GX, including the rainbow secret rare, is a popular and attainable modern hold.`) +
+      cardLinks("Pokemon Mew GX Dragon Majesty") +
+      h2("5. Mew (Wizards Black Star Promo, 2000)") +
+      p(`The classic Wizards-era Mew promo is a beloved vintage-flavored pickup that holds steady value, especially graded.`) +
+      cardLinks("Pokemon Mew Wizards Black Star promo") +
+      h2("Raw or PSA 10?") +
+      p(`Raw is the affordable way to collect; a PSA 10 commands a premium and is the better store of value for the promos and chases. Buying raw to grade? Read <a href="/guides/how-to-grade-pokemon-cards">how to grade</a> and check the <a href="/tools/pokemon-grading-calculator">grading calculator</a>. 151 sells out fast — catch it at retail with <a href="/">QuickCatch</a> and see <a href="/guides/best-cards-in-pokemon-151">best cards in 151</a>.`),
+    faqs: [
+      { q: "What is the most valuable Mew card?", a: "Among modern cards the Mew ex SIR (Pokémon 151) and the Mew VMAX alt art (Fusion Strike) lead; the nostalgic Ancient Mew promo is the most recognizable vintage Mew, with high-grade copies worth the most." },
+      { q: "Is the Ancient Mew card worth anything?", a: "Yes — the Ancient Mew movie promo is a beloved collectible; sealed and high-grade copies carry a solid premium thanks to nostalgia, though it was widely distributed so condition matters most." },
+    ],
+    related: ["mew-ex-151-worth-it", "ancient-mew-card-value", "are-mew-cards-worth-money"],
+  },
+
+  {
+    slug: "mew-ex-151-worth-it",
+    title: "Is the 151 Mew ex Worth It? (SIR Value) | wmcp.sh",
+    desc: "Is the Pokémon 151 Mew ex special illustration rare worth buying? Why it's a top chase, raw vs PSA 10, and the cheapest copies on eBay.",
+    h1: "Is the 151 Mew ex Worth It?",
+    dek: "The modern Mew chase from the 151 set — raw or graded?",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`The Mew ex special illustration rare from Pokémon 151 is one of the set's headline chases alongside Charizard. Here's the honest read.`) +
+      h2("Why it's a top chase") +
+      p(`151 reimagines the Kanto roster, and Mew — the elusive #151 — is the thematic heart of the set. The SIR's art plus deep nostalgia from returning collectors give it broad, liquid demand.`) +
+      cardLinks("Pokemon Mew ex special illustration rare 151") +
+      h2("Raw vs PSA 10") +
+      p(`Raw is the affordable, great-looking buy. A PSA 10 carries a healthy premium, though because 151 reprinted with large graded populations, the multiple is more modest than on scarce cards. For most collectors, raw is the smart pickup.`) +
+      h2("Worth it?") +
+      p(`Yes — it's a centerpiece modern Mew with safe, liquid demand. Buy at retail where you can: 151 restocks but sells fast (catch it with <a href="/">QuickCatch</a>), and compare prices with the <a href="/tools/pokemon-resale-calculator">resale calculator</a>. See <a href="/guides/best-cards-in-pokemon-151">best cards in 151</a> and <a href="/guides/charizard-ex-151-worth-it">the 151 Charizard ex</a>.`),
+    faqs: [
+      { q: "Is the 151 Mew ex a good buy?", a: "Yes — it's a top chase from a very popular, liquid set thanks to Mew's role as #151 and Kanto nostalgia. Raw is a great-looking, affordable buy; a PSA 10 is a better store of value, though the premium is modest since the set reprinted." },
+      { q: "Which is more valuable, the 151 Mew ex or Charizard ex?", a: "The 151 Charizard ex SIR generally commands more than the Mew ex SIR, but both are among the set's top chases with strong, liquid demand." },
+    ],
+    related: ["best-mew-pokemon-cards", "best-cards-in-pokemon-151", "charizard-ex-151-worth-it"],
+  },
+
+  {
+    slug: "ancient-mew-card-value",
+    title: "Ancient Mew Card Value (Movie Promo) | wmcp.sh",
+    desc: "The Ancient Mew promo from Pokémon: The Movie 2000 is a nostalgia icon. What it's worth, the versions and error cards, fakes, and the cheapest copies on eBay.",
+    h1: "Ancient Mew (The Movie Promo)",
+    dek: "The mysterious foil promo from 2000 — what it's worth and what to watch for.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`The "Ancient Mew" promo — handed out at screenings of Pokémon: The Movie 2000 — is one of the most recognizable promo cards ever, written entirely in a mysterious ancient script. Here's the value read.`) +
+      h2("Why it's beloved") +
+      p(`The full-foil design and untranslatable text made it feel like a secret artifact to a generation of fans. It was widely distributed, so it's nostalgia — not extreme rarity — that drives demand.`) +
+      cardLinks("Pokemon Ancient Mew promo") +
+      h2("Versions & error cards") +
+      p(`There's a well-known first-print "error" version (with spelling/spacing differences like "Nintendo" misprints) that collectors pay more for, plus a later corrected print. Sealed copies and high grades carry the premium.`) +
+      h2("Watch for fakes") +
+      p(`Because it's iconic and was reprinted/bootlegged heavily, fakes are common. Buy sealed from reputable sellers or graded, and learn the tells — see <a href="/guides/how-to-tell-if-a-pokemon-card-is-rare">how to tell if a card is rare</a>.`) +
+      h2("The takeaway") +
+      p(`A sentimental must-have rather than a high-end investment — affordable, iconic, and a great display piece. See the <a href="/guides/best-mew-pokemon-cards">best Mew cards</a> for the higher-value chases.`),
+    faqs: [
+      { q: "How much is an Ancient Mew worth?", a: "It's an affordable, nostalgia-driven collectible; sealed and high-grade copies carry a premium, and the first-print 'error' version is worth more than the corrected reprint. Condition and version matter most." },
+      { q: "Is Ancient Mew rare?", a: "Not especially — it was widely distributed at Movie 2000 screenings, so its value comes from nostalgia and condition rather than scarcity. The error-print version and sealed/graded copies are the desirable ones." },
+    ],
+    related: ["best-mew-pokemon-cards", "are-mew-cards-worth-money", "most-expensive-pokemon-cards"],
+  },
+
+  {
+    slug: "are-mew-cards-worth-money",
+    title: "Are Mew Cards Worth Money? (2026 Value Guide) | wmcp.sh",
+    desc: "Are Mew Pokémon cards worth money? Which Mew cards hold value — Ancient Mew, Mew ex 151, Mew VMAX alt art — raw vs graded, with the cheapest copies and PSA 10s on eBay.",
+    h1: "Are Mew Cards Worth Money?",
+    dek: "Which Mew cards actually hold value — and which are just nice to own.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Mew's mystique keeps it perpetually collected — but values vary wildly across its many cards. Here's the breakdown.`) +
+      h2("The ones that hold value") +
+      p(`The strongest modern holds are the <a href="/guides/mew-ex-151-worth-it">Mew ex SIR (151)</a> and the <a href="/guides/best-mew-pokemon-cards">Mew VMAX alt art (Fusion Strike)</a> — popular, liquid chases with durable demand.`) +
+      cardLinks("Pokemon Mew ex special illustration rare 151") +
+      h2("Nostalgia favorites") +
+      p(`The <a href="/guides/ancient-mew-card-value">Ancient Mew</a> promo and Wizards-era Mew promos are beloved and affordable — they hold sentimental value and steady (not skyrocketing) prices, with sealed/graded copies worth the most.`) +
+      cardLinks("Pokemon Ancient Mew promo") +
+      h2("Nice to own, not investments") +
+      p(`Most Mew cards — common holos, countless promos, recent bulk — are great for a collection but won't appreciate. Buy those for love of Mew, not to flip.`) +
+      h2("Raw vs graded for value") +
+      p(`For the chases and key promos, a PSA 10 is the real store of value and removes authenticity risk. Holding raw copies worth grading? Read <a href="/guides/how-to-grade-pokemon-cards">how to grade</a> and run the <a href="/tools/pokemon-grading-calculator">grading calculator</a>. Selling? See <a href="/guides/where-to-sell-pokemon-cards">where to sell</a>.`),
+    faqs: [
+      { q: "Are Mew cards a good investment?", a: "The modern chases are the strongest — the Mew ex SIR (151) and Mew VMAX alt art (Fusion Strike) have liquid, durable demand. The Ancient Mew and Wizards promos are beloved but more sentimental than high-growth. Most Mew cards won't appreciate." },
+      { q: "Which Mew card is worth the most?", a: "Among modern cards, the Mew ex SIR (151) and Mew VMAX alt art lead. The Ancient Mew promo is the most iconic vintage Mew, with sealed/high-grade copies worth the most." },
+    ],
+    related: ["best-mew-pokemon-cards", "mew-ex-151-worth-it", "best-pokemon-cards-to-invest-2026"],
+  },
 ];
 
 export const ARTICLE_SLUGS = ARTICLES.map((a) => a.slug);
