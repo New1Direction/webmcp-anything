@@ -909,6 +909,230 @@ export const ARTICLES: Article[] = [
     ],
     related: ["pokemon-151-vs-surging-sparks-vs-prismatic", "best-pokemon-cards-to-invest-2026", "best-pokemon-elite-trainer-boxes-2026"],
   },
+
+  {
+    slug: "best-cards-in-surging-sparks",
+    title: "Best Cards in Surging Sparks (Most Valuable, 2026) | wmcp.sh",
+    desc: "The best and most valuable cards in Surging Sparks — Pikachu ex special illustration rare, Latias ex, the Alolan SIRs — with current value and what to chase.",
+    h1: "Best Cards in Surging Sparks",
+    dek: "The chase cards that carry the set — and what they're worth.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Surging Sparks is one of the most top-heavy modern sets — almost all of its value sits in a handful of cards. Here are the ones that matter.`) +
+      h2("1. Pikachu ex (Special Illustration Rare)") +
+      p(`The headline by a wide margin — one of the most valuable modern chase cards and the single reason most people rip this set. It alone sets the box's expected value.`) +
+      buy("Pokemon Surging Sparks Pikachu ex special illustration rare", "See the Pikachu ex on eBay:") +
+      h2("2. Latias ex (Special Illustration Rare)") +
+      p(`The clear #2 — a strong, popular SIR that holds solid value well behind the Pikachu but ahead of the rest of the set.`) +
+      h2("3. The Alolan & supporting SIRs") +
+      p(`Alolan Exeggutor and the other special-art and full-art ex cards make up the mid tier, alongside the gold/hyper rares.`) +
+      h2("Should you chase them or buy singles?") +
+      p(`Because value is so concentrated, buying the single you want is almost always cheaper than ripping for it. Rip only for the fun/lottery. See <a href="/guides/is-surging-sparks-worth-it">is Surging Sparks worth it</a> for the box math.`) +
+      buy("Pokemon Surging Sparks Booster Box") +
+      p(`Check any price against retail with the <a href="/tools/pokemon-resale-calculator">resale calculator</a>, and catch sealed at MSRP with <a href="/">QuickCatch</a>.`),
+    faqs: [
+      { q: "What is the most valuable card in Surging Sparks?", a: "Pikachu ex (special illustration rare) is by far the most valuable, followed by Latias ex. The set's value is heavily concentrated in those two cards." },
+      { q: "Should I buy Surging Sparks singles or packs?", a: "Singles — because value is concentrated in Pikachu ex and Latias ex, buying the specific card is almost always cheaper than ripping packs to chase it." },
+    ],
+    related: ["is-surging-sparks-worth-it", "pokemon-151-vs-surging-sparks-vs-prismatic", "best-pokemon-cards-to-invest-2026"],
+  },
+
+  {
+    slug: "best-cards-in-prismatic-evolutions",
+    title: "Best Cards in Prismatic Evolutions (Most Valuable, 2026) | wmcp.sh",
+    desc: "The best and most valuable cards in Prismatic Evolutions — Umbreon ex SIR, the Eeveelution special illustration rares, and the chase cards driving the set.",
+    h1: "Best Cards in Prismatic Evolutions",
+    dek: "Umbreon ex and the Eeveelution chases that made this set explode.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Prismatic Evolutions is an Eeveelution-themed special set, and the Eeveelution chase cards drove some of the strongest demand of the era. Here's what to chase.`) +
+      h2("1. Umbreon ex (Special Illustration Rare)") +
+      p(`The crown jewel — Umbreon's "moonlit" SIR became one of the most sought-after modern cards, and it's the headline reason this set sells out.`) +
+      buy("Pokemon Prismatic Evolutions Umbreon ex special illustration rare", "See Umbreon ex on eBay:") +
+      h2("2. The other Eeveelution SIRs") +
+      p(`Sylveon, Espeon, Glaceon, Leafeon and the rest of the Eeveelution special-illustration rares all carry real value — Eevee fandom runs deep, so demand is broad rather than single-card.`) +
+      h2("3. Eevee, gold & hyper rares") +
+      p(`The Eevee SIR and the set's gold/hyper rares round out a genuinely deep chase list — one of the reasons Prismatic is a strong sealed hold.`) +
+      h2("Worth chasing?") +
+      p(`Broad, durable Eeveelution demand makes both singles and sealed attractive. For a specific Eeveelution, buy the single. See <a href="/guides/is-prismatic-evolutions-worth-it">is Prismatic Evolutions worth it</a>.`) +
+      buy("Pokemon Prismatic Evolutions Elite Trainer Box") +
+      p(`Buy at retail — use the <a href="/tools/pokemon-resale-calculator">resale calculator</a> and <a href="/">QuickCatch</a> to skip the premium.`),
+    faqs: [
+      { q: "What is the best card in Prismatic Evolutions?", a: "Umbreon ex (special illustration rare) is the crown jewel and one of the most valuable modern cards. The other Eeveelution SIRs (Sylveon, Espeon, etc.) back it up." },
+      { q: "Why is Prismatic Evolutions so popular?", a: "It's an Eeveelution-themed special set, and deep Eevee fandom gives the chase cards — led by Umbreon ex — unusually broad and durable demand." },
+    ],
+    related: ["is-prismatic-evolutions-worth-it", "pokemon-151-vs-surging-sparks-vs-prismatic", "best-pokemon-cards-to-invest-2026"],
+  },
+
+  {
+    slug: "best-cards-in-twilight-masquerade",
+    title: "Best Cards in Twilight Masquerade (Most Valuable, 2026) | wmcp.sh",
+    desc: "The best and most valuable cards in Twilight Masquerade — Bloodmoon Ursaluna ex, the Ogerpon variants, and the trainer special-arts worth chasing.",
+    h1: "Best Cards in Twilight Masquerade",
+    dek: "Bloodmoon Ursaluna leads — here's the full chase list.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Twilight Masquerade pairs one standout chase with a popular supporting cast. Here are the cards that hold value.`) +
+      h2("1. Bloodmoon Ursaluna ex") +
+      p(`The headline — a hugely popular, high-value chase and one of the most desired cards of its era. It defines the set's ceiling.`) +
+      buy("Pokemon Bloodmoon Ursaluna ex", "See Bloodmoon Ursaluna on eBay:") +
+      h2("2. The Ogerpon variants") +
+      p(`Ogerpon's multiple ex forms and special arts are popular collectibles in their own right and sit comfortably in the mid-to-upper tier.`) +
+      h2("3. Carmine & Kieran trainer SIRs") +
+      p(`The character/trainer special-illustration rares (Carmine, Kieran) carry the kind of art-driven demand that makes trainer SIRs reliably valuable.`) +
+      h2("Chase or singles?") +
+      p(`Buy the single for a specific card; rip for the Ursaluna lottery. See <a href="/guides/is-twilight-masquerade-worth-it">is Twilight Masquerade worth it</a> for box value.`) +
+      buy("Pokemon Twilight Masquerade Booster Box") +
+      p(`Compare to retail with the <a href="/tools/pokemon-resale-calculator">resale calculator</a> and catch restocks with <a href="/">QuickCatch</a>.`),
+    faqs: [
+      { q: "What is the most valuable card in Twilight Masquerade?", a: "Bloodmoon Ursaluna ex is the headline and most valuable card, followed by the Ogerpon variants and the Carmine/Kieran trainer special-illustration rares." },
+      { q: "Are the Ogerpon cards worth money?", a: "Yes — Ogerpon's ex forms and special arts are popular collectibles that sit in the mid-to-upper value tier of the set, behind Bloodmoon Ursaluna." },
+    ],
+    related: ["is-twilight-masquerade-worth-it", "best-pokemon-cards-to-invest-2026", "how-to-tell-if-a-pokemon-card-is-rare"],
+  },
+
+  {
+    slug: "best-cards-in-paldean-fates",
+    title: "Best Cards in Paldean Fates (Most Valuable Shinies, 2026) | wmcp.sh",
+    desc: "The best and most valuable cards in Paldean Fates — Shiny Charizard ex, the shiny treasure subset, and the baby shinies worth chasing in this special set.",
+    h1: "Best Cards in Paldean Fates",
+    dek: "Shiny Charizard ex leads a deep shiny chase list.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Paldean Fates is a shiny-focused special set, so the chase list is built around its shiny "treasure" subset. Here's what's worth chasing.`) +
+      h2("1. Shiny Charizard ex") +
+      p(`The headline chase — a shiny Charizard ex in a hit-dense special set is exactly the card that sells the product. It sets the ceiling.`) +
+      buy("Pokemon Paldean Fates Shiny Charizard ex", "See Shiny Charizard ex on eBay:") +
+      h2("2. The shiny ultra-rare ex cards") +
+      p(`The set's other shiny ex cards (the higher 'treasure' numbers) are the mid-to-upper tier — shiny variants of popular Paldea Pokémon.`) +
+      h2("3. The baby shinies") +
+      p(`The shiny baby Pokémon subset is broadly collected and keeps demand spread across the set, even if individual values are lower.`) +
+      h2("Chase or singles?") +
+      p(`Special sets are hit-dense but the top shinies still command premiums — buy the single you want. See <a href="/guides/is-paldean-fates-worth-it">is Paldean Fates worth it</a>.`) +
+      buy("Pokemon Paldean Fates Elite Trainer Box") +
+      p(`Buy at retail with the <a href="/tools/pokemon-resale-calculator">resale calculator</a> + <a href="/">QuickCatch</a>.`),
+    faqs: [
+      { q: "What is the best card in Paldean Fates?", a: "Shiny Charizard ex is the headline chase. The other shiny ultra-rare ex cards and the shiny baby Pokémon subset round out the value." },
+      { q: "Is Paldean Fates a good set for shinies?", a: "Yes — it's a shiny-focused special set built around a shiny 'treasure' subset, with Shiny Charizard ex as the top chase. High hit density makes it fun to rip." },
+    ],
+    related: ["is-paldean-fates-worth-it", "is-prismatic-evolutions-worth-it", "best-pokemon-cards-to-invest-2026"],
+  },
+
+  {
+    slug: "best-cards-in-stellar-crown",
+    title: "Best Cards in Stellar Crown (Most Valuable, 2026) | wmcp.sh",
+    desc: "The best and most valuable cards in Stellar Crown — Terapagos ex, the ACE SPEC cards, and the special illustration rares worth chasing.",
+    h1: "Best Cards in Stellar Crown",
+    dek: "Terapagos leads, but value is spread — here's the list.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Stellar Crown spreads its value more evenly than the marquee sets — no single card runs away with it. Here's what to chase.`) +
+      h2("1. Terapagos ex (Special Illustration Rare)") +
+      p(`The headline chase and the set's mascot — the most valuable single, though not by the runaway margin you see in Surging Sparks.`) +
+      buy("Pokemon Stellar Crown Terapagos ex", "See Terapagos ex on eBay:") +
+      h2("2. The special illustration rares") +
+      p(`The set's other SIRs and special-art cards make up a healthy mid tier and are where a lot of collector demand actually sits.`) +
+      h2("3. ACE SPEC cards") +
+      p(`The returning ACE SPEC cards add playability demand on top of collectibility — useful if you play, and a reason singles stay liquid.`) +
+      h2("Chase or singles?") +
+      p(`With value spread, ripping is reasonable, but a specific card is still cheaper as a single. See <a href="/guides/is-stellar-crown-worth-it">is Stellar Crown worth it</a>.`) +
+      buy("Pokemon Stellar Crown Booster Box") +
+      p(`Check prices with the <a href="/tools/pokemon-resale-calculator">resale calculator</a> and catch restocks with <a href="/">QuickCatch</a>.`),
+    faqs: [
+      { q: "What is the best card in Stellar Crown?", a: "Terapagos ex (special illustration rare) is the headline and most valuable card, with the set's other SIRs and ACE SPEC cards behind it. Value is spread rather than concentrated." },
+      { q: "Are Stellar Crown ACE SPEC cards valuable?", a: "They add real playability demand on top of collectibility, which keeps singles liquid — though the special illustration rares lead the set on pure value." },
+    ],
+    related: ["is-stellar-crown-worth-it", "best-pokemon-booster-boxes-2026", "best-pokemon-cards-to-invest-2026"],
+  },
+
+  {
+    slug: "best-cards-in-temporal-forces",
+    title: "Best Cards in Temporal Forces (Most Valuable, 2026) | wmcp.sh",
+    desc: "The best and most valuable cards in Temporal Forces — Iron Crown ex, Walking Wake, the Paradox special illustration rares, and the trainer special-arts.",
+    h1: "Best Cards in Temporal Forces",
+    dek: "The Paradox SIRs and trainer arts that carry the set.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Temporal Forces leans on the Paradox Pokémon and a strong trainer lineup, so value is spread across several cards rather than one. Here's the list.`) +
+      h2("1. The Paradox special illustration rares") +
+      p(`Paradox Pokémon like Iron Crown ex and Walking Wake (plus Gouging Fire) lead on SIR value — desirable arts of competitively relevant Pokémon.`) +
+      buy("Pokemon Temporal Forces Iron Crown ex", "See the Paradox SIRs on eBay:") +
+      h2("2. The trainer special-arts") +
+      p(`The set's special-art trainers carry the art-driven collector demand that makes trainer cards some of the most reliable value in any set.`) +
+      h2("3. ACE SPEC & gold rares") +
+      p(`The ACE SPEC cards add playability demand, and the gold/hyper rares round out the chase — a reason the set is decent value for players.`) +
+      h2("Chase or singles?") +
+      p(`With spread value and competitive playability, singles are the smart buy for a specific card. See <a href="/guides/is-temporal-forces-worth-it">is Temporal Forces worth it</a>.`) +
+      buy("Pokemon Temporal Forces Booster Box") +
+      p(`Compare to retail with the <a href="/tools/pokemon-resale-calculator">resale calculator</a> + <a href="/">QuickCatch</a>.`),
+    faqs: [
+      { q: "What is the best card in Temporal Forces?", a: "The Paradox special illustration rares (Iron Crown ex, Walking Wake, Gouging Fire) lead, with the special-art trainers close behind. Value is spread across several cards." },
+      { q: "Is Temporal Forces good for players?", a: "Yes — the ACE SPEC cards and competitively relevant Paradox Pokémon give it real playability demand on top of collectibility." },
+    ],
+    related: ["is-temporal-forces-worth-it", "is-paradox-rift-worth-it", "best-pokemon-cards-to-invest-2026"],
+  },
+
+  {
+    slug: "best-cards-in-paradox-rift",
+    title: "Best Cards in Paradox Rift (Most Valuable, 2026) | wmcp.sh",
+    desc: "The best and most valuable cards in Paradox Rift — Roaring Moon ex, Iron Valiant ex, the special illustration rares, and the trainer special-arts.",
+    h1: "Best Cards in Paradox Rift",
+    dek: "Roaring Moon leads a set with settled, predictable prices.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Paradox Rift is an older Scarlet & Violet set, so its chase cards have had time to settle into predictable values. Here's what's worth it.`) +
+      h2("1. Roaring Moon ex (Special Illustration Rare)") +
+      p(`The standout chase — a popular, competitively relevant Paradox Pokémon with a strong SIR that leads the set on value.`) +
+      buy("Pokemon Paradox Rift Roaring Moon ex", "See Roaring Moon ex on eBay:") +
+      h2("2. Iron Valiant ex (Special Illustration Rare)") +
+      p(`The clear #2 — the other marquee Paradox SIR, popular with both collectors and players.`) +
+      h2("3. Trainer SIRs & gold rares") +
+      p(`The set's special-art trainers and gold/hyper rares fill out the chase list, with mature, easy-to-price values.`) +
+      h2("Chase or singles?") +
+      p(`Settled prices make singles easy to value — buy the card you want. See <a href="/guides/is-paradox-rift-worth-it">is Paradox Rift worth it</a>.`) +
+      buy("Pokemon Paradox Rift Booster Box") +
+      p(`Check value with the <a href="/tools/pokemon-resale-calculator">resale calculator</a>; older sets have smaller resale gaps.`),
+    faqs: [
+      { q: "What is the most valuable card in Paradox Rift?", a: "Roaring Moon ex (special illustration rare) is the standout, followed by Iron Valiant ex. The trainer SIRs and gold rares round out the chase." },
+      { q: "Is Paradox Rift a good set to buy now?", a: "Yes for predictability — as an older set, its prices have settled, so singles are easy to value and there's less volatility than a new release." },
+    ],
+    related: ["is-paradox-rift-worth-it", "is-temporal-forces-worth-it", "best-pokemon-cards-to-invest-2026"],
+  },
+
+  {
+    slug: "best-cards-in-shrouded-fable",
+    title: "Best Cards in Shrouded Fable (Most Valuable, 2026) | wmcp.sh",
+    desc: "The best and most valuable cards in Shrouded Fable — Pecharunt ex, Fezandipiti, Munkidori, the ACE SPEC cards, and the chases in this compact special set.",
+    h1: "Best Cards in Shrouded Fable",
+    dek: "A small, hit-dense special set — here's what to chase.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Shrouded Fable is a compact special set — fewer cards, higher hit density — so the chase list is short but punchy. Here's what holds value.`) +
+      h2("1. Pecharunt ex (Special Illustration Rare)") +
+      p(`The set's mascot and headline chase — the most valuable single and the card most rippers are after.`) +
+      buy("Pokemon Shrouded Fable Pecharunt ex", "See Pecharunt ex on eBay:") +
+      h2("2. Fezandipiti & Munkidori SIRs") +
+      p(`The Loyal Three's other special-illustration rares (Fezandipiti, Munkidori) form the mid tier and are popular art pieces.`) +
+      h2("3. ACE SPEC & gold rares") +
+      p(`The returning ACE SPEC cards add playability demand, and the gold/hyper rares round out a tight but desirable chase list.`) +
+      h2("Chase or singles?") +
+      p(`The compact set is fun to rip, but the top SIRs still cost more individually — buy the single you actually want. See <a href="/guides/is-shrouded-fable-worth-it">is Shrouded Fable worth it</a>.`) +
+      buy("Pokemon Shrouded Fable Elite Trainer Box") +
+      p(`Buy at retail with the <a href="/tools/pokemon-resale-calculator">resale calculator</a> + <a href="/">QuickCatch</a>.`),
+    faqs: [
+      { q: "What is the best card in Shrouded Fable?", a: "Pecharunt ex (special illustration rare) is the headline and most valuable card, with the Fezandipiti and Munkidori SIRs behind it." },
+      { q: "Is Shrouded Fable a special set?", a: "Yes — it's a compact special set with fewer cards and higher hit density per pack, built around the Pecharunt ex and Loyal Three chases plus ACE SPEC cards." },
+    ],
+    related: ["is-shrouded-fable-worth-it", "is-paldean-fates-worth-it", "best-pokemon-cards-to-invest-2026"],
+  },
 ];
 
 export const ARTICLE_SLUGS = ARTICLES.map((a) => a.slug);

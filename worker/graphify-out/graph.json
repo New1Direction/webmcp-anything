@@ -811,7 +811,7 @@
       "label": "articlesIndexHtml()",
       "file_type": "code",
       "source_file": "src/articles.ts",
-      "source_location": "L1022",
+      "source_location": "L1059",
       "id": "src_articles_articlesindexhtml",
       "community": 22,
       "norm_label": "articlesindexhtml()"
@@ -23908,5 +23908,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "c09c1b473ee5b446a2970d5c62ea99407269683a"
+  "built_at_commit": "c684b27a0e448c3ecec88fde86b3cba654a4b285"
 }
