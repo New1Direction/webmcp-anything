@@ -177,7 +177,7 @@ export function agentReadyShopifyHtml(origin: string): string {
       <h3>DIY: works out of the box</h3>
       <p class="desc">Most Shopify stores need zero code changes. Point any agent at your store's products via wmcp.sh, free.</p>
       <ul>
-        <li>Free 100 reads/day. $29/mo Pro for 10k+/day.</li>
+        <li>Free 100 reads/day. $99/mo Pro for 10k+/day.</li>
         <li>Submit your store to /directory (agent-discoverable).</li>
         <li>Hand the URL to any MCP-capable agent — works immediately.</li>
       </ul>

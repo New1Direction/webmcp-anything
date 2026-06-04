@@ -128,7 +128,7 @@ This is what neither Shopify's toolkit nor Composio is positioned to do, structu
 
 ## How to try it
 
-Free tier is 100 reads/day, anonymous, no signup. Paid plans unlock live execute and higher quotas — $29 for Pro, $99 for resellers. Get a key at [wmcp.sh/dashboard](https://wmcp.sh/dashboard) or just hit the API:
+Free tier is 100 reads/day, anonymous, no signup. Paid plans unlock live execute and higher quotas — $39 Builder, $99 Pro, $299 for resellers. Get a key at [wmcp.sh/dashboard](https://wmcp.sh/dashboard) or just hit the API:
 
 ```bash
 curl 'https://wmcp.sh/api/v1/tools?url=<any-product-url>'
@@ -175,7 +175,7 @@ Yes — anything that speaks MCP or OpenAI function-calling format works. There'
 Server-side, the worker handles sites that allow public fetches (most Shopify, most JSON-LD retailers). For sites with aggressive bot protection (Amazon, Nike, some SPAs), the Chrome extension extracts schemas in the user's real browser and pushes them back to the cache. Cached schemas are then served server-side instantly.
 
 **How does this make money?**
-Free tier covers ~100 reads/day to keep the lights on for hobbyists. Pro ($29/mo) is for individual builders shipping agents with live execute. Reseller ($99/mo) is for B2B usage — agent platforms, shopper-assistant products. Stripe Connect (coming) for marketplace splits.
+Free tier covers ~100 reads/day to keep the lights on for hobbyists. Pro ($99/mo) is for individual builders shipping agents with live execute. Reseller ($299/mo) is for B2B usage — agent platforms, shopper-assistant products. Stripe Connect (coming) for marketplace splits.
 
 **Open source?**
 The adapter library is MIT. Worker + extension source on GitHub. The hosted service runs on Cloudflare Workers; you can self-host the adapters but the cache + dashboard are wmcp.sh-hosted.

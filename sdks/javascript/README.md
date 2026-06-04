@@ -114,8 +114,9 @@ console.log(result.value.checkout_url);
 ## Free vs paid
 
 - **Free (anonymous):** 100 reads/day per IP.
-- **Pro ($29/mo):** 10k reads + 1k live executes / day.
-- **Reseller ($99/mo):** 100k reads + 50k executes / day.
+- **Builder ($39/mo):** entry paid tier — live executes + OAuth vault.
+- **Pro ($99/mo):** 10k reads + 1k live executes / day.
+- **Reseller ($299/mo):** 100k reads + 50k executes / day.
 
 Get a key at [wmcp.sh/dashboard](https://wmcp.sh/dashboard).
 

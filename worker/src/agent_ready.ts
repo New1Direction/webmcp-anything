@@ -327,7 +327,7 @@ export function agentReadyHtml(origin: string): string {
       <ul>
         <li>Drop your URL: <code>curl 'wmcp.sh/api/v1/tools?url=…'</code></li>
         <li>Get back agent-callable tools (Claude / OpenAI / MCP shapes)</li>
-        <li>Free 100 reads/day. $29/mo Pro for 10k+/day.</li>
+        <li>Free 100 reads/day. $99/mo Pro for 10k+/day.</li>
         <li>Use it as-is &mdash; no code changes on your site needed if you already have JSON-LD or OpenAPI</li>
       </ul>
       <a class="cta" href="/dashboard">Start free →</a>
@@ -375,7 +375,7 @@ export function agentReadyHtml(origin: string): string {
       </tr>
       <tr>
         <td><strong>wmcp.sh self-serve</strong></td>
-        <td>Free / $29 Pro / mo</td>
+        <td>Free / $99 Pro / mo</td>
         <td>Auto-generated from your URL. Works for shopper-side use cases. Some non-standard sites won't be covered.</td>
       </tr>
       <tr>

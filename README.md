@@ -135,8 +135,9 @@ Two separate ladders. Self-serve API plans for anyone, and a done-for-you servic
 | Tier | Cost | What you get |
 |---|---|---|
 | **Free** | $0 | `tools/list` + REST reads, IP-rate-limited, no live execute |
-| **Pro** | $29/mo | Higher quotas, live `tools/call` execute, OAuth vault, priority cache |
-| **Reseller** | $99/mo | High-volume quotas, email support |
+| **Builder** | $39/mo | Entry paid tier: live `tools/call` execute, OAuth vault, higher quotas |
+| **Pro** | $99/mo | High quotas, priority cache, full execute + vault |
+| **Reseller** | $299/mo | High-volume quotas, email support |
 
 **Done-for-you service** ([/managed](https://wmcp.sh/managed)):
 

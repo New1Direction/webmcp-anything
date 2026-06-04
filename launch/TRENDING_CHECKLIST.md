@@ -4,7 +4,7 @@ A concrete, checkbox punch-list to give `New1Direction/webmcp-anything` the best
 
 **How the surfaces actually rank (2026):** GitHub Trending is driven by **star *velocity*** (stars gained in a rolling window), not total stars — and Trending is *downstream* of HN/Reddit/X, not a substitute for them. You chart because a wave sent you. So: the repo must be launch-ready *before* any traffic, then the traffic is pointed at it in one tight window. The real win condition isn't stars — it's `tools/call` activations + adapter PRs.
 
-Pricing to state consistently everywhere: self-serve **Free / Pro $29/mo / Reseller $99/mo**; managed **Starter $499 one-time / Managed Retainer $999/mo / Enterprise $4,999+/mo**.
+Pricing to state consistently everywhere: self-serve **Free / Builder $39/mo / Pro $99/mo / Reseller $299/mo**; managed **Starter $499 one-time / Managed Retainer $999/mo / Enterprise $4,999+/mo**.
 
 ---
 

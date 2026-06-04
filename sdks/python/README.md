@@ -93,8 +93,9 @@ print(result["value"]["checkout_url"])
 ## Free vs paid
 
 - **Free tier (anonymous):** 100 reads/day rate-limited by IP. Tool list + cached schemas.
-- **Pro ($29/mo):** 10k reads/day + 1k live executes. Get a key at [wmcp.sh/dashboard](https://wmcp.sh/dashboard).
-- **Reseller ($99/mo):** 100k reads + 50k executes + restock webhooks (coming).
+- **Builder ($39/mo):** entry paid tier — live executes + OAuth vault.
+- **Pro ($99/mo):** 10k reads/day + 1k live executes. Get a key at [wmcp.sh/dashboard](https://wmcp.sh/dashboard).
+- **Reseller ($299/mo):** 100k reads + 50k executes + restock webhooks (coming).
 
 ## License
 

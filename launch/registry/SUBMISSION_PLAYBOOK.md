@@ -299,7 +299,7 @@ remote-mcp, cloudflare-workers
 - llms.txt: https://wmcp.sh/llms.txt
 
 ### Pricing (state exactly — do NOT invent numbers)
-- **Self-serve API:** Free / Pro **$29/mo** / Reseller **$99/mo**
+- **Self-serve API:** Free / Builder **$39/mo** / Pro **$99/mo** / Reseller **$299/mo**
 - **Done-for-you (`/managed`):** Starter **$499 one-time** / Managed Retainer **$999/mo** / Enterprise **$4,999+/mo**
 
 ---
@@ -400,4 +400,4 @@ After each submission, log it here. Update as inclusion is confirmed.
 6. **Cursor directory submit path** — Cursor Directory hosts community MCP listings and offers an "Add to Cursor" deep-link; the exact submit URL/flow varies and is community-curated. Verify the current "Submit" affordance at https://cursor.directory/mcp before relying on a fixed URL.
 7. **Anthropic Connectors form fields** — taken from `launch/registry/anthropic-form-payload.md`; the live form at `claude.com/docs/connectors/building/submission` should be re-checked field-by-field, and `/privacy` + `/terms` must exist before submitting.
 8. **`og.png` / social preview** is not committed (gitignored) — must be uploaded via the GitHub web UI.
-9. **README pricing line mismatch:** the repo `README.md` pricing table currently shows API "Pro" at `$999/mo`, which contradicts the locked figure (API Pro = **$29/mo**; the **$999/mo** number belongs to the `/managed` "Managed Retainer" tier, not the API plan). All copy in this playbook uses the locked figures from AGENTS.md §3.7. The README typo should be fixed separately.
+9. **Pricing reconciled (2026-06-04):** `README.md`, `AGENTS.md`, this playbook, and the live integration/comparison pages now all match prod — self-serve **Free / Builder $39/mo / Pro $99/mo / Reseller $299/mo**; managed **Starter $499 one-time / Managed Retainer $999/mo / Enterprise $4,999+/mo**. (Earlier drift showed API Pro at $29/mo from the pre-USD-switch era; the $999/mo figure is the `/managed` Retainer tier, never the API Pro plan.)

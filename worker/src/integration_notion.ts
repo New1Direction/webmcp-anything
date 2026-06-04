@@ -20,7 +20,7 @@ export function integrationNotionHtml(origin: string): string {
       ["MCP shape", "Wrap each call yourself", "Auto-mapped", "Native MCP tools"],
       ["Database queries", "Raw filter/sort JSON", "Curated query helpers", "Tool args mirror Notion's filter shape"],
       ["Pagination", "You handle cursors", "Composio handles", "Cursor surfaced to agent"],
-      ["Cost", "Free SDK", "Platform tier", "Free 100/day + $29/mo Pro"],
+      ["Cost", "Free SDK", "Platform tier", "Free 100/day + $99/mo Pro"],
     ],
     tools: [
       { name: "search", type: "Live action", returns: "Pages + databases matching a query" },

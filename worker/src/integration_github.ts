@@ -21,7 +21,7 @@ export function integrationGithubHtml(origin: string): string {
       ["New endpoints", "Wait for SDK release", "Wait for platform update", "Available the moment GitHub publishes"],
       ["Auth", "PAT or app token, you store it", "OAuth via Composio platform", "GitHub OAuth from wmcp.sh sign-in"],
       ["MCP shape", "Wrap each method yourself", "Auto-mapped", "Native MCP / tool_use"],
-      ["Cost", "Free SDK + your hosting", "Platform tier", "Free 100/day + $29/mo Pro"],
+      ["Cost", "Free SDK + your hosting", "Platform tier", "Free 100/day + $99/mo Pro"],
     ],
     tools: [
       { name: "repos/getRepo", type: "Live action", returns: "Repo metadata + stats" },

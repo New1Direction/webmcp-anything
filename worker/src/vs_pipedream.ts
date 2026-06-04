@@ -29,7 +29,7 @@ export function vsPipedreamHtml(origin: string): string {
   {"@type":"Question","name":"When should I pick Pipedream?","acceptedAnswer":{"@type":"Answer","text":"When you're building backend workflows: 'when X happens, do Y then Z'. Their 2000+ integrations cover almost every SaaS. Their visual builder + free tier are excellent for non-agent flows. Pick Pipedream if you're triggering automations from events, not letting an agent reason about which tool to call next."}},
   {"@type":"Question","name":"When should I pick wmcp.sh?","acceptedAnswer":{"@type":"Answer","text":"When you're building an AI agent that needs to call tools dynamically — Claude / Cursor / Codex deciding which MCP tool to invoke. wmcp.sh exposes ANY URL as MCP tools an agent can choose from. Pipedream's connectors are designed for human-defined workflows; they don't translate cleanly to agent tool_use."}},
   {"@type":"Question","name":"Can I use both?","acceptedAnswer":{"@type":"Answer","text":"Yes. Use Pipedream for backend event-driven workflows. Use wmcp.sh for the agent-facing tool layer. Many teams use Pipedream as a webhook receiver that feeds wmcp.sh-exposed APIs an agent then queries."}},
-  {"@type":"Question","name":"Pricing comparison?","acceptedAnswer":{"@type":"Answer","text":"Pipedream: free 10k invocations/mo, then $19/mo for 1M invocations. wmcp.sh: free 100 reads/day anonymous, $29/mo Pro for 10k/day reads+executes. Different metering — Pipedream charges per workflow execution, wmcp.sh charges per tool call."}},
+  {"@type":"Question","name":"Pricing comparison?","acceptedAnswer":{"@type":"Answer","text":"Pipedream: free 10k invocations/mo, then $19/mo for 1M invocations. wmcp.sh: free 100 reads/day anonymous, $99/mo Pro for 10k/day reads+executes. Different metering — Pipedream charges per workflow execution, wmcp.sh charges per tool call."}},
   {"@type":"Question","name":"Does Pipedream do MCP?","acceptedAnswer":{"@type":"Answer","text":"Not as a primary product. They have some agent-related features but their core surface is workflow steps, not MCP tool_use shapes. wmcp.sh is MCP-native: every URL output is shaped for MCP clients (Claude.ai, Cursor, Codex, OpenCode, mcp-remote) directly."}}
 ]}
 </script>
@@ -177,7 +177,7 @@ export function vsPipedreamHtml(origin: string): string {
   <details><summary>When pick Pipedream?</summary><div class="answer">Event-driven backend flows. 2000+ connectors. Generous free tier.</div></details>
   <details><summary>When pick wmcp.sh?</summary><div class="answer">Agent-facing tool layer. MCP-native. Shopper-side + OpenAPI ingest + oracle/DeFi.</div></details>
   <details><summary>Can I use both?</summary><div class="answer">Yes. Pipedream for backend automations + wmcp.sh as the agent-facing tool layer.</div></details>
-  <details><summary>Pricing?</summary><div class="answer">Pipedream: free 10k invocations/mo, $19/mo for 1M. wmcp.sh: free 100/day anonymous, $29/mo Pro for 10k/day.</div></details>
+  <details><summary>Pricing?</summary><div class="answer">Pipedream: free 10k invocations/mo, $19/mo for 1M. wmcp.sh: free 100/day anonymous, $99/mo Pro for 10k/day.</div></details>
   <details><summary>Does Pipedream do MCP?</summary><div class="answer">Not as a primary product. wmcp.sh is MCP-native: every URL output is shaped for MCP clients directly.</div></details>
 </section>
 
