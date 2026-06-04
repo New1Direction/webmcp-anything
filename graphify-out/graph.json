@@ -5280,7 +5280,7 @@
       "source_file": "worker/src/anthropic_oauth.ts",
       "source_location": "L1",
       "id": "src_anthropic_oauth",
-      "community": 212,
+      "community": 144,
       "norm_label": "anthropic_oauth.ts"
     },
     {
@@ -5289,7 +5289,7 @@
       "source_file": "worker/src/anthropic_oauth.ts",
       "source_location": "L18",
       "id": "src_anthropic_oauth_env",
-      "community": 212,
+      "community": 144,
       "norm_label": "env"
     },
     {
@@ -5298,7 +5298,7 @@
       "source_file": "worker/src/anthropic_oauth.ts",
       "source_location": "L33",
       "id": "src_anthropic_oauth_bytestobase64url",
-      "community": 212,
+      "community": 144,
       "norm_label": "bytestobase64url()"
     },
     {
@@ -5307,7 +5307,7 @@
       "source_file": "worker/src/anthropic_oauth.ts",
       "source_location": "L39",
       "id": "src_anthropic_oauth_generatepkce",
-      "community": 212,
+      "community": 144,
       "norm_label": "generatepkce()"
     },
     {
@@ -5316,7 +5316,7 @@
       "source_file": "worker/src/anthropic_oauth.ts",
       "source_location": "L50",
       "id": "src_anthropic_oauth_randomstate",
-      "community": 212,
+      "community": 144,
       "norm_label": "randomstate()"
     },
     {
@@ -5325,7 +5325,7 @@
       "source_file": "worker/src/anthropic_oauth.ts",
       "source_location": "L58",
       "id": "src_anthropic_oauth_requireuser",
-      "community": 212,
+      "community": 144,
       "norm_label": "requireuser()"
     },
     {
@@ -5334,7 +5334,7 @@
       "source_file": "worker/src/anthropic_oauth.ts",
       "source_location": "L78",
       "id": "src_anthropic_oauth_anthropicstart",
-      "community": 212,
+      "community": 144,
       "norm_label": "anthropicstart()"
     },
     {
@@ -5343,7 +5343,7 @@
       "source_file": "worker/src/anthropic_oauth.ts",
       "source_location": "L122",
       "id": "src_anthropic_oauth_anthropicexchange",
-      "community": 212,
+      "community": 144,
       "norm_label": "anthropicexchange()"
     },
     {
@@ -5424,7 +5424,7 @@
       "source_file": "worker/src/articles.ts",
       "source_location": "L3637",
       "id": "src_articles_article_slugs",
-      "community": 199,
+      "community": 73,
       "norm_label": "article_slugs"
     },
     {
@@ -5559,7 +5559,7 @@
       "source_file": "worker/src/auth.ts",
       "source_location": "L116",
       "id": "src_auth_consume",
-      "community": 178,
+      "community": 24,
       "norm_label": "consume()"
     },
     {
@@ -5604,7 +5604,7 @@
       "source_file": "worker/src/auth.ts",
       "source_location": "L276",
       "id": "src_auth_revokekey",
-      "community": 180,
+      "community": 202,
       "norm_label": "revokekey()"
     },
     {
@@ -5892,7 +5892,7 @@
       "source_file": "worker/src/connect_hub.ts",
       "source_location": "L1",
       "id": "src_connect_hub",
-      "community": 213,
+      "community": 35,
       "norm_label": "connect_hub.ts"
     },
     {
@@ -5901,7 +5901,7 @@
       "source_file": "worker/src/connect_hub.ts",
       "source_location": "L20",
       "id": "src_connect_hub_wellknownmcpmanifest",
-      "community": 213,
+      "community": 35,
       "norm_label": "wellknownmcpmanifest()"
     },
     {
@@ -5910,7 +5910,7 @@
       "source_file": "worker/src/connect_hub.ts",
       "source_location": "L55",
       "id": "src_connect_hub_cat_label",
-      "community": 213,
+      "community": 35,
       "norm_label": "cat_label"
     },
     {
@@ -5919,7 +5919,7 @@
       "source_file": "worker/src/connect_hub.ts",
       "source_location": "L60",
       "id": "src_connect_hub_connecthubhtml",
-      "community": 213,
+      "community": 35,
       "norm_label": "connecthubhtml()"
     },
     {
@@ -7251,7 +7251,7 @@
       "source_file": "worker/src/email.ts",
       "source_location": "L1",
       "id": "src_email",
-      "community": 203,
+      "community": 181,
       "norm_label": "email.ts"
     },
     {
@@ -7260,7 +7260,7 @@
       "source_file": "worker/src/email.ts",
       "source_location": "L10",
       "id": "src_email_emailenabled",
-      "community": 203,
+      "community": 181,
       "norm_label": "emailenabled()"
     },
     {
@@ -7269,7 +7269,7 @@
       "source_file": "worker/src/email.ts",
       "source_location": "L11",
       "id": "src_email_from",
-      "community": 203,
+      "community": 181,
       "norm_label": "from()"
     },
     {
@@ -7278,7 +7278,7 @@
       "source_file": "worker/src/email.ts",
       "source_location": "L13",
       "id": "src_email_sendemail",
-      "community": 203,
+      "community": 181,
       "norm_label": "sendemail()"
     },
     {
@@ -7287,7 +7287,7 @@
       "source_file": "worker/src/email.ts",
       "source_location": "L28",
       "id": "src_email_broadcasttoleads",
-      "community": 203,
+      "community": 181,
       "norm_label": "broadcasttoleads()"
     },
     {
@@ -7296,7 +7296,7 @@
       "source_file": "worker/src/email.ts",
       "source_location": "L58",
       "id": "src_email_subscribeconfirmhtml",
-      "community": 203,
+      "community": 181,
       "norm_label": "subscribeconfirmhtml()"
     },
     {
@@ -7476,7 +7476,7 @@
       "source_file": "worker/src/flows2api.ts",
       "source_location": "L20",
       "id": "src_flows2api_capturelandinghtml",
-      "community": 214,
+      "community": 200,
       "norm_label": "capturelandinghtml()"
     },
     {
@@ -8871,7 +8871,7 @@
       "source_file": "worker/src/mcp_grade.ts",
       "source_location": "L248",
       "id": "src_mcp_grade_category_names",
-      "community": 213,
+      "community": 35,
       "norm_label": "category_names"
     },
     {
@@ -8880,7 +8880,7 @@
       "source_file": "worker/src/mcp_grade.ts",
       "source_location": "L249",
       "id": "src_mcp_grade_categoryslug",
-      "community": 213,
+      "community": 205,
       "norm_label": "categoryslug()"
     },
     {
@@ -8898,7 +8898,7 @@
       "source_file": "worker/src/mcp_grade.ts",
       "source_location": "L253",
       "id": "src_mcp_grade_reltime",
-      "community": 213,
+      "community": 205,
       "norm_label": "reltime()"
     },
     {
@@ -8952,7 +8952,7 @@
       "source_file": "worker/src/mcp_grade.ts",
       "source_location": "L468",
       "id": "src_mcp_grade_seedregistrygrades",
-      "community": 181,
+      "community": 211,
       "norm_label": "seedregistrygrades()"
     },
     {
@@ -8997,7 +8997,7 @@
       "source_file": "worker/src/mcp_grade.ts",
       "source_location": "L520",
       "id": "src_mcp_grade_graderank",
-      "community": 204,
+      "community": 80,
       "norm_label": "graderank()"
     },
     {
@@ -9033,7 +9033,7 @@
       "source_file": "worker/src/mcp_grade.ts",
       "source_location": "L635",
       "id": "src_mcp_grade_regradewatched",
-      "community": 181,
+      "community": 211,
       "norm_label": "regradewatched()"
     },
     {
@@ -9069,7 +9069,7 @@
       "source_file": "worker/src/mcp_grade.ts",
       "source_location": "L765",
       "id": "src_mcp_grade_gradepagehtml",
-      "community": 213,
+      "community": 205,
       "norm_label": "gradepagehtml()"
     },
     {
@@ -9177,7 +9177,7 @@
       "source_file": "worker/src/mcp_oauth.ts",
       "source_location": "L161",
       "id": "src_mcp_oauth_refreshpkcetoken",
-      "community": 210,
+      "community": 144,
       "norm_label": "refreshpkcetoken()"
     },
     {
@@ -9384,7 +9384,7 @@
       "source_file": "worker/src/mcp_proxy.ts",
       "source_location": "L1",
       "id": "src_mcp_proxy",
-      "community": 210,
+      "community": 144,
       "norm_label": "mcp_proxy.ts"
     },
     {
@@ -9393,7 +9393,7 @@
       "source_file": "worker/src/mcp_proxy.ts",
       "source_location": "L27",
       "id": "src_mcp_proxy_env",
-      "community": 210,
+      "community": 144,
       "norm_label": "env"
     },
     {
@@ -9402,7 +9402,7 @@
       "source_file": "worker/src/mcp_proxy.ts",
       "source_location": "L66",
       "id": "src_mcp_proxy_strip_req_headers",
-      "community": 210,
+      "community": 144,
       "norm_label": "strip_req_headers"
     },
     {
@@ -9411,7 +9411,7 @@
       "source_file": "worker/src/mcp_proxy.ts",
       "source_location": "L82",
       "id": "src_mcp_proxy_strip_res_headers",
-      "community": 210,
+      "community": 144,
       "norm_label": "strip_res_headers"
     },
     {
@@ -9420,7 +9420,7 @@
       "source_file": "worker/src/mcp_proxy.ts",
       "source_location": "L89",
       "id": "src_mcp_proxy_getfreshupstreamtoken",
-      "community": 210,
+      "community": 144,
       "norm_label": "getfreshupstreamtoken()"
     },
     {
@@ -9429,7 +9429,7 @@
       "source_file": "worker/src/mcp_proxy.ts",
       "source_location": "L145",
       "id": "src_mcp_proxy_mcpproxyhandler",
-      "community": 210,
+      "community": 144,
       "norm_label": "mcpproxyhandler()"
     },
     {
@@ -9438,7 +9438,7 @@
       "source_file": "worker/src/mcp_proxy.ts",
       "source_location": "L379",
       "id": "src_mcp_proxy_mcpindexhtml",
-      "community": 210,
+      "community": 144,
       "norm_label": "mcpindexhtml()"
     },
     {
@@ -9447,7 +9447,7 @@
       "source_file": "worker/src/mcp_proxy.ts",
       "source_location": "L447",
       "id": "src_mcp_proxy_listmcpproxies",
-      "community": 210,
+      "community": 144,
       "norm_label": "listmcpproxies()"
     },
     {
@@ -9546,7 +9546,7 @@
       "source_file": "worker/src/mcp_report.ts",
       "source_location": "L166",
       "id": "src_mcp_report_badgehubhtml",
-      "community": 205,
+      "community": 200,
       "norm_label": "badgehubhtml()"
     },
     {
@@ -9861,7 +9861,7 @@
       "source_file": "worker/src/metrics.ts",
       "source_location": "L1",
       "id": "src_metrics",
-      "community": 180,
+      "community": 213,
       "norm_label": "metrics.ts"
     },
     {
@@ -9870,7 +9870,7 @@
       "source_file": "worker/src/metrics.ts",
       "source_location": "L14",
       "id": "src_metrics_funnelevent",
-      "community": 180,
+      "community": 213,
       "norm_label": "funnelevent"
     },
     {
@@ -9879,7 +9879,7 @@
       "source_file": "worker/src/metrics.ts",
       "source_location": "L22",
       "id": "src_metrics_events",
-      "community": 180,
+      "community": 213,
       "norm_label": "events"
     },
     {
@@ -9888,7 +9888,7 @@
       "source_file": "worker/src/metrics.ts",
       "source_location": "L35",
       "id": "src_metrics_track",
-      "community": 180,
+      "community": 202,
       "norm_label": "track()"
     },
     {
@@ -9897,7 +9897,7 @@
       "source_file": "worker/src/metrics.ts",
       "source_location": "L57",
       "id": "src_metrics_metricsenv",
-      "community": 180,
+      "community": 213,
       "norm_label": "metricsenv"
     },
     {
@@ -9906,7 +9906,7 @@
       "source_file": "worker/src/metrics.ts",
       "source_location": "L65",
       "id": "src_metrics_getmetrics",
-      "community": 180,
+      "community": 213,
       "norm_label": "getmetrics()"
     },
     {
@@ -9933,7 +9933,7 @@
       "source_file": "worker/src/oauth.ts",
       "source_location": "L1",
       "id": "src_oauth",
-      "community": 202,
+      "community": 144,
       "norm_label": "oauth.ts"
     },
     {
@@ -9942,7 +9942,7 @@
       "source_file": "worker/src/oauth.ts",
       "source_location": "L28",
       "id": "src_oauth_env",
-      "community": 202,
+      "community": 144,
       "norm_label": "env"
     },
     {
@@ -9951,7 +9951,7 @@
       "source_file": "worker/src/oauth.ts",
       "source_location": "L38",
       "id": "src_oauth_githubstart",
-      "community": 202,
+      "community": 144,
       "norm_label": "githubstart()"
     },
     {
@@ -9960,7 +9960,7 @@
       "source_file": "worker/src/oauth.ts",
       "source_location": "L61",
       "id": "src_oauth_githubcallback",
-      "community": 202,
+      "community": 144,
       "norm_label": "githubcallback()"
     },
     {
@@ -9969,7 +9969,7 @@
       "source_file": "worker/src/oauth.ts",
       "source_location": "L182",
       "id": "src_oauth_logout",
-      "community": 202,
+      "community": 144,
       "norm_label": "logout()"
     },
     {
@@ -9978,7 +9978,7 @@
       "source_file": "worker/src/oauth.ts",
       "source_location": "L194",
       "id": "src_oauth_me",
-      "community": 202,
+      "community": 144,
       "norm_label": "me()"
     },
     {
@@ -9987,7 +9987,7 @@
       "source_file": "worker/src/oauth.ts",
       "source_location": "L215",
       "id": "src_oauth_issueownkey",
-      "community": 202,
+      "community": 144,
       "norm_label": "issueownkey()"
     },
     {
@@ -9996,7 +9996,7 @@
       "source_file": "worker/src/oauth.ts",
       "source_location": "L229",
       "id": "src_oauth_resolveorcreateuser",
-      "community": 202,
+      "community": 144,
       "norm_label": "resolveorcreateuser()"
     },
     {
@@ -10032,7 +10032,7 @@
       "source_file": "worker/src/outreach.ts",
       "source_location": "L1",
       "id": "src_outreach",
-      "community": 203,
+      "community": 212,
       "norm_label": "outreach.ts"
     },
     {
@@ -10041,7 +10041,7 @@
       "source_file": "worker/src/outreach.ts",
       "source_location": "L13",
       "id": "src_outreach_env",
-      "community": 203,
+      "community": 212,
       "norm_label": "env"
     },
     {
@@ -10050,7 +10050,7 @@
       "source_file": "worker/src/outreach.ts",
       "source_location": "L16",
       "id": "src_outreach_iscommercial",
-      "community": 203,
+      "community": 212,
       "norm_label": "iscommercial()"
     },
     {
@@ -10059,7 +10059,7 @@
       "source_file": "worker/src/outreach.ts",
       "source_location": "L20",
       "id": "src_outreach_regdomain",
-      "community": 203,
+      "community": 212,
       "norm_label": "regdomain()"
     },
     {
@@ -10068,7 +10068,7 @@
       "source_file": "worker/src/outreach.ts",
       "source_location": "L24",
       "id": "src_outreach_ispayments",
-      "community": 203,
+      "community": 212,
       "norm_label": "ispayments()"
     },
     {
@@ -10077,7 +10077,7 @@
       "source_file": "worker/src/outreach.ts",
       "source_location": "L27",
       "id": "src_outreach_issecurityvendor",
-      "community": 203,
+      "community": 212,
       "norm_label": "issecurityvendor()"
     },
     {
@@ -10086,7 +10086,7 @@
       "source_file": "worker/src/outreach.ts",
       "source_location": "L31",
       "id": "src_outreach_topfinding",
-      "community": 203,
+      "community": 212,
       "norm_label": "topfinding()"
     },
     {
@@ -10095,7 +10095,7 @@
       "source_file": "worker/src/outreach.ts",
       "source_location": "L39",
       "id": "src_outreach_auditbody",
-      "community": 203,
+      "community": 212,
       "norm_label": "auditbody()"
     },
     {
@@ -10104,7 +10104,7 @@
       "source_file": "worker/src/outreach.ts",
       "source_location": "L65",
       "id": "src_outreach_verifiedbody",
-      "community": 203,
+      "community": 212,
       "norm_label": "verifiedbody()"
     },
     {
@@ -10113,7 +10113,7 @@
       "source_file": "worker/src/outreach.ts",
       "source_location": "L83",
       "id": "src_outreach_row",
-      "community": 203,
+      "community": 212,
       "norm_label": "row"
     },
     {
@@ -10122,7 +10122,7 @@
       "source_file": "worker/src/outreach.ts",
       "source_location": "L89",
       "id": "src_outreach_generateoutreach",
-      "community": 203,
+      "community": 212,
       "norm_label": "generateoutreach()"
     },
     {
@@ -10131,7 +10131,7 @@
       "source_file": "worker/src/outreach.ts",
       "source_location": "L143",
       "id": "src_outreach_csvcell",
-      "community": 203,
+      "community": 212,
       "norm_label": "csvcell()"
     },
     {
@@ -10140,7 +10140,7 @@
       "source_file": "worker/src/outreach.ts",
       "source_location": "L147",
       "id": "src_outreach_tocsv",
-      "community": 203,
+      "community": 212,
       "norm_label": "tocsv()"
     },
     {
@@ -10149,7 +10149,7 @@
       "source_file": "worker/src/outreach.ts",
       "source_location": "L155",
       "id": "src_outreach_outreachcampaign",
-      "community": 203,
+      "community": 212,
       "norm_label": "outreachcampaign()"
     },
     {
@@ -10158,7 +10158,7 @@
       "source_file": "worker/src/outreach_reply.ts",
       "source_location": "L1",
       "id": "src_outreach_reply",
-      "community": 203,
+      "community": 181,
       "norm_label": "outreach_reply.ts"
     },
     {
@@ -10167,7 +10167,7 @@
       "source_file": "worker/src/outreach_reply.ts",
       "source_location": "L17",
       "id": "src_outreach_reply_env",
-      "community": 203,
+      "community": 181,
       "norm_label": "env"
     },
     {
@@ -10176,7 +10176,7 @@
       "source_file": "worker/src/outreach_reply.ts",
       "source_location": "L34",
       "id": "src_outreach_reply_classifyreply",
-      "community": 203,
+      "community": 181,
       "norm_label": "classifyreply()"
     },
     {
@@ -10185,7 +10185,7 @@
       "source_file": "worker/src/outreach_reply.ts",
       "source_location": "L45",
       "id": "src_outreach_reply_suggestreply",
-      "community": 203,
+      "community": 181,
       "norm_label": "suggestreply()"
     },
     {
@@ -10194,7 +10194,7 @@
       "source_file": "worker/src/outreach_reply.ts",
       "source_location": "L59",
       "id": "src_outreach_reply_authed",
-      "community": 203,
+      "community": 181,
       "norm_label": "authed()"
     },
     {
@@ -10203,7 +10203,7 @@
       "source_file": "worker/src/outreach_reply.ts",
       "source_location": "L67",
       "id": "src_outreach_reply_handleoutreachreply",
-      "community": 203,
+      "community": 181,
       "norm_label": "handleoutreachreply()"
     },
     {
@@ -10212,8 +10212,26 @@
       "source_file": "worker/src/outreach_reply.ts",
       "source_location": "L113",
       "id": "src_outreach_reply_outreachsuppression",
-      "community": 203,
+      "community": 181,
       "norm_label": "outreachsuppression()"
+    },
+    {
+      "label": "outreach_ui.ts",
+      "file_type": "code",
+      "source_file": "worker/src/outreach_ui.ts",
+      "source_location": "L1",
+      "id": "src_outreach_ui",
+      "community": 216,
+      "norm_label": "outreach_ui.ts"
+    },
+    {
+      "label": "outreachSenderHtml()",
+      "file_type": "code",
+      "source_file": "worker/src/outreach_ui.ts",
+      "source_location": "L10",
+      "id": "src_outreach_ui_outreachsenderhtml",
+      "community": 216,
+      "norm_label": "outreachsenderhtml()"
     },
     {
       "label": "privacy.ts",
@@ -10446,7 +10464,7 @@
       "source_file": "worker/src/scheduled.ts",
       "source_location": "L1",
       "id": "src_scheduled",
-      "community": 181,
+      "community": 211,
       "norm_label": "scheduled.ts"
     },
     {
@@ -10455,7 +10473,7 @@
       "source_file": "worker/src/scheduled.ts",
       "source_location": "L25",
       "id": "src_scheduled_env",
-      "community": 181,
+      "community": 211,
       "norm_label": "env"
     },
     {
@@ -10464,7 +10482,7 @@
       "source_file": "worker/src/scheduled.ts",
       "source_location": "L38",
       "id": "src_scheduled_default_stores",
-      "community": 181,
+      "community": 211,
       "norm_label": "default_stores"
     },
     {
@@ -10473,7 +10491,7 @@
       "source_file": "worker/src/scheduled.ts",
       "source_location": "L84",
       "id": "src_scheduled_uurlfor",
-      "community": 181,
+      "community": 211,
       "norm_label": "uurlfor()"
     },
     {
@@ -10482,7 +10500,7 @@
       "source_file": "worker/src/scheduled.ts",
       "source_location": "L92",
       "id": "src_scheduled_pingindexnow",
-      "community": 181,
+      "community": 211,
       "norm_label": "pingindexnow()"
     },
     {
@@ -10491,7 +10509,7 @@
       "source_file": "worker/src/scheduled.ts",
       "source_location": "L118",
       "id": "src_scheduled_seourls",
-      "community": 181,
+      "community": 211,
       "norm_label": "seourls()"
     },
     {
@@ -10500,7 +10518,7 @@
       "source_file": "worker/src/scheduled.ts",
       "source_location": "L138",
       "id": "src_scheduled_submitseobatch",
-      "community": 181,
+      "community": 211,
       "norm_label": "submitseobatch()"
     },
     {
@@ -10509,7 +10527,7 @@
       "source_file": "worker/src/scheduled.ts",
       "source_location": "L157",
       "id": "src_scheduled_grademanualseed",
-      "community": 181,
+      "community": 211,
       "norm_label": "grademanualseed()"
     },
     {
@@ -10518,7 +10536,7 @@
       "source_file": "worker/src/scheduled.ts",
       "source_location": "L175",
       "id": "src_scheduled_normalizeurl",
-      "community": 181,
+      "community": 211,
       "norm_label": "normalizeurl()"
     },
     {
@@ -10527,7 +10545,7 @@
       "source_file": "worker/src/scheduled.ts",
       "source_location": "L187",
       "id": "src_scheduled_cachekey",
-      "community": 181,
+      "community": 211,
       "norm_label": "cachekey()"
     },
     {
@@ -10536,7 +10554,7 @@
       "source_file": "worker/src/scheduled.ts",
       "source_location": "L189",
       "id": "src_scheduled_writecache",
-      "community": 181,
+      "community": 211,
       "norm_label": "writecache()"
     },
     {
@@ -10545,7 +10563,7 @@
       "source_file": "worker/src/scheduled.ts",
       "source_location": "L219",
       "id": "src_scheduled_pickstores",
-      "community": 181,
+      "community": 211,
       "norm_label": "pickstores()"
     },
     {
@@ -10554,7 +10572,7 @@
       "source_file": "worker/src/scheduled.ts",
       "source_location": "L237",
       "id": "src_scheduled_storereport",
-      "community": 181,
+      "community": 211,
       "norm_label": "storereport"
     },
     {
@@ -10563,7 +10581,7 @@
       "source_file": "worker/src/scheduled.ts",
       "source_location": "L246",
       "id": "src_scheduled_seedstore",
-      "community": 181,
+      "community": 211,
       "norm_label": "seedstore()"
     },
     {
@@ -10572,59 +10590,59 @@
       "source_file": "worker/src/scheduled.ts",
       "source_location": "L309",
       "id": "src_scheduled_scheduledhandler",
-      "community": 181,
+      "community": 211,
       "norm_label": "scheduledhandler()"
     },
     {
       "label": "addSeedStores()",
       "file_type": "code",
       "source_file": "worker/src/scheduled.ts",
-      "source_location": "L383",
+      "source_location": "L394",
       "id": "src_scheduled_addseedstores",
-      "community": 181,
+      "community": 211,
       "norm_label": "addseedstores()"
     },
     {
       "label": "addGradeServers()",
       "file_type": "code",
       "source_file": "worker/src/scheduled.ts",
-      "source_location": "L430",
+      "source_location": "L441",
       "id": "src_scheduled_addgradeservers",
-      "community": 181,
+      "community": 211,
       "norm_label": "addgradeservers()"
     },
     {
       "label": "submitSeoIndexNow()",
       "file_type": "code",
       "source_file": "worker/src/scheduled.ts",
-      "source_location": "L466",
+      "source_location": "L477",
       "id": "src_scheduled_submitseoindexnow",
-      "community": 181,
+      "community": 211,
       "norm_label": "submitseoindexnow()"
     },
     {
       "label": "regradeCorpus()",
       "file_type": "code",
       "source_file": "worker/src/scheduled.ts",
-      "source_location": "L499",
+      "source_location": "L510",
       "id": "src_scheduled_regradecorpus",
-      "community": 181,
+      "community": 211,
       "norm_label": "regradecorpus()"
     },
     {
       "label": "seedRegistry()",
       "file_type": "code",
       "source_file": "worker/src/scheduled.ts",
-      "source_location": "L540",
+      "source_location": "L551",
       "id": "src_scheduled_seedregistry",
-      "community": 181,
+      "community": 211,
       "norm_label": "seedregistry()"
     },
     {
       "label": "seedPackages()",
       "file_type": "code",
       "source_file": "worker/src/scheduled.ts",
-      "source_location": "L558",
+      "source_location": "L569",
       "id": "src_scheduled_seedpackages",
       "community": 176,
       "norm_label": "seedpackages()"
@@ -10633,9 +10651,9 @@
       "label": "runSeedNow()",
       "file_type": "code",
       "source_file": "worker/src/scheduled.ts",
-      "source_location": "L576",
+      "source_location": "L587",
       "id": "src_scheduled_runseednow",
-      "community": 181,
+      "community": 211,
       "norm_label": "runseednow()"
     },
     {
@@ -10662,7 +10680,7 @@
       "source_file": "worker/src/session.ts",
       "source_location": "L1",
       "id": "src_session",
-      "community": 202,
+      "community": 144,
       "norm_label": "session.ts"
     },
     {
@@ -10671,7 +10689,7 @@
       "source_file": "worker/src/session.ts",
       "source_location": "L10",
       "id": "src_session_session",
-      "community": 202,
+      "community": 144,
       "norm_label": "session"
     },
     {
@@ -10680,7 +10698,7 @@
       "source_file": "worker/src/session.ts",
       "source_location": "L20",
       "id": "src_session_env",
-      "community": 202,
+      "community": 144,
       "norm_label": "env"
     },
     {
@@ -10689,7 +10707,7 @@
       "source_file": "worker/src/session.ts",
       "source_location": "L25",
       "id": "src_session_randomid",
-      "community": 202,
+      "community": 144,
       "norm_label": "randomid()"
     },
     {
@@ -10698,7 +10716,7 @@
       "source_file": "worker/src/session.ts",
       "source_location": "L33",
       "id": "src_session_createsession",
-      "community": 202,
+      "community": 144,
       "norm_label": "createsession()"
     },
     {
@@ -10707,7 +10725,7 @@
       "source_file": "worker/src/session.ts",
       "source_location": "L49",
       "id": "src_session_getsession",
-      "community": 202,
+      "community": 144,
       "norm_label": "getsession()"
     },
     {
@@ -10716,7 +10734,7 @@
       "source_file": "worker/src/session.ts",
       "source_location": "L63",
       "id": "src_session_deletesession",
-      "community": 202,
+      "community": 144,
       "norm_label": "deletesession()"
     },
     {
@@ -10725,7 +10743,7 @@
       "source_file": "worker/src/session.ts",
       "source_location": "L67",
       "id": "src_session_readsessioncookie",
-      "community": 202,
+      "community": 144,
       "norm_label": "readsessioncookie()"
     },
     {
@@ -10734,7 +10752,7 @@
       "source_file": "worker/src/session.ts",
       "source_location": "L77",
       "id": "src_session_cookieheader",
-      "community": 202,
+      "community": 144,
       "norm_label": "cookieheader()"
     },
     {
@@ -10743,7 +10761,7 @@
       "source_file": "worker/src/session.ts",
       "source_location": "L81",
       "id": "src_session_clearcookieheader",
-      "community": 202,
+      "community": 144,
       "norm_label": "clearcookieheader()"
     },
     {
@@ -10752,7 +10770,7 @@
       "source_file": "worker/src/session.ts",
       "source_location": "L101",
       "id": "src_session_statepayload",
-      "community": 202,
+      "community": 144,
       "norm_label": "statepayload"
     },
     {
@@ -10761,7 +10779,7 @@
       "source_file": "worker/src/session.ts",
       "source_location": "L109",
       "id": "src_session_internalstatepayload",
-      "community": 202,
+      "community": 144,
       "norm_label": "internalstatepayload"
     },
     {
@@ -10770,7 +10788,7 @@
       "source_file": "worker/src/session.ts",
       "source_location": "L113",
       "id": "src_session_b64urlencode",
-      "community": 202,
+      "community": 144,
       "norm_label": "b64urlencode()"
     },
     {
@@ -10779,7 +10797,7 @@
       "source_file": "worker/src/session.ts",
       "source_location": "L119",
       "id": "src_session_b64urldecode",
-      "community": 202,
+      "community": 144,
       "norm_label": "b64urldecode()"
     },
     {
@@ -10788,7 +10806,7 @@
       "source_file": "worker/src/session.ts",
       "source_location": "L128",
       "id": "src_session_hmacsha256",
-      "community": 202,
+      "community": 144,
       "norm_label": "hmacsha256()"
     },
     {
@@ -10797,7 +10815,7 @@
       "source_file": "worker/src/session.ts",
       "source_location": "L145",
       "id": "src_session_constanttimeequal",
-      "community": 202,
+      "community": 144,
       "norm_label": "constanttimeequal()"
     },
     {
@@ -10806,7 +10824,7 @@
       "source_file": "worker/src/session.ts",
       "source_location": "L152",
       "id": "src_session_createoauthstate",
-      "community": 202,
+      "community": 144,
       "norm_label": "createoauthstate()"
     },
     {
@@ -10815,7 +10833,7 @@
       "source_file": "worker/src/session.ts",
       "source_location": "L177",
       "id": "src_session_consumeoauthstate",
-      "community": 202,
+      "community": 144,
       "norm_label": "consumeoauthstate()"
     },
     {
@@ -10977,7 +10995,7 @@
       "source_file": "worker/src/stripe.ts",
       "source_location": "L1",
       "id": "src_stripe",
-      "community": 180,
+      "community": 202,
       "norm_label": "stripe.ts"
     },
     {
@@ -10986,7 +11004,7 @@
       "source_file": "worker/src/stripe.ts",
       "source_location": "L18",
       "id": "src_stripe_env",
-      "community": 180,
+      "community": 202,
       "norm_label": "env"
     },
     {
@@ -10995,7 +11013,7 @@
       "source_file": "worker/src/stripe.ts",
       "source_location": "L44",
       "id": "src_stripe_createcheckout",
-      "community": 180,
+      "community": 202,
       "norm_label": "createcheckout()"
     },
     {
@@ -11004,7 +11022,7 @@
       "source_file": "worker/src/stripe.ts",
       "source_location": "L103",
       "id": "src_stripe_keybycheckout",
-      "community": 180,
+      "community": 202,
       "norm_label": "keybycheckout()"
     },
     {
@@ -11013,7 +11031,7 @@
       "source_file": "worker/src/stripe.ts",
       "source_location": "L169",
       "id": "src_stripe_resolveplanfromsubscription",
-      "community": 180,
+      "community": 202,
       "norm_label": "resolveplanfromsubscription()"
     },
     {
@@ -11031,7 +11049,7 @@
       "source_file": "worker/src/stripe.ts",
       "source_location": "L204",
       "id": "src_stripe_stripewebhook",
-      "community": 210,
+      "community": 202,
       "norm_label": "stripewebhook()"
     },
     {
@@ -11040,7 +11058,7 @@
       "source_file": "worker/src/stripe.ts",
       "source_location": "L368",
       "id": "src_stripe_revokeuserkeys",
-      "community": 180,
+      "community": 202,
       "norm_label": "revokeuserkeys()"
     },
     {
@@ -11049,7 +11067,7 @@
       "source_file": "worker/src/stripe.ts",
       "source_location": "L380",
       "id": "src_stripe_handlenonplancheckout",
-      "community": 210,
+      "community": 202,
       "norm_label": "handlenonplancheckout()"
     },
     {
@@ -11103,7 +11121,7 @@
       "source_file": "worker/src/stripe.ts",
       "source_location": "L695",
       "id": "src_stripe_newqckey",
-      "community": 180,
+      "community": 202,
       "norm_label": "newqckey()"
     },
     {
@@ -11112,7 +11130,7 @@
       "source_file": "worker/src/stripe.ts",
       "source_location": "L705",
       "id": "src_stripe_issuequickcatchlicense",
-      "community": 180,
+      "community": 202,
       "norm_label": "issuequickcatchlicense()"
     },
     {
@@ -11121,7 +11139,7 @@
       "source_file": "worker/src/stripe.ts",
       "source_location": "L738",
       "id": "src_stripe_createquickcatchcheckout",
-      "community": 180,
+      "community": 203,
       "norm_label": "createquickcatchcheckout()"
     },
     {
@@ -11130,7 +11148,7 @@
       "source_file": "worker/src/stripe.ts",
       "source_location": "L762",
       "id": "src_stripe_verifyquickcatch",
-      "community": 180,
+      "community": 203,
       "norm_label": "verifyquickcatch()"
     },
     {
@@ -11139,7 +11157,7 @@
       "source_file": "worker/src/stripe.ts",
       "source_location": "L776",
       "id": "src_stripe_quickcatchactivate",
-      "community": 180,
+      "community": 202,
       "norm_label": "quickcatchactivate()"
     },
     {
@@ -11166,7 +11184,7 @@
       "source_file": "worker/src/stripe.ts",
       "source_location": "L824",
       "id": "src_stripe_parsepricemap",
-      "community": 180,
+      "community": 202,
       "norm_label": "parsepricemap()"
     },
     {
@@ -11175,7 +11193,7 @@
       "source_file": "worker/src/stripe.ts",
       "source_location": "L832",
       "id": "src_stripe_invertpricemap",
-      "community": 180,
+      "community": 202,
       "norm_label": "invertpricemap()"
     },
     {
@@ -11184,7 +11202,7 @@
       "source_file": "worker/src/stripe.ts",
       "source_location": "L840",
       "id": "src_stripe_verifystripesig",
-      "community": 210,
+      "community": 202,
       "norm_label": "verifystripesig()"
     },
     {
@@ -11778,7 +11796,7 @@
       "source_file": "worker/src/verify.ts",
       "source_location": "L1",
       "id": "src_verify",
-      "community": 211,
+      "community": 204,
       "norm_label": "verify.ts"
     },
     {
@@ -11787,7 +11805,7 @@
       "source_file": "worker/src/verify.ts",
       "source_location": "L16",
       "id": "src_verify_env",
-      "community": 211,
+      "community": 204,
       "norm_label": "env"
     },
     {
@@ -11796,7 +11814,7 @@
       "source_file": "worker/src/verify.ts",
       "source_location": "L22",
       "id": "src_verify_verifyverdict",
-      "community": 211,
+      "community": 204,
       "norm_label": "verifyverdict"
     },
     {
@@ -11805,7 +11823,7 @@
       "source_file": "worker/src/verify.ts",
       "source_location": "L53",
       "id": "src_verify_gradeforverify",
-      "community": 211,
+      "community": 204,
       "norm_label": "gradeforverify()"
     },
     {
@@ -11814,7 +11832,7 @@
       "source_file": "worker/src/verify.ts",
       "source_location": "L65",
       "id": "src_verify_decide",
-      "community": 211,
+      "community": 204,
       "norm_label": "decide()"
     },
     {
@@ -11823,7 +11841,7 @@
       "source_file": "worker/src/verify.ts",
       "source_location": "L86",
       "id": "src_verify_verifymcpserver",
-      "community": 211,
+      "community": 204,
       "norm_label": "verifymcpserver()"
     },
     {
@@ -12417,7 +12435,7 @@
       "source_file": "worker/test/mcp_oracle.test.ts",
       "source_location": "L1",
       "id": "test_mcp_oracle_test",
-      "community": 203,
+      "community": 204,
       "norm_label": "mcp_oracle.test.ts"
     },
     {
@@ -12426,7 +12444,7 @@
       "source_file": "worker/test/mcp_oracle.test.ts",
       "source_location": "L9",
       "id": "test_mcp_oracle_test_reply",
-      "community": 203,
+      "community": 204,
       "norm_label": "reply()"
     },
     {
@@ -12435,7 +12453,7 @@
       "source_file": "worker/test/mcp_oracle.test.ts",
       "source_location": "L14",
       "id": "test_mcp_oracle_test_mockworld",
-      "community": 203,
+      "community": 204,
       "norm_label": "mockworld()"
     },
     {
@@ -12444,7 +12462,7 @@
       "source_file": "worker/test/mcp_oracle.test.ts",
       "source_location": "L26",
       "id": "test_mcp_oracle_test_post",
-      "community": 203,
+      "community": 204,
       "norm_label": "post()"
     },
     {
@@ -12498,7 +12516,7 @@
       "source_file": "worker/test/money-path.test.ts",
       "source_location": "L1",
       "id": "test_money_path_test",
-      "community": 178,
+      "community": 203,
       "norm_label": "money-path.test.ts"
     },
     {
@@ -12552,7 +12570,7 @@
       "source_file": "worker/test/outreach_reply.test.ts",
       "source_location": "L1",
       "id": "test_outreach_reply_test",
-      "community": 203,
+      "community": 181,
       "norm_label": "outreach_reply.test.ts"
     },
     {
@@ -12561,7 +12579,7 @@
       "source_file": "worker/test/outreach_reply.test.ts",
       "source_location": "L6",
       "id": "test_outreach_reply_test_nodashes",
-      "community": 203,
+      "community": 181,
       "norm_label": "nodashes()"
     },
     {
@@ -12696,7 +12714,7 @@
       "source_file": "worker/test/verify.test.ts",
       "source_location": "L1",
       "id": "test_verify_test",
-      "community": 211,
+      "community": 204,
       "norm_label": "verify.test.ts"
     },
     {
@@ -12705,7 +12723,7 @@
       "source_file": "worker/test/verify.test.ts",
       "source_location": "L6",
       "id": "test_verify_test_kv",
-      "community": 211,
+      "community": 204,
       "norm_label": "kv()"
     },
     {
@@ -12714,7 +12732,7 @@
       "source_file": "worker/test/verify.test.ts",
       "source_location": "L22",
       "id": "test_verify_test_seedgrade",
-      "community": 211,
+      "community": 204,
       "norm_label": "seedgrade()"
     },
     {
@@ -26382,9 +26400,9 @@
       "source_file": "worker/src/outreach_reply.ts",
       "source_location": "L14",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_outreach_reply",
-      "target": "src_alerts",
-      "confidence_score": 1.0
+      "target": "src_alerts"
     },
     {
       "relation": "imports_from",
@@ -26448,9 +26466,9 @@
       "source_file": "worker/src/outreach_reply.ts",
       "source_location": "L14",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_outreach_reply",
-      "target": "src_alerts_firealert",
-      "confidence_score": 1.0
+      "target": "src_alerts_firealert"
     },
     {
       "relation": "calls",
@@ -26490,9 +26508,9 @@
       "source_file": "worker/src/alternatives_mcpservers.ts",
       "source_location": "L8",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_alternatives_mcpservers",
-      "target": "src_alternatives_mcpservers_alternativesmcpservershtml",
-      "confidence_score": 1.0
+      "target": "src_alternatives_mcpservers_alternativesmcpservershtml"
     },
     {
       "relation": "imports_from",
@@ -26501,9 +26519,9 @@
       "source_file": "worker/src/alternatives_mcpservers.ts",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_alternatives_mcpservers",
-      "target": "src_ui",
-      "confidence_score": 1.0
+      "target": "src_ui"
     },
     {
       "relation": "imports",
@@ -26512,9 +26530,9 @@
       "source_file": "worker/src/alternatives_mcpservers.ts",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_alternatives_mcpservers",
-      "target": "src_ui_uicss",
-      "confidence_score": 1.0
+      "target": "src_ui_uicss"
     },
     {
       "relation": "imports",
@@ -26523,9 +26541,9 @@
       "source_file": "worker/src/alternatives_mcpservers.ts",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_alternatives_mcpservers",
-      "target": "src_ui_uinav",
-      "confidence_score": 1.0
+      "target": "src_ui_uinav"
     },
     {
       "relation": "calls",
@@ -31632,9 +31650,9 @@
       "source_file": "worker/src/outreach_reply.ts",
       "source_location": "L15",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_outreach_reply",
-      "target": "src_email",
-      "confidence_score": 1.0
+      "target": "src_email"
     },
     {
       "relation": "imports",
@@ -31643,9 +31661,9 @@
       "source_file": "worker/src/outreach_reply.ts",
       "source_location": "L15",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_outreach_reply",
-      "target": "src_email_emailenabled",
-      "confidence_score": 1.0
+      "target": "src_email_emailenabled"
     },
     {
       "relation": "calls",
@@ -31676,9 +31694,9 @@
       "source_file": "worker/src/outreach_reply.ts",
       "source_location": "L15",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_outreach_reply",
-      "target": "src_email_sendemail",
-      "confidence_score": 1.0
+      "target": "src_email_sendemail"
     },
     {
       "relation": "calls",
@@ -32459,9 +32477,9 @@
       "source_file": "worker/src/how_to_nemotron_tools.ts",
       "source_location": "L9",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_how_to_nemotron_tools",
-      "target": "src_how_to_nemotron_tools_howtonemotrontoolshtml",
-      "confidence_score": 1.0
+      "target": "src_how_to_nemotron_tools_howtonemotrontoolshtml"
     },
     {
       "relation": "imports_from",
@@ -32470,9 +32488,9 @@
       "source_file": "worker/src/how_to_nemotron_tools.ts",
       "source_location": "L7",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_how_to_nemotron_tools",
-      "target": "src_ui",
-      "confidence_score": 1.0
+      "target": "src_ui"
     },
     {
       "relation": "imports",
@@ -32481,9 +32499,9 @@
       "source_file": "worker/src/how_to_nemotron_tools.ts",
       "source_location": "L7",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_how_to_nemotron_tools",
-      "target": "src_ui_uicss",
-      "confidence_score": 1.0
+      "target": "src_ui_uicss"
     },
     {
       "relation": "imports",
@@ -32492,9 +32510,9 @@
       "source_file": "worker/src/how_to_nemotron_tools.ts",
       "source_location": "L7",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_how_to_nemotron_tools",
-      "target": "src_ui_uinav",
-      "confidence_score": 1.0
+      "target": "src_ui_uinav"
     },
     {
       "relation": "calls",
@@ -34847,9 +34865,9 @@
       "source_file": "worker/src/mcp_grade.ts",
       "source_location": "L940",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_mcp_grade_gradepagehtml",
-      "target": "src_mcp_grade_categoryslug",
-      "confidence_score": 1.0
+      "target": "src_mcp_grade_categoryslug"
     },
     {
       "relation": "calls",
@@ -36669,7 +36687,18 @@
       "source_file": "worker/src/mcp_stats.ts",
       "source_location": "L7",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_mcp_stats",
+      "target": "src_mcp_report"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "worker/src/scheduled.ts",
+      "source_location": "L377",
+      "weight": 1.0,
+      "source": "src_scheduled_scheduledhandler",
       "target": "src_mcp_report",
       "confidence_score": 1.0
     },
@@ -36702,9 +36731,9 @@
       "source_file": "worker/src/mcp_stats.ts",
       "source_location": "L7",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_mcp_stats",
-      "target": "src_mcp_report_computemcpsecurityreport",
-      "confidence_score": 1.0
+      "target": "src_mcp_report_computemcpsecurityreport"
     },
     {
       "relation": "calls",
@@ -37153,9 +37182,9 @@
       "source_file": "worker/src/mcp_stats.ts",
       "source_location": "L9",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_mcp_stats",
-      "target": "src_mcp_stats_mcpstatsjson",
-      "confidence_score": 1.0
+      "target": "src_mcp_stats_mcpstatsjson"
     },
     {
       "relation": "imports_from",
@@ -37164,9 +37193,9 @@
       "source_file": "worker/test/mcp_stats.test.ts",
       "source_location": "L4",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "test_mcp_stats_test",
-      "target": "src_mcp_stats",
-      "confidence_score": 1.0
+      "target": "src_mcp_stats"
     },
     {
       "relation": "imports",
@@ -37175,9 +37204,9 @@
       "source_file": "worker/test/mcp_stats.test.ts",
       "source_location": "L4",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "test_mcp_stats_test",
-      "target": "src_mcp_stats_mcpstatsjson",
-      "confidence_score": 1.0
+      "target": "src_mcp_stats_mcpstatsjson"
     },
     {
       "relation": "contains",
@@ -37578,9 +37607,9 @@
       "source_file": "worker/src/outreach.ts",
       "source_location": "L39",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_outreach",
-      "target": "src_outreach_auditbody",
-      "confidence_score": 1.0
+      "target": "src_outreach_auditbody"
     },
     {
       "relation": "contains",
@@ -37588,9 +37617,9 @@
       "source_file": "worker/src/outreach.ts",
       "source_location": "L143",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_outreach",
-      "target": "src_outreach_csvcell",
-      "confidence_score": 1.0
+      "target": "src_outreach_csvcell"
     },
     {
       "relation": "contains",
@@ -37598,9 +37627,9 @@
       "source_file": "worker/src/outreach.ts",
       "source_location": "L13",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_outreach",
-      "target": "src_outreach_env",
-      "confidence_score": 1.0
+      "target": "src_outreach_env"
     },
     {
       "relation": "contains",
@@ -37608,9 +37637,9 @@
       "source_file": "worker/src/outreach.ts",
       "source_location": "L89",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_outreach",
-      "target": "src_outreach_generateoutreach",
-      "confidence_score": 1.0
+      "target": "src_outreach_generateoutreach"
     },
     {
       "relation": "contains",
@@ -37618,9 +37647,9 @@
       "source_file": "worker/src/outreach.ts",
       "source_location": "L16",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_outreach",
-      "target": "src_outreach_iscommercial",
-      "confidence_score": 1.0
+      "target": "src_outreach_iscommercial"
     },
     {
       "relation": "contains",
@@ -37628,9 +37657,9 @@
       "source_file": "worker/src/outreach.ts",
       "source_location": "L24",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_outreach",
-      "target": "src_outreach_ispayments",
-      "confidence_score": 1.0
+      "target": "src_outreach_ispayments"
     },
     {
       "relation": "contains",
@@ -37638,9 +37667,9 @@
       "source_file": "worker/src/outreach.ts",
       "source_location": "L27",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_outreach",
-      "target": "src_outreach_issecurityvendor",
-      "confidence_score": 1.0
+      "target": "src_outreach_issecurityvendor"
     },
     {
       "relation": "contains",
@@ -37648,9 +37677,9 @@
       "source_file": "worker/src/outreach.ts",
       "source_location": "L155",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_outreach",
-      "target": "src_outreach_outreachcampaign",
-      "confidence_score": 1.0
+      "target": "src_outreach_outreachcampaign"
     },
     {
       "relation": "contains",
@@ -37658,9 +37687,9 @@
       "source_file": "worker/src/outreach.ts",
       "source_location": "L20",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_outreach",
-      "target": "src_outreach_regdomain",
-      "confidence_score": 1.0
+      "target": "src_outreach_regdomain"
     },
     {
       "relation": "contains",
@@ -37668,9 +37697,9 @@
       "source_file": "worker/src/outreach.ts",
       "source_location": "L83",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_outreach",
-      "target": "src_outreach_row",
-      "confidence_score": 1.0
+      "target": "src_outreach_row"
     },
     {
       "relation": "contains",
@@ -37678,9 +37707,9 @@
       "source_file": "worker/src/outreach.ts",
       "source_location": "L147",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_outreach",
-      "target": "src_outreach_tocsv",
-      "confidence_score": 1.0
+      "target": "src_outreach_tocsv"
     },
     {
       "relation": "contains",
@@ -37688,9 +37717,9 @@
       "source_file": "worker/src/outreach.ts",
       "source_location": "L31",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_outreach",
-      "target": "src_outreach_topfinding",
-      "confidence_score": 1.0
+      "target": "src_outreach_topfinding"
     },
     {
       "relation": "contains",
@@ -37698,9 +37727,9 @@
       "source_file": "worker/src/outreach.ts",
       "source_location": "L65",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_outreach",
-      "target": "src_outreach_verifiedbody",
-      "confidence_score": 1.0
+      "target": "src_outreach_verifiedbody"
     },
     {
       "relation": "imports_from",
@@ -37709,9 +37738,9 @@
       "source_file": "worker/test/outreach.test.ts",
       "source_location": "L4",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "test_outreach_test",
-      "target": "src_outreach",
-      "confidence_score": 1.0
+      "target": "src_outreach"
     },
     {
       "relation": "calls",
@@ -37720,9 +37749,9 @@
       "source_file": "worker/src/outreach.ts",
       "source_location": "L138",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_outreach_generateoutreach",
-      "target": "src_outreach_regdomain",
-      "confidence_score": 1.0
+      "target": "src_outreach_regdomain"
     },
     {
       "relation": "calls",
@@ -37731,9 +37760,9 @@
       "source_file": "worker/src/outreach.ts",
       "source_location": "L40",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_outreach_auditbody",
-      "target": "src_outreach_ispayments",
-      "confidence_score": 1.0
+      "target": "src_outreach_ispayments"
     },
     {
       "relation": "calls",
@@ -37742,9 +37771,9 @@
       "source_file": "worker/src/outreach.ts",
       "source_location": "L41",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_outreach_auditbody",
-      "target": "src_outreach_issecurityvendor",
-      "confidence_score": 1.0
+      "target": "src_outreach_issecurityvendor"
     },
     {
       "relation": "calls",
@@ -37753,9 +37782,9 @@
       "source_file": "worker/src/outreach.ts",
       "source_location": "L133",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_outreach_generateoutreach",
-      "target": "src_outreach_topfinding",
-      "confidence_score": 1.0
+      "target": "src_outreach_topfinding"
     },
     {
       "relation": "calls",
@@ -37764,9 +37793,9 @@
       "source_file": "worker/src/outreach.ts",
       "source_location": "L136",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_outreach_generateoutreach",
-      "target": "src_outreach_auditbody",
-      "confidence_score": 1.0
+      "target": "src_outreach_auditbody"
     },
     {
       "relation": "calls",
@@ -37775,9 +37804,9 @@
       "source_file": "worker/src/outreach.ts",
       "source_location": "L137",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_outreach_generateoutreach",
-      "target": "src_outreach_verifiedbody",
-      "confidence_score": 1.0
+      "target": "src_outreach_verifiedbody"
     },
     {
       "relation": "calls",
@@ -37786,9 +37815,9 @@
       "source_file": "worker/src/outreach.ts",
       "source_location": "L164",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_outreach_outreachcampaign",
-      "target": "src_outreach_generateoutreach",
-      "confidence_score": 1.0
+      "target": "src_outreach_generateoutreach"
     },
     {
       "relation": "imports",
@@ -37797,9 +37826,9 @@
       "source_file": "worker/test/outreach.test.ts",
       "source_location": "L4",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "test_outreach_test",
-      "target": "src_outreach_generateoutreach",
-      "confidence_score": 1.0
+      "target": "src_outreach_generateoutreach"
     },
     {
       "relation": "calls",
@@ -37808,9 +37837,9 @@
       "source_file": "worker/src/outreach.ts",
       "source_location": "L166",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_outreach_outreachcampaign",
-      "target": "src_outreach_tocsv",
-      "confidence_score": 1.0
+      "target": "src_outreach_tocsv"
     },
     {
       "relation": "contains",
@@ -37818,9 +37847,9 @@
       "source_file": "worker/src/outreach_reply.ts",
       "source_location": "L59",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_outreach_reply",
-      "target": "src_outreach_reply_authed",
-      "confidence_score": 1.0
+      "target": "src_outreach_reply_authed"
     },
     {
       "relation": "contains",
@@ -37828,9 +37857,9 @@
       "source_file": "worker/src/outreach_reply.ts",
       "source_location": "L34",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_outreach_reply",
-      "target": "src_outreach_reply_classifyreply",
-      "confidence_score": 1.0
+      "target": "src_outreach_reply_classifyreply"
     },
     {
       "relation": "contains",
@@ -37838,9 +37867,9 @@
       "source_file": "worker/src/outreach_reply.ts",
       "source_location": "L17",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_outreach_reply",
-      "target": "src_outreach_reply_env",
-      "confidence_score": 1.0
+      "target": "src_outreach_reply_env"
     },
     {
       "relation": "contains",
@@ -37848,9 +37877,9 @@
       "source_file": "worker/src/outreach_reply.ts",
       "source_location": "L67",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_outreach_reply",
-      "target": "src_outreach_reply_handleoutreachreply",
-      "confidence_score": 1.0
+      "target": "src_outreach_reply_handleoutreachreply"
     },
     {
       "relation": "contains",
@@ -37858,9 +37887,9 @@
       "source_file": "worker/src/outreach_reply.ts",
       "source_location": "L113",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_outreach_reply",
-      "target": "src_outreach_reply_outreachsuppression",
-      "confidence_score": 1.0
+      "target": "src_outreach_reply_outreachsuppression"
     },
     {
       "relation": "contains",
@@ -37868,9 +37897,9 @@
       "source_file": "worker/src/outreach_reply.ts",
       "source_location": "L45",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_outreach_reply",
-      "target": "src_outreach_reply_suggestreply",
-      "confidence_score": 1.0
+      "target": "src_outreach_reply_suggestreply"
     },
     {
       "relation": "imports_from",
@@ -37879,9 +37908,9 @@
       "source_file": "worker/test/outreach_reply.test.ts",
       "source_location": "L4",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "test_outreach_reply_test",
-      "target": "src_outreach_reply",
-      "confidence_score": 1.0
+      "target": "src_outreach_reply"
     },
     {
       "relation": "calls",
@@ -37890,9 +37919,9 @@
       "source_file": "worker/src/outreach_reply.ts",
       "source_location": "L76",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_outreach_reply_handleoutreachreply",
-      "target": "src_outreach_reply_classifyreply",
-      "confidence_score": 1.0
+      "target": "src_outreach_reply_classifyreply"
     },
     {
       "relation": "imports",
@@ -37901,9 +37930,9 @@
       "source_file": "worker/test/outreach_reply.test.ts",
       "source_location": "L4",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "test_outreach_reply_test",
-      "target": "src_outreach_reply_classifyreply",
-      "confidence_score": 1.0
+      "target": "src_outreach_reply_classifyreply"
     },
     {
       "relation": "calls",
@@ -37912,9 +37941,9 @@
       "source_file": "worker/src/outreach_reply.ts",
       "source_location": "L95",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_outreach_reply_handleoutreachreply",
-      "target": "src_outreach_reply_suggestreply",
-      "confidence_score": 1.0
+      "target": "src_outreach_reply_suggestreply"
     },
     {
       "relation": "calls",
@@ -37923,9 +37952,9 @@
       "source_file": "worker/src/outreach_reply.ts",
       "source_location": "L68",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_outreach_reply_handleoutreachreply",
-      "target": "src_outreach_reply_authed",
-      "confidence_score": 1.0
+      "target": "src_outreach_reply_authed"
     },
     {
       "relation": "calls",
@@ -37934,9 +37963,9 @@
       "source_file": "worker/src/outreach_reply.ts",
       "source_location": "L114",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_outreach_reply_outreachsuppression",
-      "target": "src_outreach_reply_authed",
-      "confidence_score": 1.0
+      "target": "src_outreach_reply_authed"
     },
     {
       "relation": "imports",
@@ -37945,9 +37974,9 @@
       "source_file": "worker/test/outreach_reply.test.ts",
       "source_location": "L4",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "test_outreach_reply_test",
-      "target": "src_outreach_reply_handleoutreachreply",
-      "confidence_score": 1.0
+      "target": "src_outreach_reply_handleoutreachreply"
     },
     {
       "relation": "imports",
@@ -37956,8 +37985,18 @@
       "source_file": "worker/test/outreach_reply.test.ts",
       "source_location": "L4",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "test_outreach_reply_test",
-      "target": "src_outreach_reply_outreachsuppression",
+      "target": "src_outreach_reply_outreachsuppression"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "worker/src/outreach_ui.ts",
+      "source_location": "L10",
+      "weight": 1.0,
+      "source": "src_outreach_ui",
+      "target": "src_outreach_ui_outreachsenderhtml",
       "confidence_score": 1.0
     },
     {
@@ -42038,9 +42077,9 @@
       "source_file": "worker/test/mcp_stats.test.ts",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "test_mcp_stats_test",
-      "target": "test_helpers",
-      "confidence_score": 1.0
+      "target": "test_helpers"
     },
     {
       "relation": "imports_from",
@@ -42060,9 +42099,9 @@
       "source_file": "worker/test/outreach_reply.test.ts",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "test_outreach_reply_test",
-      "target": "test_helpers",
-      "confidence_score": 1.0
+      "target": "test_helpers"
     },
     {
       "relation": "imports_from",
@@ -42071,9 +42110,9 @@
       "source_file": "worker/test/outreach.test.ts",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "test_outreach_test",
-      "target": "test_helpers",
-      "confidence_score": 1.0
+      "target": "test_helpers"
     },
     {
       "relation": "imports_from",
@@ -42126,9 +42165,9 @@
       "source_file": "worker/test/mcp_stats.test.ts",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "test_mcp_stats_test",
-      "target": "test_helpers_kvmock",
-      "confidence_score": 1.0
+      "target": "test_helpers_kvmock"
     },
     {
       "relation": "calls",
@@ -42137,9 +42176,9 @@
       "source_file": "worker/test/mcp_stats.test.ts",
       "source_location": "L9",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "test_mcp_stats_test_seededenv",
-      "target": "test_helpers_kvmock",
-      "confidence_score": 1.0
+      "target": "test_helpers_kvmock"
     },
     {
       "relation": "imports",
@@ -42148,9 +42187,9 @@
       "source_file": "worker/test/outreach_reply.test.ts",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "test_outreach_reply_test",
-      "target": "test_helpers_kvmock",
-      "confidence_score": 1.0
+      "target": "test_helpers_kvmock"
     },
     {
       "relation": "calls",
@@ -42170,9 +42209,9 @@
       "source_file": "worker/test/outreach.test.ts",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "test_outreach_test",
-      "target": "test_helpers_kvmock",
-      "confidence_score": 1.0
+      "target": "test_helpers_kvmock"
     },
     {
       "relation": "calls",
@@ -42181,9 +42220,9 @@
       "source_file": "worker/test/outreach.test.ts",
       "source_location": "L9",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "test_outreach_test_seed",
-      "target": "test_helpers_kvmock",
-      "confidence_score": 1.0
+      "target": "test_helpers_kvmock"
     },
     {
       "relation": "imports",
@@ -42214,9 +42253,9 @@
       "source_file": "worker/test/mcp_stats.test.ts",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "test_mcp_stats_test",
-      "target": "test_helpers_envmock",
-      "confidence_score": 1.0
+      "target": "test_helpers_envmock"
     },
     {
       "relation": "calls",
@@ -42225,9 +42264,9 @@
       "source_file": "worker/test/mcp_stats.test.ts",
       "source_location": "L21",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "test_mcp_stats_test_seededenv",
-      "target": "test_helpers_envmock",
-      "confidence_score": 1.0
+      "target": "test_helpers_envmock"
     },
     {
       "relation": "imports",
@@ -42258,9 +42297,9 @@
       "source_file": "worker/test/outreach_reply.test.ts",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "test_outreach_reply_test",
-      "target": "test_helpers_envmock",
-      "confidence_score": 1.0
+      "target": "test_helpers_envmock"
     },
     {
       "relation": "calls",
@@ -42335,9 +42374,9 @@
       "source_file": "worker/test/mcp_stats.test.ts",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "test_mcp_stats_test",
-      "target": "test_helpers_makectx",
-      "confidence_score": 1.0
+      "target": "test_helpers_makectx"
     },
     {
       "relation": "imports",
@@ -42368,9 +42407,9 @@
       "source_file": "worker/test/outreach_reply.test.ts",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "test_outreach_reply_test",
-      "target": "test_helpers_makectx",
-      "confidence_score": 1.0
+      "target": "test_helpers_makectx"
     },
     {
       "relation": "calls",
@@ -42639,9 +42678,9 @@
       "source_file": "worker/test/mcp_stats.test.ts",
       "source_location": "L8",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "test_mcp_stats_test",
-      "target": "test_mcp_stats_test_seededenv",
-      "confidence_score": 1.0
+      "target": "test_mcp_stats_test_seededenv"
     },
     {
       "relation": "contains",
@@ -42659,9 +42698,9 @@
       "source_file": "worker/test/outreach.test.ts",
       "source_location": "L19",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "test_outreach_test",
-      "target": "test_outreach_test_nodashes",
-      "confidence_score": 1.0
+      "target": "test_outreach_test_nodashes"
     },
     {
       "relation": "contains",
@@ -42669,9 +42708,9 @@
       "source_file": "worker/test/outreach.test.ts",
       "source_location": "L8",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "test_outreach_test",
-      "target": "test_outreach_test_seed",
-      "confidence_score": 1.0
+      "target": "test_outreach_test_seed"
     },
     {
       "relation": "contains",
@@ -42679,9 +42718,9 @@
       "source_file": "worker/test/outreach_reply.test.ts",
       "source_location": "L27",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "test_outreach_reply_test",
-      "target": "test_outreach_reply_test_ctx",
-      "confidence_score": 1.0
+      "target": "test_outreach_reply_test_ctx"
     },
     {
       "relation": "contains",
@@ -42689,9 +42728,9 @@
       "source_file": "worker/test/outreach_reply.test.ts",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "test_outreach_reply_test",
-      "target": "test_outreach_reply_test_nodashes",
-      "confidence_score": 1.0
+      "target": "test_outreach_reply_test_nodashes"
     },
     {
       "relation": "contains",
@@ -45240,9 +45279,9 @@
       "source_file": "launch/grade-outbound.md",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "launch_grade_outbound",
-      "target": "launch_grade_outbound_trust_grade_outbound_the_money_engine",
-      "confidence_score": 1.0
+      "target": "launch_grade_outbound_trust_grade_outbound_the_money_engine"
     },
     {
       "relation": "contains",
@@ -45250,9 +45289,9 @@
       "source_file": "launch/grade-outbound.md",
       "source_location": "L93",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "launch_grade_outbound_trust_grade_outbound_the_money_engine",
-      "target": "launch_grade_outbound_full_target_list_32_commercial_f_graders_finance_dev_other",
-      "confidence_score": 1.0
+      "target": "launch_grade_outbound_full_target_list_32_commercial_f_graders_finance_dev_other"
     },
     {
       "relation": "contains",
@@ -45260,9 +45299,9 @@
       "source_file": "launch/grade-outbound.md",
       "source_location": "L13",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "launch_grade_outbound_trust_grade_outbound_the_money_engine",
-      "target": "launch_grade_outbound_hot_leads_real_findings_ready_to_send",
-      "confidence_score": 1.0
+      "target": "launch_grade_outbound_hot_leads_real_findings_ready_to_send"
     },
     {
       "relation": "contains",
@@ -45270,9 +45309,9 @@
       "source_file": "launch/grade-outbound.md",
       "source_location": "L28",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "launch_grade_outbound_trust_grade_outbound_the_money_engine",
-      "target": "launch_grade_outbound_outreach_templates",
-      "confidence_score": 1.0
+      "target": "launch_grade_outbound_outreach_templates"
     },
     {
       "relation": "contains",
@@ -45280,9 +45319,9 @@
       "source_file": "launch/grade-outbound.md",
       "source_location": "L30",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "launch_grade_outbound_outreach_templates",
-      "target": "launch_grade_outbound_cold_email_general",
-      "confidence_score": 1.0
+      "target": "launch_grade_outbound_cold_email_general"
     },
     {
       "relation": "contains",
@@ -45290,9 +45329,9 @@
       "source_file": "launch/grade-outbound.md",
       "source_location": "L88",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "launch_grade_outbound_outreach_templates",
-      "target": "launch_grade_outbound_mirror_play_the_a_graded_sell_verified_easy_yes",
-      "confidence_score": 1.0
+      "target": "launch_grade_outbound_mirror_play_the_a_graded_sell_verified_easy_yes"
     },
     {
       "relation": "contains",
@@ -45300,9 +45339,9 @@
       "source_file": "launch/grade-outbound.md",
       "source_location": "L54",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "launch_grade_outbound_outreach_templates",
-      "target": "launch_grade_outbound_payments_finance_angle_agentrapay_crossfin_payram_payperbyte_merx",
-      "confidence_score": 1.0
+      "target": "launch_grade_outbound_payments_finance_angle_agentrapay_crossfin_payram_payperbyte_merx"
     },
     {
       "relation": "contains",
@@ -45310,9 +45349,9 @@
       "source_file": "launch/grade-outbound.md",
       "source_location": "L67",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "launch_grade_outbound_outreach_templates",
-      "target": "launch_grade_outbound_security_vendor_angle_viridis_security",
-      "confidence_score": 1.0
+      "target": "launch_grade_outbound_security_vendor_angle_viridis_security"
     },
     {
       "relation": "contains",
@@ -45320,9 +45359,9 @@
       "source_file": "launch/grade-outbound.md",
       "source_location": "L80",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "launch_grade_outbound_outreach_templates",
-      "target": "launch_grade_outbound_x_linkedin_dm_short",
-      "confidence_score": 1.0
+      "target": "launch_grade_outbound_x_linkedin_dm_short"
     },
     {
       "relation": "contains",
@@ -46900,9 +46939,9 @@
       "source_file": "launch/verified-pitch.md",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "launch_verified_pitch",
-      "target": "launch_verified_pitch_wmcp_sh_verified_outreach_to_a_graded_mcp_servers",
-      "confidence_score": 1.0
+      "target": "launch_verified_pitch_wmcp_sh_verified_outreach_to_a_graded_mcp_servers"
     },
     {
       "relation": "contains",
@@ -46910,9 +46949,9 @@
       "source_file": "launch/verified-pitch.md",
       "source_location": "L71",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "launch_verified_pitch_wmcp_sh_verified_outreach_to_a_graded_mcp_servers",
-      "target": "launch_verified_pitch_a_grade_targets_commercial_real_products",
-      "confidence_score": 1.0
+      "target": "launch_verified_pitch_a_grade_targets_commercial_real_products"
     },
     {
       "relation": "contains",
@@ -46920,9 +46959,9 @@
       "source_file": "launch/verified-pitch.md",
       "source_location": "L56",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "launch_verified_pitch_wmcp_sh_verified_outreach_to_a_graded_mcp_servers",
-      "target": "launch_verified_pitch_dm_x_linkedin_short_same_register",
-      "confidence_score": 1.0
+      "target": "launch_verified_pitch_dm_x_linkedin_short_same_register"
     },
     {
       "relation": "contains",
@@ -46930,9 +46969,9 @@
       "source_file": "launch/verified-pitch.md",
       "source_location": "L82",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "launch_verified_pitch_wmcp_sh_verified_outreach_to_a_graded_mcp_servers",
-      "target": "launch_verified_pitch_do_don_t_keeps_it_at_the_bar",
-      "confidence_score": 1.0
+      "target": "launch_verified_pitch_do_don_t_keeps_it_at_the_bar"
     },
     {
       "relation": "contains",
@@ -46940,9 +46979,9 @@
       "source_file": "launch/verified-pitch.md",
       "source_location": "L26",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "launch_verified_pitch_wmcp_sh_verified_outreach_to_a_graded_mcp_servers",
-      "target": "launch_verified_pitch_email_a_graded_operator",
-      "confidence_score": 1.0
+      "target": "launch_verified_pitch_email_a_graded_operator"
     },
     {
       "relation": "contains",
@@ -46950,9 +46989,9 @@
       "source_file": "launch/verified-pitch.md",
       "source_location": "L64",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "launch_verified_pitch_wmcp_sh_verified_outreach_to_a_graded_mcp_servers",
-      "target": "launch_verified_pitch_power_operator_note_caseyjhand_com",
-      "confidence_score": 1.0
+      "target": "launch_verified_pitch_power_operator_note_caseyjhand_com"
     },
     {
       "relation": "contains",
@@ -46960,9 +46999,9 @@
       "source_file": "launch/verified-pitch.md",
       "source_location": "L21",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "launch_verified_pitch_wmcp_sh_verified_outreach_to_a_graded_mcp_servers",
-      "target": "launch_verified_pitch_scarcity_use_the_real_numbers",
-      "confidence_score": 1.0
+      "target": "launch_verified_pitch_scarcity_use_the_real_numbers"
     },
     {
       "relation": "contains",
@@ -46970,9 +47009,9 @@
       "source_file": "launch/verified-pitch.md",
       "source_location": "L12",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "launch_verified_pitch_wmcp_sh_verified_outreach_to_a_graded_mcp_servers",
-      "target": "launch_verified_pitch_the_offer_accurate_don_t_overpromise",
-      "confidence_score": 1.0
+      "target": "launch_verified_pitch_the_offer_accurate_don_t_overpromise"
     },
     {
       "relation": "contains",
@@ -47956,5 +47995,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "9bc1cb89aa7a25f2305b3cceb4eb32e45178bae0"
+  "built_at_commit": "7cbd0f8422eeeeeaae1bdb9c0e922d5a8f00f00c"
 }
