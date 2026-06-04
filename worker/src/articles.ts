@@ -2902,6 +2902,175 @@ export const ARTICLES: Article[] = [
     ],
     related: ["best-umbreon-pokemon-cards", "best-espeon-pokemon-cards", "best-cards-in-prismatic-evolutions"],
   },
+
+  {
+    slug: "best-gardevoir-pokemon-cards",
+    title: "Best Gardevoir Pokémon Cards (Most Valuable, 2026) | wmcp.sh",
+    desc: "The best and most valuable Gardevoir Pokémon cards — the moonlit ex SIR, Gardevoir & Sylveon GX, Gardevoir GX, Mega Gardevoir EX — with the cheapest raw and PSA 10 copies on eBay.",
+    h1: "Best Gardevoir Pokémon Cards",
+    dek: "The moonlit ex SIR and the GX classics — and where to buy each.",
+    updated: "June 2026",
+    readMins: 7,
+    bodyHtml:
+      p(`Gardevoir is one of the most beloved Pokémon in the hobby, with a fanbase that turns its best cards into reliable chases. Here are the ones worth owning — with the cheapest raw copy and the cheapest PSA 10 on eBay for each.`) +
+      h2("1. Gardevoir ex Special Illustration Rare (Scarlet & Violet base, 2023)") +
+      p(`The headline — the moonlit Gardevoir ex SIR from the Scarlet & Violet base set is one of the most adored modern cards, with art that made it an instant collector favorite. See <a href="/guides/gardevoir-ex-worth-it">is it worth it</a>.`) +
+      cardLinks("Pokemon Gardevoir ex special illustration rare Scarlet Violet") +
+      h2("2. Gardevoir & Sylveon GX (Cosmic Eclipse, 2019)") +
+      p(`A fan-favorite Tag Team pairing two fairy-type icons — the alternate/full art is a popular high-grade target.`) +
+      cardLinks("Pokemon Gardevoir Sylveon GX Cosmic Eclipse") +
+      h2("3. Gardevoir GX (Burning Shadows, 2017)") +
+      p(`The Gardevoir GX, especially the rainbow secret rare, is a strong, attainable modern hold.`) +
+      cardLinks("Pokemon Gardevoir GX Burning Shadows") +
+      h2("4. Mega Gardevoir EX (Steam Siege, 2016)") +
+      p(`A standout from the XY era — the Mega Gardevoir EX full arts are popular with Mega Evolution collectors.`) +
+      cardLinks("Pokemon Mega Gardevoir EX Steam Siege") +
+      h2("5. Gardevoir ex (Paldea Evolved, 2023)") +
+      p(`A competitive staple as well as a collectible — the Paldea Evolved Gardevoir ex line keeps singles demand healthy.`) +
+      cardLinks("Pokemon Gardevoir ex Paldea Evolved") +
+      h2("Raw or PSA 10?") +
+      p(`Raw is the affordable way to collect; a PSA 10 commands a premium and is the store of value for the ex SIR and rainbow GX. Buying raw to grade? Read <a href="/guides/how-to-grade-pokemon-cards">how to grade</a> and check the <a href="/tools/pokemon-grading-calculator">grading calculator</a>.`),
+    faqs: [
+      { q: "What is the most valuable Gardevoir card?", a: "The moonlit Gardevoir ex special illustration rare from the Scarlet & Violet base set is the most valuable and popular modern Gardevoir, especially in PSA 10." },
+      { q: "Why is the Gardevoir ex SIR so popular?", a: "Its moonlit artwork is widely considered one of the best of the Scarlet & Violet era, and Gardevoir's devoted fanbase gives it strong, durable demand." },
+    ],
+    related: ["gardevoir-ex-worth-it", "are-gardevoir-cards-worth-money", "best-sylveon-pokemon-cards"],
+  },
+
+  {
+    slug: "gardevoir-ex-worth-it",
+    title: "Is the Gardevoir ex SIR Worth It? (Moonlit Art) | wmcp.sh",
+    desc: "Is the moonlit Gardevoir ex special illustration rare worth buying? Why it's so loved, raw vs PSA 10, and the cheapest copies on eBay.",
+    h1: "Is the Gardevoir ex SIR Worth It?",
+    dek: "The moonlit Scarlet & Violet chase — raw or graded?",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`The moonlit Gardevoir ex special illustration rare from the Scarlet & Violet base set is one of the most adored cards of the era. Here's the honest read.`) +
+      h2("Why it's so loved") +
+      p(`The art — Gardevoir in a serene moonlit field — is widely called one of the best SIRs of the Scarlet & Violet era, and Gardevoir's huge fanbase gives the card broad, durable demand.`) +
+      cardLinks("Pokemon Gardevoir ex special illustration rare Scarlet Violet") +
+      h2("Raw vs PSA 10") +
+      p(`Raw is the affordable, great-looking buy. A PSA 10 carries a solid premium — but since it's from a large mainline set, the multiple is more modest than on scarce cards. Raw is a smart collector buy.`) +
+      h2("Verdict") +
+      p(`Worth it — it's one of the most beloved modern SIRs and a centerpiece display card. Buy the PSA 10 for value, raw to enjoy it. See the <a href="/guides/best-gardevoir-pokemon-cards">best Gardevoir cards</a> and <a href="/guides/are-gardevoir-cards-worth-money">are Gardevoir cards worth money</a>.`),
+    faqs: [
+      { q: "Why is the Gardevoir ex SIR so expensive?", a: "Its moonlit artwork is one of the most praised of the Scarlet & Violet era, and Gardevoir's devoted fanbase gives it broad demand — though as a mainline-set card it's still attainable." },
+      { q: "Should I buy the Gardevoir ex SIR raw or PSA 10?", a: "Buy raw to display it affordably; buy a PSA 10 for a better store of value, though the premium is modest since it's from a large mainline set." },
+    ],
+    related: ["best-gardevoir-pokemon-cards", "are-gardevoir-cards-worth-money", "best-pokemon-cards-to-invest-2026"],
+  },
+
+  {
+    slug: "are-gardevoir-cards-worth-money",
+    title: "Are Gardevoir Cards Worth Money? (2026 Value Guide) | wmcp.sh",
+    desc: "Are Gardevoir Pokémon cards worth money? Which Gardevoir cards hold value — the ex SIR, Gardevoir & Sylveon GX, Mega Gardevoir EX — raw vs graded, with cheapest copies and PSA 10s on eBay.",
+    h1: "Are Gardevoir Cards Worth Money?",
+    dek: "Which Gardevoir cards actually hold value — and which are just nice to own.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Gardevoir's devoted fanbase keeps its best cards in demand — but most Gardevoir cards are common. Here's the breakdown.`) +
+      h2("The ones that hold value") +
+      p(`The blue-chips are the moonlit <a href="/guides/gardevoir-ex-worth-it">Gardevoir ex SIR</a> (Scarlet & Violet base) and the <a href="/guides/best-gardevoir-pokemon-cards">Gardevoir & Sylveon GX</a> (Cosmic Eclipse) — both with durable demand.`) +
+      cardLinks("Pokemon Gardevoir ex special illustration rare Scarlet Violet") +
+      h2("Strong mid-tier") +
+      p(`The Gardevoir GX (Burning Shadows rainbow) and Mega Gardevoir EX (Steam Siege) hold solid value — good entry points.`) +
+      cardLinks("Pokemon Gardevoir Sylveon GX Cosmic Eclipse") +
+      h2("Nice to own, not investments") +
+      p(`Common holos, promos, and recent bulk Gardevoirs (including the competitive Paldea Evolved ex) are great for a collection but won't appreciate much. Buy those for love of the card.`) +
+      h2("Raw vs graded for value") +
+      p(`For the ex SIR and rainbow GX, a PSA 10 is the real store of value. Read <a href="/guides/how-to-grade-pokemon-cards">how to grade</a> and run the <a href="/tools/pokemon-grading-calculator">grading calculator</a>. Selling? See <a href="/guides/where-to-sell-pokemon-cards">where to sell</a>.`),
+    faqs: [
+      { q: "Are Gardevoir cards a good investment?", a: "The best are — the moonlit Gardevoir ex SIR and the Gardevoir & Sylveon GX have durable, fan-driven demand. The Burning Shadows rainbow GX and Mega Gardevoir EX are strong mid-tier holds. Common holos won't appreciate much." },
+      { q: "Which Gardevoir card is worth the most?", a: "The moonlit Gardevoir ex special illustration rare (Scarlet & Violet base) is the most valuable, especially in PSA 10." },
+    ],
+    related: ["best-gardevoir-pokemon-cards", "gardevoir-ex-worth-it", "best-pokemon-cards-to-invest-2026"],
+  },
+
+  {
+    slug: "best-lucario-pokemon-cards",
+    title: "Best Lucario Pokémon Cards (Most Valuable, 2026) | wmcp.sh",
+    desc: "The best and most valuable Lucario Pokémon cards — Lucario LV.X, Lucario & Melmetal GX, Mega Lucario EX, Lucario ex — with the cheapest raw and PSA 10 copies on eBay.",
+    h1: "Best Lucario Pokémon Cards",
+    dek: "The LV.X classic, the GX and ex chases — and where to buy each.",
+    updated: "June 2026",
+    readMins: 6,
+    bodyHtml:
+      p(`Lucario — the Aura Pokémon and a Smash Bros. icon — has one of the most cross-over fanbases in the hobby. Here are its best cards, with the cheapest raw copy and the cheapest PSA 10 on eBay for each.`) +
+      h2("1. Lucario LV.X (Mysterious Treasures, 2007)") +
+      p(`The vintage chase — Lucario LV.X from the Diamond & Pearl era is a classic, sought-after card and a centerpiece for collectors. See its <a href="/guides/lucario-lv-x-card-value">value guide</a>.`) +
+      cardLinks("Pokemon Lucario LV X Mysterious Treasures") +
+      h2("2. Lucario & Melmetal GX (Unbroken Bonds, 2019)") +
+      p(`A popular Tag Team — the Lucario & Melmetal GX alternate/full art is a strong high-grade target and a competitive favorite of its era.`) +
+      cardLinks("Pokemon Lucario Melmetal GX Unbroken Bonds") +
+      h2("3. Mega Lucario EX (Furious Fists, 2014)") +
+      p(`A standout from the XY era — the Mega Lucario EX full arts are loved by Mega Evolution collectors.`) +
+      cardLinks("Pokemon Mega Lucario EX Furious Fists") +
+      h2("4. Lucario ex (Scarlet & Violet era)") +
+      p(`The modern Lucario ex line — including special-art versions — keeps the Aura Pokémon current and in demand.`) +
+      cardLinks("Pokemon Lucario ex special illustration rare") +
+      h2("Raw or PSA 10?") +
+      p(`Raw is the affordable way to collect; a PSA 10 commands a premium and is the store of value for the LV.X and full arts. Buying raw to grade? Read <a href="/guides/how-to-grade-pokemon-cards">how to grade</a> and check the <a href="/tools/pokemon-grading-calculator">grading calculator</a>.`),
+    faqs: [
+      { q: "What is the most valuable Lucario card?", a: "The vintage Lucario LV.X (Mysterious Treasures, 2007) is the top classic chase, especially in high grade. The Lucario & Melmetal GX and modern Lucario ex special arts lead the newer cards." },
+      { q: "Why is Lucario so popular?", a: "Lucario crosses over from the games and anime into Smash Bros., giving it a broad fanbase well beyond TCG collectors — which keeps its best cards in steady demand." },
+    ],
+    related: ["lucario-lv-x-card-value", "are-lucario-cards-worth-money", "best-pokemon-cards-to-invest-2026"],
+  },
+
+  {
+    slug: "lucario-lv-x-card-value",
+    title: "Lucario LV.X Card Value (Mysterious Treasures) | wmcp.sh",
+    desc: "The Lucario LV.X from Mysterious Treasures is a Diamond & Pearl-era classic. What it's worth, how to avoid fakes, raw vs PSA 10, and the cheapest copies on eBay.",
+    h1: "Lucario LV.X (The DP Classic)",
+    dek: "The Diamond & Pearl-era chase — what it's worth and how to buy safely.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Lucario LV.X from Mysterious Treasures (2007) is one of the most sought-after Diamond & Pearl-era cards. Here's the value read.`) +
+      h2("Why it's a classic") +
+      p(`LV.X cards were the chase rares of the DP era, and Lucario — riding huge popularity from the movies, anime, and later Smash Bros. — is one of the most desired. Nostalgia plus a broad fanbase keep demand strong.`) +
+      cardLinks("Pokemon Lucario LV X Mysterious Treasures") +
+      h2("Watch for fakes") +
+      p(`Popular older chase cards are frequently faked. Buy graded (PSA/CGC/BGS) whenever possible, or learn the tells first — see <a href="/guides/how-to-spot-fake-pokemon-booster-box">how to spot fakes</a> and <a href="/guides/how-to-tell-if-a-pokemon-card-is-rare">how to tell if a card is rare</a>.`) +
+      h2("Raw vs PSA 10") +
+      p(`Raw copies carry condition and authenticity risk. A PSA 10 is the safest, most liquid way to own it, and the premium reflects how few survive gem-mint. For DP-era chases, graded is usually the right call.`) +
+      h2("The takeaway") +
+      p(`A nostalgic, attainable-ish classic and a great centerpiece for Lucario fans. See where it ranks among the <a href="/guides/best-lucario-pokemon-cards">best Lucario cards</a> and other <a href="/guides/vintage-pokemon-cards-worth-money">vintage cards worth money</a>.`),
+    faqs: [
+      { q: "How much is a Lucario LV.X worth?", a: "It's a sought-after Diamond & Pearl-era chase whose value climbs steeply with grade; gem-mint PSA 10 copies command the biggest premium because few survive in top condition. Price off recent sold comps." },
+      { q: "Is the Lucario LV.X rare?", a: "Yes — LV.X cards were the chase rares of the DP era, and Lucario is one of the most popular, making clean high-grade copies genuinely scarce." },
+    ],
+    related: ["best-lucario-pokemon-cards", "vintage-pokemon-cards-worth-money", "are-lucario-cards-worth-money"],
+  },
+
+  {
+    slug: "are-lucario-cards-worth-money",
+    title: "Are Lucario Cards Worth Money? (2026 Value Guide) | wmcp.sh",
+    desc: "Are Lucario Pokémon cards worth money? Which Lucario cards hold value — Lucario LV.X, Lucario & Melmetal GX, Mega Lucario EX — raw vs graded, with cheapest copies and PSA 10s on eBay.",
+    h1: "Are Lucario Cards Worth Money?",
+    dek: "Which Lucario cards actually hold value — and which are just nice to own.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Lucario's cross-media popularity keeps its best cards in demand — but most Lucario cards are common. Here's the breakdown.`) +
+      h2("The ones that hold value") +
+      p(`The blue-chips are the vintage <a href="/guides/lucario-lv-x-card-value">Lucario LV.X</a> (Mysterious Treasures) and the <a href="/guides/best-lucario-pokemon-cards">Lucario & Melmetal GX</a> (Unbroken Bonds) — both with durable, fan-driven demand.`) +
+      cardLinks("Pokemon Lucario LV X Mysterious Treasures") +
+      h2("Strong mid-tier") +
+      p(`The Mega Lucario EX (Furious Fists) and the modern Lucario ex special arts hold solid value — good entry points.`) +
+      cardLinks("Pokemon Lucario ex special illustration rare") +
+      h2("Nice to own, not investments") +
+      p(`Common holos, promos, and recent bulk Lucarios are great for a collection but won't appreciate much. Buy those for love of the Aura Pokémon.`) +
+      h2("Raw vs graded for value") +
+      p(`For the LV.X and full arts, a PSA 10 is the real store of value. Read <a href="/guides/how-to-grade-pokemon-cards">how to grade</a> and run the <a href="/tools/pokemon-grading-calculator">grading calculator</a>. Selling? See <a href="/guides/where-to-sell-pokemon-cards">where to sell</a>.`),
+    faqs: [
+      { q: "Are Lucario cards a good investment?", a: "The best are — the vintage Lucario LV.X and the Lucario & Melmetal GX have durable, cross-media demand. The Mega Lucario EX and modern Lucario ex special arts are strong mid-tier holds. Common holos won't appreciate much." },
+      { q: "Which Lucario card is worth the most?", a: "The vintage Lucario LV.X (Mysterious Treasures) is the most valuable, especially in PSA 10, followed by the Lucario & Melmetal GX and modern Lucario ex special arts." },
+    ],
+    related: ["best-lucario-pokemon-cards", "lucario-lv-x-card-value", "best-pokemon-cards-to-invest-2026"],
+  },
 ];
 
 export const ARTICLE_SLUGS = ARTICLES.map((a) => a.slug);
