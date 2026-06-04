@@ -32,6 +32,7 @@ async function load() {
   } catch {}
 
   initWatch(tab);
+  initCapture(tab);
 
   const bg = await chrome.runtime.sendMessage({ type: "GET_TAB_TOOLS", tabId: tab.id });
   if (bg?.tools?.length) {
@@ -239,6 +240,105 @@ async function initWatch(tab) {
   });
 
   refresh();
+}
+
+// ---- API Capture: observe this tab's fetch/XHR → wmcp synthesizes OpenAPI tools.
+// Injected into the page's MAIN world. Self-contained (executeScript serializes it),
+// redacts auth-like fields, keeps only JSON bodies, buffers in-page until "Build".
+function wmcpInstallCapture() {
+  if (window.__wmcpCap) return "already";
+  window.__wmcpCap = true;
+  window.__wmcpFlows = [];
+  var MAX = 400, BODY = 16000;
+  var SECRET = /pass|token|secret|auth|cookie|api[_-]?key|bearer|session|ssn|\bcard\b|cvv|\botp\b|credential/i;
+  function redact(v, d) {
+    d = d || 0;
+    if (d > 6 || v == null) return v;
+    if (Array.isArray(v)) return v.slice(0, 50).map(function (x) { return redact(x, d + 1); });
+    if (typeof v === "object") { var o = {}; for (var k in v) { if (!Object.prototype.hasOwnProperty.call(v, k)) continue; o[k] = SECRET.test(k) ? "[redacted]" : redact(v[k], d + 1); } return o; }
+    return v;
+  }
+  function clean(text) { // keep only JSON bodies, redacted + truncated
+    if (text == null) return undefined;
+    try { return JSON.stringify(redact(JSON.parse(String(text).slice(0, BODY)))).slice(0, BODY); } catch (e) { return undefined; }
+  }
+  function cleanUrl(u) { try { var x = new URL(u, location.href); x.searchParams.forEach(function (val, key) { if (SECRET.test(key)) x.searchParams.set(key, "x"); }); return x.href; } catch (e) { return u; } }
+  function looksApi(url, ct) { return /json/i.test(ct || "") || /\/api\/|\/v\d+\/|graphql|\.json(\?|$)/i.test(url); }
+  function push(f) { if (window.__wmcpFlows.length < MAX) window.__wmcpFlows.push(f); }
+  var of = window.fetch;
+  if (of) window.fetch = function () {
+    var args = arguments, req = args[0], init = args[1] || {};
+    var url = (typeof req === "string" ? req : (req && req.url)) || "";
+    var method = String(init.method || (typeof req === "object" && req && req.method) || "GET").toUpperCase();
+    var reqBody = typeof init.body === "string" ? init.body : undefined;
+    return of.apply(this, args).then(function (res) {
+      try {
+        var ct = res.headers.get("content-type") || "";
+        if (looksApi(url, ct)) res.clone().text().then(function (t) { push({ method: method, url: cleanUrl(url), status: res.status, requestBody: clean(reqBody), responseBody: clean(t) }); }).catch(function () {});
+      } catch (e) {}
+      return res;
+    });
+  };
+  var ox = XMLHttpRequest.prototype.open, os = XMLHttpRequest.prototype.send;
+  XMLHttpRequest.prototype.open = function (m, u) { this.__wm = { method: String(m || "GET").toUpperCase(), url: u }; return ox.apply(this, arguments); };
+  XMLHttpRequest.prototype.send = function (body) {
+    var xhr = this;
+    try {
+      xhr.addEventListener("load", function () {
+        try {
+          var ct = xhr.getResponseHeader("content-type") || "";
+          if (xhr.__wm && looksApi(xhr.__wm.url, ct)) push({ method: xhr.__wm.method, url: cleanUrl(xhr.__wm.url), status: xhr.status, requestBody: clean(typeof body === "string" ? body : undefined), responseBody: clean(xhr.responseText) });
+        } catch (e) {}
+      });
+    } catch (e) {}
+    return os.apply(this, arguments);
+  };
+  return "installed";
+}
+
+async function initCapture(tab) {
+  const capBtn = document.getElementById("cap-btn");
+  const buildBtn = document.getElementById("cap-build");
+  const note = document.getElementById("cap-note");
+  const result = document.getElementById("cap-result");
+  const countEl = document.getElementById("cap-count");
+  if (!capBtn || !tab) return;
+  if (!/^https?:/.test(tab.url || "")) { capBtn.disabled = true; capBtn.style.opacity = ".5"; note.textContent = "Open a website to capture its API."; return; }
+
+  async function read(fn) {
+    try { const [res] = await chrome.scripting.executeScript({ target: { tabId: tab.id }, world: "MAIN", func: fn }); return res ? res.result : null; }
+    catch (e) { return undefined; }
+  }
+  async function refreshCount() {
+    const n = await read(function () { return (typeof window.__wmcpCap === "undefined") ? null : (window.__wmcpFlows || []).length; });
+    if (typeof n === "number") { buildBtn.style.display = "block"; countEl.textContent = n; capBtn.textContent = "🎯 Capturing — interact with the site"; capBtn.style.background = "#2a1500"; capBtn.style.color = "var(--accent2)"; }
+  }
+
+  capBtn.addEventListener("click", async () => {
+    const r = await read(wmcpInstallCapture);
+    if (r === undefined) { note.textContent = "Couldn't start capture on this page."; return; }
+    note.textContent = "Capturing this tab's API calls. Browse/click around the site, then hit Build. Nothing is sent until you do.";
+    refreshCount();
+  });
+
+  buildBtn.addEventListener("click", async () => {
+    buildBtn.disabled = true; buildBtn.textContent = "⚙ Building…";
+    try {
+      const flows = await read(function () { return window.__wmcpFlows || []; });
+      if (!flows || !flows.length) { result.className = "result show error"; result.textContent = "No API calls captured yet — interact with the site first."; return; }
+      let origin = ""; try { origin = new URL(tab.url).origin; } catch (e) {}
+      const resp = await fetch("https://wmcp.sh/api/v1/flows", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ flows: flows, origin: origin }) });
+      const d = await resp.json();
+      if (!resp.ok) throw new Error(d.error || "failed");
+      const tools = d.tools || [];
+      result.className = "result show";
+      result.innerHTML = "<b style=\"color:var(--accent2)\">" + tools.length + " tools</b> from " + d.stats.flows + " calls · " + d.stats.paths + " endpoints<br>" + tools.slice(0, 10).map(function (t) { return "• " + escapeHtml(t.name); }).join("<br>") + (tools.length > 10 ? "<br>…" : "") + (d.openapi_url ? "<br><span style=\"color:var(--muted)\">Agent-callable endpoint:</span><br><span style=\"color:var(--text);word-break:break-all\">" + escapeHtml(d.openapi_url) + "</span>" : "");
+    } catch (e) {
+      result.className = "result show error"; result.textContent = "❌ " + (e.message || e);
+    } finally { buildBtn.disabled = false; buildBtn.textContent = "⚙ Build agent tools"; }
+  });
+
+  refreshCount();
 }
 
 load();

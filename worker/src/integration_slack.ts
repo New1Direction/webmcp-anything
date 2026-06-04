@@ -20,7 +20,7 @@ export function integrationSlackHtml(origin: string): string {
       ["Multi-workspace", "You wire installation flow", "Composio manages", "Per-wmcp-user OAuth in vault"],
       ["MCP shape", "Wrap each method yourself", "Auto-mapped", "Native MCP tools"],
       ["Realtime / RTM", "Yes (sockets)", "Webhook → workflow", "Webhook in roadmap; not v0"],
-      ["Cost", "Free SDK + your hosting", "Platform tier", "Free 100/day + $29/mo Pro"],
+      ["Cost", "Free SDK + your hosting", "Platform tier", "Free 100/day + $99/mo Pro"],
     ],
     tools: [
       { name: "chat.postMessage", type: "Live action", returns: "Message ts + channel" },

@@ -92,7 +92,7 @@ export function landingHtml(origin: string): string {
     display: flex; justify-content: space-between; align-items: center;
     padding: 22px 24px; max-width: 1080px; margin: 0 auto;
   }
-  nav .brand { font-weight: 800; letter-spacing: -.02em; font-size: 1.05rem; }
+  nav .brand { font-weight: 800; letter-spacing: -.02em; font-size: 1.05rem; color: inherit; text-decoration: none; display: inline-flex; align-items: center; }
   nav .brand span { color: var(--accent2); }
   .brand-spark { width: .82em; height: .82em; color: var(--accent); vertical-align: -.1em; margin-right: 6px; }
   nav .links { display: flex; gap: 22px; font-size: .9rem; }
@@ -106,6 +106,10 @@ export function landingHtml(origin: string): string {
     color: var(--text); text-decoration: none; font-weight: 600;
   }
   nav .cta:hover { border-color: var(--accent); }
+  nav .links .cta { margin-left: 6px; }
+  .navtog { display: none; }
+  nav .hamb { display: none; cursor: pointer; flex-direction: column; gap: 5px; padding: 8px; margin: -8px; }
+  nav .hamb span { display: block; width: 22px; height: 2px; background: var(--muted); border-radius: 2px; }
 
   /* ---- hero ---- */
   .hero {
@@ -446,26 +450,33 @@ export function landingHtml(origin: string): string {
     .sub, .hero-ctas { margin-left: auto; margin-right: auto; justify-content: center; }
     .agent { grid-template-columns: 1fr; }
     .flywheel { grid-template-columns: 1fr; gap: 24px; }
-    nav .links { display: none; }
+    nav { flex-wrap: wrap; position: relative; }
+    nav .hamb { display: flex; }
+    nav .links {
+      display: none; position: absolute; top: calc(100% - 6px); right: 24px; left: 24px;
+      flex-direction: column; gap: 0; background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 8px; z-index: 60; box-shadow: 0 14px 40px rgba(0,0,0,.45);
+    }
+    .navtog:checked ~ .links { display: flex; }
+    nav .links a { padding: 12px 12px; border-radius: 8px; }
+    nav .links a:hover { background: var(--bg2); color: var(--text); }
+    nav .links .cta { text-align: center; margin: 4px 0 0; }
   }
 </style>
 </head>
 <body>
 
 <nav>
-  <div class="brand"><svg class="brand-spark" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 1Q12.6 11.4 23 12Q12.6 12.6 12 23Q11.4 12.6 1 12Q11.4 11.4 12 1Z"/></svg>wmcp<span>.sh</span></div>
+  <a class="brand" href="/"><svg class="brand-spark" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 1Q12.6 11.4 23 12Q12.6 12.6 12 23Q11.4 12.6 1 12Q11.4 11.4 12 1Z"/></svg>wmcp<span>.sh</span></a>
+  <input type="checkbox" id="navtog" class="navtog" aria-hidden="true" />
+  <label for="navtog" class="hamb" aria-label="Toggle menu"><span></span><span></span><span></span></label>
   <div class="links">
-    <a href="#demo">Demo</a>
-    <a href="/integration/shopify">Shopify</a>
-    <a href="/integration/openapi">OpenAPI</a>
-    <a href="/integration/stripe">Stripe</a>
-    <a href="#pricing">Pricing</a>
-    <a href="#faq">FAQ</a>
     <a href="/directory">Directory</a>
-    <a href="/mcp/grade">Trust grades</a>
-    <a href="https://github.com/New1Direction/webmcp-anything">GitHub</a>
+    <a href="/mcp/leaderboard">Leaderboard</a>
+    <a href="/webmcp">WebMCP</a>
+    <a href="/#pricing">Pricing</a>
+    <a class="cta" href="/dashboard">Dashboard →</a>
   </div>
-  <a class="cta" href="/dashboard">Dashboard →</a>
 </nav>
 
 <div class="wrap">
@@ -488,6 +499,9 @@ export function landingHtml(origin: string): string {
     </div>
     <div class="hero-stat">
       <span id="cache-stat">·</span> <span>URLs cached by the community · grows with every install</span>
+    </div>
+    <div class="hero-stat">
+      <span id="graded-stat">·</span> <span>MCP servers graded · <a href="/mcp/leaderboard" style="color:var(--accent2);text-decoration:none">live trust leaderboard</a></span>
     </div>
   </div>
   <div class="hero-3d">
@@ -829,8 +843,46 @@ tools = [
 
 </div>
 
+<style>
+  footer{border-top:1px solid var(--border); margin-top:64px; padding:42px 24px 54px; max-width:1080px; margin-left:auto; margin-right:auto}
+  .ftr-cols{display:grid; grid-template-columns:repeat(4,1fr); gap:28px}
+  .ftr-cols h4{font-size:.74rem; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); margin:0 0 10px}
+  .ftr-cols a{display:block; color:var(--text); text-decoration:none; font-size:.9rem; padding:4px 0; opacity:.82}
+  .ftr-cols a:hover{opacity:1; color:var(--accent2)}
+  .ftr-tag{color:var(--muted); font-size:.86rem; margin:30px 0 0}
+  @media (max-width:700px){ .ftr-cols{grid-template-columns:repeat(2,1fr)} }
+</style>
 <footer>
-  <a href="/">Home</a> · <a href="/directory">Directory</a> · <a href="/dashboard">Dashboard</a> · <a href="https://github.com/New1Direction/webmcp-anything">GitHub</a> · <a href="https://developer.chrome.com/docs/ai/webmcp">WebMCP spec <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:.92em;height:.92em;vertical-align:-.16em"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
+  <div class="ftr-cols">
+    <div><h4>Product</h4>
+      <a href="/directory">Directory</a>
+      <a href="/webmcp">WebMCP</a>
+      <a href="/capture">API Capture</a>
+      <a href="/connect">Connect an MCP server</a>
+      <a href="/integration/shopify">Shopify</a>
+      <a href="/integration/openapi">OpenAPI</a>
+      <a href="/integration/stripe">Stripe</a>
+    </div>
+    <div><h4>Trust</h4>
+      <a href="/mcp/leaderboard">Leaderboard</a>
+      <a href="/mcp/grade">Grade a server</a>
+      <a href="/reports/state-of-mcp-security-2026">State of MCP Security</a>
+      <a href="/mcp/badges">Get a badge</a>
+    </div>
+    <div><h4>For collectors</h4>
+      <a href="/">QuickCatch</a>
+      <a href="/drops">Restock guides</a>
+      <a href="/guides">Buying guides</a>
+      <a href="/tools">Free tools</a>
+    </div>
+    <div><h4>Company</h4>
+      <a href="/#pricing">Pricing</a>
+      <a href="/dashboard">Get a key</a>
+      <a href="/privacy">Privacy</a>
+      <a href="https://github.com/New1Direction/webmcp-anything">GitHub ↗</a>
+    </div>
+  </div>
+  <p class="ftr-tag">Any website → tools an agent can use. QuickCatch is the same wmcp tech, marketed for collectors.</p>
 </footer>
 
 <script>
@@ -838,14 +890,10 @@ const ORIGIN = ${JSON.stringify(origin)};
 
 // ---- live cache counter ----
 (async function loadStat() {
-  try {
-    const r = await fetch(ORIGIN + "/api/v1/stats/public");
-    const d = await r.json();
-    const target = d.cached_urls | 0;
-    const el = document.getElementById("cache-stat");
-    if (target <= 0) { el.textContent = "Just"; return; }
-    const start = performance.now();
-    const dur = 1400;
+  function countUp(el, target, zeroLabel) {
+    if (!el) return;
+    if (target <= 0) { el.textContent = zeroLabel; return; }
+    const start = performance.now(), dur = 1400;
     function tick(t) {
       const p = Math.min(1, (t - start) / dur);
       const eased = 1 - Math.pow(1 - p, 3);
@@ -853,6 +901,12 @@ const ORIGIN = ${JSON.stringify(origin)};
       if (p < 1) requestAnimationFrame(tick);
     }
     requestAnimationFrame(tick);
+  }
+  try {
+    const r = await fetch(ORIGIN + "/api/v1/stats/public");
+    const d = await r.json();
+    countUp(document.getElementById("cache-stat"), d.cached_urls | 0, "Just");
+    countUp(document.getElementById("graded-stat"), d.graded_servers | 0, "0");
   } catch {}
 })();
 
@@ -1008,11 +1062,16 @@ renderChat();
       if (Q.depth>zb[Q.sy][Q.sx]){ var bb = (Q.depth+1)/2; var idx = Math.max(0,Math.min(RAMP.length-1,Math.round(bb*(RAMP.length-1)))); grid[Q.sy][Q.sx] = RAMP[idx]; zb[Q.sy][Q.sx] = Q.depth; } }
     var out = ''; for (var ry = 0; ry < ROWS; ry++){ out += grid[ry].join('') + '\\n'; }
     el.textContent = out;
-    if (!reduce) raf = requestAnimationFrame(frame);
+    raf = requestAnimationFrame(frame);
   }
-  // Lazy: only animate once the section scrolls into view.
-  if ('IntersectionObserver' in window){ var io = new IntersectionObserver(function(es){ es.forEach(function(en){ if (en.isIntersecting){ frame(); io.disconnect(); } }); }); io.observe(el); }
-  else { frame(); }
+  var started = false;
+  function start(){ if (started) return; started = true; frame(); }
+  // Lazy-start when it scrolls into view, with a fallback so it always runs.
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(es){ if (es.some(function(en){ return en.isIntersecting; })){ start(); io.disconnect(); } });
+    io.observe(el);
+    setTimeout(start, 2500);
+  } else { start(); }
 })();
 </script>
 </body>

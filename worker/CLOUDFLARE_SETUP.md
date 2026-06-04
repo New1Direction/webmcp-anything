@@ -70,7 +70,7 @@ Required only if you want real subscription billing. Without this the worker sti
 
 ### B) Create products + prices
 - Stripe dashboard → Products → + Add product
-- Create: **WebMCP Pro $29/mo** and **WebMCP Reseller $99/mo**
+- Create: **WebMCP Builder $39/mo**, **WebMCP Pro $99/mo**, and **WebMCP Reseller $299/mo**
 - Note each Price ID (format: `price_1ABCdef...`)
 
 ### C) Configure the webhook

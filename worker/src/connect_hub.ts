@@ -7,6 +7,8 @@
 // dual-emit bridge as copy-paste snippets. One destination that shows the whole
 // moat: graded + vaulted + metered.
 import { PROVIDERS } from "./providers";
+import { adSlot } from "./ads";
+import { CATEGORY_NAMES, categorySlug } from "./mcp_grade";
 
 /**
  * Discovery manifest served at /.well-known/mcp — a flat, crawlable list of the
@@ -107,10 +109,10 @@ export function connectHubHtml(origin: string): string {
 
   return `<!doctype html><html lang="en"><head>
 <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Connect an MCP server — OAuth handled, credentials vaulted, trust graded | wmcp.sh</title>
+<title>The MCP hub — connect, grade & build any MCP server | wmcp.sh</title>
 <meta name="description" content="Connect ${proxied.length} OAuth-protected MCP servers (Linear, Notion, Atlassian, Asana, PayPal, Sentry, DefiLlama) once via wmcp.sh — then any agent calls them with the bearer token injected and refreshed, plus a free independent A–F trust grade that's continuously watched for drift & rug-pulls."/>
 <link rel="canonical" href="${origin}/connect"/>
-<meta property="og:title" content="Connect an MCP server | wmcp.sh"/>
+<meta property="og:title" content="The MCP hub — connect, grade & build any MCP server | wmcp.sh"/>
 <meta property="og:description" content="Connect once; any agent calls it with OAuth handled, credentials vaulted, and a continuously-watched trust grade."/>
 <meta property="og:url" content="${origin}/connect"/>
 <meta property="og:image" content="${origin}/og.png"/>
@@ -152,13 +154,24 @@ export function connectHubHtml(origin: string): string {
   .two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
   @media(max-width:720px){.two{grid-template-columns:1fr}}
   .muted{color:var(--muted)}
+  .pillrow{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0 6px}
+  .pill{display:inline-flex;align-items:center;gap:7px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:9px 14px;color:var(--text);text-decoration:none;font-weight:700;font-size:.9rem}
+  .pill:hover{border-color:var(--accent)}
   footer{margin-top:60px;color:var(--dim);font-size:.85rem;border-top:1px solid var(--border);padding-top:18px}
 </style></head><body>
 <div class="wrap">
   <a class="back" href="/">← wmcp.sh</a>
-  <h1>Connect an MCP server</h1>
-  <p class="lede">Connect once. Any agent — Claude, Cursor, Codex — then calls it at <code>${esc(origin)}/mcp/&lt;provider&gt;</code> with the OAuth bearer token injected and refreshed for you. No token pasting, ever.</p>
+  <h1>The MCP hub</h1>
+  <p class="lede">One hub for the Model Context Protocol: <strong>connect</strong> any MCP server with OAuth handled, <strong>grade</strong> any server for trust, and turn <strong>any URL</strong> into MCP tools. Any agent — Claude, Cursor, Codex — then calls it at <code>${esc(origin)}/mcp/&lt;provider&gt;</code>, bearer token injected and refreshed. No token pasting, ever.</p>
   <p class="sub">Every connection is <strong>credential-vaulted</strong> (encrypted, never in tool args), <strong>metered</strong>, and carries an <strong>independent A–F trust grade</strong> that we keep watching for drift &amp; rug-pulls.</p>
+  <div class="pillrow">
+    <a class="pill" href="/mcp/leaderboard">🏆 Trust leaderboard</a>
+    <a class="pill" href="/mcp/grade">🛡️ Grade an MCP server</a>
+    <a class="pill" href="/mcp">🔌 Connectable servers</a>
+    <a class="pill" href="/webmcp">🌐 WebMCP</a>
+    <a class="pill" href="/capture">📡 API Capture</a>
+    <a class="pill" href="/directory">📚 Directory</a>
+  </div>
 
   <div class="how">
     <div class="step"><b>1 · Connect</b><p>One OAuth click. wmcp.sh self-registers with the upstream (RFC 7591) — nothing to configure.</p></div>
@@ -203,6 +216,16 @@ verify_before_execute({ url })</pre>
       </div>
     </div>
   </div>
+
+  <div class="section">
+    <h2>Browse the trust leaderboard by category</h2>
+    <p class="muted">Independent A–F grades, grouped by what the servers actually do. Each category is its own ranked board.</p>
+    <div class="pillrow">
+      ${CATEGORY_NAMES.filter((c) => c !== "Other").map((c) => `<a class="pill" href="/mcp/leaderboard/${categorySlug(c)}">${c}</a>`).join("")}
+    </div>
+  </div>
+
+  ${adSlot()}
 
   <footer>
     Browse the full catalog: <a href="/mcp">/mcp</a> · Grade any server: <a href="/mcp/grade">/mcp/grade</a> · Pricing &amp; keys: <a href="/dashboard">/dashboard</a><br/>

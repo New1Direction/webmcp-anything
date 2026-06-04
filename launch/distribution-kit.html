@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Distribution Kit — State of MCP Security · wmcp.sh</title>
+<style>
+  :root{--bg:#0b0b12;--card:#16161f;--bg2:#11111c;--border:#2a2a3c;--text:#ececf5;--muted:#9a9ab0;--accent:#ff9e2c;--accent2:#ffcf7a;--green:#4ade80}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif;line-height:1.6;font-size:15px}
+  .wrap{max-width:820px;margin:0 auto;padding:40px 22px 80px}
+  h1{font-size:1.9rem;margin:0 0 6px;letter-spacing:-.02em}
+  h2{font-size:1.3rem;margin:38px 0 10px;border-top:1px solid var(--border);padding-top:26px}
+  h3{font-size:1rem;margin:18px 0 6px;color:var(--accent2)}
+  p{margin:0 0 12px}.muted{color:var(--muted)}
+  a{color:var(--accent2)}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:18px 0}
+  .kpi{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+  .kpi .v{font-size:1.7rem;font-weight:900;color:var(--accent2);line-height:1}
+  .kpi .l{color:var(--muted);font-size:.74rem;text-transform:uppercase;letter-spacing:.05em;margin-top:5px}
+  .note{background:rgba(255,158,44,.08);border:1px solid rgba(255,158,44,.4);border-radius:10px;padding:12px 14px;font-size:.92rem;color:var(--accent2)}
+  .block{position:relative;background:var(--card);border:1px solid var(--border);border-radius:12px;margin:10px 0 18px}
+  .block .bar{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--border);background:var(--bg2);border-radius:12px 12px 0 0}
+  .block .bar .t{font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-weight:700}
+  .cpy{background:var(--accent);color:#2a1500;border:none;border-radius:7px;padding:5px 12px;font-size:.8rem;font-weight:800;cursor:pointer;font-family:inherit}
+  .cpy.done{background:var(--green)}
+  .block pre{margin:0;padding:14px 16px;white-space:pre-wrap;word-break:break-word;font-family:"SF Mono",Menlo,monospace;font-size:.82rem;line-height:1.55;color:var(--text);max-height:420px;overflow:auto}
+  code{background:var(--bg2);padding:1px 6px;border-radius:5px;font-size:.85em}
+  ol{line-height:1.9}
+  .seq{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 22px}
+</style></head><body>
+<div class="wrap">
+<h1>Distribution Kit — State of MCP Security</h1>
+<p class="muted">Copy-paste launch assets. Click <b>Copy</b> on any block. Canonical numbers below (corpus = 6,762).</p>
+
+<div class="kpis">
+  <div class="kpi"><div class="v">6,762</div><div class="l">Servers audited</div></div>
+  <div class="kpi"><div class="v">42%</div><div class="l">A or B</div></div>
+  <div class="kpi"><div class="v">38%</div><div class="l">D or F</div></div>
+  <div class="kpi"><div class="v">13%</div><div class="l">Dead / unreachable</div></div>
+  <div class="kpi"><div class="v">~1%</div><div class="l">Real security issue</div></div>
+</div>
+<p class="note"><b>Hook:</b> the largest independent MCP audit + the trust gap nobody owns. Security news is mostly good (~1% issues); the gaps are <b>vettability</b> and <b>rot</b> (13% dead). MCP is ~90% developer tooling. Links: <a href="https://wmcp.sh/reports/state-of-mcp-security-2026">report</a> · <a href="https://wmcp.sh/mcp/leaderboard">leaderboard</a> · <a href="https://wmcp.sh/mcp/grade">grade-your-own</a></p>
+
+<h2>1 · Long-form article (dev.to → Medium → Hashnode)</h2>
+<p class="muted">Highest leverage: ranks fast + drops 3 backlinks. Title:</p>
+<div class="block"><div class="bar"><span class="t">Title</span><button class="cpy">Copy</button></div><pre>I audited 6,762 MCP servers. Here's the state of the ecosystem — and the trust gap nobody's filling.</pre></div>
+<div class="block"><div class="bar"><span class="t">Article body</span><button class="cpy">Copy</button></div><pre>Originally published with live data at https://wmcp.sh/reports/state-of-mcp-security-2026
+
+The Model Context Protocol exploded this year. Claude, Cursor, Codex, and a wave of agents now discover and auto-connect to MCP servers. Which raises a question nobody's answering: who's checking those servers are safe, reachable, and well-behaved before an agent hands them tool-call access?
+
+The official MCP registry deliberately doesn't. It authenticates namespaces and stores metadata, then explicitly delegates security and curation to "downstream aggregators." So trust in MCP is structurally unowned.
+
+I built an independent grader and ran it across 6,762 servers — the largest audit of the ecosystem I'm aware of. Here's what's there.
+
+## The method
+An open, OWASP-MCP-aligned A–F rubric across five dimensions: spec conformance, security, reliability, tool hygiene, and transparency. It covers remote servers (by connecting and inspecting their real MCP surface) and stdio servers distributed as npm/pypi packages (by statically analyzing their published source). Grades are free and identical whether or not the operator pays — that independence is the whole point.
+
+## What's actually out there
+MCP is overwhelmingly developer infrastructure. Developer Tools is the largest category by 2x (1,020 servers), followed by Finance &amp; Crypto (581), AI &amp; ML (408), Databases (396), and Cloud &amp; DevOps (372). Consumer-facing categories are thin. If you're building for agents, you're mostly building for developers right now.
+
+42% earn an A or B; 38% land at D or F. The security news is better than the headlines suggest — only ~1% of servers exposed a confirmed problem (prompt-injection / hidden-instruction markup or secret-exfiltration file paths embedded in tool descriptions — text an agent reads and may act on).
+
+The real gap is vettability and rot. 13% of registry-listed servers are simply unreachable — dead or unmaintained. And of the live ones, many can't be vetted from the outside at all: no OAuth resource metadata (RFC 9728), untyped tool schemas. An agent has no safe way to know what a server will do before connecting.
+
+And tools mutate silently after launch — the CVE-2025-54136 "rug-pull" class. A server you vetted last week can ship a renamed or malicious tool today. Static scans miss this entirely; it needs continuous re-verification. (We hash each server's tool set and re-check on a schedule.)
+
+## Why this matters
+As agents move from "suggest" to "act," "trust before connect" stops being optional. The ecosystem needs an independent, continuous, cross-client trust layer — the FICO/SSL-Labs of MCP — not a one-time scan and not a registry that punts.
+
+That's what I'm building at wmcp.sh: a free A–F trust grade for every MCP server, continuously watched for drift, plus the same idea extended to two more connection types — WebMCP (in-browser agents) and captured REST (turn any site's undocumented internal API into agent tools).
+
+If you run an MCP server: grade it free at https://wmcp.sh/mcp/grade, make sure it's reachable and transparent, and embed the badge so users know you're audited. The full report (live data): https://wmcp.sh/reports/state-of-mcp-security-2026</pre></div>
+
+<h2>2 · LinkedIn</h2>
+<div class="block"><div class="bar"><span class="t">LinkedIn post</span><button class="cpy">Copy</button></div><pre>We ran the largest independent security audit of Model Context Protocol servers to date — 6,762 of them.
+
+The takeaway isn't "everything's vulnerable." Only ~1% had a confirmed security issue. The real findings:
+• MCP is overwhelmingly developer tooling (Dev Tools outnumber every other category 2:1)
+• 13% of registered servers are already dead/unreachable
+• 42% earn an A/B grade; most of the rest simply can't be vetted from the outside
+• Tools mutate silently after launch (the "rug-pull" class) — static scans miss it
+
+As agents move from suggesting to acting, "trust before connect" stops being optional — and right now nobody owns that layer. Full report (live, independent, free): https://wmcp.sh/reports/state-of-mcp-security-2026</pre></div>
+
+<h2>3 · Reddit (r/mcp, r/LocalLLaMA, r/AI_Agents)</h2>
+<p class="muted">Check each sub's self-promo rules; disclose you built it.</p>
+<div class="block"><div class="bar"><span class="t">Title</span><button class="cpy">Copy</button></div><pre>I audited 6,762 MCP servers — the largest independent audit yet. Here's what the ecosystem actually looks like.</pre></div>
+<div class="block"><div class="bar"><span class="t">Body</span><button class="cpy">Copy</button></div><pre>Disclosure: I build wmcp.sh (an independent MCP trust grader). Sharing the aggregate because the data's genuinely interesting and I'd like the methodology critiqued.
+
+Open OWASP-MCP-aligned A–F rubric over 6,762 servers (remotes + npm/pypi via static analysis):
+- 42% grade A/B, 38% D/F. Confirmed security issues are rare (~1%) — the bigger gap is vettability + rot (13% are dead/unreachable).
+- MCP is mostly dev tooling — Dev Tools (1,020) dwarf every other category; Finance/Crypto (581) and AI/ML (408) next.
+- Tools mutate silently post-launch (CVE-2025-54136 class), which we monitor via drift detection.
+
+Grades are free + identical regardless of payment. Report + grade-your-own: https://wmcp.sh/reports/state-of-mcp-security-2026 — where's the rubric wrong?</pre></div>
+
+<h2>4 · awesome-mcp PR</h2>
+<p class="muted">Target: <code>punkpeye/awesome-mcp-servers</code> and <code>wong2/awesome-mcp-servers</code>.</p>
+<div class="block"><div class="bar"><span class="t">Entry (markdown)</span><button class="cpy">Copy</button></div><pre>- [wmcp.sh](https://wmcp.sh/mcp/leaderboard) — Independent A–F trust grades for MCP servers (security, reliability, transparency), continuously watched for tool drift / rug-pulls. Free leaderboard + an agent-callable trust oracle (`grade_mcp_server`) at `https://wmcp.sh/mcp/trust`.</pre></div>
+<div class="block"><div class="bar"><span class="t">PR description</span><button class="cpy">Copy</button></div><pre>Adds wmcp.sh, an independent (free, not pay-to-rank) trust-grading layer for MCP servers — the "is this server safe to connect?" check the registry leaves to downstream aggregators. Includes a public leaderboard of 6,762 graded servers, per-server report pages, an embeddable badge, and an agent-callable trust oracle so an agent can gate connections on a server's grade. Happy to adjust placement/wording.</pre></div>
+
+<h2>5 · MCP registry submission</h2>
+<p class="muted">Publish the trust oracle to <code>registry.modelcontextprotocol.io</code> (via <code>mcp-publisher</code> CLI). Server URL: <code>https://wmcp.sh/mcp/trust</code></p>
+<div class="block"><div class="bar"><span class="t">Name</span><button class="cpy">Copy</button></div><pre>sh.wmcp/trust-oracle</pre></div>
+<div class="block"><div class="bar"><span class="t">Description</span><button class="cpy">Copy</button></div><pre>Independent A–F trust grade + drift check for any MCP server.</pre></div>
+
+<h2>Launch sequence (~20 min)</h2>
+<div class="seq"><ol>
+  <li><b>Publish the long-form article</b> on dev.to → cross-post Medium + Hashnode (canonical link = the report). Highest leverage.</li>
+  <li><b>LinkedIn post.</b></li>
+  <li><b>Open the two awesome-mcp PRs.</b></li>
+  <li><b>Submit the trust oracle</b> to the MCP registry.</li>
+  <li><b>X thread + Show HN</b> (use the threads in state-of-mcp-security-posts.md with these numbers).</li>
+  <li><b>Reddit</b> — after HN, one post per sub, disclosed.</li>
+  <li><b>Email dev newsletters</b> (TLDR, Bytes, AI Tidbits, Console).</li>
+</ol>
+<p class="muted" style="margin:6px 0 0">Rules: post once per community, no upvote rings, disclose you built it, defend the methodology in comments.</p></div>
+</div>
+
+<script>
+document.querySelectorAll('.cpy').forEach(function(b){
+  b.addEventListener('click',function(){
+    var pre=b.closest('.block').querySelector('pre');
+    var txt=pre.innerText;
+    (navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(txt):Promise.reject())
+      .then(function(){b.textContent='Copied!';b.classList.add('done');setTimeout(function(){b.textContent='Copy';b.classList.remove('done');},1500);})
+      .catch(function(){var r=document.createRange();r.selectNodeContents(pre);var s=getSelection();s.removeAllRanges();s.addRange(r);try{document.execCommand('copy');b.textContent='Copied!';b.classList.add('done');setTimeout(function(){b.textContent='Copy';b.classList.remove('done');},1500);}catch(e){}});
+  });
+});
+</script>
+</body></html>

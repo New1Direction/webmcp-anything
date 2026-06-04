@@ -9,7 +9,7 @@ import { landingHtml } from "./landing";
 import { dashboardHtml } from "./dashboard";
 import { directoryHtml } from "./directory";
 import { ogSvg } from "./og";
-import { scheduledHandler, runSeedNow, addSeedStores } from "./scheduled";
+import { scheduledHandler, runSeedNow, addSeedStores, submitSeoIndexNow, addGradeServers, regradeCorpus, seedRegistry, seedPackages } from "./scheduled";
 import { githubStart, githubCallback, logout, me, issueOwnKey } from "./oauth";
 import {
   getProviders,
@@ -35,7 +35,7 @@ import {
 } from "./stripe";
 import { listManagedConnections } from "./connections";
 import { track } from "./metrics";
-import { resolveTools, executeTool, cacheKey, normalizeUrl, writeCache } from "./engine";
+import { resolveTools, executeTool, cacheKey, normalizeUrl, writeCache, executeCapturedTool, listCapturedTools } from "./engine";
 
 type Bindings = {
   CACHE: KVNamespace;
@@ -88,15 +88,70 @@ app.get("/api/v1/selectors", async (c) => {
 });
 
 // QuickCatch drop/restock SEO pages (programmatic) + built-in funnel.
+// English at /drops + /drops/:slug; localized (es/fr/de/pt/it) at
+// /drops/:lang + /drops/:lang/:slug. hreflang links the variants.
 app.get("/drops", async (c) => {
   const { dropsIndexHtml } = await import("./drops_seo");
-  return c.html(dropsIndexHtml(new URL(c.req.url).origin));
+  return c.html(dropsIndexHtml(new URL(c.req.url).origin, "en"));
 });
-app.get("/drops/:slug", async (c) => {
-  const { DROP_PAGES, dropPageHtml } = await import("./drops_seo");
-  const page = DROP_PAGES.find((p) => p.slug === c.req.param("slug"));
+app.get("/drops/:a", async (c) => {
+  const a = c.req.param("a");
+  const { DROP_PAGES, dropPageHtml, dropsIndexHtml, LOCALIZED_LANGS } = await import("./drops_seo");
+  const origin = new URL(c.req.url).origin;
+  // /drops/<lang> → localized index
+  if ((LOCALIZED_LANGS as readonly string[]).includes(a)) return c.html(dropsIndexHtml(origin, a as any));
+  // /drops/<slug> → English page
+  const page = DROP_PAGES.find((p) => p.slug === a);
   if (!page) return c.notFound();
-  return c.html(dropPageHtml(new URL(c.req.url).origin, page));
+  return c.html(dropPageHtml(origin, page, "en"));
+});
+app.get("/drops/:lang/:slug", async (c) => {
+  const lang = c.req.param("lang");
+  const slug = c.req.param("slug");
+  const { DROP_PAGES, dropPageHtml, isLocalizable, LOCALIZED_LANGS } = await import("./drops_seo");
+  if (!(LOCALIZED_LANGS as readonly string[]).includes(lang)) return c.notFound();
+  const page = DROP_PAGES.find((p) => p.slug === slug);
+  if (!page || !isLocalizable(page)) return c.notFound();
+  return c.html(dropPageHtml(new URL(c.req.url).origin, page, lang as any));
+});
+
+// Long-form buyer-intent articles (real editorial, eBay affiliate, link-worthy).
+// Path is /guides (the dev/MCP blog owns /blog — different audience).
+app.get("/guides", async (c) => {
+  const { articlesIndexHtml } = await import("./articles");
+  return c.html(articlesIndexHtml(new URL(c.req.url).origin));
+});
+app.get("/guides/:slug", async (c) => {
+  const { getArticle, articleHtml } = await import("./articles");
+  const a = getArticle(c.req.param("slug"));
+  if (!a) return c.notFound();
+  return c.html(articleHtml(new URL(c.req.url).origin, a));
+});
+
+// Free lead-gen tools (engineering-as-marketing) + built-in funnel.
+app.get("/tools", async (c) => {
+  const { toolsIndexHtml } = await import("./tools");
+  return c.html(toolsIndexHtml(new URL(c.req.url).origin, "en"));
+});
+app.get("/tools/pokemon-resale-calculator", async (c) => {
+  const { resaleCalculatorHtml } = await import("./tools");
+  return c.html(resaleCalculatorHtml(new URL(c.req.url).origin, "en"));
+});
+app.get("/tools/pokemon-grading-calculator", async (c) => {
+  const { gradingCalculatorHtml } = await import("./tools");
+  return c.html(gradingCalculatorHtml(new URL(c.req.url).origin));
+});
+app.get("/tools/:lang/pokemon-resale-calculator", async (c) => {
+  const lang = c.req.param("lang");
+  const { resaleCalculatorHtml, LOCALIZED_LANGS } = await import("./tools");
+  if (!(LOCALIZED_LANGS as readonly string[]).includes(lang)) return c.notFound();
+  return c.html(resaleCalculatorHtml(new URL(c.req.url).origin, lang as any));
+});
+app.get("/tools/:lang", async (c) => {
+  const lang = c.req.param("lang");
+  const { toolsIndexHtml, LOCALIZED_LANGS } = await import("./tools");
+  if (!(LOCALIZED_LANGS as readonly string[]).includes(lang)) return c.notFound();
+  return c.html(toolsIndexHtml(new URL(c.req.url).origin, lang as any));
 });
 
 app.get("/api/v1/health", (c) =>
@@ -108,18 +163,48 @@ app.get("/api/v1/health", (c) =>
 app.get("/favicon.ico", (c) => c.redirect("/favicon.svg", 302));
 
 app.get("/api/v1/stats/public", async (c) => {
-  const raw = await c.env.CACHE.get("stats:total_cached");
-  const cached_urls = raw ? parseInt(raw, 10) || 0 : 0;
-  return c.json({ cached_urls });
+  // True counts straight from KV (paginated) so the homepage matches the
+  // directory + leaderboard. Response cached 10m, so the list cost is amortized.
+  const countPrefix = async (prefix: string, maxPages: number): Promise<number> => {
+    let n = 0, pages = 0;
+    let cursor: string | undefined;
+    do {
+      const r: any = await c.env.CACHE.list({ prefix, limit: 1000, cursor });
+      n += r.keys.length;
+      cursor = r.list_complete ? undefined : r.cursor;
+      pages++;
+    } while (cursor && pages < maxPages);
+    return n;
+  };
+  let cached_urls = 0, graded_servers = 0;
+  try { cached_urls = await countPrefix("seen:", 8); } catch {
+    const raw = await c.env.CACHE.get("stats:total_cached");
+    cached_urls = raw ? parseInt(raw, 10) || 0 : 0;
+  }
+  try { graded_servers = await countPrefix("grade:", 8); } catch {}
+  return c.json({ cached_urls, graded_servers }, 200, {
+    "cache-control": "public, max-age=600, s-maxage=600",
+  });
 });
 
 app.get("/api/v1/directory", async (c) => {
-  const limit = Math.min(500, parseInt(c.req.query("limit") || "200", 10));
   const { slugFromUrl } = await import("./slug");
 
-  // Parallel: directory entries + verified set + featured ranks.
-  const [list, vList, fList] = await Promise.all([
-    c.env.CACHE.list({ prefix: "seen:", limit }),
+  // Paginate the FULL seen: set (KV.list caps at 1000/call) so the directory
+  // shows every site, not just the first 200 keys (which clustered on a few
+  // high-volume stores). The page groups these by host itself.
+  const seenKeys: any[] = [];
+  let cursor: string | undefined;
+  let pages = 0;
+  do {
+    const r: any = await c.env.CACHE.list({ prefix: "seen:", limit: 1000, cursor });
+    seenKeys.push(...r.keys);
+    cursor = r.list_complete ? undefined : r.cursor;
+    pages++;
+  } while (cursor && pages < 6 && seenKeys.length < 6000);
+  const list = { keys: seenKeys, list_complete: !cursor };
+
+  const [vList, fList] = await Promise.all([
     c.env.KEYS.list({ prefix: "verified:", limit: 1000 }),
     c.env.KEYS.list({ prefix: "featured:", limit: 1000 }),
   ]);
@@ -163,7 +248,9 @@ app.get("/api/v1/directory", async (c) => {
     return b.ts - a.ts;
   });
 
-  return c.json({ entries, list_complete: list.list_complete });
+  return c.json({ entries, list_complete: list.list_complete }, 200, {
+    "cache-control": "public, max-age=300, s-maxage=300",
+  });
 });
 
 app.get("/directory", (c) => {
@@ -260,6 +347,21 @@ app.get("/mcp/set/:id", async (c) => {
 
 // ---- Independent MCP trust grade (free, public). Registered BEFORE the
 // /mcp/:provider proxy so "grade" isn't swallowed as a provider id. ----
+// The MCP Trust Leaderboard — public ranking of every graded server (the moat).
+app.get("/mcp/leaderboard", async (c) => {
+  const { mcpLeaderboardHtml } = await import("./mcp_grade");
+  const html = await mcpLeaderboardHtml(c.env as any, new URL(c.req.url).origin);
+  return new Response(html, { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=300, s-maxage=300" } });
+});
+// Per-category leaderboards (indexable SEO: "best <category> MCP servers"). BEFORE /mcp/:provider.
+app.get("/mcp/leaderboard/:category", async (c) => {
+  const { mcpLeaderboardHtml, categoryFromSlug } = await import("./mcp_grade");
+  const cat = categoryFromSlug(c.req.param("category"));
+  if (!cat) return c.notFound();
+  const html = await mcpLeaderboardHtml(c.env as any, new URL(c.req.url).origin, cat);
+  return new Response(html, { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=300, s-maxage=300" } });
+});
+
 app.get("/mcp/grade", async (c) => {
   const { gradeHomeHtml } = await import("./mcp_grade");
   return c.html(gradeHomeHtml(new URL(c.req.url).origin));
@@ -311,10 +413,42 @@ app.get("/mcp/grade/:host/badge.svg", async (c) => {
     : `<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" width="190" height="44" role="img"><rect width="190" height="44" rx="10" fill="#11111c" stroke="#26263a"/><text x="12" y="27" font-family="sans-serif" font-size="11" fill="#8a8aa8">not yet graded · wmcp.sh</text></svg>`;
   return c.body(svg, 200, { "content-type": "image/svg+xml; charset=utf-8", "cache-control": "public, max-age=3600" });
 });
+// Shareable 1200×630 "report card" image.
+app.get("/mcp/grade/:host/card.svg", async (c) => {
+  const host = c.req.param("host");
+  const { readGrade, gradeCardSvg, scoreMcpServer, recordGrade } = await import("./mcp_grade");
+  let r = await readGrade(c.env as any, host);
+  if (!r) {
+    try {
+      if (host.startsWith("pypi:")) { const { scoreMcpPyPiPackage } = await import("./mcp_pkg"); r = await scoreMcpPyPiPackage(host.slice(5)); }
+      else if (host.startsWith("gh:")) { const { scoreMcpGitHubRepo } = await import("./mcp_pkg"); const [o, rp] = host.slice(3).split("/"); if (o && rp) r = await scoreMcpGitHubRepo(o, rp, (c.env as any).GITHUB_TOKEN); }
+      else if (host.startsWith("npm:")) { const { scoreMcpPackage } = await import("./mcp_pkg"); r = await scoreMcpPackage(host.slice(4)); }
+      else r = await scoreMcpServer(`https://${host}/mcp`);
+      if (r) await recordGrade(c.env as any, r);
+    } catch {}
+  }
+  if (!r) return c.notFound();
+  return c.body(gradeCardSvg(r), 200, { "content-type": "image/svg+xml; charset=utf-8", "cache-control": "public, max-age=3600" });
+});
 app.get("/mcp/grade/:host", async (c) => {
   const host = c.req.param("host");
   const origin = new URL(c.req.url).origin;
   const { readGrade, scoreMcpServer, recordGrade, gradePageHtml } = await import("./mcp_grade");
+  // Package / source (stdio) servers: never probe — read the static scan, or run it on demand.
+  if (host.startsWith("npm:") || host.startsWith("pypi:") || host.startsWith("gh:")) {
+    let pr = c.req.query("fresh") === "1" ? null : await readGrade(c.env as any, host);
+    if (!pr) {
+      const mod = await import("./mcp_pkg");
+      try {
+        if (host.startsWith("pypi:")) pr = await mod.scoreMcpPyPiPackage(host.slice(5));
+        else if (host.startsWith("gh:")) { const [o, rp] = host.slice(3).split("/"); if (o && rp) pr = await mod.scoreMcpGitHubRepo(o, rp, (c.env as any).GITHUB_TOKEN); }
+        else pr = await mod.scoreMcpPackage(host.slice(4));
+        if (pr && pr.grade !== "?") await recordGrade(c.env as any, pr); // don't leaderboard "couldn't analyze"
+      } catch {}
+    }
+    if (!pr) return c.notFound();
+    return c.html(gradePageHtml(pr, origin));
+  }
   let r = await readGrade(c.env as any, host);
   if (!r) {
     // Not cached — grade the conventional endpoint (or an explicit ?url=).
@@ -324,6 +458,27 @@ app.get("/mcp/grade/:host", async (c) => {
   if (!r) return c.html(gradePageHtml({ url: `https://${host}`, host, checked_at: Date.now(), reachable: false, auth_required: false, grade: "F", score: 0, sub: {}, findings: [{ id: "reachable", severity: "fail", detail: "Could not reach an MCP server at this host." }], tools_count: 0 } as any, origin), 200);
   return c.html(gradePageHtml(r, origin));
 });
+
+// "Get your badge" hub — the embed distribution funnel. MUST be before /mcp/:provider.
+app.get("/mcp/badges", async (c) => {
+  const { badgeHubHtml } = await import("./mcp_report");
+  return c.html(badgeHubHtml(new URL(c.req.url).origin));
+});
+
+// State of MCP Security — live, data-backed report (the link-bait asset).
+app.get("/reports/state-of-mcp-security-2026", async (c) => {
+  const { computeMcpSecurityReport, stateOfMcpSecurityHtml } = await import("./mcp_report");
+  const origin = new URL(c.req.url).origin;
+  // ?refresh=1 with the admin token forces a recompute (after a bulk re-grade).
+  const force = c.req.query("refresh") === "1" && c.req.header("x-admin-token") === (c.env as any).ADMIN_TOKEN;
+  const stats = await computeMcpSecurityReport(c.env as any, force);
+  return c.body(stateOfMcpSecurityHtml(origin, stats), 200, {
+    "content-type": "text/html; charset=utf-8",
+    "cache-control": "public, max-age=1800",
+  });
+});
+app.get("/reports/state-of-mcp-security", (c) => c.redirect("/reports/state-of-mcp-security-2026", 301));
+app.get("/reports", (c) => c.redirect("/reports/state-of-mcp-security-2026", 302));
 
 // Agent-callable MCP trust oracle (grade_mcp_server / check_mcp_drift). Free
 // read-tier so agents can gate connections on our grade. BEFORE /mcp/:provider.
@@ -1157,6 +1312,69 @@ app.get("/api/v1/debug", async (c) => {
  *   3. Fetch HTML + run JSON-LD adapter
  *   4. Cache miss / blocked → 404 with hint
  */
+// API Capture developer landing (with live in-browser demo).
+app.get("/capture", async (c) => {
+  const { captureLandingHtml } = await import("./flows2api");
+  return c.html(captureLandingHtml(new URL(c.req.url).origin));
+});
+
+// API Capture (premium): observed HTTP traffic → OpenAPI spec → agent tools.
+// The extension captures a site's XHR/fetch exchanges and POSTs them here. v1 is
+// read-gated; flip to gate("execute") to make it a paid-plan-only feature.
+app.post("/api/v1/flows", gate("read"), async (c) => {
+  const { synthesizeFromFlows } = await import("./flows2api");
+  const body = await c.req.json<any>().catch(() => null);
+  if (!body || !Array.isArray(body.flows) || !body.flows.length) {
+    return c.json({ error: "POST { flows: [{ method, url, status?, requestBody?, responseBody? }, ...] }" }, 400);
+  }
+  const flows = body.flows.slice(0, 2000);
+  const result = synthesizeFromFlows(flows, body.origin);
+  // Persist the spec + serve it at a URL the openapi adapter recognizes (/openapi.json)
+  // so the synthesized tools become EXECUTABLE via /api/v1/tools/execute.
+  const origin = new URL(c.req.url).origin;
+  const id = Array.from(crypto.getRandomValues(new Uint8Array(9))).map((b) => b.toString(16).padStart(2, "0")).join("");
+  try { await c.env.CACHE.put(`flowspec:${id}`, JSON.stringify(result.openapi), { expirationTtl: 30 * 86400 }); } catch {}
+  const openapiUrl = `${origin}/toolset/${id}/openapi.json`;
+  return c.json({
+    ...result,
+    toolset_id: id,
+    openapi_url: openapiUrl,
+    execute: {
+      endpoint: `${origin}/api/v1/toolset/${id}/execute`,
+      method: "POST",
+      note: "Paid (execute tier). Calls the real upstream API.",
+      example: { tool: result.tools[0]?.name || "<tool>", args: {} },
+    },
+  });
+});
+// Serve a synthesized (captured) spec — external agents (Claude/Cursor) can fetch
+// this directly; the /openapi.json suffix is what the OpenAPI adapter detects.
+app.get("/toolset/:id/openapi.json", async (c) => {
+  const raw = await c.env.CACHE.get(`flowspec:${c.req.param("id")}`);
+  if (!raw) return c.json({ error: "not found or expired" }, 404);
+  return c.body(raw, 200, { "content-type": "application/json; charset=utf-8", "cache-control": "public, max-age=300" });
+});
+// List a captured toolset's tools (discovery).
+app.get("/api/v1/toolset/:id", gate("read"), async (c) => {
+  const id = c.req.param("id");
+  const raw = await c.env.CACHE.get(`flowspec:${id}`);
+  if (!raw) return c.json({ error: "toolset not found or expired" }, 404);
+  const origin = new URL(c.req.url).origin;
+  return c.json({ toolset_id: id, openapi_url: `${origin}/toolset/${id}/openapi.json`, tools: listCapturedTools(raw, `${origin}/toolset/${id}/openapi.json`) });
+});
+// Execute a captured tool (paid) — reads the spec from KV, calls the real upstream.
+app.post("/api/v1/toolset/:id/execute", gate("execute"), async (c) => {
+  const id = c.req.param("id");
+  const raw = await c.env.CACHE.get(`flowspec:${id}`);
+  if (!raw) return c.json({ error: "toolset not found or expired" }, 404);
+  const body = await c.req.json<any>().catch(() => ({}));
+  if (!body.tool) return c.json({ error: "POST { tool, args }" }, 400);
+  const origin = new URL(c.req.url).origin;
+  const r = await executeCapturedTool(raw, body.tool, body.args, `${origin}/toolset/${id}/openapi.json`);
+  if (r.ok) { track(c.env, c.executionCtx, "activated"); return c.json({ ok: true, value: r.value }); }
+  return c.json(r.body, r.status as any);
+});
+
 app.get("/api/v1/tools", gate("read"), async (c) => {
   const url = c.req.query("url");
   if (!url) return c.json({ error: "url query param required" }, 400);
@@ -1318,6 +1536,14 @@ app.get("/api/v1/webmcp", async (c) => {
   const { bridgeDescriptor } = await import("./webmcp_bridge");
   return c.json(bridgeDescriptor(url, r.payload.tools || [], new URL(c.req.url).origin));
 });
+// The WebMCP hub — markets the one-line shim + frames wmcp.sh as the default
+// WebMCP supplier (land-grab the in-browser side of the standard).
+app.get("/webmcp", async (c) => {
+  const { webmcpHubHtml } = await import("./webmcp_bridge");
+  return new Response(webmcpHubHtml(new URL(c.req.url).origin), {
+    headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=900, s-maxage=900" },
+  });
+});
 // Hosted WebMCP shim: <script src="/webmcp/<b64url>.js"> → navigator.modelContext.
 app.get("/webmcp/:enc", async (c) => {
   const raw = c.req.param("enc");
@@ -1464,6 +1690,19 @@ app.post("/api/v1/providers/anthropic/exchange", async (c) => {
 // updating the seed_stores:list KV or for one-off pushes before a launch.
 app.post("/api/v1/admin/seed-now", (c) => runSeedNow(c as any));
 app.post("/api/v1/admin/seed-stores", (c) => addSeedStores(c as any));
+app.post("/api/v1/admin/seo-indexnow", (c) => submitSeoIndexNow(c as any));
+app.post("/api/v1/admin/grade-servers", (c) => addGradeServers(c as any));
+app.post("/api/v1/admin/regrade-corpus", (c) => regradeCorpus(c as any));
+app.post("/api/v1/admin/seed-registry", (c) => seedRegistry(c as any));
+app.post("/api/v1/admin/seed-packages", (c) => seedPackages(c as any));
+// Broadcast to the captured lead list (the report newsletter → Monitor-SKU funnel).
+app.post("/api/v1/admin/broadcast", async (c) => {
+  if (!(c.env as any).ADMIN_TOKEN || c.req.header("x-admin-token") !== (c.env as any).ADMIN_TOKEN) return c.json({ error: "admin only" }, 401);
+  const body = await c.req.json<any>().catch(() => null);
+  if (!body?.subject || !body?.html) return c.json({ error: "POST { subject, html, package?, max? }" }, 400);
+  const { broadcastToLeads } = await import("./email");
+  return c.json(await broadcastToLeads(c.env as any, body.subject, body.html, { pkg: body.package, max: body.max }));
+});
 
 // Default export — Cloudflare Workers expects `fetch` and (since we added
 // crons) `scheduled` as named handlers on the default export.

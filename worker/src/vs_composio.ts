@@ -83,7 +83,7 @@ export function vsComposioHtml(origin: string): string {
       "name": "Pricing comparison?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Composio: free tier (limited), then $39/mo per developer + usage. Per-end-user OAuth tokens are managed by Composio. wmcp.sh: free 100 reads/day anonymous, $29/mo Pro for 10k/day reads + executes. Managed agent-readiness consulting from $499 one-time. wmcp.sh's free tier is materially larger for read-heavy workloads; Composio's value-add is in the curated SaaS connectors which justify the price for teams that need those specific integrations polished."
+        "text": "Composio: free tier (limited), then $39/mo per developer + usage. Per-end-user OAuth tokens are managed by Composio. wmcp.sh: free 100 reads/day anonymous, $99/mo Pro for 10k/day reads + executes. Managed agent-readiness consulting from $499 one-time. wmcp.sh's free tier is materially larger for read-heavy workloads; Composio's value-add is in the curated SaaS connectors which justify the price for teams that need those specific integrations polished."
       }
     },
     {
@@ -239,7 +239,7 @@ export function vsComposioHtml(origin: string): string {
       <tr>
         <td><strong>Pricing (developer tier)</strong></td>
         <td>$39+/mo + usage</td>
-        <td class="ours">$29/mo Pro</td>
+        <td class="ours">$99/mo Pro</td>
       </tr>
       <tr>
         <td><strong>MCP-spec native</strong></td>
@@ -330,7 +330,7 @@ export function vsComposioHtml(origin: string): string {
   </details>
 
   <details><summary>Pricing?</summary>
-  <div class="answer">Composio: free tier (limited), then $39/mo per dev + usage. wmcp.sh: free 100 reads/day anonymous, $29/mo Pro for 10k/day reads + executes. Managed consulting from $499 one-time. wmcp.sh's free tier is materially larger for read-heavy workloads.</div>
+  <div class="answer">Composio: free tier (limited), then $39/mo per dev + usage. wmcp.sh: free 100 reads/day anonymous, $99/mo Pro for 10k/day reads + executes. Managed consulting from $499 one-time. wmcp.sh's free tier is materially larger for read-heavy workloads.</div>
   </details>
 
   <details><summary>What about reliability?</summary>

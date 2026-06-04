@@ -92,7 +92,7 @@ tools/list (discovery) is free, no signup.
 tools/call (live execution) needs a paid key, passed as a
 Bearer header.
 
-Free $0 · Pro $29/mo · Reseller $99/mo.
+Free $0 · Builder $39/mo · Pro $99/mo · Reseller $299/mo.
 
 done-for-you adapters + white-label MCP start at $499 on
 /managed. all the adapters are MIT.
@@ -195,7 +195,7 @@ more sites work server-side for everyone.
 
 ```
 free tier is 100 reads/day no signup.
-paid is $29 for live execute + $99 for resellers.
+paid is $99 for live execute (Builder $39) + $299 for resellers.
 
 if you're building an agent that needs to actually do things on
 websites, try it: wmcp.sh

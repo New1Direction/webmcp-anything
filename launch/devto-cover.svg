@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="420" viewBox="0 0 1000 420" font-family="-apple-system,BlinkMacSystemFont,Inter,Segoe UI,Helvetica,Arial,sans-serif">
+  <defs><radialGradient id="bg" cx="22%" cy="-10%" r="100%"><stop offset="0%" stop-color="#231708"/><stop offset="55%" stop-color="#0b0b12"/><stop offset="100%" stop-color="#08080e"/></radialGradient></defs>
+  <rect width="1000" height="420" fill="url(#bg)"/>
+  <rect x="6" y="6" width="988" height="408" rx="18" fill="none" stroke="#2a2a3c" stroke-width="1.5"/>
+
+  <!-- brand spark -->
+  <g transform="translate(60,58)">
+    <path d="M11 0Q11.6 10.4 22 11Q11.6 11.6 11 22Q10.4 11.6 0 11Q10.4 10.4 11 0Z" fill="#ff9e2c"/>
+    <text x="32" y="17" font-size="19" font-weight="800" fill="#ececf5">wmcp.sh</text>
+  </g>
+  <text x="60" y="118" font-size="15" font-weight="800" letter-spacing="3" fill="#8a8aa8">STATE OF MCP SECURITY · 2026</text>
+
+  <text x="58" y="196" font-size="66" font-weight="900" fill="#ececf5" letter-spacing="-2">6,762 MCP servers,</text>
+  <text x="58" y="266" font-size="66" font-weight="900" letter-spacing="-2"><tspan fill="#ececf5">audited </tspan><tspan fill="#ff9e2c">independently.</tspan></text>
+
+  <text x="60" y="312" font-size="21" fill="#9a9ab0">The largest independent audit of the MCP ecosystem.</text>
+
+  <!-- stat chips -->
+  <g transform="translate(60,352)" font-size="18" font-weight="700">
+    <rect x="0" y="0" width="150" height="40" rx="10" fill="#16161f" stroke="#2a2a3c"/><text x="16" y="26" fill="#4ade80">42%</text><text x="58" y="26" fill="#9a9ab0" font-weight="500" font-size="14">A or B</text>
+    <rect x="166" y="0" width="170" height="40" rx="10" fill="#16161f" stroke="#2a2a3c"/><text x="182" y="26" fill="#ff8a1e">13%</text><text x="226" y="26" fill="#9a9ab0" font-weight="500" font-size="14">dead/unreachable</text>
+    <rect x="352" y="0" width="200" height="40" rx="10" fill="#16161f" stroke="#2a2a3c"/><text x="368" y="26" fill="#ffcf7a">~1%</text><text x="416" y="26" fill="#9a9ab0" font-weight="500" font-size="14">real security issue</text>
+  </g>
+</svg>

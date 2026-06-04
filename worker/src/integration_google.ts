@@ -20,7 +20,7 @@ export function integrationGoogleHtml(origin: string): string {
       ["MCP shape", "Wrap each call yourself", "Per-workflow", "Native MCP tools"],
       ["Token refresh", "You handle it", "Pipedream handles it", "Worker handles it (encrypted vault)"],
       ["Multi-user", "You wire per-user OAuth", "Per-account workflow", "Connected vault per wmcp user"],
-      ["Cost", "Free libs", "Free tier + paid workflows", "Free 100/day + $29/mo Pro"],
+      ["Cost", "Free libs", "Free tier + paid workflows", "Free 100/day + $99/mo Pro"],
     ],
     tools: [
       { name: "gmail.users.messages.list", type: "Live action", returns: "Inbox listing" },

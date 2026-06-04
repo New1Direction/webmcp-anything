@@ -20,7 +20,7 @@ export function integrationLinearHtml(origin: string): string {
       ["Auth", "PAT or OAuth, you store", "Platform manages", "OAuth vault in wmcp.sh"],
       ["MCP shape", "Wrap each query yourself", "Auto-mapped", "Native MCP tools"],
       ["Webhooks", "Yes", "Platform → workflow", "Out of scope for v0"],
-      ["Cost", "Free SDK", "Platform tier", "Free 100/day + $29/mo Pro"],
+      ["Cost", "Free SDK", "Platform tier", "Free 100/day + $99/mo Pro"],
     ],
     tools: [
       { name: "issueCreate", type: "Live action", returns: "New issue with ID + URL" },

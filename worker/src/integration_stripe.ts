@@ -241,7 +241,7 @@ export function integrationStripeHtml(origin: string): string {
         <td><strong>Cost</strong></td>
         <td>Free SDK + your hosting</td>
         <td>Platform tier</td>
-        <td><strong>Free (100/day) + $29/mo Pro</strong></td>
+        <td><strong>Free (100/day) + $99/mo Pro</strong></td>
       </tr>
     </tbody>
   </table>

@@ -29,7 +29,7 @@ export function vsZapierHtml(origin: string): string {
   {"@type":"Question","name":"When should I pick Zapier?","acceptedAnswer":{"@type":"Answer","text":"For traditional no-code workflow automation: triggers, multi-step Zaps, 6000+ apps, polished UX for non-technical users. Zapier is mature, reliable, and pays for itself fast in any team that needs cross-app automation without code. Their AI features are real but optional — the core product is workflows."}},
   {"@type":"Question","name":"When should I pick wmcp.sh?","acceptedAnswer":{"@type":"Answer","text":"When you're building an AI agent — Claude.ai connector, Cursor MCP server, Codex tool — that needs to call external systems dynamically. wmcp.sh exposes any URL as MCP tools the agent can decide to call at runtime. Zapier's workflows are human-defined; wmcp.sh's tools are agent-discoverable."}},
   {"@type":"Question","name":"Does Zapier do MCP?","acceptedAnswer":{"@type":"Answer","text":"Zapier has launched 'Zapier MCP' which exposes some Zapier actions as MCP tools — but it's a thin wrapper on their existing platform, scoped to apps they curate. wmcp.sh is MCP-native: every URL output is shaped for MCP from the start, with 5 oracle/price-data adapters and full OpenAPI ingest (Stripe, GitHub, Linear, etc.) that Zapier doesn't ship."}},
-  {"@type":"Question","name":"Pricing?","acceptedAnswer":{"@type":"Answer","text":"Zapier: free 100 tasks/mo, then $20+/mo for higher tiers. wmcp.sh: free 100 reads/day anonymous (3000/mo), $29/mo Pro for 10k/day. Different metering. Zapier's value is in the curated app library + UX; wmcp.sh's is in the MCP-native + OpenAPI breadth."}},
+  {"@type":"Question","name":"Pricing?","acceptedAnswer":{"@type":"Answer","text":"Zapier: free 100 tasks/mo, then $20+/mo for higher tiers. wmcp.sh: free 100 reads/day anonymous (3000/mo), $99/mo Pro for 10k/day. Different metering. Zapier's value is in the curated app library + UX; wmcp.sh's is in the MCP-native + OpenAPI breadth."}},
   {"@type":"Question","name":"Can I use both?","acceptedAnswer":{"@type":"Answer","text":"Yes. Zapier for traditional cross-app workflows your humans + business users build. wmcp.sh as the agent-facing tool layer for AI assistants. Many teams use Zapier to ingest events (e.g. Stripe → Slack notifications) AND wmcp.sh to expose data + actions to their AI agents."}}
 ]}
 </script>
@@ -178,7 +178,7 @@ export function vsZapierHtml(origin: string): string {
   <details><summary>When pick Zapier?</summary><div class="answer">Traditional no-code workflow automation. 6000+ apps. Non-technical users.</div></details>
   <details><summary>When pick wmcp.sh?</summary><div class="answer">AI agent building. MCP-native. Shopper-side + OpenAPI + oracle/DeFi.</div></details>
   <details><summary>Does Zapier do MCP?</summary><div class="answer">Zapier launched "Zapier MCP" — a thin wrapper on their existing actions, scoped to curated apps. wmcp.sh is MCP-native from day 1, with 5 oracle adapters + full OpenAPI ingest Zapier doesn't ship.</div></details>
-  <details><summary>Pricing?</summary><div class="answer">Zapier: free 100 tasks/mo, $20+/mo higher tiers. wmcp.sh: free 100/day anonymous, $29/mo Pro.</div></details>
+  <details><summary>Pricing?</summary><div class="answer">Zapier: free 100 tasks/mo, $20+/mo higher tiers. wmcp.sh: free 100/day anonymous, $99/mo Pro.</div></details>
   <details><summary>Can I use both?</summary><div class="answer">Yes — Zapier for cross-app workflows, wmcp.sh for AI agent tool layer. Common stack.</div></details>
 </section>
 

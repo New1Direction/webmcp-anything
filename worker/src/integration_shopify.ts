@@ -345,7 +345,7 @@ result = client.execute(
   </details>
 
   <details><summary>Pricing for Shopify use specifically?</summary>
-  <div class="answer">Same tiered pricing as the rest of wmcp.sh — Free (100 reads/day, no live execute), Pro $29/mo (10k reads + 1k live executes/day, includes Shopify <code>add_to_cart</code>), Reseller $99/mo (100k + 50k, designed for agent platforms). Get a key at <a href="/dashboard">/dashboard</a>.</div>
+  <div class="answer">Same tiered pricing as the rest of wmcp.sh — Free (100 reads/day, no live execute), Pro $99/mo (10k reads + 1k live executes/day, includes Shopify <code>add_to_cart</code>), Reseller $299/mo (100k + 50k, designed for agent platforms). Get a key at <a href="/dashboard">/dashboard</a>.</div>
   </details>
 </section>
 

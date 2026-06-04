@@ -56,6 +56,7 @@ export function track(
 
 type MetricsEnv = {
   USAGE: KVNamespace;
+  CACHE?: KVNamespace;
   ADMIN_TOKEN?: string;
   ENVIRONMENT?: string;
 };
@@ -98,5 +99,35 @@ export async function getMetrics(c: Context<{ Bindings: MetricsEnv }>) {
     checkout_to_paid_pct: rate(totals.paid, totals.checkout_started),
   };
 
-  return c.json({ events: EVENTS, totals, funnel, byDay });
+  // Live asset counts for the command center (admin-only, so list cost is fine):
+  // cached URLs + distinct directory sites, graded MCP servers, and the agent
+  // grade-queue depth.
+  let cached_urls = 0, graded_servers = 0, grade_queue = 0;
+  const sites = new Set<string>();
+  if (c.env.CACHE) {
+    try {
+      let cursor: string | undefined, pages = 0;
+      do {
+        const r: any = await c.env.CACHE.list({ prefix: "seen:", limit: 1000, cursor });
+        cached_urls += r.keys.length;
+        for (const k of r.keys) {
+          const u = k.metadata && (k.metadata as any).url;
+          if (u) { try { sites.add(new URL(u).hostname.replace(/^www\./, "")); } catch {} }
+        }
+        cursor = r.list_complete ? undefined : r.cursor; pages++;
+      } while (cursor && pages < 8);
+    } catch {}
+    try {
+      let cursor: string | undefined, pages = 0;
+      do {
+        const r: any = await c.env.CACHE.list({ prefix: "grade:", limit: 1000, cursor });
+        graded_servers += r.keys.length;
+        cursor = r.list_complete ? undefined : r.cursor; pages++;
+      } while (cursor && pages < 8);
+    } catch {}
+    try { const raw = await c.env.CACHE.get("gradeseed:manual"); if (raw) { const a = JSON.parse(raw); if (Array.isArray(a)) grade_queue = a.length; } } catch {}
+  }
+  const assets = { cached_urls, directory_sites: sites.size, graded_servers, grade_queue };
+
+  return c.json({ events: EVENTS, totals, funnel, byDay, assets });
 }

@@ -17,8 +17,10 @@
 // Skips stores that 4xx/5xx/timeout. Logs results to CF Tail.
 
 import * as shopify from "../../adapters/shopify.js";
-import { regradeWatched, seedRegistryGrades } from "./mcp_grade";
+import { regradeWatched, seedRegistryGrades, scoreMcpServer, recordGrade } from "./mcp_grade";
 import { fireAlert } from "./alerts";
+import { DROP_SLUGS, LOCALIZABLE_SLUGS, LOCALIZED_LANGS } from "./drops_seo";
+import { ARTICLE_SLUGS } from "./articles";
 
 type Env = {
   CACHE: KVNamespace;
@@ -107,6 +109,63 @@ async function pingIndexNow(urls: string[]): Promise<number> {
     console.log(`[indexnow] failed: ${e?.message || e}`);
   }
   return urlList.length;
+}
+
+// The full drops + tools SEO URL set (English + 11 localized + indexes). These
+// are static pages, so instead of re-submitting all ~2,600 every run, the cron
+// pushes a rotating batch via a KV cursor — the whole set cycles to IndexNow
+// roughly once per day. Keeps Bing/Naver/Yandex crawling without spamming.
+function seoUrls(): string[] {
+  const out: string[] = [];
+  out.push(`${SITE_ORIGIN}/drops`);
+  for (const slug of DROP_SLUGS) out.push(`${SITE_ORIGIN}/drops/${slug}`);
+  for (const lang of LOCALIZED_LANGS) {
+    out.push(`${SITE_ORIGIN}/drops/${lang}`);
+    for (const slug of LOCALIZABLE_SLUGS) out.push(`${SITE_ORIGIN}/drops/${lang}/${slug}`);
+  }
+  out.push(`${SITE_ORIGIN}/tools`, `${SITE_ORIGIN}/tools/pokemon-resale-calculator`);
+  for (const lang of LOCALIZED_LANGS) {
+    out.push(`${SITE_ORIGIN}/tools/${lang}`, `${SITE_ORIGIN}/tools/${lang}/pokemon-resale-calculator`);
+  }
+  out.push(`${SITE_ORIGIN}/guides`);
+  for (const slug of ARTICLE_SLUGS) out.push(`${SITE_ORIGIN}/guides/${slug}`);
+  return out;
+}
+
+const SEO_CURSOR_KEY = "indexnow:seo:cursor";
+const SEO_BATCH = 300; // ~2,600 urls / 300 ≈ 9 runs ≈ full set every ~18h
+
+async function submitSeoBatch(env: Env): Promise<number> {
+  const all = seoUrls();
+  let cursor = 0;
+  try { cursor = parseInt((await env.CACHE.get(SEO_CURSOR_KEY)) || "0", 10) || 0; } catch {}
+  if (cursor >= all.length) cursor = 0;
+  const batch = all.slice(cursor, cursor + SEO_BATCH);
+  await pingIndexNow(batch);
+  const next = cursor + SEO_BATCH >= all.length ? 0 : cursor + SEO_BATCH;
+  try { await env.CACHE.put(SEO_CURSOR_KEY, String(next)); } catch {}
+  console.log(`[indexnow] seo batch: ${batch.length} urls (cursor ${cursor}→${next} of ${all.length})`);
+  return batch.length;
+}
+
+// Agent-fed MCP grading firehose. External agents POST a big list of MCP server
+// URLs to /api/v1/admin/grade-servers; the cron grades a slice each run and they
+// land on /mcp/leaderboard + enter the continuous drift watch. This is how the
+// trust-graph moat scales without per-call rate limits — agents dump, cron eats.
+const GRADE_SEED_KEY = "gradeseed:manual";
+
+async function gradeManualSeed(env: Env, max = 18): Promise<{ graded: number; remaining: number }> {
+  let list: string[] = [];
+  try { const raw = await env.CACHE.get(GRADE_SEED_KEY); list = raw ? JSON.parse(raw) : []; } catch {}
+  if (!Array.isArray(list) || !list.length) return { graded: 0, remaining: 0 };
+  const batch = list.slice(0, max);
+  const rest = list.slice(max);
+  let graded = 0;
+  await Promise.all(batch.map(async (url) => {
+    try { const r = await scoreMcpServer(url); await recordGrade(env as any, r); graded++; } catch { /* unreachable / non-MCP — drop */ }
+  }));
+  try { await env.CACHE.put(GRADE_SEED_KEY, JSON.stringify(rest)); } catch {}
+  return { graded, remaining: rest.length };
 }
 
 const UA =
@@ -281,6 +340,8 @@ export async function scheduledHandler(
   if (env.ENVIRONMENT === "production") {
     const freshUrls = reports.flatMap((r) => r.new_urls).map(uUrlFor);
     if (freshUrls.length) ctx.waitUntil(pingIndexNow(freshUrls));
+    // Rotating batch of the static drops/tools SEO pages → IndexNow.
+    ctx.waitUntil(submitSeoBatch(env).catch((e) => console.log("[indexnow] seo batch error", String(e))));
   }
 
   // Re-verify watched MCP servers: rug-pull / schema-drift / grade-drop +
@@ -299,6 +360,14 @@ export async function scheduledHandler(
     seedRegistryGrades(env as any)
       .then((d) => console.log(`[cron] registry-seed: seeded=${d.seeded} nextCursor=${d.nextCursor || "(start)"}`))
       .catch((e) => console.log("[cron] registry-seed error", String(e)))
+  );
+
+  // Agent-fed grading firehose: grade a slice of the manually-seeded MCP server
+  // URLs (POSTed by external agents to /api/v1/admin/grade-servers).
+  ctx.waitUntil(
+    gradeManualSeed(env)
+      .then((d) => console.log(`[cron] grade-seed: graded=${d.graded} remaining=${d.remaining}`))
+      .catch((e) => console.log("[cron] grade-seed error", String(e)))
   );
 }
 
@@ -352,6 +421,154 @@ export async function addSeedStores(c: any): Promise<Response> {
 }
 
 /**
+ * Admin-gated. POST /api/v1/admin/grade-servers with
+ * { urls: ["https://server.com/mcp", ...] }
+ * Queues MCP server URLs into `gradeseed:manual`; the cron grades a slice each
+ * run → they appear on /mcp/leaderboard and enter the continuous drift watch.
+ * The firehose external agents use to scale the trust-graph moat.
+ */
+export async function addGradeServers(c: any): Promise<Response> {
+  const env: Env = c.env;
+  const token = c.req.header("x-admin-token");
+  if (!env.ADMIN_TOKEN || token !== env.ADMIN_TOKEN) {
+    return c.json({ error: "admin only" }, 401);
+  }
+  const body: { urls?: string[] } | null = await c.req.json().catch(() => null);
+  if (!body || !Array.isArray(body.urls)) {
+    return c.json({ error: "urls array required" }, 400);
+  }
+  const cleaned = body.urls
+    .map((u) => String(u).trim())
+    .filter((u) => { try { return new URL(u).protocol === "https:"; } catch { return false; } });
+
+  let existing: string[] = [];
+  try { const raw = await env.CACHE.get(GRADE_SEED_KEY); if (raw) { const p = JSON.parse(raw); if (Array.isArray(p)) existing = p; } } catch {}
+  const before = new Set(existing);
+  const merged = [...new Set([...existing, ...cleaned])].slice(0, 20000);
+  const newly_added = merged.filter((u) => !before.has(u)).length;
+  await env.CACHE.put(GRADE_SEED_KEY, JSON.stringify(merged));
+
+  return c.json({
+    ok: true,
+    accepted: cleaned.length,
+    rejected: body.urls.length - cleaned.length,
+    newly_added,
+    queued_total: merged.length,
+  });
+}
+
+/**
+ * Admin-gated. POST /api/v1/admin/seo-indexnow with `x-admin-token`.
+ * Submits the ENTIRE drops/tools SEO URL set to IndexNow in one shot
+ * (Bing/Naver/Yandex/Seznam) — the instant full backfill. The cron also
+ * rotates through the set automatically; this is for "index everything now".
+ */
+export async function submitSeoIndexNow(c: any): Promise<Response> {
+  const env: Env = c.env;
+  const token = c.req.header("x-admin-token");
+  if (!env.ADMIN_TOKEN || token !== env.ADMIN_TOKEN) {
+    return c.json({ error: "admin only" }, 401);
+  }
+  const all = seoUrls();
+  all.push(`${SITE_ORIGIN}/mcp/leaderboard`, `${SITE_ORIGIN}/webmcp`, `${SITE_ORIGIN}/connect`, `${SITE_ORIGIN}/directory`, `${SITE_ORIGIN}/reports/state-of-mcp-security-2026`, `${SITE_ORIGIN}/mcp/badges`);
+  // Include every graded MCP-server report page (the moat content) in IndexNow.
+  try {
+    let cursor: string | undefined, pages = 0;
+    do {
+      const r: any = await env.CACHE.list({ prefix: "grade:", limit: 1000, cursor });
+      for (const k of r.keys) all.push(`${SITE_ORIGIN}/mcp/grade/${encodeURIComponent(k.name.slice("grade:".length))}`);
+      cursor = r.list_complete ? undefined : r.cursor; pages++;
+    } while (cursor && pages < 8);
+  } catch {}
+  let submitted = 0;
+  for (let i = 0; i < all.length; i += 10000) {
+    const chunk = all.slice(i, i + 10000);
+    await pingIndexNow(chunk);
+    submitted += chunk.length;
+  }
+  return c.json({ ok: true, submitted, host: SITE_HOST });
+}
+
+/**
+ * Admin-gated BULK corpus re-grade. POST /api/v1/admin/regrade-corpus
+ * `x-admin-token` + ?n=<batch>&cursor=<kv-cursor>. Re-grades one cursor page of
+ * the gradewatch: set in parallel (fast probe) and returns the next cursor, so a
+ * caller can loop the whole corpus through the improved grader without the 2-week
+ * cron wait. Bounded per call (subrequests + wall-clock) by the batch size.
+ */
+export async function regradeCorpus(c: any): Promise<Response> {
+  const env: Env = c.env;
+  const token = c.req.header("x-admin-token");
+  if (!env.ADMIN_TOKEN || token !== env.ADMIN_TOKEN) {
+    return c.json({ error: "admin only" }, 401);
+  }
+  const n = Math.min(Math.max(parseInt(c.req.query("n") || "20", 10) || 20, 1), 40);
+  const cursor = c.req.query("cursor") || undefined;
+  const fast = c.req.query("fast") === "1"; // default = accurate (full-timeout) probe
+  const list: any = await env.CACHE.list({ prefix: "gradewatch:", limit: n, cursor });
+  const hosts: string[] = list.keys.map((k: any) => k.name.slice("gradewatch:".length));
+
+  let regraded = 0, failed = 0, reachable = 0, improved = 0;
+  await Promise.all(hosts.map(async (h) => {
+    const url = (await env.CACHE.get(`gradewatch:${h}`)) || `https://${h}/mcp`;
+    let prev: number | undefined;
+    try { const p = await env.CACHE.get(`grade:${h}`); if (p) prev = JSON.parse(p).score; } catch {}
+    try {
+      const fresh = await scoreMcpServer(url, { fast });
+      await recordGrade(env, fresh);
+      regraded++;
+      if (fresh.reachable) reachable++;
+      if (typeof prev === "number" && fresh.score > prev) improved++;
+    } catch { failed++; }
+  }));
+
+  return c.json({
+    ok: true,
+    batch: hosts.length,
+    regraded, failed, reachable, improved,
+    next_cursor: list.list_complete ? null : list.cursor,
+    done: !!list.list_complete,
+  });
+}
+
+/**
+ * Admin-gated bulk registry drain. POST /api/v1/admin/seed-registry?n=<page>
+ * Pulls one cursor page from the official MCP registry and grades its remote
+ * servers (advancing the persistent cursor), so a caller can loop it to cover
+ * the whole registry now instead of the slow 10/run cron. Returns seeded count.
+ */
+export async function seedRegistry(c: any): Promise<Response> {
+  const env: Env = c.env;
+  const token = c.req.header("x-admin-token");
+  if (!env.ADMIN_TOKEN || token !== env.ADMIN_TOKEN) {
+    return c.json({ error: "admin only" }, 401);
+  }
+  if (c.req.query("reset") === "1") await env.CACHE.delete("gradeseed:cursor");
+  const n = Math.min(Math.max(parseInt(c.req.query("n") || "30", 10) || 30, 1), 50);
+  const before = (await env.CACHE.get("gradeseed:cursor")) || "";
+  const r = await seedRegistryGrades(env, n);
+  return c.json({ ok: true, seeded: r.seeded, cursor_before: before, cursor_after: r.nextCursor, wrapped: !r.nextCursor });
+}
+
+/**
+ * Admin-gated STATIC package scan seeding. POST /api/v1/admin/seed-packages?n=<count>
+ * Walks the registry for npm-package (stdio) servers and statically grades them —
+ * growing the corpus past the remotely-reachable set. Loop it to cover the registry.
+ */
+export async function seedPackages(c: any): Promise<Response> {
+  const env: Env = c.env;
+  const token = c.req.header("x-admin-token");
+  if (!env.ADMIN_TOKEN || token !== env.ADMIN_TOKEN) {
+    return c.json({ error: "admin only" }, 401);
+  }
+  if (c.req.query("reset") === "1") await env.CACHE.delete("pkgseed:cursor");
+  const n = Math.min(Math.max(parseInt(c.req.query("n") || "12", 10) || 12, 1), 20);
+  const { seedRegistryPackages } = await import("./mcp_pkg");
+  const r = await seedRegistryPackages(env, n);
+  return c.json({ ok: true, scanned: r.scanned, seeded: r.seeded, next_cursor: r.nextCursor, done: !r.nextCursor });
+}
+
+/**
  * Admin-gated manual trigger. POST /api/v1/admin/seed-now with
  * `x-admin-token: <ADMIN_TOKEN>`. Runs the same logic as the cron and
  * returns the per-store report as JSON for quick verification.
@@ -361,6 +578,14 @@ export async function runSeedNow(c: any): Promise<Response> {
   const token = c.req.header("x-admin-token");
   if (!env.ADMIN_TOKEN || token !== env.ADMIN_TOKEN) {
     return c.json({ error: "admin only" }, 401);
+  }
+
+  // On-demand drain of the agent-fed grade queue. ?grade_only=1 skips the store
+  // seed for a fast grade-only run; ?grade=N sets the batch (capped).
+  const gradeN = Math.min(30, parseInt(c.req.query("grade") || "15", 10) || 15);
+  const grade_seed = await gradeManualSeed(env, gradeN);
+  if (c.req.query("grade_only") === "1") {
+    return c.json({ ok: true, grade_seed });
   }
 
   const stores = await pickStores(env);
@@ -373,5 +598,5 @@ export async function runSeedNow(c: any): Promise<Response> {
     indexnow_submitted = freshUrls.length;
     if (freshUrls.length) c.executionCtx.waitUntil(pingIndexNow(freshUrls));
   }
-  return c.json({ ok: true, total_new, indexnow_submitted, stores: reports });
+  return c.json({ ok: true, total_new, indexnow_submitted, grade_seed, stores: reports });
 }

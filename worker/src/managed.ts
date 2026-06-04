@@ -216,7 +216,7 @@ export function managedHtml(origin: string): string {
 <section id="packages">
   <div class="section-label">Packages</div>
   <h2>Three tiers. Fixed scope. Real outcomes.</h2>
-  <p class="section-sub">All three include a wmcp.sh Pro API subscription (normally $29/mo) and a 30-day satisfaction guarantee on the deliverables. Pay via Stripe invoice or card.</p>
+  <p class="section-sub">All three include a wmcp.sh Pro API subscription (normally $99/mo) and a 30-day satisfaction guarantee on the deliverables. Pay via Stripe invoice or card.</p>
 
   <div class="tier-grid">
     <div class="tier">

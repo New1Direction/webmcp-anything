@@ -91,13 +91,15 @@ export async function captureLead(c: Context<{ Bindings: Env }>) {
   const pkg = sanitize(body.package, 50);
   const use_case = sanitize(body.use_case, MAX_FIELD_LEN);
 
-  if (!name || !email || !site_url) {
+  // email is the only hard requirement (simple "notify me" captures send just that);
+  // the richer calculator/directory forms still send name + site_url.
+  if (!email) {
     return c.json({ error: "missing_required_field" }, 400);
   }
   if (!isValidEmail(email)) {
     return c.json({ error: "invalid_email" }, 400);
   }
-  if (!isValidUrl(site_url)) {
+  if (site_url && !isValidUrl(site_url)) {
     return c.json({ error: "invalid_site_url" }, 400);
   }
 
@@ -141,6 +143,17 @@ export async function captureLead(c: Context<{ Bindings: Env }>) {
     c.executionCtx,
     `🟣 New /managed lead: ${name} <${email}> · ${site_url}${pkg ? ` · ${pkg}` : ""}${use_case ? `\n${use_case.slice(0, 280)}` : ""}`
   );
+
+  // Confirmation email for explicit "notify me" subscribers (the dev/report list).
+  // Ships dark until RESEND_API_KEY is set. Fire-and-forget.
+  if (pkg === "mcp-report" || pkg === "mcp-watch") {
+    c.executionCtx.waitUntil((async () => {
+      try {
+        const { sendEmail, subscribeConfirmHtml, emailEnabled } = await import("./email");
+        if (emailEnabled(c.env)) await sendEmail(c.env, { to: email, subject: "You're subscribed — State of MCP Security", html: subscribeConfirmHtml() });
+      } catch {}
+    })());
+  }
 
   return c.json({ ok: true, lead_id: leadId, message: "received" });
 }

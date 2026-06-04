@@ -10,7 +10,9 @@
 // Static import — blog post map is part of the worker bundle. Used by
 // /llms.txt, /llms-full.txt, and sitemapXml below.
 import { BLOG_POSTS, BLOG_SLUGS } from "./blog_posts";
-import { DROP_SLUGS } from "./drops_seo";
+import { DROP_SLUGS, LOCALIZABLE_SLUGS, LOCALIZED_LANGS } from "./drops_seo";
+import { ARTICLE_SLUGS } from "./articles";
+import { CATEGORY_NAMES, categorySlug } from "./mcp_grade";
 
 const PROVIDER_BADGE: Record<string, { color: string; label: string }> = {
   shopify: { color: "#4ade80", label: "Shopify" },
@@ -330,8 +332,12 @@ User-agent: *
 Allow: /
 Disallow: /api/
 Disallow: /dashboard
-Disallow: /connect/
+# Block the auth-gated proxy + oracle endpoints, but KEEP the public
+# content under /mcp indexable (these Allow rules win by longest-match):
 Disallow: /mcp/
+Allow: /mcp/grade
+Allow: /mcp/leaderboard
+Allow: /connect
 
 Sitemap: ${origin}/sitemap.xml
 
@@ -377,11 +383,31 @@ export function llmsTxt(origin: string): string {
 ## Start here
 
 - [Homepage](${origin}/): one-paragraph pitch + live demo
+- [The MCP hub](${origin}/connect): connect (OAuth-vaulted), grade, and build MCP servers in one place
+- [MCP Trust Leaderboard](${origin}/mcp/leaderboard): independent A–F trust grades for MCP servers, continuously watched for drift
+- [WebMCP](${origin}/webmcp): one line makes any site agent-ready via navigator.modelContext (dual-emits as MCP)
 - [Agent-ready (cornerstone)](${origin}/agent-ready): canonical guide on making your site work with AI agents
 - [Engineering blog](${origin}/blog): ${blogCount} long-form posts on MCP, edge architecture, OAuth, e-commerce parsing, oracle adapters
 - [Directory](${origin}/directory): every URL the community has turned into MCP tools — ${blogCount > 0 ? "verified badges + featured placement available" : "open submission"}
 - [Submit your site](${origin}/directory/submit): free listing form for site owners
 - [Price-data adapters](${origin}/price-data): 5 oracle / price-data sources (CoinGecko, Pyth, Chainlink, DefiLlama, DexScreener)
+
+## QuickCatch — Pokémon & TCG drop catcher (consumer app)
+
+QuickCatch is wmcp.sh's consumer Chrome extension built on the same engine: it
+watches a Pokémon/TCG product page in your own browser and adds the item to your
+cart the moment it restocks, even on sites that block server-side bots. Free
+install, no proxies, no server.
+
+- [All drop & restock guides](${origin}/drops): index of 120+ English guides — TCG sets, every major store, QuickCatch vs sneaker bots, and sniping how-tos
+- [Pokémon restock tracker](${origin}/drops/pokemon-restock-tracker): the cornerstone explainer
+- [Pokémon restock bot alternative](${origin}/drops/pokemon-restock-bot-alternative): why a browser catcher beats a server bot
+- [QuickCatch vs sneaker bots](${origin}/drops/quickcatch-vs-sneaker-bots): comparison vs Valor/Cybersole/Kodai-style AIO bots
+- [How to snipe a Pokémon drop](${origin}/drops/how-to-snipe-pokemon-drops): step-by-step
+- [Free Pokémon tools](${origin}/tools): incl. the [retail vs resale calculator](${origin}/tools/pokemon-resale-calculator)
+- [Pokémon buying guides](${origin}/guides): in-depth articles on what's worth buying (booster boxes, sealed vs singles, spotting fakes, what holds value)
+- Localized in 11 languages at \`${origin}/drops/<lang>/<slug>\` — es, fr, de, pt, it, nl, pl, ja, ko, zh, zh-Hant (with hreflang; all URLs in /sitemap.xml)
+- Chrome Web Store: https://chromewebstore.google.com/detail/quickcatch/bglmmkpaofofjnpkabfneeemgnjpjejl
 
 ## Vertical-specific agent-readiness guides
 
@@ -529,11 +555,36 @@ export async function sitemapXml(env: any, origin: string): Promise<string> {
   // Iterate all seen: entries and emit one URL per cached page.
   // KV.list returns up to 1000 keys per page; we don't paginate beyond that
   // for v0 since we're nowhere near the limit.
-  const list = await env.CACHE.list({ prefix: "seen:", limit: 1000 });
-  const entries: Array<{ url: string; ts: number }> = list.keys
+  // Paginate ALL seen: entries (one cached /u page each) — not just the first 1000.
+  const seenKeys: any[] = [];
+  {
+    let cursor: string | undefined, pages = 0;
+    do {
+      const r: any = await env.CACHE.list({ prefix: "seen:", limit: 1000, cursor });
+      seenKeys.push(...r.keys);
+      cursor = r.list_complete ? undefined : r.cursor; pages++;
+    } while (cursor && pages < 8);
+  }
+  const entries: Array<{ url: string; ts: number }> = seenKeys
     .map((k: any) => k.metadata)
     .filter((m: any) => m && m.url)
     .map((m: any) => ({ url: m.url, ts: m.ts || 0 }));
+
+  // Every graded MCP server is a real, unique trust-report page → index them all.
+  const gradeHosts: string[] = [];
+  {
+    let cursor: string | undefined, pages = 0;
+    do {
+      const r: any = await env.CACHE.list({ prefix: "grade:", limit: 1000, cursor });
+      for (const k of r.keys) gradeHosts.push(k.name.slice("grade:".length));
+      cursor = r.list_complete ? undefined : r.cursor; pages++;
+    } while (cursor && pages < 8);
+  }
+  const gradeUrlsXml = gradeHosts.map((h) => `  <url>
+    <loc>${origin}/mcp/grade/${encodeURIComponent(h)}</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>`).join("\n");
 
   // Blog posts (auto-generated; 24 at time of writing).
   const blogUrlsXml = BLOG_SLUGS.map((slug) => {
@@ -603,6 +654,16 @@ export async function sitemapXml(env: any, origin: string): Promise<string> {
   </url>
   <url>
     <loc>${origin}/mcp/grade</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>${origin}/mcp/leaderboard</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>${origin}/webmcp</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -803,12 +864,78 @@ export async function sitemapXml(env: any, origin: string): Promise<string> {
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
+  <url>
+    <loc>${origin}/tools</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>${origin}/reports/state-of-mcp-security-2026</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>${origin}/mcp/badges</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>${origin}/capture</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+${CATEGORY_NAMES.map((c) => `  <url>
+    <loc>${origin}/mcp/leaderboard/${categorySlug(c)}</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>`).join("\n")}
+  <url>
+    <loc>${origin}/guides</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+${ARTICLE_SLUGS.map((slug) => `  <url>
+    <loc>${origin}/guides/${slug}</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>`).join("\n")}
+  <url>
+    <loc>${origin}/tools/pokemon-resale-calculator</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>${origin}/tools/pokemon-grading-calculator</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+${LOCALIZED_LANGS.map((lang) => `  <url>
+    <loc>${origin}/tools/${lang}</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>${origin}/tools/${lang}/pokemon-resale-calculator</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>`).join("\n")}
 ${DROP_SLUGS.map((slug) => `  <url>
     <loc>${origin}/drops/${slug}</loc>
     <changefreq>daily</changefreq>
     <priority>0.85</priority>
   </url>`).join("\n")}
+${LOCALIZED_LANGS.map((lang) => `  <url>
+    <loc>${origin}/drops/${lang}</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+${LOCALIZABLE_SLUGS.map((slug) => `  <url>
+    <loc>${origin}/drops/${lang}/${slug}</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.65</priority>
+  </url>`).join("\n")}`).join("\n")}
 ${blogUrlsXml}
+${gradeUrlsXml}
 ${urlsXml}
 </urlset>
 `;

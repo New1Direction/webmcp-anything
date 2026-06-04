@@ -28,7 +28,7 @@ then OpenAPI specs, then schema.org JSON-LD, then a known-provider table,
 and finally a Claude Haiku fallback that produces best-effort tools and
 caches them on Cloudflare KV. `tools/list` (discovery) is free and
 anonymous; live `tools/call` needs a paid key passed as a Bearer header.
-Self-serve API is Free / Pro $29/mo / Reseller $99/mo; there's a separate
+Self-serve API is Free / Builder $39/mo / Pro $99/mo / Reseller $299/mo; there's a separate
 done-for-you tier ($499 one-time and up) if you want a custom adapter
 hand-built and verified.
 
