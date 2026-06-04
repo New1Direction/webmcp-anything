@@ -2127,6 +2127,178 @@ export const ARTICLES: Article[] = [
     ],
     related: ["best-gengar-pokemon-cards", "gengar-vmax-alt-art-worth-it", "best-pokemon-cards-to-invest-2026"],
   },
+
+  {
+    slug: "best-blastoise-pokemon-cards",
+    title: "Best Blastoise Pokémon Cards (Most Valuable, 2026) | wmcp.sh",
+    desc: "The best and most valuable Blastoise Pokémon cards — 1st Edition Base Set, Blastoise ex 151 SIR, Shadowless, Blastoise & Piplup GX — with the cheapest raw and PSA 10 copies on eBay.",
+    h1: "Best Blastoise Pokémon Cards",
+    dek: "The Base Set grail, the 151 chase — and where to buy each, raw or PSA 10.",
+    updated: "June 2026",
+    readMins: 7,
+    bodyHtml:
+      p(`Blastoise is one of the original Kanto starters and a Base Set holo grail. Here are its best cards — with the cheapest raw copy and the cheapest PSA 10 on eBay for each.`) +
+      h2("1. 1st Edition Base Set Blastoise (1999)") +
+      p(`The grail — the 1st Edition Base Set Blastoise (#2/102, with the "Edition 1" stamp) is one of the most coveted vintage holos, hugely valuable in PSA 10.`) +
+      cardLinks("Pokemon Blastoise 1st edition base set") +
+      h2("2. Blastoise ex Special Illustration Rare (151, 2023)") +
+      p(`The modern Kanto chase — the Blastoise ex SIR from Pokémon 151 rides the same nostalgia wave as the 151 Charizard and Venusaur. See <a href="/guides/blastoise-ex-151-worth-it">is it worth it</a>.`) +
+      cardLinks("Pokemon Blastoise ex special illustration rare 151") +
+      h2("3. Shadowless Base Set Blastoise (1999)") +
+      p(`The next tier down from 1st Edition — Shadowless Base Set Blastoise lacks the art-box drop-shadow and is far rarer than the later Unlimited print.`) +
+      cardLinks("Pokemon Blastoise base set shadowless") +
+      h2("4. Blastoise & Piplup GX (Cosmic Eclipse, 2019)") +
+      p(`A fan-favorite Tag Team — the Blastoise & Piplup GX alternate/full art is a popular high-grade target.`) +
+      cardLinks("Pokemon Blastoise Piplup GX Cosmic Eclipse") +
+      h2("5. Base Set Blastoise — Unlimited (1999)") +
+      p(`The most common Base Set print — still a beautiful, desirable holo and the most affordable way to own a Base Set Blastoise.`) +
+      cardLinks("Pokemon Blastoise base set unlimited") +
+      h2("Raw or PSA 10?") +
+      p(`Raw is the affordable way to collect; a PSA 10 commands a major premium and is the store of value for the Base Set grails. Buy graded for vintage to remove authenticity risk — see <a href="/guides/how-to-spot-fake-pokemon-booster-box">how to spot fakes</a>. Buying raw to grade? Read <a href="/guides/how-to-grade-pokemon-cards">how to grade</a> and check the <a href="/tools/pokemon-grading-calculator">grading calculator</a>.`) +
+      p(`Complete the Kanto starter trio: <a href="/guides/best-charizard-pokemon-cards">best Charizard cards</a> and <a href="/guides/best-venusaur-pokemon-cards">best Venusaur cards</a>.`),
+    faqs: [
+      { q: "What is the most valuable Blastoise card?", a: "The 1st Edition Base Set Blastoise (1999) is the most valuable, especially in PSA 10. The Shadowless print and the modern 151 Blastoise ex SIR are the other top cards." },
+      { q: "Is the Base Set Blastoise worth money?", a: "Yes — the holo Base Set Blastoise is a desirable vintage card, with 1st Edition and Shadowless prints worth far more than Unlimited, especially graded." },
+    ],
+    related: ["blastoise-ex-151-worth-it", "are-blastoise-cards-worth-money", "best-charizard-pokemon-cards"],
+  },
+
+  {
+    slug: "blastoise-ex-151-worth-it",
+    title: "Is the 151 Blastoise ex Worth It? (SIR Value) | wmcp.sh",
+    desc: "Is the Pokémon 151 Blastoise ex special illustration rare worth buying? Why it's a top Kanto chase, raw vs PSA 10, and the cheapest copies on eBay.",
+    h1: "Is the 151 Blastoise ex Worth It?",
+    dek: "The modern Blastoise chase from the 151 set — raw or graded?",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`The Blastoise ex special illustration rare from Pokémon 151 is one of the set's Kanto-starter chases alongside Charizard and Venusaur. Here's the read.`) +
+      h2("Why it's a top chase") +
+      p(`151 reimagines the original Kanto roster, and the starter SIRs are core to the set's appeal. Blastoise's striking art plus deep nostalgia give it broad, liquid demand.`) +
+      cardLinks("Pokemon Blastoise ex special illustration rare 151") +
+      h2("Raw vs PSA 10") +
+      p(`Raw is the affordable, great-looking buy. A PSA 10 carries a premium, though because 151 reprinted with large graded populations, the multiple is modest. For most collectors, raw is the smart pickup.`) +
+      h2("Worth it?") +
+      p(`Yes — a centerpiece modern Blastoise with safe, liquid demand, and a must-have if you're building the starter trio. Buy at retail where you can: 151 restocks but sells fast (catch it with <a href="/">QuickCatch</a>), and compare prices with the <a href="/tools/pokemon-resale-calculator">resale calculator</a>. See <a href="/guides/best-cards-in-pokemon-151">best cards in 151</a> and <a href="/guides/charizard-ex-151-worth-it">the 151 Charizard ex</a>.`),
+    faqs: [
+      { q: "Is the 151 Blastoise ex a good buy?", a: "Yes — it's a top Kanto-starter chase from a very popular, liquid set. Raw is a great-looking, affordable buy; a PSA 10 is a better store of value, though the premium is modest since the set reprinted." },
+      { q: "Should I collect all three 151 starter ex cards?", a: "Many collectors do — the Charizard, Blastoise, and Venusaur ex SIRs form the Kanto starter trio and look great together. Charizard commands the most; Blastoise and Venusaur are more affordable." },
+    ],
+    related: ["best-blastoise-pokemon-cards", "best-cards-in-pokemon-151", "charizard-ex-151-worth-it"],
+  },
+
+  {
+    slug: "are-blastoise-cards-worth-money",
+    title: "Are Blastoise Cards Worth Money? (2026 Value Guide) | wmcp.sh",
+    desc: "Are Blastoise Pokémon cards worth money? Which Blastoise cards hold value — Base Set grails vs modern chases, raw vs graded — and the cheapest copies and PSA 10s on eBay.",
+    h1: "Are Blastoise Cards Worth Money?",
+    dek: "Which Blastoise cards actually hold value — and which are just nice to own.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Blastoise's status as an original Kanto starter keeps it a collector favorite — but values swing widely. Here's how it breaks down.`) +
+      h2("The ones that hold value") +
+      p(`The blue-chips are the <a href="/guides/best-blastoise-pokemon-cards">1st Edition / Shadowless Base Set</a> holos — genuinely scarce vintage with durable demand.`) +
+      cardLinks("Pokemon Blastoise 1st edition base set") +
+      h2("Strong modern holds") +
+      p(`The <a href="/guides/blastoise-ex-151-worth-it">151 Blastoise ex SIR</a> and the Blastoise & Piplup GX (Cosmic Eclipse) hold solid value — popular and liquid, good entry points.`) +
+      cardLinks("Pokemon Blastoise ex special illustration rare 151") +
+      h2("Nice to own, not investments") +
+      p(`Common holos, promos, and recent bulk Blastoises are great for a collection but won't appreciate much. Buy those for love of the card, not to flip.`) +
+      h2("Raw vs graded for value") +
+      p(`For the Base Set grails, a PSA 10 is the real store of value and removes authenticity risk. Holding raw copies worth grading? Read <a href="/guides/how-to-grade-pokemon-cards">how to grade</a> and run the <a href="/tools/pokemon-grading-calculator">grading calculator</a>. Selling? See <a href="/guides/where-to-sell-pokemon-cards">where to sell</a>.`),
+    faqs: [
+      { q: "Are Blastoise cards a good investment?", a: "The vintage grails are — the 1st Edition and Shadowless Base Set holos have durable demand. The 151 Blastoise ex SIR and Blastoise & Piplup GX are strong modern holds. Common holos won't appreciate much." },
+      { q: "Which Blastoise card is worth the most?", a: "The 1st Edition Base Set Blastoise is worth the most, especially in PSA 10, followed by the Shadowless print." },
+    ],
+    related: ["best-blastoise-pokemon-cards", "blastoise-ex-151-worth-it", "best-pokemon-cards-to-invest-2026"],
+  },
+
+  {
+    slug: "best-venusaur-pokemon-cards",
+    title: "Best Venusaur Pokémon Cards (Most Valuable, 2026) | wmcp.sh",
+    desc: "The best and most valuable Venusaur Pokémon cards — 1st Edition Base Set, Venusaur ex 151 SIR, Shadowless, Mega Venusaur EX — with the cheapest raw and PSA 10 copies on eBay.",
+    h1: "Best Venusaur Pokémon Cards",
+    dek: "The Base Set grail, the 151 chase — and where to buy each, raw or PSA 10.",
+    updated: "June 2026",
+    readMins: 7,
+    bodyHtml:
+      p(`Venusaur completes the original Kanto starter trio and is a Base Set holo grail in its own right. Here are its best cards — with the cheapest raw copy and the cheapest PSA 10 on eBay for each.`) +
+      h2("1. 1st Edition Base Set Venusaur (1999)") +
+      p(`The grail — the 1st Edition Base Set Venusaur (#15/102, with the "Edition 1" stamp) is one of the most coveted vintage holos and hugely valuable in PSA 10.`) +
+      cardLinks("Pokemon Venusaur 1st edition base set") +
+      h2("2. Venusaur ex Special Illustration Rare (151, 2023)") +
+      p(`The modern Kanto chase — the Venusaur ex SIR from Pokémon 151 rounds out the starter trio with Charizard and Blastoise. See <a href="/guides/venusaur-ex-151-worth-it">is it worth it</a>.`) +
+      cardLinks("Pokemon Venusaur ex special illustration rare 151") +
+      h2("3. Shadowless Base Set Venusaur (1999)") +
+      p(`The next tier down from 1st Edition — Shadowless Base Set Venusaur lacks the art-box drop-shadow and is far rarer than Unlimited.`) +
+      cardLinks("Pokemon Venusaur base set shadowless") +
+      h2("4. Mega Venusaur EX (XY, 2014)") +
+      p(`A standout from the XY era — the Mega Venusaur EX full arts are popular with collectors who love the Mega Evolution designs.`) +
+      cardLinks("Pokemon Mega Venusaur EX XY") +
+      h2("5. Base Set Venusaur — Unlimited (1999)") +
+      p(`The most common Base Set print — still a desirable holo and the most affordable way to own a Base Set Venusaur.`) +
+      cardLinks("Pokemon Venusaur base set unlimited") +
+      h2("Raw or PSA 10?") +
+      p(`Raw is the affordable way to collect; a PSA 10 commands a major premium and is the store of value for the Base Set grails. Buy graded for vintage to remove authenticity risk — see <a href="/guides/how-to-spot-fake-pokemon-booster-box">how to spot fakes</a>. Buying raw to grade? Read <a href="/guides/how-to-grade-pokemon-cards">how to grade</a> and check the <a href="/tools/pokemon-grading-calculator">grading calculator</a>.`) +
+      p(`Complete the Kanto starter trio: <a href="/guides/best-charizard-pokemon-cards">best Charizard cards</a> and <a href="/guides/best-blastoise-pokemon-cards">best Blastoise cards</a>.`),
+    faqs: [
+      { q: "What is the most valuable Venusaur card?", a: "The 1st Edition Base Set Venusaur (1999) is the most valuable, especially in PSA 10. The Shadowless print and the modern 151 Venusaur ex SIR are the other top cards." },
+      { q: "Is the Base Set Venusaur worth money?", a: "Yes — the holo Base Set Venusaur is a desirable vintage card, with 1st Edition and Shadowless prints worth far more than Unlimited, especially graded." },
+    ],
+    related: ["venusaur-ex-151-worth-it", "are-venusaur-cards-worth-money", "best-charizard-pokemon-cards"],
+  },
+
+  {
+    slug: "venusaur-ex-151-worth-it",
+    title: "Is the 151 Venusaur ex Worth It? (SIR Value) | wmcp.sh",
+    desc: "Is the Pokémon 151 Venusaur ex special illustration rare worth buying? Why it's a top Kanto chase, raw vs PSA 10, and the cheapest copies on eBay.",
+    h1: "Is the 151 Venusaur ex Worth It?",
+    dek: "The modern Venusaur chase from the 151 set — raw or graded?",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`The Venusaur ex special illustration rare from Pokémon 151 completes the set's Kanto-starter trio with Charizard and Blastoise. Here's the read.`) +
+      h2("Why it's a top chase") +
+      p(`151 reimagines the original Kanto roster, and the starter SIRs are central to its appeal. Venusaur's lush art plus nostalgia give it broad, liquid demand — and starter-trio collectors always want all three.`) +
+      cardLinks("Pokemon Venusaur ex special illustration rare 151") +
+      h2("Raw vs PSA 10") +
+      p(`Raw is the affordable, great-looking buy. A PSA 10 carries a premium, though because 151 reprinted with large graded populations, the multiple is modest. For most collectors, raw is the smart pickup.`) +
+      h2("Worth it?") +
+      p(`Yes — a centerpiece modern Venusaur with safe, liquid demand, and the most affordable of the three 151 starter ex SIRs. Buy at retail where you can (catch 151 restocks with <a href="/">QuickCatch</a>) and compare prices with the <a href="/tools/pokemon-resale-calculator">resale calculator</a>. See <a href="/guides/best-cards-in-pokemon-151">best cards in 151</a> and the <a href="/guides/blastoise-ex-151-worth-it">151 Blastoise ex</a>.`),
+    faqs: [
+      { q: "Is the 151 Venusaur ex a good buy?", a: "Yes — it's a top Kanto-starter chase from a very popular, liquid set, and typically the most affordable of the three 151 starter ex SIRs. Raw is a great-looking buy; a PSA 10 is a better store of value." },
+      { q: "Which 151 starter ex is the cheapest?", a: "The Venusaur ex SIR is usually the most affordable of the three, with Blastoise next and Charizard commanding the most." },
+    ],
+    related: ["best-venusaur-pokemon-cards", "best-cards-in-pokemon-151", "blastoise-ex-151-worth-it"],
+  },
+
+  {
+    slug: "are-venusaur-cards-worth-money",
+    title: "Are Venusaur Cards Worth Money? (2026 Value Guide) | wmcp.sh",
+    desc: "Are Venusaur Pokémon cards worth money? Which Venusaur cards hold value — Base Set grails vs modern chases, raw vs graded — and the cheapest copies and PSA 10s on eBay.",
+    h1: "Are Venusaur Cards Worth Money?",
+    dek: "Which Venusaur cards actually hold value — and which are just nice to own.",
+    updated: "June 2026",
+    readMins: 5,
+    bodyHtml:
+      p(`Venusaur's status as an original Kanto starter keeps it collected — but values swing widely across its cards. Here's the breakdown.`) +
+      h2("The ones that hold value") +
+      p(`The blue-chips are the <a href="/guides/best-venusaur-pokemon-cards">1st Edition / Shadowless Base Set</a> holos — genuinely scarce vintage with durable demand.`) +
+      cardLinks("Pokemon Venusaur 1st edition base set") +
+      h2("Strong modern holds") +
+      p(`The <a href="/guides/venusaur-ex-151-worth-it">151 Venusaur ex SIR</a> and the Mega Venusaur EX (XY) hold solid value — popular and liquid, good entry points.`) +
+      cardLinks("Pokemon Venusaur ex special illustration rare 151") +
+      h2("Nice to own, not investments") +
+      p(`Common holos, promos, and recent bulk Venusaurs are great for a collection but won't appreciate much. Buy those for love of the card, not to flip.`) +
+      h2("Raw vs graded for value") +
+      p(`For the Base Set grails, a PSA 10 is the real store of value and removes authenticity risk. Holding raw copies worth grading? Read <a href="/guides/how-to-grade-pokemon-cards">how to grade</a> and run the <a href="/tools/pokemon-grading-calculator">grading calculator</a>. Selling? See <a href="/guides/where-to-sell-pokemon-cards">where to sell</a>.`),
+    faqs: [
+      { q: "Are Venusaur cards a good investment?", a: "The vintage grails are — the 1st Edition and Shadowless Base Set holos have durable demand. The 151 Venusaur ex SIR and Mega Venusaur EX are strong modern holds. Common holos won't appreciate much." },
+      { q: "Which Venusaur card is worth the most?", a: "The 1st Edition Base Set Venusaur is worth the most, especially in PSA 10, followed by the Shadowless print." },
+    ],
+    related: ["best-venusaur-pokemon-cards", "venusaur-ex-151-worth-it", "best-pokemon-cards-to-invest-2026"],
+  },
 ];
 
 export const ARTICLE_SLUGS = ARTICLES.map((a) => a.slug);
