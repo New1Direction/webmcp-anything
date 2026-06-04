@@ -38,8 +38,8 @@ describe("GEO stats feed", () => {
   it("includes a ready-to-quote citation with the numbers + source", async () => {
     const res = await mcpStatsJson(makeCtx({ env: seededEnv() }));
     const cite = res.body.citation as string;
-    expect(cite).toContain("41%");           // security-failure stat
-    expect(cite).toContain("38%");           // D/F stat
+    expect(cite).toContain("38%");           // leads with the strong D/F stat
+    expect(cite).toContain("28%");           // and the A/B pass rate
     expect(cite).toContain("6771");          // n
     expect(cite.toLowerCase()).toContain("wmcp.sh");
     expect(cite).toContain("/reports/state-of-mcp-security-2026");

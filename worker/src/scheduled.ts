@@ -369,6 +369,17 @@ export async function scheduledHandler(
       .then((d) => console.log(`[cron] grade-seed: graded=${d.graded} remaining=${d.remaining}`))
       .catch((e) => console.log("[cron] grade-seed error", String(e)))
   );
+
+  // Keep the public security report + GEO stats feed (/reports + /api/v1/mcp/stats)
+  // fresh on their own — recompute every 6h so nobody has to hit ?refresh=1.
+  if (new Date().getUTCHours() % 6 === 0) {
+    ctx.waitUntil(
+      import("./mcp_report")
+        .then(({ computeMcpSecurityReport }) => computeMcpSecurityReport(env as any, true))
+        .then((s) => console.log(`[cron] report-refresh: ${s.total} graded, ${s.pct_failing}% D/F`))
+        .catch((e) => console.log("[cron] report-refresh error", String(e)))
+    );
+  }
 }
 
 const STORE_HOSTNAME_RE = /^[a-z0-9]([a-z0-9.-]*[a-z0-9])?\.[a-z]{2,}$/i;
