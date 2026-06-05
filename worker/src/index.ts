@@ -208,11 +208,16 @@ app.get("/api/v1/stats/public", async (c) => {
 });
 
 app.get("/api/v1/directory", async (c) => {
+  const limit = Math.min(500, parseInt(c.req.query("limit") || "200", 10));
+  // Max entries shown per host so one big store (e.g. the cron's Shopify seed)
+  // can't flood the page and read as spam. ?per_host=0 disables the per-host cap
+  // only — `limit` (max 500) still applies, so this is not an "everything" escape.
+  const perHost = Math.max(0, parseInt(c.req.query("per_host") || "3", 10));
   const { slugFromUrl } = await import("./slug");
 
   // Paginate the FULL seen: set (KV.list caps at 1000/call) so the directory
-  // shows every site, not just the first 200 keys (which clustered on a few
-  // high-volume stores). The page groups these by host itself.
+  // sees every site, not just the first 1000 keys (which clustered on a few
+  // high-volume stores). rankDirectory then dedups per-host + applies `limit`.
   const seenKeys: any[] = [];
   let cursor: string | undefined;
   let pages = 0;
@@ -244,7 +249,7 @@ app.get("/api/v1/directory", async (c) => {
     })
   );
 
-  const entries = list.keys
+  const raw = list.keys
     .map((k: any) => k.metadata)
     .filter((m: any) => m && m.url)
     .map((m: any) => {
@@ -260,17 +265,15 @@ app.get("/api/v1/directory", async (c) => {
       };
     });
 
-  // Sort: featured first (asc by rank), then by ts desc.
-  entries.sort((a: any, b: any) => {
-    const ar = a.featured_rank ?? Number.POSITIVE_INFINITY;
-    const br = b.featured_rank ?? Number.POSITIVE_INFINITY;
-    if (ar !== br) return ar - br;
-    return b.ts - a.ts;
-  });
-
-  return c.json({ entries, list_complete: list.list_complete }, 200, {
-    "cache-control": "public, max-age=300, s-maxage=300",
-  });
+  // Per-host dedup + featured-first ordering lives in rankDirectory (pure,
+  // unit-tested) — it supersedes the old inline sort and adds the per-host cap.
+  const { rankDirectory } = await import("./directory_rank");
+  const { entries, distinct_hosts } = rankDirectory(raw, { perHost, limit });
+  return c.json(
+    { entries, list_complete: list.list_complete, distinct_hosts, per_host_cap: perHost || null },
+    200,
+    { "cache-control": "public, max-age=300, s-maxage=300" }
+  );
 });
 
 app.get("/directory", (c) => {
