@@ -81,8 +81,11 @@ export async function writeCache(env: EngineEnv, url: string, payload: any, ttlS
   const already = await env.CACHE.get(seenKey);
   const adapter = payload?.adapter || "other";
   const title = payload?.product?.title || payload?.product?.name || undefined;
+  // n = tool count so the sitemap can exclude thin "0 agent-callable tools"
+  // pages (which uHtml also renders with noindex). undefined on legacy entries.
+  const n = Array.isArray(payload?.tools) ? payload.tools.length : undefined;
   await env.CACHE.put(seenKey, normalized, {
-    metadata: { url: normalized, adapter, ts: Date.now(), title },
+    metadata: { url: normalized, adapter, ts: Date.now(), title, n },
   });
   if (!already) {
     const raw = await env.CACHE.get("stats:total_cached");

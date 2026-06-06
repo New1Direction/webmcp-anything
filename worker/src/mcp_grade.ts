@@ -534,7 +534,48 @@ export function diffTools(prev: Record<string, string>, next: Record<string, str
  * fire an alert. THIS is the wedge: a continuously re-verified attestation that
  * a one-shot static scanner structurally cannot produce.
  */
+// Reject non-public / placeholder / private hosts so we never mint a "Trust
+// grade F" page (and sitemap + leaderboard row) for localhost, RFC1918 IPs,
+// example.com, or unresolved template vars like {host}/{region}. Package grade
+// subjects (npm:/pypi:/gh:) are always valid. Used at the mint sites (recordGrade
+// below + the route handlers) AND the sitemap emitter so already-persisted junk
+// is excluded even before a KV purge.
+export function isPublicGradableHost(host: string): boolean {
+  if (!host) return false;
+  if (host.startsWith("npm:") || host.startsWith("pypi:") || host.startsWith("gh:")) return true;
+  const h = host.toLowerCase().trim();
+  // Illegal/placeholder chars: braces, brackets, percent-encoding, angle, whitespace.
+  if (/[{}\[\]<>%\s]/.test(h)) return false;
+  if (!h.includes(".")) return false; // single-label (localhost, etc.) — not a registrable domain
+  if (/(^|\.)(localhost|local|internal|test|example|invalid|lan|home|corp)$/.test(h)) return false;
+  if (/(^|\.)example\.(com|org|net)$/.test(h) || h.includes("example.com")) return false;
+  const hostNoPort = h.replace(/:\d+$/, "");
+  const m = hostNoPort.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
+  if (m) {
+    const a = parseInt(m[1], 10), b = parseInt(m[2], 10);
+    if (a === 0 || a === 10 || a === 127) return false;        // unspecified / private / loopback
+    if (a === 192 && b === 168) return false;                  // private
+    if (a === 172 && b >= 16 && b <= 31) return false;         // private
+    if (a === 169 && b === 254) return false;                  // link-local (incl. cloud metadata)
+    if (a >= 224) return false;                                // multicast / reserved
+    return true;                                               // a public IPv4 literal is allowed
+  }
+  if (hostNoPort.includes(":")) return false;                  // bare IPv6 host key is malformed
+  return true;
+}
+
+// Light commercial heuristic (mirrors outreach.ts) — used to sharpen the
+// conversion pitch on low-graded *business* servers without nagging hobby/throwaway hosts.
+const GRADE_THROWAWAY = /(trycloudflare|vercel\.app|onrender|ngrok|railway\.app|herokuapp|glitch\.me|repl\.co|fly\.dev|run\.app|workers\.dev|supabase\.co|koyeb|googleapis\.com|^npm:|^pypi:|^gh:|localhost)/;
+export function isCommercialHost(host: string): boolean {
+  const parts = host.split(".");
+  return !GRADE_THROWAWAY.test(host) && host.includes(".") && parts.length >= 2 && parts.length <= 4;
+}
+
 export async function recordGrade(env: Env, r: GradeResult): Promise<DriftOutcome> {
+  // Never persist a grade for a non-public/placeholder host (keeps junk out of
+  // the leaderboard + sitemap regardless of which route triggered the score).
+  if (!isPublicGradableHost(r.host)) return { drifted: false, gradeDropped: false };
   const prev = await readGrade(env, r.host);
   const now = r.checked_at;
   const out: DriftOutcome = { drifted: false, gradeDropped: false, prevGrade: prev?.grade };
@@ -816,6 +857,43 @@ export function gradePageHtml(r: GradeResult, origin: string): string {
     reviewRating: { "@type": "Rating", ratingValue: r.score, bestRating: 100, alternateName: r.grade },
     author: { "@type": "Organization", name: "wmcp.sh" }, datePublished: new Date(r.checked_at).toISOString(),
   }).replace(/</g, "\\u003c").replace(/>/g, "\\u003e").replace(/&/g, "\\u0026"); // <script> breakout guard (host is attacker-influenceable)
+
+  // ---- GEO: a visible, extractable "is X safe?" answer + FAQPage schema so AI
+  // answer engines (ChatGPT/Claude/Perplexity) can quote wmcp.sh as the source. ----
+  const fs2 = Array.isArray(r.findings) ? r.findings : [];
+  const topF = fs2.find((f) => f.severity === "fail") || fs2.find((f) => f.severity === "warn") || fs2[0];
+  const gradeTop = topF ? String(topF.detail || "").replace(/\s+/g, " ").trim() : "";
+  const notGraded = r.grade === "?";
+  const answerText = notGraded
+    ? `We couldn't gather enough data to grade ${r.host} yet. wmcp.sh runs an independent A–F MCP trust audit (security/OWASP, spec conformance, reliability, tool hygiene, transparency) and watches each server for drift — the grade is free.`
+    : `Independent trust grade ${r.grade} (${r.score}/100). ${gradeTop || "No blocking issues found in the static + spec checks."} wmcp.sh continuously watches ${r.host} for tool drift and rug-pulls. The grade is free and identical whether or not the operator pays.`;
+  const answerBlockHtml = `<div class="answer"><h2>Is the ${esc(r.host)} MCP server safe to use?</h2><p>${esc(answerText)}</p></div>`;
+  const faqJsonld = JSON.stringify({
+    "@context": "https://schema.org", "@type": "FAQPage",
+    mainEntity: [
+      { "@type": "Question", name: `Is the ${r.host} MCP server safe to use?`, acceptedAnswer: { "@type": "Answer", text: answerText } },
+      { "@type": "Question", name: `What are the risks of connecting to ${r.host}?`, acceptedAnswer: { "@type": "Answer", text: (gradeTop || "No blocking issues were found in the static + spec checks.") + (notGraded ? "" : ` Overall trust grade ${r.grade} (${r.score}/100).`) } },
+      { "@type": "Question", name: `When was ${r.host} last audited?`, acceptedAnswer: { "@type": "Answer", text: `Last checked ${new Date(r.checked_at).toISOString().slice(0, 10)}; wmcp.sh re-checks it on a schedule for tool drift and rug-pulls.` } },
+    ],
+  }).replace(/</g, "\\u003c").replace(/>/g, "\\u003e").replace(/&/g, "\\u0026");
+
+  // ---- Capture identity AT the grade. Operators of low-graded commercial servers
+  // are the highest-intent Deep-Audit/Monitoring buyers; give them a score-conditioned
+  // capture (records host+grade+finding via /api/v1/leads). Grade itself stays free. ----
+  const lowCommercial = !notGraded && r.score < 60 && r.kind !== "package" && isCommercialHost(r.host);
+  const captureUseCase = `${r.host} · grade ${r.grade} (${r.score}/100)${gradeTop ? ` · top: ${gradeTop.slice(0, 180)}` : ""}`;
+  const operatorCaptureHtml = lowCommercial ? `<div class="opcap">
+    <div class="opcap-h">Developers see this <b>${r.grade}</b> before they connect to ${esc(r.host)}.</div>
+    <div class="opcap-s">Clear it: a <b>Deep Audit</b> shows exactly what to fix, and <b>Monitoring</b> proves the fix to everyone who checks your grade. Drop your email and we'll send this server's full findings + the fix path. The grade itself stays free.</div>
+    <div class="opcap-row">
+      <input type="email" class="op-e" placeholder="you@company.com" />
+      <button class="btn btn-p op-b" type="button">Send my findings →</button>
+    </div>
+    <div class="op-m"></div>
+    <script>(function(){var s=document.currentScript,w=s.parentElement;var e=w.querySelector('.op-e'),b=w.querySelector('.op-b'),m=w.querySelector('.op-m');var meta=${JSON.stringify(captureUseCase)},surl=${JSON.stringify(r.url)};function go(){var v=(e.value||'').trim();if(v.indexOf('@')<1){m.style.color='#f87171';m.textContent='Enter a valid email.';return;}b.disabled=true;b.textContent='…';fetch('/api/v1/leads',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email:v,package:'grade-audit',site_url:surl,use_case:meta})}).then(function(){m.style.color='#4ade80';m.textContent='Got it — findings are on the way.';e.value='';b.textContent='Sent';}).catch(function(){m.style.color='#f87171';m.textContent='Try again.';b.disabled=false;b.textContent='Send my findings →';});}b.addEventListener('click',go);e.addEventListener('keydown',function(ev){if(ev.key==='Enter')go();});})();</script>
+  </div>` : "";
+  const claimHtml = r.kind === "package" ? "" : `<p class="muted" style="font-size:.85rem;margin-top:10px">Run <b>${esc(r.host)}</b>? <a href="/directory/submit">Claim it (free)</a> to get drift alerts and show an independently-verified trust badge. The grade stays free — claiming just ties it to you.</p>`;
+
   return `<!doctype html><html lang="en"><head>
 <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>${esc(r.host)} MCP server — safe to use? Trust grade ${r.grade} | wmcp.sh</title>
@@ -828,6 +906,7 @@ export function gradePageHtml(r: GradeResult, origin: string): string {
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="${origin}/mcp/grade/${eh}/card.svg"/>
 <script type="application/ld+json">${jsonld}</script>
+<script type="application/ld+json">${faqJsonld}</script>
 <style>
   :root{--bg:#07070d;--card:#16161f;--bg2:#11111c;--border:#26263a;--text:#ececf5;--muted:#8a8aa8;--dim:#6a6a88;--accent:#ff9e2c;--accent2:#ffcf7a;--green:#4ade80;--red:#f87171}
   *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif;line-height:1.6;background-image:radial-gradient(ellipse 900px 600px at 12% -8%,rgba(255,158,44,.10),transparent 62%)}
@@ -874,6 +953,13 @@ export function gradePageHtml(r: GradeResult, origin: string): string {
   button.btn{border:none;cursor:pointer;font-family:inherit;font-size:.92rem}
   .embed,.oracle{margin-top:26px;border-top:1px solid var(--border);padding-top:16px}
   .embed h3,.oracle h3{margin:0 0 6px;font-size:1rem}
+  .answer{margin:16px 0 0;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+  .answer h2{margin:0 0 6px;font-size:1.05rem}.answer p{margin:0;color:var(--muted);font-size:.94rem}
+  .opcap{background:rgba(248,113,113,.06);border:1px solid rgba(248,113,113,.4);border-radius:14px;padding:18px 20px;margin:24px 0}
+  .opcap-h{font-weight:800;font-size:1.06rem}.opcap-s{color:var(--muted);font-size:.9rem;margin:5px 0 12px;max-width:640px}
+  .opcap-row{display:flex;gap:8px;flex-wrap:wrap;max-width:520px}
+  .opcap-row input{flex:1;min-width:220px;background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:11px 14px;font-size:.92rem}
+  .op-m{font-size:.85rem;margin-top:8px;min-height:1em}
   label{display:block;font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);margin:10px 0 4px}
   .snip{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-family:"SF Mono",Menlo,monospace;font-size:.78rem;overflow-x:auto;white-space:pre-wrap;word-break:break-all;margin:0;color:var(--text)}
 </style></head><body>
@@ -886,6 +972,7 @@ export function gradePageHtml(r: GradeResult, origin: string): string {
       <div class="score">${r.grade === "?" ? `<b style="color:${c}">Not graded</b> · insufficient data` : `<b style="color:${c}">${r.score}/100</b> · MCP Trust Grade`} · <span class="dim">checked ${relTime(r.checked_at)}${r.protocol_version ? " · MCP " + r.protocol_version : ""}${r.auth_required ? " · OAuth-protected" : ""}</span></div>
     </div>
   </div>
+  ${answerBlockHtml}
   ${attest}
   ${toolsHtml}
   ${subRow("spec", r.kind === "package" ? "Spec / packaging" : "Spec conformance")}
@@ -896,12 +983,14 @@ export function gradePageHtml(r: GradeResult, origin: string): string {
   ${subRow("transparency", "Transparency / provenance")}
   ${r.kind === "package" ? "" : behavioralHtml}
   ${findingsHtml}
+  ${operatorCaptureHtml}
   <div class="cta">
     <button class="btn btn-p" id="monitor">Watch this server — drift &amp; rug-pull alerts →</button>
     <button class="btn btn-s" id="deepAudit">Get the full audit report →</button>
     <a class="btn btn-s" href="/mcp/grade">Grade another server</a>
   </div>
   <p class="muted" style="font-size:.85rem;margin-top:10px">We re-grade <b>${esc(r.host)}</b> on a schedule and alert your Slack/webhook the moment its tools change or its grade drops — rug-pull insurance for the connection.</p>
+  ${claimHtml}
 
   <div class="embed">
     <h3>Share this report card</h3>
@@ -1034,6 +1123,9 @@ export async function mcpLeaderboardHtml(env: Env, origin: string, category?: st
     const list: any = await env.CACHE.list({ prefix: "grade:", limit: 1000, cursor });
     for (const k of list.keys) {
       const host = k.name.slice("grade:".length);
+      // Skip non-public/placeholder hosts (localhost, RFC1918 IPs, example.com,
+      // {template} vars) that may have been persisted before host validation.
+      if (!isPublicGradableHost(host)) continue;
       let m = k.metadata as any;
       if (!m || typeof m.score !== "number") {
         if (gets < 80) {

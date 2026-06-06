@@ -14,7 +14,7 @@ function kv() {
   };
 }
 
-const HOST = "mcp.example.com";
+const HOST = "mcp.acmelabs.io";
 function baseGrade(): GradeResult {
   return {
     url: `https://${HOST}/mcp`, host: HOST, checked_at: Date.now(), reachable: true, auth_required: false,

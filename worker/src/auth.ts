@@ -221,7 +221,7 @@ export function proxyExecuteGate(): MiddlewareHandler<{ Bindings: Bindings; Vari
     const freePerDay = parseInt(c.env.PROXY_FREE_CALLS_PER_DAY || "0", 10) || 0;
     if (freePerDay <= 0) {
       // Default-off → today's behavior: free plan can't execute live.
-      return c.json({ error: "payment_required", hint: "Live tool calls require a paid plan. Visit /dashboard to upgrade.", plan: auth.plan }, 402);
+      return c.json({ error: "payment_required", hint: "Executing a vaulted tool (e.g. Shopify add_to_cart) needs a paid plan — see /pricing. Reads and the A–F trust grade stay free.", plan: auth.plan }, 402);
     }
     const day = new Date().toISOString().slice(0, 10);
     const fk = `freecall:${auth.key}:${day}`;

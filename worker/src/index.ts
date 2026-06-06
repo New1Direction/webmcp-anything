@@ -456,7 +456,12 @@ app.get("/mcp/grade/:host/card.svg", async (c) => {
 app.get("/mcp/grade/:host", async (c) => {
   const host = c.req.param("host");
   const origin = new URL(c.req.url).origin;
-  const { readGrade, scoreMcpServer, recordGrade, gradePageHtml } = await import("./mcp_grade");
+  const { readGrade, scoreMcpServer, recordGrade, gradePageHtml, isPublicGradableHost } = await import("./mcp_grade");
+  // Reject non-public / placeholder hosts (localhost, RFC1918 IPs, example.com,
+  // {template} vars) so we never mint a junk "Trust grade F" page (or sitemap row).
+  if (!isPublicGradableHost(host)) {
+    return c.html(`<!doctype html><html lang="en"><head><meta charset="utf-8"/><meta name="robots" content="noindex"/><title>Not a public MCP server · wmcp.sh</title></head><body style="font-family:-apple-system,sans-serif;background:#07070d;color:#ececf5;padding:48px 22px;max-width:640px;margin:0 auto"><p><a href="/mcp/grade" style="color:#ffcf7a">← Grade a server</a></p><h1 style="font-size:1.4rem">That's not a public MCP server host</h1><p style="color:#8a8aa8">wmcp.sh grades publicly reachable MCP servers. Localhost, private/loopback IPs, and placeholder hostnames aren't graded.</p></body></html>`, 404);
+  }
   // Package / source (stdio) servers: never probe — read the static scan, or run it on demand.
   if (host.startsWith("npm:") || host.startsWith("pypi:") || host.startsWith("gh:")) {
     let pr = c.req.query("fresh") === "1" ? null : await readGrade(c.env as any, host);
@@ -548,6 +553,14 @@ app.get("/agent-ready", async (c) => {
   });
 });
 
+// /pricing — the canonical pricing URL (both locked ladders). Was a 404; pricing
+// previously lived only at the /#pricing homepage anchor.
+app.get("/pricing", async (c) => {
+  const { pricingPageHtml } = await import("./pricing");
+  return new Response(pricingPageHtml(new URL(c.req.url).origin), {
+    headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=900, s-maxage=900" },
+  });
+});
 app.get("/managed", async (c) => {
   const { managedHtml } = await import("./managed");
   return new Response(managedHtml(new URL(c.req.url).origin), {
