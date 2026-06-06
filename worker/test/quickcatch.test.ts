@@ -41,6 +41,33 @@ describe("QuickCatch checkout ($12/mo consumer SKU)", () => {
     expect(d).toContain("subscription_data[metadata][kind]=quickcatch");
     expect(d).toContain("line_items[0][price]=price_qc");
   });
+  it("threads the attribution source into Stripe (client_reference_id + metadata), defaulting to 'direct'", async () => {
+    const env = envMock({ STRIPE_SECRET_KEY: "sk", STRIPE_PRICE_QUICKCATCH: "price_qc" });
+    const sent = stubStripe();
+    await createQuickCatchCheckout(makeCtx({ env, body: { email: "a@b.com", source: "ext_paywall" } }));
+    let d = decodeURIComponent(sent());
+    expect(d).toContain("client_reference_id=ext_paywall");
+    expect(d).toContain("metadata[source]=ext_paywall");
+    // default when no source supplied
+    await createQuickCatchCheckout(makeCtx({ env, body: { email: "a@b.com" } }));
+    expect(decodeURIComponent(sent())).toContain("metadata[source]=direct");
+  });
+});
+
+describe("quickCatchPage (/quickcatch buy page — fixes the in-extension 404)", () => {
+  it("renders the $12 buy page with a self-canonical and the source threaded into checkout", async () => {
+    const { quickCatchPage } = await import("../src/stripe");
+    const html = quickCatchPage(makeCtx({ env: envMock({}), method: "GET", query: { source: "ext_banner" } })).body as string;
+    expect(html).toContain("$12");
+    expect(html).toContain('rel="canonical" href="https://wmcp.sh/quickcatch"');
+    expect(html).toContain('"ext_banner"'); // source baked into the page's checkout call
+    expect(html).not.toContain("canceled — no charge");
+  });
+  it("shows the canceled note after an abandoned checkout", async () => {
+    const { quickCatchPage } = await import("../src/stripe");
+    const html = quickCatchPage(makeCtx({ env: envMock({}), method: "GET", query: { canceled: "1" } })).body as string;
+    expect(html).toContain("canceled — no charge");
+  });
 });
 
 describe("QuickCatch license: webhook issues it, verify gates on it (never a key)", () => {

@@ -35,6 +35,7 @@ import {
   createQuickCatchCheckout,
   verifyQuickCatch,
   quickCatchActivate,
+  quickCatchPage,
 } from "./stripe";
 import { listManagedConnections } from "./connections";
 import { track } from "./metrics";
@@ -1587,6 +1588,7 @@ app.post("/api/v1/mcp/monitor/checkout", async (c) => createMonitorCheckout(c as
 // the extension's entitlement check.
 app.post("/api/v1/quickcatch/checkout", async (c) => createQuickCatchCheckout(c as any));
 app.get("/api/v1/quickcatch/verify", async (c) => verifyQuickCatch(c as any));
+app.get("/quickcatch", (c) => quickCatchPage(c as any));
 app.get("/quickcatch/activate", async (c) => quickCatchActivate(c as any));
 
 // ===== WebMCP↔MCP dual-emit bridge — one extraction, BOTH protocols =====
