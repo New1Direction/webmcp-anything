@@ -6,6 +6,7 @@
 
 import { BLOG_POSTS, BLOG_SLUGS } from "./blog_posts";
 import type { BlogPost } from "./blog_posts";
+import { adSlot } from "./ads";
 
 const BRAND_CSS = `
 :root { --bg:#07070d;--card:#16161f;--bg2:#11111c;--border:#26263a;--text:#ececf5;--muted:#8a8aa8;--dim:#6a6a88;--accent:#ff9e2c;--accent2:#ffcf7a;--green:#4ade80;--pink:#ffb86b;--gold:#fbbf24; }
@@ -232,6 +233,8 @@ ${navHtml()}
   <div class="meta">${escapeHtml(post.date)}${post.primary_query ? ` &middot; targets <span class="q">${escapeHtml(post.primary_query)}</span>` : ""}</div>
 
   ${post.html}
+
+  ${adSlot()}
 
   <div class="post-cta">
     <div class="l">
