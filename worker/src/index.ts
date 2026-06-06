@@ -9,7 +9,7 @@ import { landingHtml } from "./landing";
 import { dashboardHtml } from "./dashboard";
 import { directoryHtml } from "./directory";
 import { ogSvg } from "./og";
-import { scheduledHandler, runSeedNow, addSeedStores, submitSeoIndexNow, addGradeServers, regradeCorpus, seedRegistry, seedPackages } from "./scheduled";
+import { scheduledHandler, runSeedNow, addSeedStores, submitSeoIndexNow, addGradeServers, regradeCorpus, seedRegistry, seedPackages, seedBehaviorAdmin } from "./scheduled";
 import { githubStart, githubCallback, logout, me, issueOwnKey } from "./oauth";
 import {
   getProviders,
@@ -1781,6 +1781,8 @@ app.get("/admin/outreach", async (c) => {
 });
 app.post("/api/v1/admin/regrade-corpus", (c) => regradeCorpus(c as any));
 app.post("/api/v1/admin/seed-registry", (c) => seedRegistry(c as any));
+// Curate the behavioral-seed flagship list + optionally run a batch (?run=1).
+app.post("/api/v1/admin/seed-behavior", (c) => seedBehaviorAdmin(c as any));
 app.post("/api/v1/admin/seed-packages", (c) => seedPackages(c as any));
 // Broadcast to the captured lead list (the report newsletter → Monitor-SKU funnel).
 app.post("/api/v1/admin/broadcast", async (c) => {
