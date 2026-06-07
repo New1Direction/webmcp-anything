@@ -6,6 +6,7 @@
 [![MIT License](https://img.shields.io/badge/license-MIT-4ade80)](./LICENSE)
 [![MCP compatible](https://img.shields.io/badge/MCP-compatible-00e5ff)](https://modelcontextprotocol.io)
 [![TypeScript](https://img.shields.io/badge/built%20with-TypeScript-3178c6)](#whats-in-the-repo)
+[![New1Direction/webmcp-anything MCP server](https://glama.ai/mcp/servers/New1Direction/webmcp-anything/badges/score.svg)](https://glama.ai/mcp/servers/New1Direction/webmcp-anything)
 
 <p align="center">
   <a href="https://wmcp.sh/demo/hero.mp4">

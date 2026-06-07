@@ -98,9 +98,14 @@ switch, spend caps, audit). Built on Cloudflare Workers.
 
 ### 5. punkpeye/awesome-mcp-servers (the big community list) — GitHub PR
 Fork → add under the most fitting category (Security / Monitoring, or a Tools
-section), keep alphabetical, follow their emoji legend in CONTRIBUTING. Entry:
+section), keep alphabetical, follow their emoji legend in CONTRIBUTING.
+**Required by the maintainer:** add the Glama score badge immediately after the
+server link (punkpeye = Glama's founder). Submit/claim the server at
+https://glama.ai/mcp/servers first; the badge auto-populates once Glama indexes
+the public repo (the badge URL is valid immediately, shows "unranked" until then).
+Entry (copy-paste, badge included):
 ```
-- [wmcp.sh Trust Oracle](https://wmcp.sh/mcp/trust) ☁️ - An MCP server that grades other MCP servers: independent A–F trust score, drift/rug-pull monitoring, and a verify-before-execute gate for agents. Free. Leaderboard at https://wmcp.sh/mcp/leaderboard
+- [wmcp.sh Trust Oracle](https://wmcp.sh/mcp/trust) [![New1Direction/webmcp-anything MCP server](https://glama.ai/mcp/servers/New1Direction/webmcp-anything/badges/score.svg)](https://glama.ai/mcp/servers/New1Direction/webmcp-anything) ☁️ - An MCP server that grades other MCP servers: independent A–F trust score, drift/rug-pull monitoring, and a verify-before-execute gate for agents. Free. Leaderboard at https://wmcp.sh/mcp/leaderboard
 ```
 (☁️ = hosted/remote service. Add the correct legend emojis per their README.)
 
