@@ -2,7 +2,7 @@
 // invoke read-only, zero-argument tools, never anything mutating/destructive or
 // anything that requires arguments.
 import { describe, it, expect, vi, afterEach } from "vitest";
-import { isReadOnlyCallable, seedBehaviorForHost } from "../src/mcp_grade";
+import { isReadOnlyCallable, seedBehaviorForHost, seedBehaviorBatch, DEFAULT_BEHAVIOR_SEED_HOSTS } from "../src/mcp_grade";
 import { kvMock } from "./helpers";
 import { readBehavior } from "../src/behavior";
 
@@ -76,5 +76,55 @@ describe("seedBehaviorForHost", () => {
     const out = await seedBehaviorForHost(env, "locked.acmelabs.io");
     expect(out.calls).toBe(0);
     expect(fetchSpy).not.toHaveBeenCalled();
+  });
+});
+
+describe("seedBehaviorBatch", () => {
+  // A grade record whose probe will be attempted (fetch is stubbed per-test).
+  const gradeRec = (host: string) => JSON.stringify({
+    url: `https://${host}/mcp`, host, checked_at: Date.now(), reachable: true,
+    auth_required: false, grade: "A", score: 95, sub: {}, findings: [], tools_count: 3,
+  });
+  /** fetch stub that fails every probe fast but records which hosts were tried. */
+  const probeSpy = () => {
+    const tried: string[] = [];
+    vi.stubGlobal("fetch", vi.fn(async (url: any) => {
+      tried.push(new URL(String(url)).host);
+      throw new Error("unreachable (test)");
+    }));
+    return tried;
+  };
+
+  it("falls back to the checked-in default flagship list when nothing is curated", async () => {
+    const env: any = { CACHE: kvMock() };
+    for (const h of DEFAULT_BEHAVIOR_SEED_HOSTS) await env.CACHE.put(`grade:${h}`, gradeRec(h));
+    const tried = probeSpy();
+    const out = await seedBehaviorBatch(env, { max: 3 });
+    expect(out.targets).toBe(3);
+    // probeMcp may retry URL variants per host — assert on unique host order
+    expect([...new Set(tried)]).toEqual(DEFAULT_BEHAVIOR_SEED_HOSTS.slice(0, 3));
+  });
+
+  it("rotates the flagship list across runs so hosts past `max` still get exercised", async () => {
+    const env: any = { CACHE: kvMock() };
+    const hosts = ["a.acmelabs.io", "b.acmelabs.io", "c.acmelabs.io"];
+    await env.CACHE.put("behaviorseed:list", JSON.stringify(hosts));
+    for (const h of hosts) await env.CACHE.put(`grade:${h}`, gradeRec(h));
+    const tried = probeSpy();
+    await seedBehaviorBatch(env, { max: 2 });   // run 1 → a, b
+    expect([...new Set(tried)]).toEqual(["a.acmelabs.io", "b.acmelabs.io"]);
+    tried.length = 0;
+    await seedBehaviorBatch(env, { max: 2 });   // run 2 → c, a (offset 2)
+    expect([...new Set(tried)]).toEqual(["c.acmelabs.io", "a.acmelabs.io"]);
+  });
+
+  it("prefers the curated KV list over the defaults", async () => {
+    const env: any = { CACHE: kvMock() };
+    await env.CACHE.put("behaviorseed:list", JSON.stringify(["curated.acmelabs.io"]));
+    await env.CACHE.put("grade:curated.acmelabs.io", gradeRec("curated.acmelabs.io"));
+    const tried = probeSpy();
+    const out = await seedBehaviorBatch(env, { max: 1 });
+    expect(out.targets).toBe(1);
+    expect([...new Set(tried)]).toEqual(["curated.acmelabs.io"]);
   });
 });

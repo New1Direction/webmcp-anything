@@ -719,6 +719,25 @@ export async function seedBehaviorForHost(env: Env, host: string, maxTools = 2):
 
 const BEHAVIOR_SEED_LIST = "behaviorseed:list";   // admin-curated flagship hosts
 const BEHAVIOR_SEED_CURSOR = "behaviorseed:cursor";
+const BEHAVIOR_SEED_ROT = "behaviorseed:rot";     // rotation offset over the flagship list
+
+// Default flagship set, used until the operator curates their own list via
+// POST /api/v1/admin/seed-behavior. Every host here was verified live on
+// 2026-06-09: public, graded A/A+, streamable-HTTP, answers tools/list without
+// auth, and exposes ≥2 zero-arg tools that pass isReadOnlyCallable. Deliberately
+// diverse operators — the "✓ verified" tier must not look like one vendor's farm.
+export const DEFAULT_BEHAVIOR_SEED_HOSTS = [
+  "gbif-biodiversity.caseyjhand.com",
+  "usaspending.caseyjhand.com",
+  "www.cannonstudio.app",
+  "mcp.influship.com",
+  "api.humantaste.app",
+  "toofi.app",
+  "www.cyclesite.co.uk",
+  "mcp.nausika.app",
+  "vastlint.org",
+  "hemmabo-mcp-server.vercel.app",
+];
 
 /** Read the admin-curated seed host list. */
 export async function readBehaviorSeedList(env: Env): Promise<string[]> {
@@ -748,7 +767,16 @@ export async function seedBehaviorBatch(env: Env, opts: { max?: number; maxTools
   const seen = new Set<string>();
   const push = (h: string) => { const hh = h.toLowerCase(); if (hh && !seen.has(hh) && isPublicGradableHost(hh)) { seen.add(hh); targets.push(hh); } };
 
-  for (const h of await readBehaviorSeedList(env)) { if (targets.length >= max) break; push(h); }
+  // Flagships: the curated KV list when the operator has set one, else the
+  // checked-in defaults. Rotate the starting offset each run so a list longer
+  // than `max` still cycles every flagship across consecutive cron runs
+  // (without this, hosts past the first `max` would never be exercised).
+  const curated = await readBehaviorSeedList(env);
+  const flagships = curated.length ? curated : DEFAULT_BEHAVIOR_SEED_HOSTS;
+  let rot = 0;
+  try { rot = parseInt((await env.CACHE.get(BEHAVIOR_SEED_ROT)) || "0", 10) || 0; } catch {}
+  for (let j = 0; j < flagships.length && targets.length < max; j++) push(flagships[(rot + j) % flagships.length]);
+  await env.CACHE.put(BEHAVIOR_SEED_ROT, String(flagships.length ? (rot + targets.length) % flagships.length : 0), { expirationTtl: 30 * 86400 });
   // Fill remaining budget with a rotating slice of the watch set.
   if (targets.length < max) {
     const cursor = (await env.CACHE.get(BEHAVIOR_SEED_CURSOR)) || undefined;

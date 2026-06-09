@@ -34,8 +34,9 @@ PROXY_FREE_CALLS_PER_DAY = "25"
 # Behavioral seeding: when "1", the 2h cron exercises a small curated set of
 # public, no-auth servers' READ-ONLY tools so the behavioral overlay lights up
 # (the "✓ verified" tier) without waiting for user proxy traffic. "0" = off.
-# Curate which servers via POST /api/v1/admin/seed-behavior {hosts:[...]}.
-BEHAVIOR_SEED = "0"
+# Curate which servers via POST /api/v1/admin/seed-behavior {hosts:[...]};
+# until curated, the checked-in DEFAULT_BEHAVIOR_SEED_HOSTS flagship list is used.
+BEHAVIOR_SEED = "1"
 
 # Static assets — demo videos, OG images, etc.
 # Files in ./public/ are served at the URL matching their path
