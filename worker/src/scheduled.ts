@@ -203,8 +203,11 @@ async function writeCache(
   const already = await env.CACHE.get(seenKey);
   const adapter = payload?.adapter || "other";
   const title = payload?.product?.title || payload?.product?.name || undefined;
+  // n = tool count, same contract as engine.ts's writer: the sitemap only
+  // lists /u pages with n > 0 (0-tool pages render noindex — keep them out).
+  const n = Array.isArray(payload?.tools) ? payload.tools.length : undefined;
   await env.CACHE.put(seenKey, normalized, {
-    metadata: { url: normalized, adapter, ts: Date.now(), title },
+    metadata: { url: normalized, adapter, ts: Date.now(), title, n },
   });
   if (!already) {
     const raw = await env.CACHE.get("stats:total_cached");

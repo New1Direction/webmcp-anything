@@ -338,6 +338,7 @@ Disallow: /dashboard
 Disallow: /mcp/
 Allow: /mcp/grade
 Allow: /mcp/leaderboard
+Allow: /mcp/badges
 Allow: /connect
 
 Sitemap: ${origin}/sitemap.xml
@@ -579,9 +580,11 @@ export async function sitemapXml(env: any, origin: string): Promise<string> {
   const entries: Array<{ url: string; ts: number }> = seenKeys
     .map((k: any) => k.metadata)
     .filter((m: any) => m && m.url)
-    // Exclude thin "0 agent-callable tools" pages (uHtml renders them noindex too).
-    // n is undefined on legacy entries → kept; only drop when we KNOW it's 0.
-    .filter((m: any) => m.n !== 0)
+    // Only list pages we KNOW have agent-callable tools (n > 0). 0-tool pages
+    // render noindex (a sitemap/noindex contradiction in Search Console), and
+    // unknown-n legacy entries can't be trusted either way — the harvest cron
+    // and engine both stamp n on (re)cache, so good pages re-enter on refresh.
+    .filter((m: any) => typeof m.n === "number" && m.n > 0)
     .map((m: any) => ({ url: m.url, ts: m.ts || 0 }));
 
   // Every graded MCP server is a real, unique trust-report page → index them all,
