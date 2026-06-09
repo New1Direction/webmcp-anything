@@ -9,7 +9,7 @@ All 6 hot leads **re-verified live 2026-06-09: still F (45/100)**. Report pages 
 ---
 
 ## 1. mcp.viridis-security.com — F 45 · *security vendor* (best opener — the irony sells itself)
-**Find {name}:** "Viridis Security founder" on LinkedIn/X, or security@ / hello@viridis-security.com
+**Contact (researched 2026-06-09 — WEAK):** no public footprint. WHOIS is privacy-redacted, site wouldn't load, zero search results for founder/handles. Best cold attempt: a contact form on viridis-security.com (if it loads for you) or a guessed role address `security@` / `hello@` / `contact@viridis-security.com` (unverified — may bounce). Honestly the hardest of the four; consider deprioritizing unless you can load their site.
 **Report:** https://wmcp.sh/mcp/grade/mcp.viridis-security.com
 
 ```
@@ -29,7 +29,8 @@ badge once you pass). The grade's free and identical either way. Worth 15 min?
 ```
 
 ## 2. api.agentrapay.ai — F 45 · *payments*
-**Find {name}:** funded startup → founder DM on X/LinkedIn converts fastest; or hello@agentrapay.ai
+**Contact (researched 2026-06-09 — MEDIUM):** privacy-conscious startup (1–10 ppl, founded 2024), no founder name or email public. Channel = **DM @agentrapay on X** (their site links x.com/agentrapay; also seen as @AgentraAI). Docs/well-known agent-card at agentrapay.ai/docs if you want a deeper hook. No `{name}` available → open with "Agentra team —".
+> Note: Agentra sells "trust infrastructure / reputation scoring for agents" — they're adjacent to wmcp's trust angle, so an F on *their own* security grade is an especially sharp (if delicate) hook.
 **Report:** https://wmcp.sh/mcp/grade/api.agentrapay.ai
 
 ```
@@ -49,7 +50,7 @@ grade's free either way — happy to walk you through it. Worth 15 minutes?
 ```
 
 ## 3. crossfin.dev — F 45 · *finance*
-**Find {name}:** "Crossfin founder" LinkedIn/X; or hello@crossfin.dev
+**Contact (researched 2026-06-09 — LOW/anon):** indie builder, no name/email/X anywhere. The site is bare (only links to live.crossfin.dev). Only real channel = **open a GitHub issue on `github.com/bubilife1202/crossfin`** (the repo behind it) or @ that GitHub user. No `{name}` → open with "Hey —". (Note: the LinkedIn "Crossfin Holdings" is a different South-African investment firm — don't contact them.)
 **Report:** https://wmcp.sh/mcp/grade/crossfin.dev
 
 ```
@@ -68,7 +69,7 @@ Want the audit?
 ```
 
 ## 4. mcp.payram.com — F 45 · *payments*
-**Find {name}:** "Payram founder" LinkedIn/X; or security@ / hello@payram.com
+**Contact (researched 2026-06-09 — STRONG, best-equipped lead):** contact name **Krishna Raj**; direct **Telegram → t.me/krishnaxl**; email **support@payram.com**; book-a-call **calendly.com/payram-sales/payram-demo-crypto-payments**; community **t.me/PayRamChat**. Best move: DM krishnaxl on Telegram (founder/leadership, direct line) with the finding + report link. Use `{name}` = Krishna.
 **Report:** https://wmcp.sh/mcp/grade/mcp.payram.com
 
 ```
