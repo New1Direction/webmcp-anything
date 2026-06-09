@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>wmcp.sh — what it is, the funnels, what's wired</title>
+<style>
+  :root{
+    --bg:#07070d;--bg2:#11111c;--card:#16161f;--border:#26263a;
+    --text:#ececf5;--muted:#9a9ab0;--dim:#6a6a88;
+    --accent:#ff9e2c;--accent2:#ffcf7a;--green:#4ade80;--red:#ff5470;--blue:#7aa2ff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);line-height:1.6;
+    font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif;
+    background-image:radial-gradient(ellipse 1000px 640px at 12% -6%,rgba(255,158,44,.13),transparent 60%);
+    -webkit-font-smoothing:antialiased}
+  .wrap{max-width:1000px;margin:0 auto;padding:44px 24px 90px}
+  a{color:var(--accent2);text-decoration:none}a:hover{text-decoration:underline}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.05rem}
+  .brand svg{flex:none}
+  h1{font-size:2.5rem;letter-spacing:-.025em;line-height:1.08;margin:18px 0 10px}
+  .tag{color:var(--accent2);font-weight:700}
+  .lede{color:var(--muted);font-size:1.18rem;max-width:760px;margin:0 0 6px}
+  .spine{color:var(--dim);font-size:.95rem;margin:14px 0 0}
+  h2{font-size:1.5rem;letter-spacing:-.01em;margin:46px 0 6px;display:flex;align-items:center;gap:10px}
+  h2 .n{color:var(--accent);font-size:1rem;font-weight:800;background:rgba(255,158,44,.12);border:1px solid rgba(255,158,44,.4);border-radius:8px;padding:2px 9px}
+  .sub{color:var(--muted);margin:0 0 18px}
+  .grid{display:grid;gap:14px}
+  .two{grid-template-columns:1fr 1fr}
+  .three{grid-template-columns:repeat(3,1fr)}
+  @media(max-width:760px){.two,.three{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px 20px}
+  .card h3{margin:0 0 6px;font-size:1.05rem}
+  .card p{margin:0;color:var(--muted);font-size:.92rem}
+  .pill{display:inline-block;font-size:.68rem;font-weight:800;letter-spacing:.04em;border-radius:999px;padding:2px 9px;vertical-align:middle;white-space:nowrap}
+  .live{color:#bdf0cd;background:rgba(74,222,128,.13);border:1px solid rgba(74,222,128,.4)}
+  .dark{color:var(--accent2);background:rgba(255,158,44,.1);border:1px solid rgba(255,158,44,.4)}
+  .soon{color:var(--blue);background:rgba(122,162,255,.12);border:1px solid rgba(122,162,255,.4)}
+  table{width:100%;border-collapse:collapse;margin:6px 0 0;font-size:.92rem}
+  th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--border);vertical-align:top}
+  th{color:var(--accent2);font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;font-weight:800}
+  td .price{color:var(--text);font-weight:700;white-space:nowrap}
+  td.small{color:var(--muted);font-size:.86rem}
+  .money{font-variant-numeric:tabular-nums}
+  .flow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;color:var(--muted);font-size:.85rem;margin-top:4px}
+  .flow code{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:2px 7px;color:var(--accent2);font-size:.82rem}
+  .flow .arrow{color:var(--dim)}
+  .stat{display:flex;flex-direction:column;gap:2px}
+  .stat .big{font-size:1.8rem;font-weight:800;letter-spacing:-.02em}
+  .stat .lbl{color:var(--dim);font-size:.78rem;text-transform:uppercase;letter-spacing:.05em}
+  .note{background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:10px;padding:14px 16px;color:var(--muted);font-size:.92rem;margin:18px 0}
+  .note b{color:var(--text)}
+  ul.clean{list-style:none;padding:0;margin:10px 0 0}
+  ul.clean li{padding:6px 0 6px 24px;position:relative;color:var(--muted);font-size:.93rem}
+  ul.clean li:before{content:"→";position:absolute;left:0;color:var(--accent)}
+  .knob{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:11px 0;border-bottom:1px solid var(--border)}
+  .knob:last-child{border-bottom:none}
+  .knob .k{font-family:"SF Mono",Menlo,monospace;font-size:.84rem;color:var(--accent2)}
+  .knob .d{color:var(--muted);font-size:.86rem;flex:1;padding:0 12px}
+  footer{margin-top:50px;padding-top:18px;border-top:1px solid var(--border);color:var(--dim);font-size:.82rem}
+  .linkgrid{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .linkgrid a{background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:8px 12px;font-size:.85rem;color:var(--text)}
+  .linkgrid a:hover{border-color:var(--accent);text-decoration:none}
+  .linkgrid a span{color:var(--dim)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="brand">
+    <svg viewBox="0 0 24 24" fill="#ff9e2c" width="22" height="22" aria-hidden="true"><path d="M12 1Q12.6 11.4 23 12Q12.6 12.6 12 23Q11.4 12.6 1 12Q11.4 11.4 12 1Z"/></svg>
+    wmcp.sh
+  </div>
+
+  <h1>Any website becomes <span class="tag">tools an agent can use</span> — no MCP server required.</h1>
+  <p class="lede">wmcp.sh is a hosted Cloudflare Worker that turns any URL into agent-callable MCP tools, plus a Chrome extension, open-source adapters, and SDKs. On top of that sits an <b style="color:var(--text)">independent A–F trust graph</b> for the whole MCP ecosystem — the part that's hard to copy.</p>
+  <p class="spine">The spine: <b style="color:var(--accent2)">read</b> (free, drives reach &amp; acquisition) → <b style="color:var(--accent2)">execute</b> (governed, paid) → <b style="color:var(--accent2)">trust</b> (the moat: who's safe to connect to).</p>
+
+  <!-- ============ WHAT IT IS ============ -->
+  <h2><span class="n">1</span> The two halves</h2>
+  <div class="grid two">
+    <div class="card">
+      <h3>① The product — "WebMCP for anything"</h3>
+      <p>Point an agent at <code style="color:var(--accent2)">wmcp.sh/api/v1/tools?url=…</code> and any site (Shopify, an OpenAPI spec, schema.org, or LLM-extracted) comes back as callable tools. Live execute (add-to-cart, real actions) runs through a governed OAuth-vault proxy with a kill switch, daily cap, and audit log.</p>
+    </div>
+    <div class="card">
+      <h3>② The moat — the MCP trust graph</h3>
+      <p>An independent, free A–F grade for MCP servers (security/OWASP, spec, reliability, tool hygiene, transparency), continuously re-checked for drift &amp; rug-pulls. The grade is <b style="color:var(--text)">never for sale</b> — we monetize the monitoring/audit around it. Independence is the acquisition premium (Cloudflare can't grade the gateway it sells; Anthropic can't grade its own registry).</p>
+    </div>
+  </div>
+
+  <!-- ============ SCALE ============ -->
+  <h2><span class="n">2</span> What's built, at scale</h2>
+  <p class="sub">Verified live on production.</p>
+  <div class="grid three">
+    <div class="card stat"><div class="big" style="color:var(--accent)">6,771</div><div class="lbl">MCP servers graded (A–F)</div></div>
+    <div class="card stat"><div class="big" style="color:var(--accent)">12,443</div><div class="lbl">URLs in the sitemap</div></div>
+    <div class="card stat"><div class="big" style="color:var(--accent)">7</div><div class="lbl">revenue lines wired to Stripe</div></div>
+  </div>
+  <ul class="clean">
+    <li><b style="color:var(--text)">Money plumbing is done</b> — every paid line mints a live Stripe <code style="background:var(--bg2);padding:1px 6px;border-radius:5px;font-size:.85em">cs_live</code> session today.</li>
+    <li><b style="color:var(--text)">Governance dashboard shipped</b> — kill switch + daily cap + audit log on <code style="background:var(--bg2);padding:1px 6px;border-radius:5px;font-size:.85em">/dashboard</code>.</li>
+    <li><b style="color:var(--text)">Programmatic SEO + GEO</b> — grade pages, drops (12 languages), vs/alternatives/integration pages, blog; a citation feed at <code style="background:var(--bg2);padding:1px 6px;border-radius:5px;font-size:.85em">/api/v1/mcp/stats</code> + <code style="background:var(--bg2);padding:1px 6px;border-radius:5px;font-size:.85em">llms.txt</code> so AI assistants can cite us.</li>
+    <li><b style="color:var(--text)">QuickCatch extension</b> — published on the Chrome Web Store; restock watch + auto-add-to-cart.</li>
+  </ul>
+
+  <!-- ============ FUNNELS ============ -->
+  <h2><span class="n">3</span> The money funnels</h2>
+  <p class="sub">Seven ways in. The first four are subscription/service revenue; the last three are skim on the SEO traffic.</p>
+  <table>
+    <thead><tr><th>Funnel</th><th>Price</th><th>Where it starts</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><b>Self-serve API</b><div class="small">turn any URL into tools; governed live execute</div></td>
+        <td class="money"><span class="price">Free · $39 · $99 · $299</span><div class="small">/mo (Builder/Pro/Reseller)</div></td>
+        <td class="small"><a href="https://wmcp.sh/pricing">/pricing</a> → <a href="https://wmcp.sh/dashboard">/dashboard</a> → Stripe</td>
+        <td><span class="pill live">LIVE</span></td>
+      </tr>
+      <tr>
+        <td><b>Managed (done-for-you)</b><div class="small">we build + run your connections</div></td>
+        <td class="money"><span class="price">$499 · $999 · $4,999+</span><div class="small">one-time setup / mo / mo</div></td>
+        <td class="small"><a href="https://wmcp.sh/managed">/managed</a>, <a href="https://wmcp.sh/pricing">/pricing</a></td>
+        <td><span class="pill live">LIVE</span></td>
+      </tr>
+      <tr>
+        <td><b>Trust-authority SKUs</b><div class="small">Deep Audit · Monitoring · Verified badge · managed Connection</div></td>
+        <td class="money"><span class="price">one-time + recurring</span></td>
+        <td class="small"><a href="https://wmcp.sh/mcp/grade">/mcp/grade/&lt;host&gt;</a> — D/F commercial pages pitch the audit + capture the lead</td>
+        <td><span class="pill live">LIVE</span></td>
+      </tr>
+      <tr>
+        <td><b>QuickCatch</b><div class="small">consumer restock catcher (extension)</div></td>
+        <td class="money"><span class="price">$12</span><div class="small">/mo</div></td>
+        <td class="small">extension → <a href="https://wmcp.sh/quickcatch">/quickcatch</a> + <a href="https://wmcp.sh/drops">/drops</a> pages</td>
+        <td><span class="pill live">LIVE</span></td>
+      </tr>
+      <tr>
+        <td><b>Affiliate</b><div class="small">buy-buttons on ~2,700 drop &amp; guide pages</div></td>
+        <td class="money"><span class="price">~3% commission</span></td>
+        <td class="small">every <a href="https://wmcp.sh/drops">/drops</a> &amp; /guides page</td>
+        <td><span class="pill live">eBay LIVE</span> <span class="pill dark">Amazon/TCG dark</span></td>
+      </tr>
+      <tr>
+        <td><b>Display ads</b><div class="small">EthicalAds on dev content</div></td>
+        <td class="money"><span class="price">RPM skim</span></td>
+        <td class="small">blog corpus</td>
+        <td><span class="pill dark">DARK — needs publisher ID</span></td>
+      </tr>
+      <tr>
+        <td><b>Lead gen</b><div class="small">warm pipeline for the SKUs above</div></td>
+        <td class="money"><span class="price">→ sales</span></td>
+        <td class="small">grade-page capture + <a href="https://wmcp.sh/managed">/managed</a> → <code class="small">/api/v1/leads</code></td>
+        <td><span class="pill live">LIVE</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="note"><b>The honest read:</b> the machine is built and every path takes money — the binding constraint is <b>demand</b>, not plumbing (≈300 visitors, ~0 paid at last count). So the job now is (a) flip the dark switches, and (b) drive qualified traffic into pages that are already monetized.</div>
+
+  <!-- ============ TOP OF FUNNEL ============ -->
+  <h2><span class="n">4</span> Top-of-funnel (how people arrive)</h2>
+  <div class="grid three">
+    <div class="card"><h3>Programmatic SEO</h3><p>12,443 URLs — 6,772 trust-grade pages, drops in 12 languages, vs/alternatives/integration, blog &amp; guides.</p></div>
+    <div class="card"><h3>GEO / AI citation</h3><p>Structured "is X MCP server safe?" answers + FAQ schema + a citable stats feed, so ChatGPT/Claude/Perplexity quote wmcp.</p></div>
+    <div class="card"><h3>The extension + drops</h3><p>QuickCatch installs and drop-wave traffic feed the $12 consumer line and the affiliate buy-buttons.</p></div>
+  </div>
+
+  <!-- ============ SWITCHES ============ -->
+  <h2><span class="n">5</span> Dark switches — ready, waiting on you</h2>
+  <p class="sub">All built and shipped; each is one config away from earning.</p>
+  <div class="card">
+    <div class="knob"><span class="k">affiliate.ts</span><span class="d">Paste your Amazon + TCGplayer tags → affiliate revenue across ~2,700 pages</span><span class="pill dark">needs link</span></div>
+    <div class="knob"><span class="k">ads.ts · EA_PUBLISHER</span><span class="d">EthicalAds publisher id → ad slots light up on the blog corpus</span><span class="pill dark">needs id</span></div>
+    <div class="knob"><span class="k">PROXY_FREE_CALLS_PER_DAY</span><span class="d">Give free users a taste of live execute before the paywall</span><span class="pill dark">set to e.g. 5</span></div>
+    <div class="knob"><span class="k">BEHAVIOR_SEED</span><span class="d">Earn the "✓ verified" tier on flagship servers (the uncopyable signal)</span><span class="pill dark">set to 1 + curate</span></div>
+  </div>
+
+  <!-- ============ LINKS ============ -->
+  <h2><span class="n">6</span> Live pages</h2>
+  <div class="linkgrid">
+    <a href="https://wmcp.sh/">Home <span>/</span></a>
+    <a href="https://wmcp.sh/pricing">Pricing <span>/pricing</span></a>
+    <a href="https://wmcp.sh/managed">Managed <span>/managed</span></a>
+    <a href="https://wmcp.sh/dashboard">Dashboard <span>/dashboard</span></a>
+    <a href="https://wmcp.sh/mcp/leaderboard">Trust leaderboard <span>/mcp/leaderboard</span></a>
+    <a href="https://wmcp.sh/mcp/grade">Grade a server <span>/mcp/grade</span></a>
+    <a href="https://wmcp.sh/directory">Directory <span>/directory</span></a>
+    <a href="https://wmcp.sh/drops">Drops <span>/drops</span></a>
+    <a href="https://wmcp.sh/quickcatch">QuickCatch <span>/quickcatch</span></a>
+    <a href="https://wmcp.sh/connect">Connect <span>/connect</span></a>
+    <a href="https://wmcp.sh/reports/state-of-mcp-security-2026">State of MCP Security <span>/reports</span></a>
+    <a href="https://wmcp.sh/blog">Blog <span>/blog</span></a>
+  </div>
+
+  <footer>
+    wmcp.sh — internal briefing. Prices are the locked ladders (self-serve Free/$39/$99/$299; managed $499/$999/$4,999+). The A–F trust grade is free and identical whether or not the operator pays. Not affiliated with Anthropic, OpenAI, Google, Cloudflare, or any retailer named on the drop pages.
+  </footer>
+
+</div>
+</body>
+</html>
