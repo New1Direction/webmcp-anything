@@ -30,7 +30,7 @@ ENVIRONMENT = "production"
 # "5" to let new users feel vaulted-credential execute (the switching cost) before
 # the paywall — the metering + per-key daily reset are already wired in auth.ts.
 # Cheapest conversion lever for the read→execute funnel. Owner sets the value.
-PROXY_FREE_CALLS_PER_DAY = "0"
+PROXY_FREE_CALLS_PER_DAY = "25"
 # Behavioral seeding: when "1", the 2h cron exercises a small curated set of
 # public, no-auth servers' READ-ONLY tools so the behavioral overlay lights up
 # (the "✓ verified" tier) without waiting for user proxy traffic. "0" = off.
