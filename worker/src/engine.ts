@@ -10,6 +10,7 @@
 import * as shopify from "../../adapters/shopify.js";
 import * as jsonld from "../../adapters/jsonld.js";
 import * as openapi from "../../adapters/openapi.js";
+import * as llmstxt from "../../adapters/llmstxt.js";
 import * as llm from "../../adapters/llm.js";
 import * as coingecko from "../../adapters/coingecko.js";
 import * as defillama from "../../adapters/defillama.js";
@@ -30,8 +31,12 @@ export type EngineEnv = {
 // Minimal shape of what Workers' ExecutionContext gives us (waitUntil only).
 type WaitCtx = { waitUntil(p: Promise<unknown>): void };
 
-// Crypto/data adapters share the same structure: detect → extract → action.
+// Format and crypto/data adapters share the same structure: detect → extract → action.
 // They sit after openapi and before the HTML fetch in the chain.
+export const FORMAT_ADAPTERS = [
+  { name: "llmstxt", mod: llmstxt, ttl: 24 * 3600 },
+];
+
 export const CRYPTO_ADAPTERS = [
   { name: "coingecko", mod: coingecko, ttl: 60 },
   { name: "dexscreener", mod: dexscreener, ttl: 60 },
@@ -106,7 +111,7 @@ export type ResolveResult =
   | { ok: true; payload: ToolsPayload; from: "cache" | "live" | "llm"; cached_at?: number }
   | { ok: false; status: number; body: any };
 
-// The 5-tier cascade (cache → shopify → openapi → crypto → jsonld → llm).
+// The cascade: cache → shopify → openapi → format → crypto → jsonld → llm.
 // Mirrors what /api/v1/tools used to do inline; callers decide how to gate +
 // serialize. `authUserId` lets the LLM fallback use the caller's connected
 // Anthropic/Claude-Max OAuth token (shifts inference cost to their account).
@@ -146,6 +151,24 @@ export async function resolveTools(
       const data = await openapi.extract(openapiCtx);
       const payload: ToolsPayload = { adapter: "openapi", tools: data.tools, product: data.product };
       ctx.waitUntil(writeCache(env, url, payload, 24 * 3600));
+      return { ok: true, payload, from: "live" };
+    } catch {
+      // fall through to crypto/jsonld
+    }
+  }
+
+  for (const { name, mod, ttl } of FORMAT_ADAPTERS) {
+    const fctx = (mod as any).detect({ url });
+    if (!fctx) continue;
+    try {
+      const data = await (mod as any).extract(fctx);
+      const payload: ToolsPayload = {
+        adapter: name,
+        tools: data.tools,
+        product: data.product,
+        variants: data.variants,
+      };
+      ctx.waitUntil(writeCache(env, url, payload, ttl));
       return { ok: true, payload, from: "live" };
     } catch {
       // fall through to crypto/jsonld
@@ -302,25 +325,6 @@ export async function executeTool(
     }
   }
 
-  for (const { name, mod } of CRYPTO_ADAPTERS) {
-    const cctx = (mod as any).detect({ url });
-    if (!cctx) continue;
-    try {
-      const data = await (mod as any).extract(cctx);
-      const tool = data.tools.find((t: any) => t.name === toolName);
-      if (!tool) return { ok: false, status: 404, body: { error: `tool ${toolName} not found` } };
-      if (tool.result !== undefined) return { ok: true, value: tool.result };
-      const kind = tool.action?.kind;
-      if (!kind) return { ok: false, status: 400, body: { error: "static result tool — no action to execute" } };
-      const handler = (mod as any).actions?.[kind];
-      if (!handler) return { ok: false, status: 500, body: { error: `no action handler for ${kind}` } };
-      const value = await handler({ ...tool.action, args: args || {} });
-      return { ok: true, value };
-    } catch (err: any) {
-      return { ok: false, status: 500, body: { ok: false, error: String(err?.message || err), adapter: name } };
-    }
-  }
-
   const oaCtx = openapi.detect({ url });
   if (oaCtx) {
     try {
@@ -339,6 +343,44 @@ export async function executeTool(
       return { ok: true, value };
     } catch (err: any) {
       return { ok: false, status: 500, body: { ok: false, error: String(err?.message || err) } };
+    }
+  }
+
+  for (const { name, mod } of FORMAT_ADAPTERS) {
+    const fctx = (mod as any).detect({ url });
+    if (!fctx) continue;
+    try {
+      const data = await (mod as any).extract(fctx);
+      const tool = data.tools.find((t: any) => t.name === toolName);
+      if (!tool) return { ok: false, status: 404, body: { error: `tool ${toolName} not found` } };
+      if (tool.result !== undefined) return { ok: true, value: tool.result };
+      const kind = tool.action?.kind;
+      if (!kind) return { ok: false, status: 400, body: { error: "static result tool — no action to execute" } };
+      const handler = (mod as any).actions?.[kind];
+      if (!handler) return { ok: false, status: 500, body: { error: `no action handler for ${kind}` } };
+      const value = await handler({ ...tool.action, args: args || {} });
+      return { ok: true, value };
+    } catch (err: any) {
+      return { ok: false, status: 500, body: { ok: false, error: String(err?.message || err), adapter: name } };
+    }
+  }
+
+  for (const { name, mod } of CRYPTO_ADAPTERS) {
+    const cctx = (mod as any).detect({ url });
+    if (!cctx) continue;
+    try {
+      const data = await (mod as any).extract(cctx);
+      const tool = data.tools.find((t: any) => t.name === toolName);
+      if (!tool) return { ok: false, status: 404, body: { error: `tool ${toolName} not found` } };
+      if (tool.result !== undefined) return { ok: true, value: tool.result };
+      const kind = tool.action?.kind;
+      if (!kind) return { ok: false, status: 400, body: { error: "static result tool — no action to execute" } };
+      const handler = (mod as any).actions?.[kind];
+      if (!handler) return { ok: false, status: 500, body: { error: `no action handler for ${kind}` } };
+      const value = await handler({ ...tool.action, args: args || {} });
+      return { ok: true, value };
+    } catch (err: any) {
+      return { ok: false, status: 500, body: { ok: false, error: String(err?.message || err), adapter: name } };
     }
   }
 

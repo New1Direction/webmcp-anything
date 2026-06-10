@@ -1,0 +1,18 @@
+# Example Agent Surface
+
+> A compact map of agent-readable documentation and APIs.
+
+Use the stable docs before the API reference when bootstrapping an integration.
+
+## Docs
+
+- [Quickstart](./docs/quickstart.md): Start here for setup.
+- [API Reference](https://example.com/api): Endpoint documentation.
+
+## Support
+
+- [Status Page](https://status.example.com): Current service status.
+
+## Optional
+
+- [Release Notes](/releases): Lower-priority product updates.
