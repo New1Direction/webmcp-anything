@@ -35,9 +35,12 @@ type Env = {
   // plan for collectors — auto-cart + anti-bot hard sites + unlimited watches in
   // the browser extension. A license key (not an API key) gates the extension.
   STRIPE_PRICE_QUICKCATCH?: string;
+  // One-time, no-install impulse products sold on the consumer SEO pages
+  // (mobile-first, instant on-page unlock). 503 until the price id is set.
+  STRIPE_PRICE_GUIDE?: string;
 };
 
-const STRIPE_API = "https://api.stripe.com/v1";
+export const STRIPE_API = "https://api.stripe.com/v1";
 
 // =================== Checkout Session creator ===================
 
@@ -882,7 +885,7 @@ export async function quickCatchActivate(c: Context<{ Bindings: Env }>) {
   <p style="color:#9a9aae;font-size:.9rem">Don't have the extension yet? <a style="color:#ff9e2c" href="/">Install QuickCatch</a>, then open its Options and paste the key. Keep this key — you can re-open this page from your receipt anytime.</p>`);
 }
 
-async function createSessionResponse(
+export async function createSessionResponse(
   c: Context<{ Bindings: Env }>,
   form: URLSearchParams
 ) {
