@@ -38,7 +38,7 @@ import {
   quickCatchPage,
 } from "./stripe";
 import { listManagedConnections } from "./connections";
-import { track } from "./metrics";
+import { track, trackView } from "./metrics";
 import { resolveTools, executeTool, cacheKey, normalizeUrl, writeCache, executeCapturedTool, listCapturedTools } from "./engine";
 
 type Bindings = {
@@ -68,6 +68,29 @@ app.use("*", cors({
   exposeHeaders: ["Mcp-Session-Id", "MCP-Protocol-Version"],
   maxAge: 86400,
 }));
+
+// Page-view instrumentation: record arrival page + traffic source for every GET
+// (no-ops on assets/API inside trackView). Turns the blind "25k visitors with 0
+// signups" number into top-landing-pages + top-referrers, read from the land:/
+// ref: KV counters or GET /api/v1/admin/metrics. Fire-and-forget, never blocks.
+app.use("*", async (c, next) => {
+  if (c.req.method === "GET") {
+    try {
+      const u = new URL(c.req.url);
+      trackView(
+        c.env,
+        c.executionCtx,
+        u.pathname,
+        c.req.header("referer") || c.req.header("Referer"),
+        u,
+        c.req.header("user-agent") || ""
+      );
+    } catch {
+      /* never break a request */
+    }
+  }
+  await next();
+});
 
 // --------------------- helpers ---------------------
 // cacheKey / normalizeUrl / writeCache (and the extraction/execution cascade
