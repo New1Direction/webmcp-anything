@@ -198,6 +198,26 @@ app.get("/tools/:lang", async (c) => {
   return c.html(toolsIndexHtml(new URL(c.req.url).origin, lang as any));
 });
 
+// ---- Impulse digital products: one-time, no-install, instant on-page unlock.
+// Mobile-first $2.99 buy for the consumer SEO traffic that can't install an
+// extension or commit to a subscription. Engine in ./digital.
+app.get("/guide", async (c) => {
+  const { digitalSalesHtml } = await import("./digital");
+  return c.html(digitalSalesHtml(new URL(c.req.url).origin, "guide", c.req.query("canceled") === "1"));
+});
+app.post("/api/v1/guide/checkout", async (c) => {
+  const { createDigitalCheckout } = await import("./digital");
+  return createDigitalCheckout(c as any, "guide");
+});
+app.get("/guide/unlock", async (c) => {
+  const { digitalUnlock } = await import("./digital");
+  return digitalUnlock(c as any, "guide");
+});
+app.get("/guide/read", async (c) => {
+  const { digitalRead } = await import("./digital");
+  return digitalRead(c as any, "guide");
+});
+
 app.get("/api/v1/health", (c) =>
   c.json({ ok: true, version: "0.1.0", env: c.env.ENVIRONMENT })
 );
