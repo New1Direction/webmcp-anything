@@ -3754,6 +3754,8 @@ ${uiNav(origin)}
 
   ${relatedHtml(a)}
 
+  <p style="text-align:center;margin:18px 0"><a href="/guide" style="display:inline-block;background:#ff9e2c;color:#1a1206;font-weight:700;padding:13px 20px;border-radius:11px;text-decoration:none">📘 The Drop-Day Playbook — the restock-day checklist ($2.99)</a></p>
+
   <footer>
     <a href="/guides">All guides</a> · <a href="/drops">Restock guides</a> · <a href="/tools">Free tools</a> · <a href="/">wmcp.sh</a>
   </footer>
