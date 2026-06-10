@@ -26,6 +26,7 @@ type ProductId = "guide" | "calcpro";
 interface ProductDef {
   priceEnv: keyof Env;
   price: string; // display only
+  mode?: "payment" | "subscription"; // default one-time; calcpro is recurring
   title: string;
   tagline: string; // sales-page sub-headline
   bullets: string[]; // "what's inside"
@@ -49,7 +50,8 @@ const PRODUCTS: Record<ProductId, ProductDef> = {
   },
   calcpro: {
     priceEnv: "STRIPE_PRICE_CALCPRO",
-    price: "$4.99",
+    price: "$4.99/mo",
+    mode: "subscription",
     title: "Pro Portfolio Calculator",
     tagline: "The free calculator does one item. This does your whole collection — track every sealed box and card, see your total savings and resale profit at a glance. Saves on your device, no account.",
     bullets: [
@@ -246,14 +248,21 @@ export async function createDigitalCheckout(c: Context<{ Bindings: Env }>, produ
   const origin = new URL(c.req.url).origin;
   const source = String(c.req.query("source") || c.req.query("utm_source") || "")
     .slice(0, 40).replace(/[^a-z0-9_.:-]/gi, "") || "direct";
+  const mode = def.mode || "payment";
   const form = new URLSearchParams();
-  form.set("mode", "payment");
+  form.set("mode", mode);
   form.set("line_items[0][price]", price);
   form.set("line_items[0][quantity]", "1");
   form.set("allow_promotion_codes", "true");
   form.set("client_reference_id", source);
   form.set("metadata[kind]", `digital:${product}`);
   form.set("metadata[source]", source);
+  if (mode === "subscription") {
+    // Carry the same metadata onto the subscription so a future cancel webhook
+    // can find + revoke the access token for this product.
+    form.set("subscription_data[metadata][kind]", `digital:${product}`);
+    form.set("subscription_data[metadata][source]", source);
+  }
   form.set("success_url", `${origin}/${product}/unlock?session_id={CHECKOUT_SESSION_ID}`);
   form.set("cancel_url", `${origin}/${product}?canceled=1`);
   return await createSessionResponse(c as any, form);
@@ -319,7 +328,7 @@ ${def.bullets.map((b) => `<li>${esc(b)}</li>`).join("\n")}
 </div>
 <div class="card" style="text-align:center">
 <div class="price">${esc(def.price)}</div>
-<p class="mut" style="margin:.2em 0 16px">one-time · instant access · no signup · no app</p>
+<p class="mut" style="margin:.2em 0 16px">${def.mode === "subscription" ? "cancel anytime" : "one-time"} · instant access · no signup · no app</p>
 <button class="buy" id="buy" data-product="${esc(product)}">Get instant access — ${esc(def.price)}</button>
 <p class="mut" style="font-size:.85rem;margin:14px 0 0">Secure checkout by Stripe. Works on mobile. Reopen anytime from your access link.</p>
 </div>

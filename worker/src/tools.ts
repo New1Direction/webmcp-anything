@@ -459,9 +459,9 @@ ${alternates(origin, "calc")}
 
   <section class="cta" style="margin-top:18px">
     <h2>Do your whole collection — Pro Portfolio Calculator</h2>
-    <p>The free tool above does one item. Pro tallies every sealed box and card you own — total spend, savings, and resale profit at a glance, saved on your device. One-time, no app.</p>
+    <p>The free tool above does one item. Pro tallies every sealed box and card you own — total spend, savings, and resale profit at a glance, saved on your device. Cancel anytime.</p>
     <div class="row">
-      <a class="btn btn-primary" href="${origin}/calcpro">⚡ Unlock Pro — $4.99</a>
+      <a class="btn btn-primary" href="${origin}/calcpro">⚡ Unlock Pro — $4.99/mo</a>
       <a class="btn btn-ghost" href="${origin}/guide">📘 Drop-Day Playbook — $2.99</a>
     </div>
   </section>
