@@ -1447,6 +1447,10 @@ ${localizable ? hreflangTags(origin, p.slug) + "\n" : ""}<meta property="og:titl
 
   ${conversionBlock(f.topic, ui)}
 
+  <section style="text-align:center;margin:10px 0 4px">
+    <a href="${origin}/guide" style="display:inline-block;background:var(--accent2,#ff9e2c);color:#1a1206;font-weight:700;padding:13px 20px;border-radius:11px;text-decoration:none">📘 The Drop-Day Playbook — land restocks at retail ($2.99)</a>
+  </section>
+
   <footer>
     <p class="related">${esc(ui.more)} ${relatedFor(p, origin, useLang)}</p>
     ${localizable ? langSwitcher(origin, p.slug, useLang) : ""}

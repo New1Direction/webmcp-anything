@@ -52,4 +52,33 @@ describe("digital impulse products", () => {
     expect(html).toContain("Get instant access");
     expect(html).toContain("no signup");
   });
+
+  it("calcpro checkout is fail-closed without its price (503)", async () => {
+    const c = makeCtx({ env: envMock({ STRIPE_SECRET_KEY: "sk_test" }), method: "POST", body: {}, url: "https://wmcp.sh/api/v1/calcpro/checkout" });
+    const r: any = await createDigitalCheckout(c, "calcpro");
+    expect(r.status).toBe(503);
+    expect(r.body.error).toBe("calcpro_not_configured");
+  });
+
+  it("calcpro sales page renders at \$4.99 with its own copy", () => {
+    const html = digitalSalesHtml("https://wmcp.sh", "calcpro", false);
+    expect(html).toContain("$4.99");
+    expect(html).toContain('data-product="calcpro"');
+    expect(html).toContain("Portfolio");
+  });
+
+  it("calcpro unlock content serves the portfolio tool for a valid token", async () => {
+    const env = envMock();
+    await env.KEYS.put("dlg:cptoken", JSON.stringify({ product: "calcpro", ts: 1 }));
+    const c = makeCtx({ env, method: "GET", query: { t: "cptoken" }, url: "https://wmcp.sh/calcpro/read?t=cptoken" });
+    const r: any = await digitalRead(c, "calcpro");
+    expect(r.status).toBe(200);
+    expect(String(r.body)).toContain("Pro Portfolio Calculator");
+    // a guide token must not open calcpro
+    const env2 = envMock();
+    await env2.KEYS.put("dlg:gtok", JSON.stringify({ product: "guide", ts: 1 }));
+    const c2 = makeCtx({ env: env2, method: "GET", query: { t: "gtok" }, url: "https://wmcp.sh/calcpro/read?t=gtok" });
+    const r2: any = await digitalRead(c2, "calcpro");
+    expect(r2.status).toBe(403);
+  });
 });

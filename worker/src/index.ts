@@ -217,6 +217,23 @@ app.get("/guide/read", async (c) => {
   const { digitalRead } = await import("./digital");
   return digitalRead(c as any, "guide");
 });
+// Calculator Pro ($4.99) — second impulse product on the same engine.
+app.get("/calcpro", async (c) => {
+  const { digitalSalesHtml } = await import("./digital");
+  return c.html(digitalSalesHtml(new URL(c.req.url).origin, "calcpro", c.req.query("canceled") === "1"));
+});
+app.post("/api/v1/calcpro/checkout", async (c) => {
+  const { createDigitalCheckout } = await import("./digital");
+  return createDigitalCheckout(c as any, "calcpro");
+});
+app.get("/calcpro/unlock", async (c) => {
+  const { digitalUnlock } = await import("./digital");
+  return digitalUnlock(c as any, "calcpro");
+});
+app.get("/calcpro/read", async (c) => {
+  const { digitalRead } = await import("./digital");
+  return digitalRead(c as any, "calcpro");
+});
 
 app.get("/api/v1/health", (c) =>
   c.json({ ok: true, version: "0.1.0", env: c.env.ENVIRONMENT })
