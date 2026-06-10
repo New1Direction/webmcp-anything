@@ -49,6 +49,7 @@ export interface GradeResult {
   last_drift?: { ts: number; added: string[]; removed: string[]; changed: string[] };
   // ---- behavioral trust v2: observed from REAL proxied calls (the uncopyable half) ----
   behavioral?: BehaviorSummary;        // present once we've seen ≥5 real tool calls for this host
+  verified_behavioral?: boolean;       // true once the grade reflects observed behavior — the "behaviorally verified" tier
 }
 
 export interface DriftOutcome {
@@ -504,7 +505,7 @@ export async function seedRegistryGrades(
 // Lightweight metadata on the grade key so the leaderboard reads the whole set
 // in one KV.list call (no per-host get). Kept well under the 1KB metadata cap.
 export function gradeMeta(r: GradeResult) {
-  return { grade: r.grade, score: r.score, checked_at: r.checked_at, tools_count: r.tools_count, url: r.url, category: r.category };
+  return { grade: r.grade, score: r.score, checked_at: r.checked_at, tools_count: r.tools_count, url: r.url, category: r.category, verified: r.verified_behavioral || undefined };
 }
 export async function persistGrade(env: Env, r: GradeResult): Promise<void> {
   await env.CACHE.put(`grade:${r.host}`, JSON.stringify(r), { expirationTtl: 30 * 86400, metadata: gradeMeta(r) });
@@ -534,7 +535,48 @@ export function diffTools(prev: Record<string, string>, next: Record<string, str
  * fire an alert. THIS is the wedge: a continuously re-verified attestation that
  * a one-shot static scanner structurally cannot produce.
  */
+// Reject non-public / placeholder / private hosts so we never mint a "Trust
+// grade F" page (and sitemap + leaderboard row) for localhost, RFC1918 IPs,
+// example.com, or unresolved template vars like {host}/{region}. Package grade
+// subjects (npm:/pypi:/gh:) are always valid. Used at the mint sites (recordGrade
+// below + the route handlers) AND the sitemap emitter so already-persisted junk
+// is excluded even before a KV purge.
+export function isPublicGradableHost(host: string): boolean {
+  if (!host) return false;
+  if (host.startsWith("npm:") || host.startsWith("pypi:") || host.startsWith("gh:")) return true;
+  const h = host.toLowerCase().trim();
+  // Illegal/placeholder chars: braces, brackets, percent-encoding, angle, whitespace.
+  if (/[{}\[\]<>%\s]/.test(h)) return false;
+  if (!h.includes(".")) return false; // single-label (localhost, etc.) — not a registrable domain
+  if (/(^|\.)(localhost|local|internal|test|example|invalid|lan|home|corp)$/.test(h)) return false;
+  if (/(^|\.)example\.(com|org|net)$/.test(h) || h.includes("example.com")) return false;
+  const hostNoPort = h.replace(/:\d+$/, "");
+  const m = hostNoPort.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
+  if (m) {
+    const a = parseInt(m[1], 10), b = parseInt(m[2], 10);
+    if (a === 0 || a === 10 || a === 127) return false;        // unspecified / private / loopback
+    if (a === 192 && b === 168) return false;                  // private
+    if (a === 172 && b >= 16 && b <= 31) return false;         // private
+    if (a === 169 && b === 254) return false;                  // link-local (incl. cloud metadata)
+    if (a >= 224) return false;                                // multicast / reserved
+    return true;                                               // a public IPv4 literal is allowed
+  }
+  if (hostNoPort.includes(":")) return false;                  // bare IPv6 host key is malformed
+  return true;
+}
+
+// Light commercial heuristic (mirrors outreach.ts) — used to sharpen the
+// conversion pitch on low-graded *business* servers without nagging hobby/throwaway hosts.
+const GRADE_THROWAWAY = /(trycloudflare|vercel\.app|onrender|ngrok|railway\.app|herokuapp|glitch\.me|repl\.co|fly\.dev|run\.app|workers\.dev|supabase\.co|koyeb|googleapis\.com|^npm:|^pypi:|^gh:|localhost)/;
+export function isCommercialHost(host: string): boolean {
+  const parts = host.split(".");
+  return !GRADE_THROWAWAY.test(host) && host.includes(".") && parts.length >= 2 && parts.length <= 4;
+}
+
 export async function recordGrade(env: Env, r: GradeResult): Promise<DriftOutcome> {
+  // Never persist a grade for a non-public/placeholder host (keeps junk out of
+  // the leaderboard + sitemap regardless of which route triggered the score).
+  if (!isPublicGradableHost(r.host)) return { drifted: false, gradeDropped: false };
   const prev = await readGrade(env, r.host);
   const now = r.checked_at;
   const out: DriftOutcome = { drifted: false, gradeDropped: false, prevGrade: prev?.grade };
@@ -566,6 +608,7 @@ export async function recordGrade(env: Env, r: GradeResult): Promise<DriftOutcom
     const beh = summarizeBehavior(await readBehavior(env, r.host));
     if (beh) {
       r.behavioral = beh;
+      r.verified_behavioral = true;
       r.sub.reliability = {
         score: beh.reliability_score,
         weight: 20,
@@ -608,6 +651,142 @@ export async function recordGrade(env: Env, r: GradeResult): Promise<DriftOutcom
   await env.CACHE.put(`gradehist:${r.host}`, JSON.stringify(hist), { expirationTtl: 120 * 86400 });
 
   return out;
+}
+
+// ============================================================================
+// Behavioral seeding — exercise a host's READ-ONLY tools ourselves so the
+// behavioral overlay (behavior.ts) lights up WITHOUT waiting for user proxy
+// traffic. This converts the uncopyable moat (observed p50/p95/error from real
+// calls) from a thesis into a live, visible signal: a seeded host accrues real
+// observations → the next recordGrade folds in a MEASURED reliability score and
+// marks it `verified_behavioral` → it out-ranks label-only servers on the board.
+//
+// SAFE BY CONSTRUCTION:
+//  - only tools that are explicitly readOnlyHint===true (or safe-by-name AND not
+//    destructive) AND require ZERO arguments are ever invoked (called with {});
+//  - mutating/destructive tools are never called;
+//  - auth-required, package, non-public, and non-streamable hosts are skipped;
+//  - bounded fan-out + short timeouts; runs cron-only behind the BEHAVIOR_SEED
+//    flag (default off) over a curated, admin-controlled host list — never a
+//    blanket sweep of the whole corpus (that would be impolite and too sparse
+//    to stay inside behavior.ts's 30-day window anyway).
+// ============================================================================
+const SEED_DESTRUCT = /(delete|drop|remove|destroy|send|transfer|payment|charge|buy|checkout|cart|order|exec|shell|run_|spawn|write|create|update|patch|put|post|set_|edit|cancel|approve|deploy|publish|merge|push|revoke|reset|email|sms|message|invite|upload)/i;
+const SEED_SAFE_NAME = /(^|[_\-.])(list|get|search|find|read|fetch|describe|show|status|health|ping|info|lookup|query|view|count|stat|stats|version|whoami|ls|cat|summary|resolve|browse|inspect)([_\-.]|$)/i;
+
+/** Is this tool safe for us to invoke unprompted, with no arguments? */
+export function isReadOnlyCallable(t: any): boolean {
+  if (!t || typeof t.name !== "string" || !t.name) return false;
+  const ann = t.annotations || {};
+  if (ann.destructiveHint === true || ann.readOnlyHint === false) return false;
+  if (SEED_DESTRUCT.test(t.name)) return false;
+  const req = t.inputSchema && Array.isArray(t.inputSchema.required) ? t.inputSchema.required : [];
+  if (req.length > 0) return false;                 // never fabricate required args
+  if (ann.readOnlyHint === true) return true;       // explicit read-only wins
+  return SEED_SAFE_NAME.test(t.name);               // else conservative name allowlist
+}
+
+/** Exercise up to `maxTools` read-only, no-arg tools on one host; record observations. */
+export async function seedBehaviorForHost(env: Env, host: string, maxTools = 2): Promise<{ host: string; calls: number; tools: number }> {
+  const out = { host, calls: 0, tools: 0 };
+  if (!isPublicGradableHost(host)) return out;
+  const g = await readGrade(env, host);
+  if (!g || g.auth_required || g.kind === "package") return out; // can't (or shouldn't) call these
+  const probe = await probeMcp(g.url || `https://${host}/mcp`, host, true);
+  if (!probe.reachable || probe.transport !== "streamable-http") return out; // one-shot tools/call needs streamable HTTP
+  const ep = probe.resolvedUrl;
+  let tools: any[] = [];
+  try {
+    const tl = await callMcp(ep, { jsonrpc: "2.0", id: 2, method: "tools/list", params: {} }, 8000);
+    tools = Array.isArray(tl.json?.result?.tools) ? tl.json.result.tools : [];
+  } catch { return out; }
+  const callable = tools.filter(isReadOnlyCallable).slice(0, maxTools);
+  out.tools = callable.length;
+  const { recordToolCall } = await import("./behavior");
+  for (const t of callable) {
+    const t0 = Date.now();
+    let r: { status: number; json: any } | null = null;
+    try { r = await callMcp(ep, { jsonrpc: "2.0", id: 7, method: "tools/call", params: { name: String(t.name), arguments: {} } }, 8000); }
+    catch { continue; } // transient/our-side failure (timeout/abort) → don't penalize the server
+    // Only record when we got a real JSON-RPC response. ok = transport-level
+    // success, matching the proxy's recordToolCall semantics exactly.
+    if (!r || !r.json || (r.json.result === undefined && r.json.error === undefined)) continue;
+    const ok = r.status >= 200 && r.status < 400;
+    try { await recordToolCall(env as any, host, { tool: String(t.name), ok, latency_ms: Date.now() - t0 }); out.calls++; } catch {}
+  }
+  return out;
+}
+
+const BEHAVIOR_SEED_LIST = "behaviorseed:list";   // admin-curated flagship hosts
+const BEHAVIOR_SEED_CURSOR = "behaviorseed:cursor";
+const BEHAVIOR_SEED_ROT = "behaviorseed:rot";     // rotation offset over the flagship list
+
+// Default flagship set, used until the operator curates their own list via
+// POST /api/v1/admin/seed-behavior. Every host here was verified live on
+// 2026-06-09: public, graded A/A+, streamable-HTTP, answers tools/list without
+// auth, and exposes ≥2 zero-arg tools that pass isReadOnlyCallable. Deliberately
+// diverse operators — the "✓ verified" tier must not look like one vendor's farm.
+export const DEFAULT_BEHAVIOR_SEED_HOSTS = [
+  "gbif-biodiversity.caseyjhand.com",
+  "usaspending.caseyjhand.com",
+  "www.cannonstudio.app",
+  "mcp.influship.com",
+  "api.humantaste.app",
+  "toofi.app",
+  "www.cyclesite.co.uk",
+  "mcp.nausika.app",
+  "vastlint.org",
+  "hemmabo-mcp-server.vercel.app",
+];
+
+/** Read the admin-curated seed host list. */
+export async function readBehaviorSeedList(env: Env): Promise<string[]> {
+  try { const raw = await env.CACHE.get(BEHAVIOR_SEED_LIST); const a = raw ? JSON.parse(raw) : []; return Array.isArray(a) ? a : []; } catch { return []; }
+}
+
+/** Add hosts to the curated seed list (dedup, public-only, capped). Returns the new list. */
+export async function addBehaviorSeedHosts(env: Env, hosts: string[], cap = 80): Promise<string[]> {
+  const cur = await readBehaviorSeedList(env);
+  const set = new Set(cur);
+  for (const h of hosts) { const hh = String(h || "").toLowerCase().trim().replace(/^https?:\/\//, "").replace(/\/.*$/, ""); if (hh && isPublicGradableHost(hh)) set.add(hh); }
+  const next = [...set].slice(0, cap);
+  await env.CACHE.put(BEHAVIOR_SEED_LIST, JSON.stringify(next));
+  return next;
+}
+
+/**
+ * One cron batch: exercise the curated flagship list (every run, so they stay
+ * inside the 30-day window and quickly cross ≥5 calls), plus — if there's spare
+ * budget — a rotating slice of the watch set to discover/sample more broadly.
+ * Bounded fan-out; safe per seedBehaviorForHost. Returns counts.
+ */
+export async function seedBehaviorBatch(env: Env, opts: { max?: number; maxToolsPerHost?: number } = {}): Promise<{ hosts: number; calls: number; targets: number }> {
+  const max = opts.max ?? 6;
+  const maxTools = opts.maxToolsPerHost ?? 2;
+  const targets: string[] = [];
+  const seen = new Set<string>();
+  const push = (h: string) => { const hh = h.toLowerCase(); if (hh && !seen.has(hh) && isPublicGradableHost(hh)) { seen.add(hh); targets.push(hh); } };
+
+  // Flagships: the curated KV list when the operator has set one, else the
+  // checked-in defaults. Rotate the starting offset each run so a list longer
+  // than `max` still cycles every flagship across consecutive cron runs
+  // (without this, hosts past the first `max` would never be exercised).
+  const curated = await readBehaviorSeedList(env);
+  const flagships = curated.length ? curated : DEFAULT_BEHAVIOR_SEED_HOSTS;
+  let rot = 0;
+  try { rot = parseInt((await env.CACHE.get(BEHAVIOR_SEED_ROT)) || "0", 10) || 0; } catch {}
+  for (let j = 0; j < flagships.length && targets.length < max; j++) push(flagships[(rot + j) % flagships.length]);
+  await env.CACHE.put(BEHAVIOR_SEED_ROT, String(flagships.length ? (rot + targets.length) % flagships.length : 0), { expirationTtl: 30 * 86400 });
+  // Fill remaining budget with a rotating slice of the watch set.
+  if (targets.length < max) {
+    const cursor = (await env.CACHE.get(BEHAVIOR_SEED_CURSOR)) || undefined;
+    const list: any = await env.CACHE.list({ prefix: "gradewatch:", limit: 60, cursor });
+    for (const k of list.keys) { if (targets.length >= max) break; push(k.name.slice("gradewatch:".length)); }
+    await env.CACHE.put(BEHAVIOR_SEED_CURSOR, list.list_complete ? "" : (list.cursor || ""), { expirationTtl: 30 * 86400 });
+  }
+
+  const results = await Promise.all(targets.map((h) => seedBehaviorForHost(env, h, maxTools).catch(() => ({ host: h, calls: 0, tools: 0 }))));
+  return { hosts: results.filter((r) => r.calls > 0).length, calls: results.reduce((s, r) => s + r.calls, 0), targets: targets.length };
 }
 
 /**
@@ -816,6 +995,46 @@ export function gradePageHtml(r: GradeResult, origin: string): string {
     reviewRating: { "@type": "Rating", ratingValue: r.score, bestRating: 100, alternateName: r.grade },
     author: { "@type": "Organization", name: "wmcp.sh" }, datePublished: new Date(r.checked_at).toISOString(),
   }).replace(/</g, "\\u003c").replace(/>/g, "\\u003e").replace(/&/g, "\\u0026"); // <script> breakout guard (host is attacker-influenceable)
+
+  // ---- GEO: a visible, extractable "is X safe?" answer + FAQPage schema so AI
+  // answer engines (ChatGPT/Claude/Perplexity) can quote wmcp.sh as the source. ----
+  const fs2 = Array.isArray(r.findings) ? r.findings : [];
+  const topF = fs2.find((f) => f.severity === "fail") || fs2.find((f) => f.severity === "warn") || fs2[0];
+  const gradeTop = topF ? String(topF.detail || "").replace(/\s+/g, " ").trim() : "";
+  const notGraded = r.grade === "?";
+  const answerText = notGraded
+    ? `We couldn't gather enough data to grade ${r.host} yet. wmcp.sh runs an independent A–F MCP trust audit (security/OWASP, spec conformance, reliability, tool hygiene, transparency) and watches each server for drift — the grade is free.`
+    : `Independent trust grade ${r.grade} (${r.score}/100). ${gradeTop || "No blocking issues found in the static + spec checks."} wmcp.sh continuously watches ${r.host} for tool drift and rug-pulls. The grade is free and identical whether or not the operator pays.`;
+  const verifiedPill = r.verified_behavioral
+    ? `<div style="margin:0 0 8px"><span style="display:inline-block;font-size:.7rem;font-weight:800;color:#bdf0cd;background:rgba(74,222,128,.12);border:1px solid rgba(74,222,128,.4);border-radius:999px;padding:2px 9px">✓ Behaviorally verified</span> <span class="muted" style="font-size:.82rem">reliability measured from ${r.behavioral?.observed_calls ?? 0} real observed tool call${r.behavioral?.observed_calls === 1 ? "" : "s"} — not just a static scan</span></div>`
+    : "";
+  const answerBlockHtml = `<div class="answer">${verifiedPill}<h2>Is the ${esc(r.host)} MCP server safe to use?</h2><p>${esc(answerText)}</p></div>`;
+  const faqJsonld = JSON.stringify({
+    "@context": "https://schema.org", "@type": "FAQPage",
+    mainEntity: [
+      { "@type": "Question", name: `Is the ${r.host} MCP server safe to use?`, acceptedAnswer: { "@type": "Answer", text: answerText } },
+      { "@type": "Question", name: `What are the risks of connecting to ${r.host}?`, acceptedAnswer: { "@type": "Answer", text: (gradeTop || "No blocking issues were found in the static + spec checks.") + (notGraded ? "" : ` Overall trust grade ${r.grade} (${r.score}/100).`) } },
+      { "@type": "Question", name: `When was ${r.host} last audited?`, acceptedAnswer: { "@type": "Answer", text: `Last checked ${new Date(r.checked_at).toISOString().slice(0, 10)}; wmcp.sh re-checks it on a schedule for tool drift and rug-pulls.` } },
+    ],
+  }).replace(/</g, "\\u003c").replace(/>/g, "\\u003e").replace(/&/g, "\\u0026");
+
+  // ---- Capture identity AT the grade. Operators of low-graded commercial servers
+  // are the highest-intent Deep-Audit/Monitoring buyers; give them a score-conditioned
+  // capture (records host+grade+finding via /api/v1/leads). Grade itself stays free. ----
+  const lowCommercial = !notGraded && r.score < 60 && r.kind !== "package" && isCommercialHost(r.host);
+  const captureUseCase = `${r.host} · grade ${r.grade} (${r.score}/100)${gradeTop ? ` · top: ${gradeTop.slice(0, 180)}` : ""}`;
+  const operatorCaptureHtml = lowCommercial ? `<div class="opcap">
+    <div class="opcap-h">Developers see this <b>${r.grade}</b> before they connect to ${esc(r.host)}.</div>
+    <div class="opcap-s">Clear it: a <b>Deep Audit</b> shows exactly what to fix, and <b>Monitoring</b> proves the fix to everyone who checks your grade. Drop your email and we'll send this server's full findings + the fix path. The grade itself stays free.</div>
+    <div class="opcap-row">
+      <input type="email" class="op-e" placeholder="you@company.com" />
+      <button class="btn btn-p op-b" type="button">Send my findings →</button>
+    </div>
+    <div class="op-m"></div>
+    <script>(function(){var s=document.currentScript,w=s.parentElement;var e=w.querySelector('.op-e'),b=w.querySelector('.op-b'),m=w.querySelector('.op-m');var meta=${JSON.stringify(captureUseCase)},surl=${JSON.stringify(r.url)};function go(){var v=(e.value||'').trim();if(v.indexOf('@')<1){m.style.color='#f87171';m.textContent='Enter a valid email.';return;}b.disabled=true;b.textContent='…';fetch('/api/v1/leads',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email:v,package:'grade-audit',site_url:surl,use_case:meta})}).then(function(){m.style.color='#4ade80';m.textContent='Got it — findings are on the way.';e.value='';b.textContent='Sent';}).catch(function(){m.style.color='#f87171';m.textContent='Try again.';b.disabled=false;b.textContent='Send my findings →';});}b.addEventListener('click',go);e.addEventListener('keydown',function(ev){if(ev.key==='Enter')go();});})();</script>
+  </div>` : "";
+  const claimHtml = r.kind === "package" ? "" : `<p class="muted" style="font-size:.85rem;margin-top:10px">Run <b>${esc(r.host)}</b>? <a href="/directory/submit">Claim it (free)</a> to get drift alerts and show an independently-verified trust badge. The grade stays free — claiming just ties it to you.</p>`;
+
   return `<!doctype html><html lang="en"><head>
 <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>${esc(r.host)} MCP server — safe to use? Trust grade ${r.grade} | wmcp.sh</title>
@@ -828,6 +1047,7 @@ export function gradePageHtml(r: GradeResult, origin: string): string {
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="${origin}/mcp/grade/${eh}/card.svg"/>
 <script type="application/ld+json">${jsonld}</script>
+<script type="application/ld+json">${faqJsonld}</script>
 <style>
   :root{--bg:#07070d;--card:#16161f;--bg2:#11111c;--border:#26263a;--text:#ececf5;--muted:#8a8aa8;--dim:#6a6a88;--accent:#ff9e2c;--accent2:#ffcf7a;--green:#4ade80;--red:#f87171}
   *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif;line-height:1.6;background-image:radial-gradient(ellipse 900px 600px at 12% -8%,rgba(255,158,44,.10),transparent 62%)}
@@ -874,6 +1094,13 @@ export function gradePageHtml(r: GradeResult, origin: string): string {
   button.btn{border:none;cursor:pointer;font-family:inherit;font-size:.92rem}
   .embed,.oracle{margin-top:26px;border-top:1px solid var(--border);padding-top:16px}
   .embed h3,.oracle h3{margin:0 0 6px;font-size:1rem}
+  .answer{margin:16px 0 0;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+  .answer h2{margin:0 0 6px;font-size:1.05rem}.answer p{margin:0;color:var(--muted);font-size:.94rem}
+  .opcap{background:rgba(248,113,113,.06);border:1px solid rgba(248,113,113,.4);border-radius:14px;padding:18px 20px;margin:24px 0}
+  .opcap-h{font-weight:800;font-size:1.06rem}.opcap-s{color:var(--muted);font-size:.9rem;margin:5px 0 12px;max-width:640px}
+  .opcap-row{display:flex;gap:8px;flex-wrap:wrap;max-width:520px}
+  .opcap-row input{flex:1;min-width:220px;background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:11px 14px;font-size:.92rem}
+  .op-m{font-size:.85rem;margin-top:8px;min-height:1em}
   label{display:block;font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);margin:10px 0 4px}
   .snip{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-family:"SF Mono",Menlo,monospace;font-size:.78rem;overflow-x:auto;white-space:pre-wrap;word-break:break-all;margin:0;color:var(--text)}
 </style></head><body>
@@ -886,6 +1113,7 @@ export function gradePageHtml(r: GradeResult, origin: string): string {
       <div class="score">${r.grade === "?" ? `<b style="color:${c}">Not graded</b> · insufficient data` : `<b style="color:${c}">${r.score}/100</b> · MCP Trust Grade`} · <span class="dim">checked ${relTime(r.checked_at)}${r.protocol_version ? " · MCP " + r.protocol_version : ""}${r.auth_required ? " · OAuth-protected" : ""}</span></div>
     </div>
   </div>
+  ${answerBlockHtml}
   ${attest}
   ${toolsHtml}
   ${subRow("spec", r.kind === "package" ? "Spec / packaging" : "Spec conformance")}
@@ -896,12 +1124,14 @@ export function gradePageHtml(r: GradeResult, origin: string): string {
   ${subRow("transparency", "Transparency / provenance")}
   ${r.kind === "package" ? "" : behavioralHtml}
   ${findingsHtml}
+  ${operatorCaptureHtml}
   <div class="cta">
     <button class="btn btn-p" id="monitor">Watch this server — drift &amp; rug-pull alerts →</button>
     <button class="btn btn-s" id="deepAudit">Get the full audit report →</button>
     <a class="btn btn-s" href="/mcp/grade">Grade another server</a>
   </div>
   <p class="muted" style="font-size:.85rem;margin-top:10px">We re-grade <b>${esc(r.host)}</b> on a schedule and alert your Slack/webhook the moment its tools change or its grade drops — rug-pull insurance for the connection.</p>
+  ${claimHtml}
 
   <div class="embed">
     <h3>Share this report card</h3>
@@ -1027,21 +1257,24 @@ async function run(){
 export async function mcpLeaderboardHtml(env: Env, origin: string, category?: string): Promise<string> {
   // Paginate the full grade set (KV.list caps at 1000/call) so the ranking is
   // the true top across ALL graded servers, not an arbitrary first 1000.
-  const rows: Array<{ host: string; grade: string; score: number; checked_at?: number; tools_count?: number; category?: string }> = [];
+  const rows: Array<{ host: string; grade: string; score: number; checked_at?: number; tools_count?: number; category?: string; verified?: boolean }> = [];
   let gets = 0, pages = 0;
   let cursor: string | undefined;
   do {
     const list: any = await env.CACHE.list({ prefix: "grade:", limit: 1000, cursor });
     for (const k of list.keys) {
       const host = k.name.slice("grade:".length);
+      // Skip non-public/placeholder hosts (localhost, RFC1918 IPs, example.com,
+      // {template} vars) that may have been persisted before host validation.
+      if (!isPublicGradableHost(host)) continue;
       let m = k.metadata as any;
       if (!m || typeof m.score !== "number") {
         if (gets < 80) {
           gets++;
-          try { const raw = await env.CACHE.get(k.name); if (raw) { const g = JSON.parse(raw); m = { grade: g.grade, score: g.score, checked_at: g.checked_at, tools_count: g.tools_count, category: g.category }; } } catch {}
+          try { const raw = await env.CACHE.get(k.name); if (raw) { const g = JSON.parse(raw); m = { grade: g.grade, score: g.score, checked_at: g.checked_at, tools_count: g.tools_count, category: g.category, verified: g.verified_behavioral || undefined }; } } catch {}
         }
       }
-      if (m && typeof m.score === "number") rows.push({ host, grade: m.grade, score: m.score, checked_at: m.checked_at, tools_count: m.tools_count, category: m.category });
+      if (m && typeof m.score === "number") rows.push({ host, grade: m.grade, score: m.score, checked_at: m.checked_at, tools_count: m.tools_count, category: m.category, verified: m.verified });
     }
     cursor = list.list_complete ? undefined : list.cursor;
     pages++;
@@ -1074,7 +1307,7 @@ export async function mcpLeaderboardHtml(env: Env, origin: string, category?: st
     return `<tr data-cat="${esc(cat)}">
       <td class="rank">${i + 1}</td>
       <td><span class="g" style="color:${color};border-color:${color}55;background:${color}14">${esc(r.grade)}</span></td>
-      <td><a class="host" href="${origin}/mcp/grade/${encodeURIComponent(r.host)}">${esc(r.host)}</a></td>
+      <td><a class="host" href="${origin}/mcp/grade/${encodeURIComponent(r.host)}">${esc(r.host)}</a>${r.verified ? ` <span class="vbadge" title="Behaviorally verified — reliability measured from real observed tool calls, not just a static scan">✓ verified</span>` : ""}</td>
       <td><span class="cat">${esc(cat)}</span></td>
       <td class="num">${r.score}</td>
       <td class="num dim">${r.tools_count ?? "—"}</td>
@@ -1112,6 +1345,7 @@ export async function mcpLeaderboardHtml(env: Env, origin: string, category?: st
   .g{display:inline-block;min-width:32px;text-align:center;font-weight:800;border:1px solid;border-radius:7px;padding:3px 8px;font-size:.82rem}
   table.tbl td .g{margin:0}
   a.host{text-decoration:none;font-weight:600;color:var(--text)} a.host:hover{color:var(--accent2)}
+  .vbadge{display:inline-block;font-size:.66rem;font-weight:800;letter-spacing:.03em;color:#bdf0cd;background:rgba(74,222,128,.12);border:1px solid rgba(74,222,128,.4);border-radius:999px;padding:1px 7px;margin-left:6px;white-space:nowrap;vertical-align:middle}
   .cat{display:inline-block;font-size:.78rem;color:var(--muted);background:var(--bg2);border:1px solid var(--border);border-radius:999px;padding:2px 9px;white-space:nowrap}
   .catfilter{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px}
   .chip{background:var(--bg2);border:1px solid var(--border);color:var(--muted);border-radius:999px;padding:6px 13px;font-size:.82rem;cursor:pointer;font-family:inherit;text-decoration:none;display:inline-block}

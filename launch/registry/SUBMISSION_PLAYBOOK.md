@@ -312,9 +312,14 @@ Legend (verified): 🎖️ official · 🐍 Python · 📇 TypeScript/JS · 🏎
 
 Our flags: 📇 (TypeScript) ☁️ (cloud/remote — talks to remote APIs) 🍎 🪟 🐧.
 
-Entry line (paste, adjust position to stay alphabetical):
+**Maintainer requirement:** the punkpeye list (run by Glama's founder) wants the
+Glama **score badge** right after the repo link. Submit/claim at
+https://glama.ai/mcp/servers first (Glama auto-indexes this public repo); the
+badge URL is valid immediately and shows "unranked" until Glama scores it.
+
+Entry line (paste, adjust position to stay alphabetical) — badge included:
 ```markdown
-- [New1Direction/webmcp-anything](https://github.com/New1Direction/webmcp-anything) 📇 ☁️ 🍎 🪟 🐧 - Turn ANY website into agent-callable MCP tools in one line of config. Hosted Streamable-HTTP server: `/mcp/u/<base64url>` for one site, `/mcp/url?url=a&url=b` to compose several. 5-tier extraction (Shopify, JSON-LD, OpenAPI, LLM fallback) + OAuth-vault proxy. Free tools/list; paid tools/call.
+- [New1Direction/webmcp-anything](https://github.com/New1Direction/webmcp-anything) [![New1Direction/webmcp-anything MCP server](https://glama.ai/mcp/servers/New1Direction/webmcp-anything/badges/score.svg)](https://glama.ai/mcp/servers/New1Direction/webmcp-anything) 📇 ☁️ 🍎 🪟 🐧 - Turn ANY website into agent-callable MCP tools in one line of config. Hosted Streamable-HTTP server: `/mcp/u/<base64url>` for one site, `/mcp/url?url=a&url=b` to compose several. 5-tier extraction (Shopify, JSON-LD, OpenAPI, LLM fallback) + OAuth-vault proxy. Free tools/list; paid tools/call.
 ```
 
 PR steps:

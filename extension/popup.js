@@ -221,7 +221,7 @@ async function initWatch(tab) {
       btn.textContent = "⚡ Watch this drop";
       note.innerHTML = qcPaid
         ? "We watch it in the background and add it to your cart the instant it restocks. Just keep Chrome running."
-        : 'Free: we watch one item and alert you on restock. <a href="https://wmcp.sh/quickcatch" target="_blank" rel="noopener" style="color:var(--accent2)">QuickCatch ($12/mo)</a> watches unlimited items and auto-carts them.';
+        : 'Free: we watch one item and alert you on restock. <a href="https://wmcp.sh/quickcatch?source=ext_popup" target="_blank" rel="noopener" style="color:var(--accent2)">QuickCatch ($12/mo)</a> watches unlimited items and auto-carts them.';
     }
   }
 
@@ -242,7 +242,7 @@ async function initWatch(tab) {
       else {
         const res = await chrome.runtime.sendMessage({ type: "WATCH_START", url, title });
         if (res && res.paywall) {
-          note.innerHTML = 'Free watches one item at a time. <a href="https://wmcp.sh/quickcatch" target="_blank" rel="noopener" style="color:var(--accent2)">Upgrade to QuickCatch — $12/mo</a> for unlimited watches + auto-cart.';
+          note.innerHTML = 'Free watches one item at a time. <a href="https://wmcp.sh/quickcatch?source=ext_paywall" target="_blank" rel="noopener" style="color:var(--accent2)">Upgrade to QuickCatch — $12/mo</a> for unlimited watches + auto-cart.';
           return;
         }
       }

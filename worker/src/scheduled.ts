@@ -17,7 +17,7 @@
 // Skips stores that 4xx/5xx/timeout. Logs results to CF Tail.
 
 import * as shopify from "../../adapters/shopify.js";
-import { regradeWatched, seedRegistryGrades, scoreMcpServer, recordGrade } from "./mcp_grade";
+import { regradeWatched, seedRegistryGrades, scoreMcpServer, recordGrade, seedBehaviorBatch, addBehaviorSeedHosts, readBehaviorSeedList } from "./mcp_grade";
 import { fireAlert } from "./alerts";
 import { DROP_SLUGS, LOCALIZABLE_SLUGS, LOCALIZED_LANGS } from "./drops_seo";
 import { ARTICLE_SLUGS } from "./articles";
@@ -29,6 +29,7 @@ type Env = {
   ENVIRONMENT: string;
   ADMIN_TOKEN?: string;
   LEAD_ALERT_WEBHOOK?: string;
+  BEHAVIOR_SEED?: string;
 };
 
 // Diverse, single-domain (no country-TLD duplicates) well-known Shopify
@@ -202,8 +203,11 @@ async function writeCache(
   const already = await env.CACHE.get(seenKey);
   const adapter = payload?.adapter || "other";
   const title = payload?.product?.title || payload?.product?.name || undefined;
+  // n = tool count, same contract as engine.ts's writer: the sitemap only
+  // lists /u pages with n > 0 (0-tool pages render noindex — keep them out).
+  const n = Array.isArray(payload?.tools) ? payload.tools.length : undefined;
   await env.CACHE.put(seenKey, normalized, {
-    metadata: { url: normalized, adapter, ts: Date.now(), title },
+    metadata: { url: normalized, adapter, ts: Date.now(), title, n },
   });
   if (!already) {
     const raw = await env.CACHE.get("stats:total_cached");
@@ -370,6 +374,19 @@ export async function scheduledHandler(
       .catch((e) => console.log("[cron] grade-seed error", String(e)))
   );
 
+  // Behavioral seeding (default OFF — set BEHAVIOR_SEED="1"). Exercise a small
+  // curated set of public, no-auth servers' READ-ONLY tools ourselves so the
+  // behavioral overlay lights up without waiting for user proxy traffic — turns
+  // the uncopyable moat into a live "✓ verified" signal on the board. Safe by
+  // construction (read-only, no-arg tools only); bounded fan-out.
+  if (env.BEHAVIOR_SEED === "1") {
+    ctx.waitUntil(
+      seedBehaviorBatch(env as any)
+        .then((d) => console.log(`[cron] behavior-seed: hosts=${d.hosts} calls=${d.calls} targets=${d.targets}`))
+        .catch((e) => console.log("[cron] behavior-seed error", String(e)))
+    );
+  }
+
   // Keep the public security report + GEO stats feed (/reports + /api/v1/mcp/stats)
   // fresh on their own — recompute every 6h so nobody has to hit ?refresh=1.
   if (new Date().getUTCHours() % 6 === 0) {
@@ -466,6 +483,33 @@ export async function addGradeServers(c: any): Promise<Response> {
     newly_added,
     queued_total: merged.length,
   });
+}
+
+/**
+ * Admin-gated. POST /api/v1/admin/seed-behavior with `x-admin-token`.
+ * Curate the behavioral-seed flagship list and/or run a batch now.
+ *   body { hosts?: string[] }  → add hosts to the curated list (public-only, capped)
+ *   ?run=1                     → also run a seed batch immediately (handy for testing)
+ *   ?max=N&tools=M             → batch sizing
+ * Seeding itself only runs from cron when BEHAVIOR_SEED="1"; this endpoint lets
+ * the operator curate which flagship servers get "✓ verified" and trigger a run.
+ */
+export async function seedBehaviorAdmin(c: any): Promise<Response> {
+  const env: Env = c.env;
+  const token = c.req.header("x-admin-token");
+  if (!env.ADMIN_TOKEN || token !== env.ADMIN_TOKEN) return c.json({ error: "admin only" }, 401);
+  const body: { hosts?: string[] } | null = await c.req.json().catch(() => null);
+  let list = await readBehaviorSeedList(env as any);
+  if (body && Array.isArray(body.hosts) && body.hosts.length) {
+    list = await addBehaviorSeedHosts(env as any, body.hosts);
+  }
+  let batch: any = null;
+  if (c.req.query("run") === "1") {
+    const max = parseInt(c.req.query("max") || "6", 10) || 6;
+    const maxToolsPerHost = parseInt(c.req.query("tools") || "2", 10) || 2;
+    batch = await seedBehaviorBatch(env as any, { max, maxToolsPerHost });
+  }
+  return c.json({ ok: true, seed_list: list, seed_list_size: list.length, batch });
 }
 
 /**

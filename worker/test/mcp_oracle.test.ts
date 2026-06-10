@@ -70,13 +70,13 @@ describe("trust oracle (MCP server)", () => {
   it("tools/call grade_mcp_server returns a grade + recommendation", async () => {
     mockWorld();
     const env: any = { CACHE: kvMock() };
-    const res = await oracleHandler(post(env, { jsonrpc: "2.0", id: 5, method: "tools/call", params: { name: "grade_mcp_server", arguments: { url: "https://mcp.example.com/mcp" } } }));
+    const res = await oracleHandler(post(env, { jsonrpc: "2.0", id: 5, method: "tools/call", params: { name: "grade_mcp_server", arguments: { url: "https://mcp.acmelabs.io/mcp" } } }));
     const out = JSON.parse(res.body.result.content[0].text);
     expect(out.grade).toBeTruthy();
     expect(["ok", "caution", "avoid"]).toContain(out.recommendation);
     expect(out.report_url).toContain("/mcp/grade/");
     // it persisted (and registered the watch)
-    expect(await env.CACHE.get("gradewatch:mcp.example.com")).toBeTruthy();
+    expect(await env.CACHE.get("gradewatch:mcp.acmelabs.io")).toBeTruthy();
   });
 
   it("tools/call with missing url → -32602", async () => {
@@ -94,7 +94,7 @@ describe("trust oracle (MCP server)", () => {
   it("check_mcp_drift returns stability info", async () => {
     mockWorld();
     const env: any = { CACHE: kvMock() };
-    const res = await oracleHandler(post(env, { jsonrpc: "2.0", id: 8, method: "tools/call", params: { name: "check_mcp_drift", arguments: { url: "https://mcp.example.com/mcp" } } }));
+    const res = await oracleHandler(post(env, { jsonrpc: "2.0", id: 8, method: "tools/call", params: { name: "check_mcp_drift", arguments: { url: "https://mcp.acmelabs.io/mcp" } } }));
     const out = JSON.parse(res.body.result.content[0].text);
     expect(out).toHaveProperty("drift_count");
     expect(out).toHaveProperty("tool_surface_stable_days");
@@ -106,8 +106,8 @@ describe("seedRegistryGrades — coverage land-grab", () => {
     mockWorld({
       registry: {
         servers: [
-          { name: "a/x", remotes: [{ type: "streamable-http", url: "https://a.example.com/mcp" }] },
-          { name: "b/y", remotes: [{ type: "sse", url: "https://b.example.com/sse" }] },
+          { name: "a/x", remotes: [{ type: "streamable-http", url: "https://a.acmelabs.io/mcp" }] },
+          { name: "b/y", remotes: [{ type: "sse", url: "https://b.acmelabs.io/sse" }] },
           { name: "c/local", packages: [{}] }, // no remotes → skipped
         ],
         metadata: { nextCursor: "CURSOR2" },
@@ -118,7 +118,7 @@ describe("seedRegistryGrades — coverage land-grab", () => {
     expect(out.seeded).toBe(2);
     expect(out.nextCursor).toBe("CURSOR2");
     expect(await env.CACHE.get("gradeseed:cursor")).toBe("CURSOR2");
-    expect(await readGrade(env, "a.example.com")).toBeTruthy();
-    expect(await env.CACHE.get("gradewatch:a.example.com")).toBeTruthy();
+    expect(await readGrade(env, "a.acmelabs.io")).toBeTruthy();
+    expect(await env.CACHE.get("gradewatch:a.acmelabs.io")).toBeTruthy();
   });
 });

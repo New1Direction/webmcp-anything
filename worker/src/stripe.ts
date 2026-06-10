@@ -736,11 +736,16 @@ async function issueQuickCatchLicense(
 // $12/mo consumer subscription. Email required so we can issue + recover the
 // license. 503 until STRIPE_PRICE_QUICKCATCH is set (fail-closed like every SKU).
 export async function createQuickCatchCheckout(c: Context<{ Bindings: Env }>) {
-  const body = await c.req.json<{ email?: string }>().catch(() => null);
+  const body = await c.req.json<{ email?: string; source?: string }>().catch(() => null);
   if (!body?.email || body.email.indexOf("@") < 1) return c.json({ error: "email_required" }, 400);
   if (!c.env.STRIPE_SECRET_KEY || !c.env.STRIPE_PRICE_QUICKCATCH) {
     return c.json({ error: "quickcatch_not_configured" }, 503);
   }
+  // Attribution: where this checkout came from (ext popup/banner/paywall, a
+  // /drops page, /quickcatch, /pricing…). Makes install→sub measurable once the
+  // extension upgrade links carry ?source=/utm_source=. Sanitized short token.
+  const source = String(body?.source || c.req.query("source") || c.req.query("utm_source") || "")
+    .slice(0, 40).replace(/[^a-z0-9_.:-]/gi, "") || "direct";
   const origin = new URL(c.req.url).origin;
   const form = new URLSearchParams();
   form.set("mode", "subscription");
@@ -748,13 +753,98 @@ export async function createQuickCatchCheckout(c: Context<{ Bindings: Env }>) {
   form.set("line_items[0][quantity]", "1");
   form.set("customer_email", body.email);
   form.set("allow_promotion_codes", "true");
+  form.set("client_reference_id", source);
   form.set("metadata[kind]", QUICKCATCH_KIND);
   form.set("metadata[email]", body.email);
+  form.set("metadata[source]", source);
   form.set("subscription_data[metadata][kind]", QUICKCATCH_KIND);
   form.set("subscription_data[metadata][email]", body.email);
+  form.set("subscription_data[metadata][source]", source);
   form.set("success_url", `${origin}/quickcatch/activate?session_id={CHECKOUT_SESSION_ID}`);
   form.set("cancel_url", `${origin}/quickcatch?canceled=1`);
+  // Count checkout-starts by source (USAGE namespace, 60-day TTL). Best-effort.
+  c.executionCtx.waitUntil((async () => {
+    try {
+      const day = new Date().toISOString().slice(0, 10);
+      const k = `qcsrc:${source}:${day}`;
+      const n = parseInt((await c.env.USAGE.get(k)) || "0", 10) || 0;
+      await c.env.USAGE.put(k, String(n + 1), { expirationTtl: 60 * 86400 });
+    } catch {}
+  })());
   return await createSessionResponse(c, form);
+}
+
+// GET /quickcatch — the public buy/landing page. EVERY in-extension upgrade CTA
+// (popup, restock banner, options) and the Stripe cancel_url point here; before
+// this it 404'd and dead-ended the whole consumer funnel. Works for already-
+// installed extensions with NO Web Store re-publish (the URL is unchanged).
+export function quickCatchPage(c: Context<{ Bindings: Env }>) {
+  const origin = new URL(c.req.url).origin;
+  const canceled = c.req.query("canceled") === "1";
+  const source = String(c.req.query("source") || c.req.query("utm_source") || "quickcatch")
+    .slice(0, 40).replace(/[^a-z0-9_.:-]/gi, "") || "quickcatch";
+  const cw = "https://chromewebstore.google.com/detail/quickcatch/bglmmkpaofofjnpkabfneeemgnjpjejl";
+  return c.html(`<!doctype html><html lang="en"><head><meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>QuickCatch — $12/mo restock catcher | wmcp.sh</title>
+<meta name="description" content="QuickCatch watches Pokémon &amp; collectible drops and auto-adds to cart the instant they restock — even on sites that block bots. $12/mo, cancel anytime."/>
+<link rel="canonical" href="${origin}/quickcatch"/>
+<style>
+  :root{--bg:#07070d;--bg2:#11111c;--card:#16161f;--border:#26263a;--text:#ececf5;--muted:#9a9ab0;--accent:#ff9e2c;--accent2:#ffcf7a;--green:#4ade80;--red:#ff5470}
+  *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif;line-height:1.6;background-image:radial-gradient(ellipse 900px 600px at 12% -6%,rgba(255,158,44,.13),transparent 60%)}
+  .wrap{max-width:640px;margin:0 auto;padding:48px 22px 70px}
+  h1{font-size:2rem;letter-spacing:-.02em;margin:0 0 10px}.lead{color:var(--muted);font-size:1.1rem;margin:0 0 22px}
+  .price{font-size:2.4rem;font-weight:800}.price small{font-size:1rem;color:var(--muted);font-weight:500}
+  ul{list-style:none;padding:0;margin:18px 0}
+  li{padding:7px 0 7px 26px;position:relative;color:var(--text)}
+  li:before{content:"✓";position:absolute;left:0;color:var(--green);font-weight:800}
+  .box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px 22px;margin:22px 0}
+  .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+  input{flex:1;min-width:240px;background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:13px 15px;font-size:.95rem}
+  .btn{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#2a1500;border:none;border-radius:10px;padding:13px 22px;font-weight:800;cursor:pointer;font-size:.95rem}
+  .btn-s{display:inline-block;background:var(--bg2);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:12px 18px;font-weight:700;text-decoration:none;font-size:.9rem}
+  #m{font-size:.9rem;margin-top:10px;min-height:1em}
+  .note{color:var(--muted);font-size:.86rem;margin-top:12px}
+  .cancel{background:rgba(255,158,44,.08);border:1px solid rgba(255,158,44,.4);border-radius:10px;padding:11px 14px;color:var(--accent2);font-size:.9rem;margin-bottom:18px}
+  a{color:var(--accent2)}
+</style></head><body><div class="wrap">
+  ${canceled ? `<div class="cancel">Checkout canceled — no charge. Your watches still work on the free tier. Grab Pro below whenever you're ready.</div>` : ""}
+  <h1>QuickCatch 🎯</h1>
+  <p class="lead">Catch the drop before the bots do. QuickCatch watches restocks and auto-adds to your cart the instant they go live — even on sites that block bots.</p>
+  <div class="price">$12<small>/mo · cancel anytime</small></div>
+  <ul>
+    <li>Unlimited watched products (free tier = 1)</li>
+    <li>Auto add-to-cart the second it restocks</li>
+    <li>Works on the hard, bot-blocked stores</li>
+    <li>Desktop alerts + opens the in-stock tab for you</li>
+  </ul>
+  <div class="box">
+    <strong>Start QuickCatch Pro</strong>
+    <p class="note" style="margin-top:4px">Enter your email — your license key is tied to it. No password. You'll paste the key into the extension's Options.</p>
+    <div class="row">
+      <input id="e" type="email" placeholder="you@email.com" autocomplete="email"/>
+      <button class="btn" id="go">Get QuickCatch — $12/mo →</button>
+    </div>
+    <div id="m"></div>
+  </div>
+  <p class="note">Don't have the extension yet? <a class="btn-s" href="${cw}" target="_blank" rel="noopener">Install QuickCatch (free)</a> — then come back and upgrade.</p>
+  <script>
+  (function(){
+    var e=document.getElementById("e"),b=document.getElementById("go"),m=document.getElementById("m");
+    var src=${JSON.stringify(source)};
+    function go(){
+      var v=(e.value||"").trim();
+      if(v.indexOf("@")<1){m.style.color="#ff5470";m.textContent="Enter a valid email.";return;}
+      b.disabled=true;b.textContent="Loading…";m.textContent="";
+      fetch("/api/v1/quickcatch/checkout",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({email:v,source:src})})
+        .then(function(r){return r.json().catch(function(){return{};}).then(function(d){return{s:r.status,d:d};});})
+        .then(function(x){if(x.d&&x.d.url){location.href=x.d.url;return;}b.disabled=false;b.textContent="Get QuickCatch — $12/mo →";m.style.color="#ff5470";m.textContent=x.s===503?"Not switched on yet — check back soon.":("Could not start checkout: "+((x.d&&x.d.error)||x.s));})
+        .catch(function(){b.disabled=false;b.textContent="Get QuickCatch — $12/mo →";m.style.color="#ff5470";m.textContent="Network error — try again.";});
+    }
+    b.addEventListener("click",go);e.addEventListener("keydown",function(ev){if(ev.key==="Enter")go();});
+  })();
+  </script>
+</div></body></html>`);
 }
 
 // GET /api/v1/quickcatch/verify?key=qc_…  → { active } for the extension to gate

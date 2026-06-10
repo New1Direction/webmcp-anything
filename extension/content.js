@@ -240,7 +240,7 @@ function qcUpgradeBanner() {
     const d = document.createElement("div");
     d.id = "qc-upgrade";
     d.style.cssText = "position:fixed;z-index:2147483647;left:50%;top:14px;transform:translateX(-50%);max-width:92vw;background:#13131a;color:#ececf5;border:1px solid rgba(255,158,44,.5);border-radius:12px;padding:12px 16px;font:600 14px/1.4 -apple-system,system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.45)";
-    d.innerHTML = '🎯 It’s back in stock! You were alerted. <a href="https://wmcp.sh/quickcatch" target="_blank" rel="noopener" style="color:#ffcf7a;text-decoration:underline">Upgrade to QuickCatch ($12/mo)</a> and we’ll auto-add it to your cart next time. <span id="qc-x" style="cursor:pointer;color:#8a8aa8;margin-left:8px">✕</span>';
+    d.innerHTML = '🎯 It’s back in stock! You were alerted. <a href="https://wmcp.sh/quickcatch?source=ext_banner" target="_blank" rel="noopener" style="color:#ffcf7a;text-decoration:underline">Upgrade to QuickCatch ($12/mo)</a> and we’ll auto-add it to your cart next time. <span id="qc-x" style="cursor:pointer;color:#8a8aa8;margin-left:8px">✕</span>';
     document.documentElement.appendChild(d);
     const x = d.querySelector("#qc-x"); if (x) x.addEventListener("click", () => d.remove());
     setTimeout(() => d.remove(), 15000);

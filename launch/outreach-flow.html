@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Outreach Engine — how it works</title>
+<style>
+  :root{--bg:#0a0a12;--card:#16161f;--bg2:#11111c;--border:#26263a;--text:#ececf5;--muted:#8a8aa8;--accent:#ff9e2c;--accent2:#ffcf7a;--green:#4ade80;--blue:#7aa2ff}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif;line-height:1.55;padding:36px 18px 80px}
+  .wrap{max-width:780px;margin:0 auto}
+  h1{font-size:1.7rem;margin:0 0 6px;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .lead{color:var(--muted);font-size:1.02rem;margin:0 0 26px}
+  .lead b{color:var(--text)}
+  .step{display:flex;gap:14px;align-items:flex-start;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 18px;margin:0 0 12px}
+  .num{flex:none;width:30px;height:30px;border-radius:50%;background:var(--bg2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.9rem}
+  .step h3{margin:0 0 4px;font-size:1.04rem;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+  .step p{margin:0;color:var(--muted);font-size:.93rem}
+  .tag{font-size:.66rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:999px;border:1px solid}
+  .t-auto{color:var(--green);border-color:#4ade8055;background:#4ade8014}
+  .t-you{color:var(--accent);border-color:#ff9e2c55;background:#ff9e2c14}
+  .t-setup{color:var(--blue);border-color:#7aa2ff55;background:#7aa2ff14}
+  .t-have{color:var(--muted);border-color:var(--border);background:var(--bg2)}
+  .t-money{color:#ffcf7a;border-color:#ffcf7a55;background:#ffcf7a14}
+  .arrow{text-align:center;color:var(--border);font-size:1.1rem;margin:-4px 0 8px}
+  .box{border-radius:14px;padding:16px 20px;margin:22px 0}
+  .touch{background:#ff9e2c10;border:1px solid #ff9e2c44}
+  .rule{background:var(--bg2);border:1px solid var(--border)}
+  .box h2{margin:0 0 8px;font-size:1.05rem}
+  .box ul{margin:6px 0 0;padding-left:20px;color:var(--muted);font-size:.93rem}
+  .box li{margin:4px 0}
+  .sub{margin:8px 0;color:var(--muted);font-size:.93rem}
+  .seg{display:flex;gap:12px;flex-wrap:wrap;margin:8px 0 0}
+  .segc{flex:1;min-width:240px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:13px 15px}
+  .segc b{color:var(--text)}
+  footer{color:var(--muted);font-size:.82rem;margin-top:26px;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>The outreach engine, in plain English</h1>
+  <p class="lead">We already graded thousands of MCP servers. This turns those grades into paying customers, almost entirely on autopilot. <b>You only ever touch the hot replies, and even those come pre-written.</b></p>
+
+  <div class="step"><div class="num">1</div><div>
+    <h3>The grade graph <span class="tag t-have">already done</span></h3>
+    <p>We have independently graded 6,771 MCP servers A to F. 2,580 of them scored D or F. Every grade sits on its own public report page. That is the raw material.</p>
+  </div></div>
+  <div class="arrow">↓</div>
+
+  <div class="step"><div class="num">2</div><div>
+    <h3>Generate the campaign <span class="tag t-auto">automatic</span></h3>
+    <p>One call pulls the right targets and writes a personalized email for each, using its real failing finding (for example: "your authorize_payment tool is flagged for a secret-exfiltration surface"). No writing per lead. Out comes a spreadsheet, ready to send.</p>
+  </div></div>
+  <div class="arrow">↓</div>
+
+  <div class="step"><div class="num">3</div><div>
+    <h3>Find the emails <span class="tag t-setup">set up once</span></h3>
+    <p>A finder tool (Apollo or Hunter) fills in each contact email from the company's domain. Connect it once and it runs on every batch.</p>
+  </div></div>
+  <div class="arrow">↓</div>
+
+  <div class="step"><div class="num">4</div><div>
+    <h3>Send them <span class="tag t-setup">set up once</span></h3>
+    <p>A cold-email tool (Smartlead or Instantly) on a dedicated warmed domain sends the emails, spaced out, each with an unsubscribe link. You import the spreadsheet and it drips them automatically.</p>
+  </div></div>
+  <div class="arrow">↓</div>
+
+  <div class="step"><div class="num">5</div><div>
+    <h3>Triage every reply <span class="tag t-auto">automatic</span></h3>
+    <p>Each reply hits our webhook and gets sorted instantly:</p>
+    <ul style="margin:8px 0 0;padding-left:18px;color:var(--muted);font-size:.92rem">
+      <li><b style="color:var(--text)">Unsubscribe:</b> removed and never contacted again.</li>
+      <li><b style="color:var(--text)">Out of office, bounce, or "not interested":</b> logged quietly. You never see it.</li>
+      <li><b style="color:var(--green)">Interested, asks price, or any real question:</b> flagged HOT.</li>
+    </ul>
+  </div></div>
+  <div class="arrow">↓</div>
+
+  <div class="step"><div class="num">6</div><div>
+    <h3>Close the hot ones <span class="tag t-you">your only step</span></h3>
+    <p>Each hot reply pings your Slack or Discord with the message and a ready-to-send reply already written for you. Read it, tweak if you feel like it, send. That is your entire job.</p>
+  </div></div>
+  <div class="arrow">↓</div>
+
+  <div class="step"><div class="num">7</div><div>
+    <h3>They pay on their report page <span class="tag t-money">revenue</span></h3>
+    <p>Hot leads buy the Deep Audit (one time, the fix) plus Monitoring (monthly, keeps it clean and proves it to their users). A-graders buy the Verified badge instead.</p>
+  </div></div>
+
+  <div class="box rule">
+    <h2>Two lists, same engine</h2>
+    <div class="seg">
+      <div class="segc"><b>Audit list (F-graders)</b><div class="sub" style="margin:4px 0 0">"Your server failed security. Here is exactly what to fix." Sells the Deep Audit + Monitoring.</div></div>
+      <div class="segc"><b>Verified list (A-graders)</b><div class="sub" style="margin:4px 0 0">"You passed. Make it provable with a live badge." Sells Verified + Monitoring. Easy yes.</div></div>
+    </div>
+  </div>
+
+  <div class="box touch">
+    <h2>What you actually touch</h2>
+    <ul>
+      <li><b>Once:</b> connect a sending domain + an email finder, set two secrets (alert webhook + admin token), paste one webhook URL into the email tool.</li>
+      <li><b>Forever after:</b> read the hot pings and send the reply that is already drafted for you.</li>
+    </ul>
+  </div>
+
+  <div class="box rule">
+    <h2>The one rule</h2>
+    <p class="sub" style="margin:0">The grades are honest and free whether or not anyone pays. This is independent audit, not a shakedown. That honesty is the entire moat, so it never gets bent to make a sale.</p>
+  </div>
+
+  <footer>wmcp.sh outreach engine · generate → enrich → send → triage → you close the hot ones</footer>
+</div>
+</body>
+</html>

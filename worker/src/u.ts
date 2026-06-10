@@ -13,7 +13,7 @@ import { BLOG_POSTS, BLOG_SLUGS } from "./blog_posts";
 import { DROP_SLUGS, LOCALIZABLE_SLUGS, LOCALIZED_LANGS } from "./drops_seo";
 import { SKILL_SLUGS, SKILL_CATEGORIES, catSlug as skillCatSlug } from "./skills_seo";
 import { ARTICLE_SLUGS } from "./articles";
-import { CATEGORY_NAMES, categorySlug } from "./mcp_grade";
+import { CATEGORY_NAMES, categorySlug, isPublicGradableHost } from "./mcp_grade";
 
 const PROVIDER_BADGE: Record<string, { color: string; label: string }> = {
   shopify: { color: "#4ade80", label: "Shopify" },
@@ -92,7 +92,7 @@ export function uHtml(sourceUrl: string, entry: CacheEntry, origin: string): str
 <meta charset="utf-8" />
 <title>${escapeHtml(pageTitle)}</title>
 <meta name="description" content="${escapeHtml(pageDesc)}" />
-<link rel="canonical" href="${origin}/u/${base64urlEncode(sourceUrl)}" />
+${toolCount === 0 ? '<meta name="robots" content="noindex,follow" />\n' : ""}<link rel="canonical" href="${origin}/u/${base64urlEncode(sourceUrl)}" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta property="og:title" content="${escapeHtml(title)} — agent tools" />
 <meta property="og:description" content="${escapeHtml(pageDesc)}" />
@@ -338,6 +338,7 @@ Disallow: /dashboard
 Disallow: /mcp/
 Allow: /mcp/grade
 Allow: /mcp/leaderboard
+Allow: /mcp/badges
 Allow: /connect
 
 Sitemap: ${origin}/sitemap.xml
@@ -579,15 +580,25 @@ export async function sitemapXml(env: any, origin: string): Promise<string> {
   const entries: Array<{ url: string; ts: number }> = seenKeys
     .map((k: any) => k.metadata)
     .filter((m: any) => m && m.url)
+    // Only list pages we KNOW have agent-callable tools (n > 0). 0-tool pages
+    // render noindex (a sitemap/noindex contradiction in Search Console), and
+    // unknown-n legacy entries can't be trusted either way — the harvest cron
+    // and engine both stamp n on (re)cache, so good pages re-enter on refresh.
+    .filter((m: any) => typeof m.n === "number" && m.n > 0)
     .map((m: any) => ({ url: m.url, ts: m.ts || 0 }));
 
-  // Every graded MCP server is a real, unique trust-report page → index them all.
+  // Every graded MCP server is a real, unique trust-report page → index them all,
+  // EXCEPT non-public/placeholder hosts (localhost, RFC1918 IPs, example.com,
+  // {template} vars) that should never have been minted a grade page.
   const gradeHosts: string[] = [];
   {
     let cursor: string | undefined, pages = 0;
     do {
       const r: any = await env.CACHE.list({ prefix: "grade:", limit: 1000, cursor });
-      for (const k of r.keys) gradeHosts.push(k.name.slice("grade:".length));
+      for (const k of r.keys) {
+        const h = k.name.slice("grade:".length);
+        if (isPublicGradableHost(h)) gradeHosts.push(h);
+      }
       cursor = r.list_complete ? undefined : r.cursor; pages++;
     } while (cursor && pages < 8);
   }
@@ -657,6 +668,11 @@ export async function sitemapXml(env: any, origin: string): Promise<string> {
     <loc>${origin}/managed</loc>
     <changefreq>weekly</changefreq>
     <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>${origin}/pricing</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
   </url>
   <url>
     <loc>${origin}/connect</loc>
