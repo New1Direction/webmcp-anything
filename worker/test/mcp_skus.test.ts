@@ -95,3 +95,130 @@ describe("trust-SKU webhooks are fail-closed (never mint a key)", () => {
     expect(env.KEYS.__keys("monitorsub:").length).toBe(0);
   });
 });
+
+// ───────────── fulfillment: the trust SKUs actually deliver ─────────────
+import { captureLead } from "../src/lead_capture";
+import { regradeWatched } from "../src/mcp_grade";
+import { notifyMonitorSubscribers } from "../src/trust_delivery";
+
+const GRADE = {
+  url: "https://mcp.x.com/mcp", host: "mcp.x.com", checked_at: Date.UTC(2026, 9, 1), reachable: true, auth_required: false,
+  grade: "F", score: 31, tools_count: 2,
+  sub: { security: { score: 10, weight: 30, notes: [] }, hygiene: { score: 40, weight: 15, notes: [] } },
+  findings: [{ id: "tool_poisoning", severity: "fail", owasp: "MCP01", detail: 'Tool "fetch" description contains prompt-injection / hidden-instruction markup.' }],
+};
+
+function mailEnv(over: Record<string, any> = {}) {
+  const env = envMock({ STRIPE_WEBHOOK_SECRET: WHSEC, RESEND_API_KEY: "re_x", CACHE: envMock().KEYS, ...over });
+  return env;
+}
+
+function captureFetch() {
+  const calls: { url: string; body: any }[] = [];
+  vi.stubGlobal("fetch", vi.fn(async (url: string, init: any) => {
+    let body: any = init?.body;
+    try { body = JSON.parse(body); } catch {}
+    calls.push({ url: String(url), body });
+    return { ok: true, status: 200, json: async () => ({}), text: async () => "" };
+  }));
+  return calls;
+}
+
+async function fireOn(env: any, obj: any, type = "checkout.session.completed") {
+  const raw = JSON.stringify({ type, created: Math.floor(Date.now() / 1000), data: { object: obj } });
+  const c = makeCtx({ env, body: raw, headers: { "stripe-signature": signStripe(raw, WHSEC) } });
+  const res = await stripeWebhook(c);
+  await Promise.all(c.__waited);
+  return res;
+}
+
+describe("Monitoring fulfillment", () => {
+  const meta = { kind: "grade_monitor", host: "mcp.x.com" };
+
+  it("checkout + subscription events share one record keyed by subscription id, and cancellation removes it", async () => {
+    const env = mailEnv();
+    await env.CACHE.put("grade:mcp.x.com", JSON.stringify(GRADE));
+    captureFetch();
+    await fireOn(env, { id: "cs_1", subscription: "sub_9", customer_email: "ops@x.com", metadata: meta });
+    await fireOn(env, { id: "sub_9", status: "active", metadata: meta }, "customer.subscription.created");
+    expect(env.KEYS.__keys("monitorsub:")).toEqual(["monitorsub:mcp.x.com:sub_9"]);
+    expect(JSON.parse(await env.KEYS.get("monitorsub:mcp.x.com:sub_9")).email).toBe("ops@x.com");
+
+    await fireOn(env, { id: "sub_9", status: "canceled", metadata: meta }, "customer.subscription.deleted");
+    expect(env.KEYS.__keys("monitorsub:").length).toBe(0);
+  });
+
+  it("a subscription that goes unpaid stops alerting", async () => {
+    const env = mailEnv();
+    captureFetch();
+    await fireOn(env, { id: "cs_1", subscription: "sub_9", customer_email: "ops@x.com", metadata: meta });
+    await fireOn(env, { id: "sub_9", status: "unpaid", metadata: meta }, "customer.subscription.updated");
+    expect(env.KEYS.__keys("monitorsub:").length).toBe(0);
+  });
+
+  it("new subscribers get a welcome email with the current grade, once", async () => {
+    const env = mailEnv();
+    await env.CACHE.put("grade:mcp.x.com", JSON.stringify(GRADE));
+    const calls = captureFetch();
+    await fireOn(env, { id: "cs_1", subscription: "sub_9", customer_email: "ops@x.com", metadata: meta });
+    await fireOn(env, { id: "sub_9", status: "active", metadata: { ...meta, email: "ops@x.com" } }, "customer.subscription.updated");
+    const mails = calls.filter((x) => x.url.includes("resend.com"));
+    expect(mails).toHaveLength(1);
+    expect(mails[0].body.to).toEqual(["ops@x.com"]);
+    expect(mails[0].body.html).toContain("Grade F");
+  });
+
+  it("drift alerts reach email-only subscribers, not just webhooks", async () => {
+    const env = mailEnv();
+    await env.KEYS.put("monitorsub:mcp.x.com:sub_a", JSON.stringify({ host: "mcp.x.com", email: "ops@x.com", alert_url: "" }));
+    await env.KEYS.put("monitorsub:mcp.x.com:sub_b", JSON.stringify({ host: "mcp.x.com", alert_url: "https://hooks.slack.com/x" }));
+    const calls = captureFetch();
+    const n = await notifyMonitorSubscribers(env, "mcp.x.com", "grade drop B→F");
+    expect(n).toBe(2);
+    expect(calls.find((x) => x.url.includes("resend.com"))?.body.to).toEqual(["ops@x.com"]);
+    expect(calls.find((x) => x.url.includes("hooks.slack.com"))?.body.text).toBe("grade drop B→F");
+  });
+
+  it("paid hosts are re-checked every cron run, ahead of the free rotation", async () => {
+    const env = mailEnv();
+    // 30 free hosts all checked LONG before the paid one → rotation alone would skip it.
+    for (let i = 0; i < 30; i++) await env.CACHE.put(`gradewatch:free${i}.example.org`, `https://free${i}.example.org/mcp`, { metadata: { checked_at: i } } as any);
+    await env.CACHE.put("gradewatch:paid.example.org", "https://paid.example.org/mcp", { metadata: { checked_at: Date.now() } } as any);
+    await env.KEYS.put("monitorsub:paid.example.org:sub_1", JSON.stringify({ host: "paid.example.org" }));
+    vi.stubGlobal("fetch", vi.fn(async () => { throw new Error("offline"); }));
+    const out = await regradeWatched(env, { waitUntil: () => {} }, () => {}, 20);
+    const probed = (globalThis.fetch as any).mock.calls.map((c: any[]) => String(c[0]));
+    expect(probed.some((u: string) => u.includes("paid.example.org"))).toBe(true);
+    expect(out.checked).toBe(21);
+  });
+});
+
+describe("Deep Audit + grade-page lead deliver immediately", () => {
+  it("a paid Deep Audit emails the machine audit to the buyer", async () => {
+    const env = mailEnv();
+    await env.CACHE.put("grade:mcp.x.com", JSON.stringify(GRADE));
+    const calls = captureFetch();
+    await fireOn(env, { id: "cs_2", customer_email: "cto@x.com", metadata: { kind: "deep_audit", host: "mcp.x.com", target_url: "https://mcp.x.com/mcp" } });
+    const mail = calls.find((x) => x.url.includes("resend.com"));
+    expect(mail?.body.to).toEqual(["cto@x.com"]);
+    expect(mail?.body.subject).toContain("Your MCP audit");
+    expect(env.KEYS.__keys("deepaudit:").length).toBe(1);
+  });
+
+  it("the grade-page capture sends findings from the STORED grade, not the form text, once per day", async () => {
+    const env = mailEnv();
+    await env.CACHE.put("grade:mcp.x.com", JSON.stringify(GRADE));
+    const calls = captureFetch();
+    const body = { email: "ops@x.com", package: "grade-audit", site_url: "https://mcp.x.com/mcp", use_case: "<a href=https://phish.example>click</a>" };
+    for (let i = 0; i < 2; i++) {
+      const c = makeCtx({ env, body, ip: `10.0.0.${i}` });
+      await captureLead(c);
+      await Promise.all(c.__waited);
+    }
+    const mails = calls.filter((x) => x.url.includes("resend.com"));
+    expect(mails).toHaveLength(1);
+    expect(mails[0].body.html).toContain("prompt-injection");
+    expect(mails[0].body.html).toContain("Fix path");
+    expect(mails[0].body.html).not.toContain("phish.example");
+  });
+});

@@ -13,6 +13,7 @@ import { resolveAuth, type Plan } from "./auth";
 import { track } from "./metrics";
 import { emailEnabled, sendEmail } from "./email";
 import { isPaidPlan, requestOrigin } from "./paywall";
+import { sendFindingsEmail } from "./trust_delivery";
 import {
   STRIPE_API,
   invertPriceMap,
@@ -546,22 +547,44 @@ async function handleNonPlanCheckout(
         { expirationTtl: 365 * 86400, metadata: { host: obj.metadata?.host, status: "paid_pending_fulfillment" } }
       );
     }
+    const auditEmail = obj.customer_email || obj.customer_details?.email || obj.metadata?.email;
+    if (eventType === "checkout.session.completed" && auditEmail && obj.metadata?.host) {
+      // Instant deliverable: the full machine audit lands in the inbox now; the
+      // human review recorded above follows.
+      c.executionCtx.waitUntil(sendFindingsEmail(c.env as any, auditEmail, obj.metadata.host, "audit").catch(() => {}));
+    }
     return c.json({ ok: true, action: "deep_audit_recorded", host: obj.metadata?.host });
   }
 
   if (kind === "grade_monitor") {
     // Recurring. Subscriber pays to be alerted when a specific MCP server's
     // grade drops or its tools change (rug-pull). Store the subscription so the
-    // cron's drift detector fans out to their webhook. NEVER a key.
+    // cron re-checks the host every run and fans alerts out to the subscriber's
+    // webhook + email. NEVER a key.
+    //
+    // Keyed by the SUBSCRIPTION id for both the session and subscription events
+    // (the session's own id would leave an orphan that customer.subscription.
+    // deleted never removes — cancelled subscribers would keep getting alerts).
     const host = obj.metadata?.host as string | undefined;
-    const subId = (obj.id as string) || (obj.subscription as string) || "sub";
-    const alertUrl = obj.metadata?.alert_url as string | undefined;
-    if (host) {
-      await c.env.KEYS.put(
-        `monitorsub:${host}:${subId}`,
-        JSON.stringify({ host, alert_url: alertUrl || "", since: Date.now(), email: obj.customer_email || obj.metadata?.email }),
-        { expirationTtl: 400 * 86400 }
-      );
+    const isSession = eventType === "checkout.session.completed";
+    const subId = ((isSession ? obj.subscription : obj.id) as string | undefined) || (obj.id as string) || "sub";
+    if (!host) return c.json({ ok: true, action: "monitor_ignored" });
+    const recKey = `monitorsub:${host}:${subId}`;
+    if (!isSession && !isEntitled(obj.status)) {
+      await c.env.KEYS.delete(recKey);
+      return c.json({ ok: true, action: "monitor_removed", host });
+    }
+    const prev = safeJson((await c.env.KEYS.get(recKey)) || "null");
+    const email =
+      obj.customer_email || obj.customer_details?.email || (obj.metadata?.email as string | undefined) || prev?.email;
+    const alertUrl = (obj.metadata?.alert_url as string | undefined) || prev?.alert_url || "";
+    await c.env.KEYS.put(
+      recKey,
+      JSON.stringify({ host, alert_url: alertUrl, since: prev?.since || Date.now(), email }),
+      { expirationTtl: 400 * 86400 }
+    );
+    if (email && (!prev || !prev.email)) {
+      c.executionCtx.waitUntil(sendFindingsEmail(c.env as any, email, host, "monitor_welcome").catch(() => {}));
     }
     return c.json({ ok: true, action: "monitor_active", host });
   }
@@ -728,6 +751,7 @@ export async function createDeepAuditCheckout(c: Context<{ Bindings: Env }>) {
   form.set("metadata[host]", host);
   form.set("metadata[target_url]", body.url);
   form.set("metadata[email]", body.email);
+  track(c.env, c.executionCtx, "checkout_started", { kind: "deep_audit", source: c.req.query("source") });
   form.set("success_url", `${origin}/mcp/grade/${encodeURIComponent(host)}?audit=ok`);
   form.set("cancel_url", `${origin}/mcp/grade/${encodeURIComponent(host)}?canceled=1`);
   return await createSessionResponse(c, form);
@@ -757,6 +781,8 @@ export async function createMonitorCheckout(c: Context<{ Bindings: Env }>) {
   form.set("subscription_data[metadata][kind]", "grade_monitor");
   form.set("subscription_data[metadata][host]", host);
   if (body.alert_url) form.set("subscription_data[metadata][alert_url]", body.alert_url);
+  if (body.email) form.set("subscription_data[metadata][email]", body.email);
+  track(c.env, c.executionCtx, "checkout_started", { kind: "grade_monitor", source: c.req.query("source") });
   form.set("success_url", `${origin}/mcp/grade/${encodeURIComponent(host)}?monitor=ok`);
   form.set("cancel_url", `${origin}/mcp/grade/${encodeURIComponent(host)}?canceled=1`);
   return await createSessionResponse(c, form);
