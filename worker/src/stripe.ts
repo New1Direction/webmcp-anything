@@ -9,8 +9,18 @@
 //   STRIPE_PRICE_TO_PLAN    JSON, e.g. {"price_1ABC":"pro","price_1XYZ":"reseller"}
 
 import type { Context } from "hono";
-import { issueKey, revokeKey, resolveAuth, type Plan } from "./auth";
+import { resolveAuth, type Plan } from "./auth";
 import { track } from "./metrics";
+import { emailEnabled, sendEmail } from "./email";
+import { isPaidPlan, requestOrigin } from "./paywall";
+import {
+  STRIPE_API,
+  invertPriceMap,
+  isEntitled,
+  resolveBillingUser,
+  syncEntitlement,
+  updateFromSubscription,
+} from "./billing";
 import { slugFromUrl } from "./slug";
 import { PROVIDERS } from "./providers";
 import { connKey, MANAGED_CONNECTION_KIND } from "./connections";
@@ -38,47 +48,91 @@ type Env = {
   // One-time, no-install impulse products sold on the consumer SEO pages
   // (mobile-first, instant on-page unlock). 503 until the price id is set.
   STRIPE_PRICE_GUIDE?: string;
+  RESEND_API_KEY?: string;
+  RESEND_FROM?: string;
 };
 
-export const STRIPE_API = "https://api.stripe.com/v1";
+export { STRIPE_API };
 
 // =================== Checkout Session creator ===================
+//
+// POST /api/v1/stripe/checkout { plan, email?, source? }
+// Signed in (session cookie or API key) → the subscription is bound to THAT
+// account (metadata.user_id), so the plan lands on the account the buyer is
+// already using instead of a detached email-only one. Anonymous → legacy
+// email checkout (a new cust:<id> account + key).
 
 export async function createCheckout(c: Context<{ Bindings: Env }>) {
   const body = await c.req
-    .json<{ email: string; plan: Plan; origin?: string }>()
+    .json<{ email?: string; plan?: string; source?: string }>()
     .catch(() => null);
-  if (!body?.email || !body?.plan) {
-    return c.json({ error: "email and plan required" }, 400);
+  if (!body?.plan) return c.json({ error: "email and plan required" }, 400);
+  if (!isPaidPlan(body.plan)) return c.json({ error: "invalid_plan", plan: body.plan }, 400);
+  const plan: Plan = body.plan;
+
+  const auth = await resolveAuth(c as any);
+  const account = auth.anonymous ? null : auth.user_id;
+  let customer: string | undefined;
+  let email = (body.email || "").trim();
+  if (account) {
+    const userRaw = await c.env.KEYS.get(`user:${account}`);
+    const user = userRaw ? safeJson(userRaw) : null;
+    const b = user?.billing || {};
+    if ((b.sub_id && isEntitled(b.status)) || (isPaidPlan(user?.plan) && account.startsWith("cust:"))) {
+      // One subscription per account; switching happens in place.
+      return c.json(
+        {
+          error: "already_subscribed",
+          plan: user.plan,
+          hint: "You already have a plan. Switch plans (prorated) or manage billing from /dashboard#billing.",
+          manage_url: `${requestOrigin(c.req.url)}/dashboard#billing`,
+        },
+        409
+      );
+    }
+    customer = b.customer_id || (account.startsWith("cust:") ? account.slice(5) : undefined);
+    if (!email) email = user?.email || "";
   }
+  if (!account && !email) return c.json({ error: "email and plan required" }, 400);
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return c.json({ error: "invalid_email" }, 400);
   if (!c.env.STRIPE_SECRET_KEY) {
     return c.json({ error: "stripe_not_configured" }, 503);
   }
 
-  const planToPrice = invertPriceMap(c.env.STRIPE_PRICE_TO_PLAN);
-  const price_id = planToPrice[body.plan];
+  const price_id = invertPriceMap(c.env.STRIPE_PRICE_TO_PLAN)[plan];
   if (!price_id) {
-    return c.json({ error: `no_price_for_plan`, plan: body.plan }, 400);
+    return c.json({ error: `no_price_for_plan`, plan }, 400);
   }
+  const source =
+    String(body.source || "").slice(0, 40).replace(/[^a-z0-9_.:-]/gi, "") || "direct";
 
-  const origin = body.origin || new URL(c.req.url).origin;
+  // Redirects always go back to THIS origin (a caller-supplied origin would be
+  // an open redirect carrying the checkout session id).
+  const origin = requestOrigin(c.req.url);
   const form = new URLSearchParams();
   form.set("mode", "subscription");
   form.set("line_items[0][price]", price_id);
   form.set("line_items[0][quantity]", "1");
-  form.set("customer_email", body.email);
-  form.set("client_reference_id", body.email);
-  form.set("metadata[plan]", body.plan);
+  if (customer) form.set("customer", customer);
+  else if (email) form.set("customer_email", email);
+  form.set("client_reference_id", account || email);
+  form.set("metadata[plan]", plan);
   // kind=plan lets the webhook tell API-plan checkouts apart from the non-plan
   // SKUs (directory Verified, Agent-Ready Fix) that must NOT mint an API key.
   form.set("metadata[kind]", "plan");
-  form.set("subscription_data[metadata][plan]", body.plan);
+  form.set("metadata[source]", source);
+  form.set("subscription_data[metadata][plan]", plan);
   form.set("subscription_data[metadata][kind]", "plan");
+  form.set("subscription_data[metadata][source]", source);
+  if (account) {
+    form.set("metadata[user_id]", account);
+    form.set("subscription_data[metadata][user_id]", account);
+  }
   form.set("allow_promotion_codes", "true");
-  form.set("success_url", `${origin}/dashboard?session_id={CHECKOUT_SESSION_ID}`);
-  form.set("cancel_url", `${origin}/dashboard?canceled=1`);
+  form.set("success_url", `${origin}/dashboard?session_id={CHECKOUT_SESSION_ID}#billing`);
+  form.set("cancel_url", `${origin}/dashboard?canceled=1&upgrade=${plan}#plans`);
 
-  track(c.env, c.executionCtx, "checkout_started");
+  track(c.env, c.executionCtx, "checkout_started", { plan, source, account: account ? "signed_in" : "email" });
 
   const res = await fetch(`${STRIPE_API}/checkout/sessions`, {
     method: "POST",
@@ -101,7 +155,7 @@ export async function createCheckout(c: Context<{ Bindings: Env }>) {
 // =================== Key lookup by checkout session ===================
 //
 // Called by /dashboard after Stripe redirects with ?session_id=...
-// Idempotently issues the key if the webhook hasn't landed yet.
+// Idempotently grants the plan if the webhook hasn't landed yet.
 
 export async function keyByCheckout(c: Context<{ Bindings: Env }>) {
   const session_id = c.req.query("session_id");
@@ -121,7 +175,7 @@ export async function keyByCheckout(c: Context<{ Bindings: Env }>) {
       502
     );
   }
-  if (session.payment_status !== "paid") {
+  if (session.payment_status !== "paid" && session.payment_status !== "no_payment_required") {
     return c.json({ pending: true, status: session.payment_status });
   }
 
@@ -132,41 +186,53 @@ export async function keyByCheckout(c: Context<{ Bindings: Env }>) {
     return c.json({ ok: true, kind: sessKind, key: null });
   }
 
-  const customer_id: string | undefined = session.customer;
+  const customer_id: string | undefined = session.customer || undefined;
   const email: string | undefined =
     session.customer_email ||
     session.customer_details?.email ||
-    session.client_reference_id;
-  const user_id = customer_id ? `cust:${customer_id}` : `email:${email}`;
-  const sub_id: string | undefined = session.subscription;
+    (session.metadata?.user_id ? undefined : session.client_reference_id);
+  const boundUser = session.metadata?.user_id as string | undefined;
+  const user_id = await resolveBillingUser(c.env as any, {
+    metaUserId: boundUser,
+    customerId: customer_id,
+    email,
+  });
+  const sub_id: string | undefined = session.subscription || undefined;
 
-  // Already issued?
-  const userRaw = await c.env.KEYS.get(`user:${user_id}`);
-  if (userRaw) {
-    const u = JSON.parse(userRaw);
-    if (u.keys?.length) {
-      if (email) {
-        await c.env.KEYS.put(`email:${email.toLowerCase()}`, user_id);
-      }
-      return c.json({
-        key: u.keys[u.keys.length - 1],
-        plan: u.plan,
-        user_id,
-      });
+  // An account-bound checkout only reveals keys to that account's own session
+  // or key — a forwarded success URL must not hand out the account's key.
+  if (boundUser) {
+    const auth = await resolveAuth(c as any);
+    if (auth.anonymous || auth.user_id !== boundUser) {
+      return c.json({ ok: true, key: null, sign_in_required: true });
     }
   }
 
-  // Webhook hasn't fired yet — figure out the plan and issue ourselves.
-  let plan: Plan =
-    (session.metadata?.plan as Plan) ||
-    (await resolvePlanFromSubscription(c.env, sub_id)) ||
-    "pro";
-
-  const key = await issueKey(c.env as any, user_id, plan, sub_id);
-  if (email) {
-    await c.env.KEYS.put(`email:${email.toLowerCase()}`, user_id);
+  // Grant only if the webhook hasn't already recorded this subscription — once
+  // it has, its (possibly newer, e.g. canceled) state is authoritative.
+  const userRaw = await c.env.KEYS.get(`user:${user_id}`);
+  const u = userRaw ? safeJson(userRaw) : null;
+  if (!u || !sub_id || u.billing?.sub_id !== sub_id) {
+    const plan: Plan =
+      (isPaidPlan(session.metadata?.plan) ? (session.metadata.plan as Plan) : null) ||
+      (await resolvePlanFromSubscription(c.env, sub_id)) ||
+      "pro";
+    await syncEntitlement(c.env as any, c.executionCtx, user_id, {
+      plan,
+      status: "active",
+      customer_id,
+      sub_id,
+      email,
+      event_ts: Math.floor(Date.now() / 1000),
+    });
   }
-  return c.json({ key, plan, user_id });
+  const fresh = safeJson((await c.env.KEYS.get(`user:${user_id}`)) || "null");
+  const keys: string[] = fresh?.keys || [];
+  return c.json({
+    key: keys.length ? keys[keys.length - 1] : null,
+    plan: fresh?.plan || "free",
+    user_id,
+  });
 }
 
 async function resolvePlanFromSubscription(
@@ -180,26 +246,59 @@ async function resolvePlanFromSubscription(
   );
   if (!res.ok) return null;
   const sub: any = await res.json();
-  const meta_plan = sub.metadata?.plan as Plan | undefined;
-  if (meta_plan) return meta_plan;
-  const price_id = sub.items?.data?.[0]?.price?.id;
-  if (!price_id) return null;
-  const map = parsePriceMap(env.STRIPE_PRICE_TO_PLAN);
-  return map[price_id] || null;
+  const u = updateFromSubscription(env as any, sub);
+  return u.known ? u.plan : null;
 }
 
 // =================== Recovery by email ===================
+//
+// POST /api/v1/keys/recover { email }
+// Keys go to the INBOX, never into the HTTP response: returning them here let
+// anyone who knew a customer's email take their paid key. The response is the
+// same whether or not the email has an account (no enumeration), and sends are
+// capped per address per day.
+
+const RECOVER_MAX_PER_DAY = 3;
 
 export async function recoverByEmail(c: Context<{ Bindings: Env }>) {
   const body = await c.req.json<{ email: string }>().catch(() => null);
   if (!body?.email) return c.json({ error: "email_required" }, 400);
   const email = body.email.toLowerCase().trim();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return c.json({ error: "invalid_email" }, 400);
+  const generic = {
+    ok: true,
+    email_delivery: emailEnabled(c.env),
+    message: emailEnabled(c.env)
+      ? "If that email has a wmcp.sh account, its API key is on the way to that inbox."
+      : "Email delivery is offline. Sign in with GitHub using the same verified email — your paid plan and keys link to it automatically.",
+  };
+  if (!emailEnabled(c.env)) return c.json(generic);
+
+  const day = new Date().toISOString().slice(0, 10);
+  const digest = Array.from(
+    new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(email)))
+  ).map((b) => b.toString(16).padStart(2, "0")).join("").slice(0, 32);
+  const rlKey = `recover:${digest}:${day}`;
+  const sent = parseInt((await c.env.USAGE.get(rlKey)) || "0", 10) || 0;
+  if (sent >= RECOVER_MAX_PER_DAY) return c.json(generic);
+
   const user_id = await c.env.KEYS.get(`email:${email}`);
-  if (!user_id) return c.json({ error: "not_found" }, 404);
-  const userRaw = await c.env.KEYS.get(`user:${user_id}`);
-  if (!userRaw) return c.json({ error: "not_found" }, 404);
-  const u = JSON.parse(userRaw);
-  return c.json({ keys: u.keys || [], plan: u.plan, user_id });
+  const u = user_id ? safeJson((await c.env.KEYS.get(`user:${user_id}`)) || "null") : null;
+  const keys: string[] = u?.keys || [];
+  if (!keys.length) return c.json(generic);
+
+  await c.env.USAGE.put(rlKey, String(sent + 1), { expirationTtl: 2 * 86400 });
+  const esc = (x: string) => x.replace(/[&<>"]/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" } as any)[ch]);
+  await sendEmail(c.env, {
+    to: email,
+    subject: "Your wmcp.sh API key",
+    html: `<div style="font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;max-width:520px;color:#16161f;line-height:1.6">
+<p>Someone (hopefully you) asked to recover the API key for this email on wmcp.sh.</p>
+<p>Plan: <b>${esc(String(u.plan || "free"))}</b></p>
+<p style="font-family:ui-monospace,monospace;background:#f4f4f8;border-radius:8px;padding:12px;word-break:break-all">${esc(keys[keys.length - 1])}</p>
+<p>Manage your plan at <a href="${requestOrigin(c.req.url)}/dashboard">wmcp.sh/dashboard</a>. Didn't ask for this? You can ignore this email.</p></div>`,
+  });
+  return c.json(generic);
 }
 
 // =================== Webhook ===================
@@ -213,7 +312,7 @@ export async function stripeWebhook(c: Context<{ Bindings: Env }>) {
   if (!secret) {
     // In production, refuse unsigned webhooks outright — without the signing
     // secret a forged checkout.session.completed could mint a paid API key
-    // (see the issueKey path below). Only the dev env tolerates it.
+    // (see the entitlement path below). Only the dev env tolerates it.
     if (c.env.ENVIRONMENT === "production") {
       return c.json({ error: "webhook_not_configured" }, 503);
     }
@@ -233,7 +332,6 @@ export async function stripeWebhook(c: Context<{ Bindings: Env }>) {
     return c.json({ error: "invalid json" }, 400);
   }
 
-  const priceToPlan = parsePriceMap(c.env.STRIPE_PRICE_TO_PLAN);
 
   switch (event.type) {
     case "checkout.session.completed":
@@ -242,80 +340,53 @@ export async function stripeWebhook(c: Context<{ Bindings: Env }>) {
       const obj = event.data.object;
       // Session vs Subscription discriminator.
       const isSession = event.type === "checkout.session.completed";
-      if (isSession) track(c.env, c.executionCtx, "paid");
+      const kind = obj.metadata?.kind as string | undefined;
+      if (isSession) {
+        track(c.env, c.executionCtx, "paid", {
+          kind: kind || "plan",
+          plan: kind && kind !== "plan" ? undefined : obj.metadata?.plan,
+          source: obj.metadata?.source,
+        });
+      }
 
       // FAIL-CLOSED SKU GUARD. Any checkout whose metadata.kind is set and is
       // NOT "plan" (directory Verified, Agent-Ready Fix, or any future SKU) is
-      // handled here and MUST return before the issueKey path below — otherwise
-      // a $129 badge or one-time fix would silently mint a free Pro API key via
-      // the plan="pro" fallthrough.
-      const kind = obj.metadata?.kind as string | undefined;
+      // handled here and MUST return before the entitlement path below —
+      // otherwise a $129 badge or one-time fix would silently mint a free Pro
+      // API key via the plan="pro" fallthrough.
       if (kind && kind !== "plan") {
         return await handleNonPlanCheckout(c, event.type, kind, obj);
       }
-      const customer_id: string | undefined = obj.customer;
-      const sub_id: string | undefined = isSession
-        ? obj.subscription
-        : obj.id;
-      const email: string | undefined =
-        obj.customer_email ||
-        obj.customer_details?.email ||
-        (isSession ? obj.client_reference_id : undefined);
 
-      // Plan resolution:
-      // - subscription event: items.data[0].price.id
-      // - session event: from metadata, else fetch the subscription
-      const meta_plan = obj.metadata?.plan as Plan | undefined;
-      const price_id = obj.items?.data?.[0]?.price?.id;
-      let plan: Plan =
-        meta_plan ||
-        (price_id ? priceToPlan[price_id] : undefined) ||
-        (await resolvePlanFromSubscription(c.env, sub_id)) ||
-        "pro";
-
-      const status = obj.status || "active";
-      const user_id = customer_id
-        ? `cust:${customer_id}`
-        : email
-        ? `email:${email}`
-        : `sub:${sub_id || obj.id}`;
-
-      if (status === "canceled" || status === "unpaid") {
-        await revokeUserKeys(c.env, user_id);
-        return c.json({ ok: true, action: "revoked", user_id });
+      const event_ts = typeof event.created === "number" ? event.created : undefined;
+      let update;
+      let email: string | undefined;
+      if (isSession) {
+        email =
+          obj.customer_email ||
+          obj.customer_details?.email ||
+          (obj.metadata?.user_id ? undefined : obj.client_reference_id);
+        const paid = obj.payment_status !== "unpaid";
+        const sub_id: string | undefined = obj.subscription || undefined;
+        const plan: Plan =
+          (isPaidPlan(obj.metadata?.plan) ? (obj.metadata.plan as Plan) : null) ||
+          (await resolvePlanFromSubscription(c.env, sub_id)) ||
+          "pro";
+        // Async payment methods complete the session unpaid; access waits for
+        // the subscription to turn active.
+        update = { plan, status: paid ? "active" : "incomplete", customer_id: obj.customer || undefined, sub_id, email, event_ts };
+      } else {
+        update = updateFromSubscription(c.env as any, obj, event_ts);
       }
 
-      // Existing user → update plan on existing keys (idempotent).
-      const userRaw = await c.env.KEYS.get(`user:${user_id}`);
-      if (userRaw) {
-        const u = JSON.parse(userRaw);
-        if (u.keys?.length) {
-          for (const k of u.keys) {
-            const krRaw = await c.env.KEYS.get(`key:${k}`);
-            if (krRaw) {
-              const kr = JSON.parse(krRaw);
-              kr.plan = plan;
-              kr.status = "active";
-              await c.env.KEYS.put(`key:${k}`, JSON.stringify(kr));
-            }
-          }
-          if (email) {
-            await c.env.KEYS.put(`email:${email.toLowerCase()}`, user_id);
-          }
-          return c.json({
-            ok: true,
-            action: "plan_updated",
-            plan,
-            user_id,
-          });
-        }
-      }
-
-      const key = await issueKey(c.env as any, user_id, plan, sub_id);
-      if (email) {
-        await c.env.KEYS.put(`email:${email.toLowerCase()}`, user_id);
-      }
-      return c.json({ ok: true, action: "key_issued", key, plan, user_id });
+      const user_id = await resolveBillingUser(c.env as any, {
+        metaUserId: obj.metadata?.user_id,
+        customerId: update.customer_id,
+        email,
+        fallbackId: update.sub_id || obj.id,
+      });
+      const r = await syncEntitlement(c.env as any, c.executionCtx, user_id, update);
+      return c.json({ ok: true, action: r.action, plan: r.plan, user_id, ...(r.key ? { key: r.key } : {}) });
     }
 
     case "customer.subscription.deleted": {
@@ -358,21 +429,25 @@ export async function stripeWebhook(c: Context<{ Bindings: Env }>) {
         }
         return c.json({ ok: true, action: "quickcatch_deactivated" });
       }
-      const user_id = `cust:${sub.customer}`;
-      await revokeUserKeys(c.env, user_id);
-      return c.json({ ok: true, action: "revoked", user_id });
+      // Any other non-plan SKU (digital:*, future kinds) must never touch the
+      // buyer's API plan.
+      if (kind && kind !== "plan") return c.json({ ok: true, ignored_kind: kind });
+
+      // Plan ended → downgrade to free. Keys stay valid on the free tier, so a
+      // returning customer keeps the same key and re-upgrades in one click.
+      const update = updateFromSubscription(c.env as any, { ...sub, status: "canceled" }, typeof event.created === "number" ? event.created : undefined);
+      const user_id = await resolveBillingUser(c.env as any, {
+        metaUserId: sub.metadata?.user_id,
+        customerId: update.customer_id,
+        fallbackId: sub.id,
+      });
+      const r = await syncEntitlement(c.env as any, c.executionCtx, user_id, update);
+      return c.json({ ok: true, action: r.action, plan: r.plan, user_id });
     }
 
     default:
       return c.json({ ok: true, ignored: event.type });
   }
-}
-
-async function revokeUserKeys(env: Env, user_id: string) {
-  const userRaw = await env.KEYS.get(`user:${user_id}`);
-  if (!userRaw) return;
-  const u = JSON.parse(userRaw);
-  for (const k of u.keys || []) await revokeKey(env as any, k);
 }
 
 // =================== non-plan SKU fulfillment (webhook) ===================
@@ -913,21 +988,6 @@ function safeJson(s: string): any {
 }
 
 // =================== helpers ===================
-
-function parsePriceMap(s?: string): Record<string, Plan> {
-  try {
-    return JSON.parse(s || "{}");
-  } catch {
-    return {};
-  }
-}
-
-function invertPriceMap(s?: string): Partial<Record<Plan, string>> {
-  const m = parsePriceMap(s);
-  const out: Partial<Record<Plan, string>> = {};
-  for (const [price, plan] of Object.entries(m)) out[plan] = price;
-  return out;
-}
 
 // Stripe signature verification — manual HMAC-SHA256.
 async function verifyStripeSig(
