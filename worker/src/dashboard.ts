@@ -141,6 +141,15 @@ export function dashboardHtml(origin: string): string {
   pre .k { color: var(--accent2); } pre .s { color: #ffb86b; }
   .note { color: var(--muted); font-size: .85rem; }
   hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+  .plan.current { border-color: var(--green); }
+  .plan .upgrade:disabled { opacity: .6; cursor: default; transform: none; }
+  .notice { margin-top: 14px; border-radius: 12px; padding: 14px 16px; font-size: .9rem; }
+  .notice.warn { background: rgba(248,113,113,.08); border: 1px solid var(--red); color: #fecaca; }
+  .notice.info { background: rgba(255,158,44,.08); border: 1px solid rgba(255,158,44,.5); color: var(--accent2); }
+  .notice.ok { background: rgba(74,222,128,.08); border: 1px solid var(--green); color: #bbf7d0; }
+  #upgrade-banner { display: none; margin: 0 0 18px; background: linear-gradient(135deg,rgba(255,158,44,.14),rgba(255,207,122,.06)); border: 1px solid var(--accent); border-radius: 16px; padding: 18px 20px; }
+  #upgrade-banner .row { display: flex; gap: 14px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+  #billing-msg { min-height: 1em; }
   a { color: var(--accent2); text-decoration: none; }
   a:hover { text-decoration: underline; }
 </style>
@@ -236,11 +245,21 @@ export function dashboardHtml(origin: string): string {
 
 <hr/>
 
-<h2 style="margin-bottom:6px">Plans</h2>
-<p class="muted" style="margin-top:0">Upgrade unlocks live <code>execute</code> on Shopify, higher quotas, and (soon) headless browser support for bot-protected sites.</p>
+<h2 id="plans" style="margin-bottom:6px">Plans</h2>
+<p class="muted" style="margin-top:0">Upgrade unlocks live <code>execute</code> on Shopify, higher quotas, and (soon) headless browser support for bot-protected sites. Cancel or switch anytime — switches are prorated.</p>
+
+<div id="upgrade-banner" role="status">
+  <div class="row">
+    <div>
+      <strong id="upgrade-title">Unlock this call</strong>
+      <div class="muted" id="upgrade-detail" style="font-size:.9rem;margin-top:2px"></div>
+    </div>
+    <button class="input-btn" id="upgrade-go" style="background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1a1a1a;border:none;font-weight:700">Upgrade</button>
+  </div>
+</div>
 
 <div class="plans">
-  <div class="plan">
+  <div class="plan" data-plan-card="free">
     <h3>Free</h3>
     <div class="price">$0<small>/mo</small></div>
     <ul>
@@ -249,9 +268,9 @@ export function dashboardHtml(origin: string): string {
       <li>No execute</li>
       <li>Best-effort cache</li>
     </ul>
-    <a class="upgrade muted-btn" href="#">Current</a>
+    <a class="upgrade muted-btn" id="free-plan-btn" href="#">Current</a>
   </div>
-  <div class="plan featured">
+  <div class="plan featured" data-plan-card="builder">
     <h3>Builder</h3>
     <div class="price">$39<small>/mo</small></div>
     <ul>
@@ -263,7 +282,7 @@ export function dashboardHtml(origin: string): string {
     </ul>
     <button class="upgrade" data-plan="builder">Upgrade</button>
   </div>
-  <div class="plan">
+  <div class="plan" data-plan-card="pro">
     <h3>Pro</h3>
     <div class="price">$99<small>/mo</small></div>
     <ul>
@@ -275,7 +294,7 @@ export function dashboardHtml(origin: string): string {
     </ul>
     <button class="upgrade" data-plan="pro">Upgrade</button>
   </div>
-  <div class="plan">
+  <div class="plan" data-plan-card="reseller">
     <h3>Reseller</h3>
     <div class="price">$299<small>/mo</small></div>
     <ul>
@@ -291,7 +310,7 @@ export function dashboardHtml(origin: string): string {
 
 <div id="checkout-modal" style="display:none;margin-top:20px;background:var(--card);border:1px solid var(--accent);border-radius:16px;padding:24px">
   <strong>Continue to checkout</strong>
-  <p class="muted" style="margin:6px 0 14px;font-size:.88rem">Enter your email — your API key will be tied to it so you can recover it later.</p>
+  <p class="muted" style="margin:6px 0 14px;font-size:.88rem">Enter your email — your API key will be tied to it so you can recover it later. <a href="${origin}/api/v1/auth/github/start?redirect_to=/dashboard%23plans">Sign in with GitHub</a> instead to put the plan on your account.</p>
   <div class="key-row">
     <input type="email" id="checkout-email" placeholder="you@company.com" style="font-family:inherit" />
     <button class="input-btn" id="checkout-go">Continue →</button>
@@ -300,8 +319,8 @@ export function dashboardHtml(origin: string): string {
 </div>
 
 <div id="success-banner" style="display:none;margin-top:20px;background:linear-gradient(135deg,rgba(74,222,128,.12),rgba(255,176,0,.08));border:1px solid var(--green);border-radius:16px;padding:24px">
-  <strong style="color:var(--green)">Payment received — your key is ready</strong>
-  <p class="muted" style="margin:6px 0 12px;font-size:.88rem">Save this somewhere safe. You can also recover it via email below.</p>
+  <strong style="color:var(--green)" id="success-title">Payment received — your key is ready</strong>
+  <p class="muted" style="margin:6px 0 12px;font-size:.88rem" id="success-note">Save this somewhere safe. Existing keys on this account were upgraded too — no need to swap keys in your agents.</p>
   <div class="key-row">
     <div class="key-display" id="success-key">—</div>
     <button class="copy-btn" id="success-copy">Copy</button>
@@ -315,7 +334,7 @@ export function dashboardHtml(origin: string): string {
 <hr/>
 
 <h2 style="margin-bottom:6px">Lost your key?</h2>
-<p class="muted" style="margin-top:0">Enter the email you paid with and we'll show your key.</p>
+<p class="muted" style="margin-top:0">Enter the email you paid with and we'll email your key to that inbox. Or sign in with GitHub using the same verified email.</p>
 <div class="key-row" style="max-width:520px">
   <input type="email" id="recover-email" placeholder="you@company.com" style="font-family:inherit" />
   <button class="input-btn" id="recover-go">Recover</button>
@@ -366,6 +385,7 @@ let activeApiKeyProvider = null;
           </a>
         </div>\`;
       authArea.style.display = "block";
+      await loadBilling();
       return;
     }
 
@@ -382,6 +402,7 @@ let activeApiKeyProvider = null;
         </div>
         <button class="input-btn" id="signout">Sign out</button>
       </div>
+      <div id="billing" style="margin:6px 0 16px;padding:14px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)"></div>
       <div style="margin-top:8px">
         <strong>Your keys</strong>
         \${keys.length ? \`
@@ -397,6 +418,7 @@ let activeApiKeyProvider = null;
       </div>
     \`;
     authArea.style.display = "block";
+    await loadBilling();
 
     // Wire up signed-in actions
     document.getElementById("signout")?.addEventListener("click", async () => {
@@ -586,63 +608,227 @@ document.getElementById("apikey-save")?.addEventListener("click", async () => {
 lookupBtn.addEventListener("click", check);
 inp.addEventListener("keydown", e => { if (e.key === "Enter") check(); });
 
-// --- Checkout flow ---
+// --- Checkout / upgrade flow ---
 const modal = document.getElementById("checkout-modal");
 const checkoutEmail = document.getElementById("checkout-email");
 const checkoutGo = document.getElementById("checkout-go");
 const checkoutError = document.getElementById("checkout-error");
-let selectedPlan = "pro";
+const PARAMS = new URLSearchParams(window.location.search);
+const SOURCE = (PARAMS.get("source") || PARAMS.get("utm_source") || "dashboard").replace(/[^a-z0-9_.:-]/gi, "").slice(0, 40) || "dashboard";
+const PLAN_LABEL = { free: "Free", builder: "Builder", pro: "Pro", reseller: "Reseller" };
+const PLAN_PRICE = { builder: "$39/mo", pro: "$99/mo", reseller: "$299/mo" };
+const PLAN_RANK = { free: 0, builder: 1, pro: 2, reseller: 3 };
+let selectedPlan = "builder";
+let BILLING = null;
 
 document.querySelectorAll("button.upgrade[data-plan]").forEach((b) => {
-  b.addEventListener("click", () => {
-    selectedPlan = b.dataset.plan;
-    modal.style.display = "block";
-    checkoutEmail.focus();
-    modal.scrollIntoView({ behavior: "smooth", block: "center" });
-  });
+  b.addEventListener("click", () => startUpgrade(b.dataset.plan, b));
 });
 
-checkoutGo.addEventListener("click", startCheckout);
-checkoutEmail.addEventListener("keydown", (e) => { if (e.key === "Enter") startCheckout(); });
+checkoutGo.addEventListener("click", () => startCheckout(checkoutEmail.value.trim()));
+checkoutEmail.addEventListener("keydown", (e) => { if (e.key === "Enter") startCheckout(checkoutEmail.value.trim()); });
 
-async function startCheckout() {
-  const email = checkoutEmail.value.trim();
+// One entry point for every upgrade button: in-place switch for subscribers,
+// one-click checkout when signed in, email checkout when anonymous.
+async function startUpgrade(plan, btn) {
+  selectedPlan = plan;
   checkoutError.textContent = "";
-  if (!email || !email.includes("@")) {
+  if (BILLING && BILLING.can_change_plan) return changePlan(plan, btn);
+  if (BILLING && BILLING.signed_in) return startCheckout("", btn);
+  modal.style.display = "block";
+  checkoutEmail.focus();
+  modal.scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
+async function startCheckout(email, btn) {
+  const signedIn = !!(BILLING && BILLING.signed_in);
+  if (!signedIn && (!email || !email.includes("@"))) {
     checkoutError.textContent = "Enter a valid email.";
     return;
   }
-  checkoutGo.disabled = true;
-  checkoutGo.textContent = "Loading…";
+  const button = btn || checkoutGo;
+  const label = button.textContent;
+  button.disabled = true;
+  button.textContent = "Loading…";
   try {
     const r = await fetch(ORIGIN + "/api/v1/stripe/checkout", {
       method: "POST",
+      credentials: "include",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ email, plan: selectedPlan, origin: ORIGIN }),
+      body: JSON.stringify({ email: email || undefined, plan: selectedPlan, source: SOURCE }),
     });
-    const d = await r.json();
-    if (!r.ok || !d.url) {
-      checkoutError.textContent = d.error || "Checkout failed.";
-      checkoutGo.disabled = false;
-      checkoutGo.textContent = "Continue →";
-      return;
-    }
-    window.location.href = d.url;
+    const d = await r.json().catch(() => ({}));
+    if (r.ok && d.url) { window.location.href = d.url; return; }
+    showCheckoutError(r.status, d, signedIn);
   } catch (e) {
-    checkoutError.textContent = String(e);
-    checkoutGo.disabled = false;
-    checkoutGo.textContent = "Continue →";
+    showCheckoutError(0, {}, signedIn);
+  }
+  button.disabled = false;
+  button.textContent = label;
+}
+
+function showCheckoutError(status, d, signedIn) {
+  const msg =
+    d.error === "already_subscribed" ? "You already have a plan — switch it from Billing above." :
+    status === 503 ? "Checkout isn't switched on yet — try again shortly." :
+    d.error === "invalid_email" ? "Enter a valid email." :
+    status === 0 ? "Network error — try again." :
+    "Checkout failed (" + (d.error || status) + ").";
+  if (signedIn) setBillingMsg(msg, "warn"); else checkoutError.textContent = msg;
+  if (d.error === "already_subscribed") document.getElementById("billing")?.scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
+async function changePlan(plan, btn) {
+  const cur = BILLING.plan;
+  const verb = PLAN_RANK[plan] > PLAN_RANK[cur] ? "Upgrade" : "Downgrade";
+  const note = verb === "Upgrade"
+    ? "The prorated difference is charged now to your card on file."
+    : "The unused time is credited to your next invoice.";
+  if (!confirm(verb + " from " + PLAN_LABEL[cur] + " to " + PLAN_LABEL[plan] + " (" + PLAN_PRICE[plan] + ")? " + note)) return;
+  if (btn) { btn.disabled = true; btn.textContent = "Switching…"; }
+  try {
+    const r = await fetch(ORIGIN + "/api/v1/billing/change-plan", {
+      method: "POST",
+      credentials: "include",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ plan }),
+    });
+    const d = await r.json().catch(() => ({}));
+    if (r.ok) {
+      setBillingMsg("You're on " + PLAN_LABEL[d.plan] + " now. Your existing keys picked up the new limits.", "ok");
+      await loadBilling();
+    } else {
+      setBillingMsg(d.hint || ("Could not switch plan (" + (d.error || r.status) + ")."), "warn");
+    }
+  } catch (e) {
+    setBillingMsg("Network error — try again.", "warn");
+  }
+  renderPlanCards();
+}
+
+async function openPortal(btn) {
+  btn.disabled = true;
+  btn.textContent = "Opening…";
+  try {
+    const r = await fetch(ORIGIN + "/api/v1/billing/portal", { method: "POST", credentials: "include" });
+    const d = await r.json().catch(() => ({}));
+    if (r.ok && d.url) { window.location.href = d.url; return; }
+    setBillingMsg(d.hint || ("Billing portal unavailable (" + (d.error || r.status) + ")."), "warn");
+  } catch (e) {
+    setBillingMsg("Network error — try again.", "warn");
+  }
+  btn.disabled = false;
+  btn.textContent = "Manage billing";
+}
+
+function setBillingMsg(text, tone) {
+  const el = document.getElementById("billing-msg");
+  if (!el) { alert(text); return; }
+  el.className = "notice " + tone;
+  el.textContent = text;
+  el.style.display = "block";
+}
+
+async function loadBilling() {
+  try {
+    const r = await fetch(ORIGIN + "/api/v1/billing", { credentials: "include" });
+    BILLING = await r.json();
+  } catch (e) {
+    BILLING = null;
+  }
+  renderBillingPanel();
+  renderPlanCards();
+  return BILLING;
+}
+
+function fmtDate(unix) {
+  try { return new Date(unix * 1000).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" }); } catch (e) { return ""; }
+}
+
+function renderBillingPanel() {
+  const el = document.getElementById("billing");
+  if (!el || !BILLING || !BILLING.signed_in) return;
+  const b = BILLING.billing || {};
+  const plan = BILLING.plan || "free";
+  const lim = BILLING.limits || {};
+  let status = "";
+  if (b.status === "past_due") {
+    status = '<div class="notice warn">Your last payment failed. Update your card in <b>Manage billing</b> to keep ' + PLAN_LABEL[plan] + ' — Stripe retries automatically.</div>';
+  } else if (b.cancel_at_period_end && b.current_period_end) {
+    status = '<div class="notice info">' + PLAN_LABEL[plan] + ' ends on ' + fmtDate(b.current_period_end) + ' — then it drops to Free. Resume anytime in <b>Manage billing</b>.</div>';
+  } else if (b.status === "incomplete") {
+    status = '<div class="notice info">Payment is still processing — your plan unlocks as soon as it clears.</div>';
+  }
+  const renew = (b.current_period_end && !b.cancel_at_period_end && plan !== "free") ? ' · renews ' + fmtDate(b.current_period_end) : '';
+  const up = BILLING.upgrade;
+  el.innerHTML =
+    '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">' +
+      '<div><strong>Billing</strong> <span class="pill ' + plan + '" style="margin-left:6px">' + PLAN_LABEL[plan] + '</span>' +
+      '<div class="muted" style="font-size:.85rem">' + (lim.reads_per_day || 0).toLocaleString() + ' reads · ' + (lim.executes_per_day || 0).toLocaleString() + ' live executes / day' + renew + '</div></div>' +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap">' +
+        (up ? '<button class="input-btn" id="billing-up" data-plan="' + up.plan + '">' + (plan === "free" ? "Upgrade to " : "Switch to ") + PLAN_LABEL[up.plan] + ' — ' + up.price + '</button>' : '') +
+        (BILLING.can_manage ? '<button class="input-btn" id="billing-portal">Manage billing</button>' : '') +
+      '</div>' +
+    '</div>' + status + '<div id="billing-msg" class="notice" style="display:none"></div>';
+  document.getElementById("billing-portal")?.addEventListener("click", (e) => openPortal(e.currentTarget));
+  document.getElementById("billing-up")?.addEventListener("click", (e) => startUpgrade(e.currentTarget.dataset.plan, e.currentTarget));
+  if (PARAMS.get("billing") === "updated") setBillingMsg("Billing updated. Changes can take a few seconds to show.", "ok");
+}
+
+function renderPlanCards() {
+  const plan = (BILLING && BILLING.plan) || "free";
+  document.querySelectorAll("[data-plan-card]").forEach((card) => {
+    const p = card.dataset.planCard;
+    card.classList.toggle("current", p === plan);
+    const btn = card.querySelector("button.upgrade[data-plan]");
+    if (!btn) return;
+    if (p === plan) { btn.textContent = "Current plan"; btn.disabled = true; return; }
+    btn.disabled = false;
+    if (BILLING && BILLING.can_change_plan) btn.textContent = (PLAN_RANK[p] > PLAN_RANK[plan] ? "Upgrade to " : "Switch to ") + PLAN_LABEL[p];
+    else btn.textContent = "Upgrade";
+  });
+  const free = document.getElementById("free-plan-btn");
+  if (free) {
+    const onFree = plan === "free";
+    free.textContent = onFree ? "Current" : (BILLING && BILLING.can_manage ? "Cancel in billing" : "Free");
+    free.onclick = (e) => {
+      e.preventDefault();
+      if (!onFree && BILLING && BILLING.can_manage) openPortal(document.getElementById("billing-portal") || free);
+    };
   }
 }
 
+// Arrived from a paywall (402/429 upgrade_url): say what was blocked and
+// pre-select the plan that unlocks it.
+(function upgradeIntent() {
+  const want = PARAMS.get("upgrade");
+  if (!PLAN_PRICE[want] || PARAMS.get("session_id")) return;
+  const reasons = {
+    execute_required: "Live tool calls (execute) need a paid plan.",
+    free_tier_exhausted: "This agent used today's free tool calls.",
+    quota_reads: "You hit today's read limit.",
+    quota_executes: "You hit today's live-execute limit.",
+    quota_push: "You hit today's cache-push limit.",
+  };
+  const why = reasons[PARAMS.get("reason")] || (PARAMS.get("canceled") === "1" ? "Checkout canceled — no charge made." : "");
+  document.getElementById("upgrade-title").textContent = (why ? why + " " : "") + PLAN_LABEL[want] + " unlocks it.";
+  const lim = { builder: "2,000 reads + 200 live executes / day", pro: "10,000 reads + 1,000 live executes / day", reseller: "100,000 reads + 50,000 executes / day" };
+  document.getElementById("upgrade-detail").textContent = PLAN_PRICE[want] + " · " + lim[want] + " · cancel anytime";
+  const go = document.getElementById("upgrade-go");
+  go.textContent = "Upgrade to " + PLAN_LABEL[want] + " — " + PLAN_PRICE[want];
+  go.addEventListener("click", () => startUpgrade(want, go));
+  document.getElementById("upgrade-banner").style.display = "block";
+  document.querySelector('[data-plan-card="' + want + '"]')?.classList.add("featured");
+  if (location.hash === "#plans") setTimeout(() => document.getElementById("plans").scrollIntoView({ block: "start" }), 50);
+})();
+
 // --- Post-checkout / cancel banners ---
 (async function handleReturn() {
-  const params = new URLSearchParams(window.location.search);
-  if (params.get("canceled") === "1") {
-    document.getElementById("cancel-banner").style.display = "block";
+  if (PARAMS.get("canceled") === "1") {
+    if (!PLAN_PRICE[PARAMS.get("upgrade")]) document.getElementById("cancel-banner").style.display = "block";
     return;
   }
-  const sid = params.get("session_id");
+  const sid = PARAMS.get("session_id");
   if (!sid) return;
   const banner = document.getElementById("success-banner");
   const keyEl = document.getElementById("success-key");
@@ -650,12 +836,19 @@ async function startCheckout() {
   keyEl.textContent = "Loading…";
   // Poll briefly to absorb webhook race.
   for (let i = 0; i < 8; i++) {
-    const r = await fetch(ORIGIN + "/api/v1/keys/by-checkout?session_id=" + encodeURIComponent(sid));
+    const r = await fetch(ORIGIN + "/api/v1/keys/by-checkout?session_id=" + encodeURIComponent(sid), { credentials: "include" });
     const d = await r.json();
+    if (d.sign_in_required) {
+      document.getElementById("success-title").textContent = "Payment received — plan active";
+      keyEl.textContent = "Sign in with the account you upgraded to see your key.";
+      return;
+    }
     if (d.key) {
       keyEl.textContent = d.key;
+      document.getElementById("success-title").textContent = "Payment received — you're on " + (PLAN_LABEL[d.plan] || d.plan);
       // Auto-fill the key-check box too.
       inp.value = d.key;
+      loadBilling();
       return;
     }
     if (d.pending) {
@@ -666,7 +859,7 @@ async function startCheckout() {
     }
     await new Promise((res) => setTimeout(res, 1500));
   }
-  keyEl.textContent = "Took too long — try the recovery form below with your email.";
+  keyEl.textContent = "Took too long — refresh in a minute, or use the recovery form below.";
 })();
 
 document.getElementById("success-copy")?.addEventListener("click", () => {
@@ -694,7 +887,10 @@ async function recover() {
       out.innerHTML = '<span class="muted" style="color:var(--red)">' + (d.error || "Not found") + '</span>';
       return;
     }
-    out.innerHTML = '<div class="key-display" style="max-width:520px">' + (d.keys?.[d.keys.length - 1] || "—") + '</div>';
+    const p = document.createElement("p");
+    p.className = "muted";
+    p.textContent = d.message || "Check your inbox.";
+    out.appendChild(p);
   } catch (e) {
     out.innerHTML = '<span style="color:var(--red)">' + String(e) + '</span>';
   }

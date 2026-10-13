@@ -1588,6 +1588,20 @@ app.post("/api/v1/stripe/webhook", async (c) => stripeWebhook(c as any));
 app.post("/api/v1/stripe/checkout", async (c) => createCheckout(c as any));
 app.get("/api/v1/keys/by-checkout", async (c) => keyByCheckout(c as any));
 app.post("/api/v1/keys/recover", async (c) => recoverByEmail(c as any));
+// Self-serve billing: status (session or key), portal + in-place plan switch
+// (signed-in session only — an agent's API key can't touch billing).
+app.get("/api/v1/billing", async (c) => {
+  const { billingStatus } = await import("./billing");
+  return billingStatus(c as any);
+});
+app.post("/api/v1/billing/portal", async (c) => {
+  const { billingPortal } = await import("./billing");
+  return billingPortal(c as any);
+});
+app.post("/api/v1/billing/change-plan", async (c) => {
+  const { changePlan } = await import("./billing");
+  return changePlan(c as any);
+});
 
 // --------------------- self-serve directory Verified + Agent-Ready Fix ------
 // Ownership claim (meta-tag) gates the Verified purchase; both SKUs are

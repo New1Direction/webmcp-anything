@@ -12,6 +12,8 @@
 
 import type { Context, MiddlewareHandler, Next } from "hono";
 import { readSessionCookie } from "./session";
+import { track } from "./metrics";
+import { upgradeInfo, upgradeHint, requestOrigin, type PaywallReason } from "./paywall";
 
 export type Plan = "free" | "builder" | "pro" | "reseller";
 
@@ -148,11 +150,10 @@ export function gate(action: Action): MiddlewareHandler<{ Bindings: Bindings; Va
     c.set("auth", auth);
 
     if (action === "execute" && !PLAN_LIMITS[auth.plan].can_execute_paid) {
-      return c.json({
+      return paywall(c, auth, "execute_required", 402, {
         error: "payment_required",
-        hint: "Live execute requires a paid plan. Visit /dashboard to upgrade.",
-        plan: auth.plan,
-      }, 402);
+        hint: "Live execute requires a paid plan.",
+      });
     }
 
     const kind: "reads" | "executes" | "push" =
@@ -165,13 +166,14 @@ export function gate(action: Action): MiddlewareHandler<{ Bindings: Bindings; Va
     c.header("x-webmcp-remaining", String(usage.remaining));
 
     if (!usage.allowed) {
-      return c.json({
+      const reason: PaywallReason =
+        kind === "reads" ? "quota_reads" : kind === "executes" ? "quota_executes" : "quota_push";
+      return paywall(c, auth, reason, 429, {
         error: "quota_exceeded",
-        hint: `Plan "${auth.plan}" allows ${usage.limit} ${kind}/day. Upgrade at /dashboard.`,
-        plan: auth.plan,
+        hint: `Plan "${auth.plan}" allows ${usage.limit} ${kind}/day (resets 00:00 UTC).`,
         limit: usage.limit,
         remaining: 0,
-      }, 429);
+      });
     }
 
     await next();
@@ -211,7 +213,7 @@ export function proxyExecuteGate(): MiddlewareHandler<{ Bindings: Bindings; Vari
       c.header("x-webmcp-limit", String(usage.limit));
       c.header("x-webmcp-remaining", String(usage.remaining));
       if (!usage.allowed) {
-        return c.json({ error: "quota_exceeded", hint: `Plan "${auth.plan}" allows ${usage.limit} executes/day. Upgrade at /dashboard.`, plan: auth.plan, limit: usage.limit, remaining: 0 }, 429);
+        return paywall(c, auth, "quota_executes", 429, { error: "quota_exceeded", hint: `Plan "${auth.plan}" allows ${usage.limit} executes/day (resets 00:00 UTC).`, limit: usage.limit, remaining: 0 });
       }
       await next();
       return;
@@ -221,20 +223,19 @@ export function proxyExecuteGate(): MiddlewareHandler<{ Bindings: Bindings; Vari
     const freePerDay = parseInt(c.env.PROXY_FREE_CALLS_PER_DAY || "0", 10) || 0;
     if (freePerDay <= 0) {
       // Default-off → today's behavior: free plan can't execute live.
-      return c.json({ error: "payment_required", hint: "Executing a vaulted tool (e.g. Shopify add_to_cart) needs a paid plan — see /pricing. Reads and the A–F trust grade stay free.", plan: auth.plan }, 402);
+      return paywall(c, auth, "execute_required", 402, { error: "payment_required", hint: "Executing a vaulted tool (e.g. Shopify add_to_cart) needs a paid plan. Reads and the A–F trust grade stay free." });
     }
     const day = new Date().toISOString().slice(0, 10);
     const fk = `freecall:${auth.key}:${day}`;
     let used = 0;
     try { used = parseInt((await c.env.USAGE.get(fk)) || "0", 10) || 0; } catch {}
     if (used >= freePerDay) {
-      return c.json({
+      return paywall(c, auth, "free_tier_exhausted", 402, {
         error: "free_tier_exhausted",
-        hint: `This agent used its ${freePerDay} free tool calls today. Upgrade for unlimited at /dashboard, or wait for the daily reset (UTC).`,
-        plan: auth.plan,
+        hint: `This agent used its ${freePerDay} free tool calls today (resets 00:00 UTC).`,
         free_per_day: freePerDay,
         used,
-      }, 402);
+      });
     }
     c.executionCtx.waitUntil(c.env.USAGE.put(fk, String(used + 1), { expirationTtl: 2 * 86400 }));
     c.header("x-webmcp-plan", auth.plan);
@@ -242,6 +243,24 @@ export function proxyExecuteGate(): MiddlewareHandler<{ Bindings: Bindings; Vari
     c.header("x-webmcp-free-remaining", String(freePerDay - used - 1));
     await next();
   };
+}
+
+// Every plan gate answers with the same actionable body: the original error +
+// hint, plus `upgrade` (recommended plan, price, pre-selected checkout link).
+// Counted as an aggregate paywall_hit by reason + plan — no identity recorded.
+function paywall(
+  c: Context<{ Bindings: Bindings; Variables: { auth: AuthCtx } }>,
+  auth: AuthCtx,
+  reason: PaywallReason,
+  status: 402 | 429,
+  body: Record<string, unknown> & { error: string; hint: string }
+) {
+  const upgrade = upgradeInfo(requestOrigin(c.req.url), auth.plan, reason);
+  track(c.env, c.executionCtx, "paywall_hit", { reason, plan: auth.plan });
+  return c.json(
+    { ...body, hint: `${body.hint} ${upgradeHint(upgrade)}`, plan: auth.plan, upgrade_url: upgrade.upgrade_url, upgrade },
+    status
+  );
 }
 
 /** Generate a new API key + record it in KV. */

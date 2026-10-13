@@ -17,6 +17,8 @@ import { resolveAuth, consume, PLAN_LIMITS, type AuthCtx } from "./auth";
 import { base64urlDecode } from "./u";
 import { resolveTools, executeTool, type EngineEnv } from "./engine";
 import { loadToolsetUrls } from "./toolsets";
+import { upgradeInfo, upgradeHint, requestOrigin, type PaywallReason } from "./paywall";
+import { track } from "./metrics";
 
 type McpEnv = EngineEnv & { USAGE: KVNamespace; ENVIRONMENT: string };
 type McpCtx = Context<{ Bindings: McpEnv; Variables: { auth: AuthCtx } }>;
@@ -24,13 +26,19 @@ type McpCtx = Context<{ Bindings: McpEnv; Variables: { auth: AuthCtx } }>;
 const SUPPORTED = ["2024-11-05", "2025-03-26", "2025-06-18", "2025-11-25"];
 const DEFAULT_VERSION = "2025-06-18";
 
-const UPGRADE = "https://wmcp.sh/dashboard";
-
 function rpcResult(id: any, result: any) {
   return { jsonrpc: "2.0", id, result };
 }
 function rpcError(id: any, code: number, message: string, data?: any) {
   return { jsonrpc: "2.0", id: id ?? null, error: { code, message, ...(data ? { data } : {}) } };
+}
+
+// Plan gate as a JSON-RPC error whose message itself carries the upgrade step:
+// MCP clients surface `message` to the model/user, `data` is often dropped.
+function rpcPaywall(c: McpCtx, id: any, code: number, error: string, auth: AuthCtx, reason: PaywallReason, extra: Record<string, unknown> = {}) {
+  const u = upgradeInfo(requestOrigin(c.req.url), auth.plan, reason);
+  track(c.env, c.executionCtx, "paywall_hit", { reason, plan: auth.plan, surface: "mcp" });
+  return c.json(rpcError(id, code, `${error}. ${upgradeHint(u)}`, { plan: auth.plan, ...extra, upgrade: u.upgrade_url, upgrade_info: u }));
 }
 
 // MCP tool names: ^[A-Za-z0-9_.-]{1,128}$. Web-extracted labels often contain
@@ -144,7 +152,7 @@ async function handleOne(c: McpCtx, msg: any): Promise<Response> {
       // Discovery is free/anonymous-friendly; still meters one read for accounting.
       const usage = await consume(c as any, auth, "reads");
       if (!usage.allowed) {
-        return c.json(rpcError(id, -32000, "quota_exceeded", { plan: auth.plan, limit: usage.limit, upgrade: UPGRADE }));
+        return rpcPaywall(c, id, -32000, "quota_exceeded", auth, "quota_reads", { limit: usage.limit });
       }
       const { tools } = await buildToolIndex(c, urls, auth.user_id);
       return c.json(rpcResult(id, { tools }));
@@ -159,11 +167,11 @@ async function handleOne(c: McpCtx, msg: any): Promise<Response> {
       }
       // Paid gate — as JSON-RPC errors, never HTTP 402/429/401/403.
       if (!PLAN_LIMITS[auth.plan].can_execute_paid) {
-        return c.json(rpcError(id, -32002, "payment_required: live tool calls require a paid plan", { plan: auth.plan, upgrade: UPGRADE }));
+        return rpcPaywall(c, id, -32002, "payment_required: live tool calls require a paid plan", auth, "execute_required");
       }
       const usage = await consume(c as any, auth, "executes");
       if (!usage.allowed) {
-        return c.json(rpcError(id, -32000, "quota_exceeded", { plan: auth.plan, limit: usage.limit, upgrade: UPGRADE }));
+        return rpcPaywall(c, id, -32000, "quota_exceeded", auth, "quota_executes", { limit: usage.limit });
       }
       const { index } = await buildToolIndex(c, urls, auth.user_id);
       const target = index.get(params.name);

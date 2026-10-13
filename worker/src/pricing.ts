@@ -149,9 +149,12 @@ var ORIGIN=${JSON.stringify(origin)};
     var addr=(email.value||"").trim();err.textContent="";
     if(!addr||addr.indexOf("@")<0){err.textContent="Enter a valid email.";return;}
     go.disabled=true;go.textContent="Loading…";
-    fetch(ORIGIN+"/api/v1/stripe/checkout",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({email:addr,plan:plan,origin:ORIGIN})})
-      .then(function(r){return r.json().catch(function(){return{};}).then(function(d){return{ok:r.ok,d:d};});})
-      .then(function(x){if(!x.ok||!x.d.url){err.textContent=(x.d&&x.d.error)||"Checkout failed.";go.disabled=false;go.textContent="Continue →";return;}window.location.href=x.d.url;})
+    var src=(new URLSearchParams(location.search).get("source")||"pricing").replace(/[^a-z0-9_.:-]/gi,"").slice(0,40)||"pricing";
+    fetch(ORIGIN+"/api/v1/stripe/checkout",{method:"POST",credentials:"include",headers:{"content-type":"application/json"},body:JSON.stringify({email:addr,plan:plan,source:src})})
+      .then(function(r){return r.json().catch(function(){return{};}).then(function(d){return{ok:r.ok,s:r.status,d:d};});})
+      .then(function(x){if(x.ok&&x.d.url){window.location.href=x.d.url;return;}
+        if(x.d&&x.d.error==="already_subscribed"){window.location.href=ORIGIN+"/dashboard#billing";return;}
+        err.textContent=x.s===503?"Checkout isn't switched on yet — try again shortly.":((x.d&&x.d.error)||"Checkout failed.");go.disabled=false;go.textContent="Continue →";})
       .catch(function(){err.textContent="Network error — try again.";go.disabled=false;go.textContent="Continue →";});
   }
   go.addEventListener("click",start);

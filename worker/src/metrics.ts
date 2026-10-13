@@ -17,7 +17,11 @@ export type FunnelEvent =
   | "probe_run"
   | "activated"          // a live tools/call execute succeeded — the real activation
   | "checkout_started"
-  | "paid";
+  | "paid"
+  | "paywall_hit"        // a 402/429 plan gate fired (the moment of highest intent)
+  | "portal_opened"
+  | "plan_changed"
+  | "subscription_ended";
 
 const EVENTS: FunnelEvent[] = [
   "u_view",
@@ -26,32 +30,52 @@ const EVENTS: FunnelEvent[] = [
   "activated",
   "checkout_started",
   "paid",
+  "paywall_hit",
+  "portal_opened",
+  "plan_changed",
+  "subscription_ended",
 ];
 const TTL_DAYS = 90;
 
 // Fire-and-forget increment. Takes only the pieces it needs (not the full Hono
 // Context) so it composes cleanly across modules with different Bindings types.
 // Must never throw into the request path.
+//
+// `dims` adds one aggregate counter per dimension (conv:<event>:<k>.<v>:<day>)
+// so conversion can be sliced by plan / paywall reason / source. Privacy: only
+// low-cardinality labels go in — never user ids, keys, emails or IPs — and
+// every value is squashed to [a-z0-9_] so nothing free-form can leak through.
 export function track(
   env: { USAGE: KVNamespace },
   ctx: { waitUntil(p: Promise<unknown>): void },
-  event: FunnelEvent
+  event: FunnelEvent,
+  dims?: Record<string, string | undefined>
 ): void {
   try {
     const day = new Date().toISOString().slice(0, 10);
-    const key = `metric:${event}:${day}`;
+    const keys = [`metric:${event}:${day}`];
+    for (const [k, v] of Object.entries(dims || {})) {
+      const label = dimLabel(v);
+      if (label) keys.push(`conv:${event}:${dimLabel(k)}.${label}:${day}`);
+    }
     ctx.waitUntil(
-      (async () => {
-        const cur = await env.USAGE.get(key);
-        const n = cur ? parseInt(cur, 10) : 0;
-        await env.USAGE.put(key, String(n + 1), {
-          expirationTtl: TTL_DAYS * 86400,
-        });
-      })()
+      Promise.all(
+        keys.map(async (key) => {
+          const cur = await env.USAGE.get(key);
+          const n = cur ? parseInt(cur, 10) : 0;
+          await env.USAGE.put(key, String(n + 1), {
+            expirationTtl: TTL_DAYS * 86400,
+          });
+        })
+      )
     );
   } catch {
     // metrics must never break a request
   }
+}
+
+export function dimLabel(v: string | undefined): string {
+  return String(v || "").toLowerCase().replace(/[^a-z0-9_]/g, "_").slice(0, 32);
 }
 
 // ---------------------------------------------------------------------------
@@ -219,6 +243,7 @@ export async function getMetrics(c: Context<{ Bindings: MetricsEnv }>) {
     probe_to_checkout_pct: rate(totals.checkout_started, totals.probe_run),
     activated_to_checkout_pct: rate(totals.checkout_started, totals.activated),
     checkout_to_paid_pct: rate(totals.paid, totals.checkout_started),
+    paywall_to_checkout_pct: rate(totals.checkout_started, totals.paywall_hit),
   };
 
   // Live asset counts for the command center (admin-only, so list cost is fine):
@@ -254,7 +279,9 @@ export async function getMetrics(c: Context<{ Bindings: MetricsEnv }>) {
   // Landing-page + traffic-source rollups (where the visitors land / come from).
   const landing: Record<string, number> = {};
   const sources: Record<string, number> = {};
-  for (const [prefix, acc] of [["land:", landing], ["ref:", sources]] as const) {
+  // conv:<event>:<dim>.<value>:<day> → "<event>:<dim>.<value>" totals.
+  const conversion: Record<string, number> = {};
+  for (const [prefix, acc] of [["land:", landing], ["ref:", sources], ["conv:", conversion]] as const) {
     try {
       const l = await c.env.USAGE.list({ prefix, limit: 1000 });
       await Promise.all(
@@ -280,5 +307,6 @@ export async function getMetrics(c: Context<{ Bindings: MetricsEnv }>) {
     assets,
     landing: topN(landing),
     sources: topN(sources),
+    conversion: topN(conversion, 100),
   });
 }
