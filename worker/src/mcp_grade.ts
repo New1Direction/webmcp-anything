@@ -13,7 +13,10 @@ import { readBehavior, summarizeBehavior, type BehaviorSummary } from "./behavio
 import { uiCss, uiNav, emailCapture, monitorUpsell } from "./ui";
 import { adSlot } from "./ads";
 
+import { monitoredHosts, notifyMonitorSubscribers } from "./trust_delivery";
+
 type Env = { CACHE: KVNamespace; KEYS?: KVNamespace };
+const MAX_PAID_PER_RUN = 50;
 
 const SUPPORTED_VERSIONS = ["2024-11-05", "2025-03-26", "2025-06-18"];
 const TIMEOUT_MS = 12000;
@@ -794,19 +797,6 @@ export async function seedBehaviorBatch(env: Env, opts: { max?: number; maxTools
  * for a host (monitorsub:<host>:<sub> in KEYS, written by the Stripe webhook).
  * Each subscriber gets a POST to their Slack-compatible alert_url.
  */
-async function notifyMonitorSubscribers(env: Env, host: string, text: string): Promise<void> {
-  if (!env.KEYS) return;
-  let keys: { name: string }[] = [];
-  try { keys = (await env.KEYS.list({ prefix: `monitorsub:${host}:` })).keys; } catch { return; }
-  await Promise.all(keys.map(async (k) => {
-    try {
-      const raw = await env.KEYS!.get(k.name);
-      const sub = raw ? JSON.parse(raw) : null;
-      if (sub?.alert_url) await fetch(sub.alert_url, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ text }) }).catch(() => {});
-    } catch {}
-  }));
-}
-
 /**
  * Cron step: re-grade watched servers, detect rug-pulls / grade drops, and
  * alert. Capped + rotated (oldest-checked first) to stay within budget.
@@ -823,7 +813,12 @@ export async function regradeWatched(
   const list = await env.CACHE.list({ prefix: "gradewatch:", limit: 1000 });
   const rows = list.keys.map((k: any) => ({ h: k.name.slice("gradewatch:".length), ts: (k.metadata && k.metadata.checked_at) || 0 }));
   rows.sort((a, b) => a.ts - b.ts);
-  const batch = rows.slice(0, max);
+  // Paying Monitoring subscribers are re-checked EVERY run (the product
+  // promise), on top of the free rotation — otherwise a paid host waits its
+  // turn behind thousands of free ones (~12 days at 20/run every 2h).
+  const paid = (await monitoredHosts(env)).slice(0, MAX_PAID_PER_RUN);
+  const paidSet = new Set(paid);
+  const batch = [...paid.map((h) => ({ h })), ...rows.filter((r) => !paidSet.has(r.h)).slice(0, max)];
 
   let drifted = 0, dropped = 0;
   await Promise.all(
@@ -853,12 +848,12 @@ export async function regradeWatched(
             (s.changed.length ? ` ~${s.changed.length} changed` : "") +
             ` · grade ${out.prevGrade}→${fresh.grade} · ${url}`;
           fireAlertFn(env, ctx, msg);
-          ctx.waitUntil(notifyMonitorSubscribers(env, h, msg)); // paid subscribers
+          ctx.waitUntil(notifyMonitorSubscribers(env as any, h, msg)); // paid subscribers
         } else if (out.gradeDropped) {
           dropped++;
           const msg = `⚠ MCP grade drop: ${h} ${out.prevGrade}→${fresh.grade} · ${url}`;
           fireAlertFn(env, ctx, msg);
-          ctx.waitUntil(notifyMonitorSubscribers(env, h, msg)); // paid subscribers
+          ctx.waitUntil(notifyMonitorSubscribers(env as any, h, msg)); // paid subscribers
         }
       } catch {
         /* unreachable this round — skip, keep prior grade */
@@ -1125,7 +1120,7 @@ export function gradePageHtml(r: GradeResult, origin: string): string {
   ${r.kind === "package" ? "" : behavioralHtml}
   ${findingsHtml}
   ${operatorCaptureHtml}
-  <div class="cta">
+  <div class="cta" id="act">
     <button class="btn btn-p" id="monitor">Watch this server — drift &amp; rug-pull alerts →</button>
     <button class="btn btn-s" id="deepAudit">Get the full audit report →</button>
     <a class="btn btn-s" href="/mcp/grade">Grade another server</a>

@@ -20,6 +20,7 @@ import { fireAlert } from "./alerts";
 type Env = {
   KEYS: KVNamespace;
   USAGE: KVNamespace;
+  CACHE?: KVNamespace;
   LEAD_ALERT_WEBHOOK?: string;
 };
 
@@ -153,6 +154,21 @@ export async function captureLead(c: Context<{ Bindings: Env }>) {
         if (emailEnabled(c.env)) await sendEmail(c.env, { to: email, subject: "You're subscribed — State of MCP Security", html: subscribeConfirmHtml() });
       } catch {}
     })());
+  }
+
+  // The grade page promises "your findings are on the way" — deliver them now,
+  // rendered from the stored grade for that host (never from form text).
+  if (pkg === "grade-audit" && site_url && c.env.CACHE) {
+    let host = "";
+    try { host = new URL(site_url).host.toLowerCase(); } catch {}
+    if (host) {
+      c.executionCtx.waitUntil((async () => {
+        try {
+          const { sendFindingsEmail } = await import("./trust_delivery");
+          await sendFindingsEmail(c.env as any, email, host, "lead");
+        } catch {}
+      })());
+    }
   }
 
   return c.json({ ok: true, lead_id: leadId, message: "received" });
