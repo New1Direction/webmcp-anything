@@ -159,6 +159,7 @@ export function dashboardHtml(origin: string): string {
 <header>
   <h1>Get your key &amp; go live</h1>
   <p class="muted">Pick a plan to unlock live <code>execute</code>, or paste an existing key to see plan + usage. Already paid? Recover your key by email below.</p>
+  <a class="input-btn" style="display:inline-block" href="/start">Resume URL setup →</a>
 </header>
 
 <div id="auth-area" class="key-box" style="display:none">

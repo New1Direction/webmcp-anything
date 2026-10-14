@@ -21,7 +21,11 @@ export type FunnelEvent =
   | "paywall_hit"        // a 402/429 plan gate fired (the moment of highest intent)
   | "portal_opened"
   | "plan_changed"
-  | "subscription_ended";
+  | "subscription_ended"
+  | "activation_preview"
+  | "account_signed_in"
+  | "key_issued"
+  | "discovery_verified";
 
 const EVENTS: FunnelEvent[] = [
   "u_view",
@@ -34,6 +38,10 @@ const EVENTS: FunnelEvent[] = [
   "portal_opened",
   "plan_changed",
   "subscription_ended",
+  "activation_preview",
+  "account_signed_in",
+  "key_issued",
+  "discovery_verified",
 ];
 const TTL_DAYS = 90;
 
@@ -121,6 +129,7 @@ function isBot(ua: string): boolean {
 // machine endpoints (don't pollute the page funnel).
 export function pageBucket(path: string): string | null {
   if (path === "/") return "home";
+  if (path === "/start") return "activation";
   if (/^\/(api|static|assets|_)\//.test(path)) return null;
   if (/\.(js|css|png|jpe?g|gif|svg|ico|txt|xml|json|webp|woff2?|map|wasm)$/i.test(path)) return null;
   if (["/favicon.ico", "/robots.txt", "/sitemap.xml", "/llms.txt"].includes(path)) return null;

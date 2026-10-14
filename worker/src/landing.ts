@@ -494,7 +494,7 @@ export function landingHtml(origin: string): string {
     <h1>Turn any URL into <span class="accent">agent-callable MCP tools.</span></h1>
     <p class="sub">A real, hosted MCP server. Paste any URL to get agent-callable tools — or connect it to <strong style="color:var(--text)">Claude, Cursor, and Codex in one line</strong>. Shopify, OpenAPI, JSON-LD, and growing. Open-source adapters.</p>
     <div class="hero-ctas">
-      <a class="btn-primary" href="#code"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 3 14h9l-1 8 10-12h-9z"/></svg>Connect your agent</a>
+      <a class="btn-primary" href="/start"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 3 14h9l-1 8 10-12h-9z"/></svg>Connect your agent</a>
       <a class="btn-secondary" href="#demo"><svg class="ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4v16l13-8z"/></svg>Try the demo</a>
     </div>
     <div class="hero-stat">
@@ -527,7 +527,7 @@ export function landingHtml(origin: string): string {
   <div class="demo-box">
     <div class="row">
       <input id="u" type="url" placeholder="https://raw.githubusercontent.com/twilio/twilio-oai/main/spec/json/twilio_lookups_v2.json" />
-      <button class="go" id="go"><svg class="ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Get tools</button>
+      <button class="go" id="go"><svg class="ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Preview tools</button>
     </div>
     <div class="chips">
       <span style="color:var(--muted);font-size:.78rem;align-self:center">try:</span>
@@ -536,7 +536,7 @@ export function landingHtml(origin: string): string {
       <span class="chip" data-u="https://www.freecodecamp.org/news/the-javascript-array-handbook/">an article (jsonld)</span>
       <span class="chip" data-u="https://www.allbirds.com/products/mens-wool-runners">a storefront (shopify)</span>
     </div>
-    <pre id="out"><span class="c">// Paste a URL and click Get tools.</span></pre>
+    <pre id="out"><span class="c">// Continue to the guided preview. No account needed to inspect tools.</span></pre>
   </div>
 </section>
 
@@ -959,7 +959,6 @@ const ORIGIN = ${JSON.stringify(origin)};
 const out = document.getElementById("out");
 const inp = document.getElementById("u");
 const btn = document.getElementById("go");
-const BTN_LABEL = '<svg class="ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Get tools';
 
 document.querySelectorAll(".chip").forEach(c => {
   c.addEventListener("click", () => { inp.value = c.dataset.u; runDemo(); });
@@ -970,26 +969,18 @@ inp.addEventListener("keydown", e => { if (e.key === "Enter") runDemo(); });
 async function runDemo() {
   const url = inp.value.trim();
   if (!url) return;
-  btn.disabled = true; btn.textContent = "…";
-  out.innerHTML = '<span class="c">// fetching ' + escapeHtml(url) + '…</span>';
   try {
-    const r = await fetch(ORIGIN + "/api/v1/tools?url=" + encodeURIComponent(url));
-    const data = await r.json();
-    out.innerHTML = colorize(JSON.stringify(data, null, 2));
-  } catch (e) {
-    out.innerHTML = '<span style="color:var(--red)">' + escapeHtml(String(e)) + '</span>';
-  } finally {
-    btn.disabled = false; btn.innerHTML = BTN_LABEL;
+    const u = new URL(url);
+    if (u.protocol !== 'https:' || u.username || u.password || u.search || u.hash) throw new Error();
+    try { sessionStorage.setItem('wmcp_activation_url', u.href); } catch {}
+    window.location.assign('/start');
+  } catch {
+    out.textContent = 'Use a public HTTPS URL without credentials, query parameters or fragments. Private credentials belong in the Dashboard vault.';
   }
 }
 
 function escapeHtml(s) {
   return s.replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"})[c]);
-}
-function colorize(json) {
-  return escapeHtml(json)
-    .replace(/&quot;([^&]+?)&quot;:/g, '<span class="k">"$1"</span>:')
-    .replace(/: &quot;([^&]*?)&quot;/g, ': <span class="s">"$1"</span>');
 }
 
 // ---- code tabs ----

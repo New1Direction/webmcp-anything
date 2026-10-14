@@ -6,8 +6,8 @@
 //   POST /api/v1/auth/logout         → clear session
 //
 // Identity model:
-//   - First GH sign-in for an email: create user `gh:<github_id>` (or link to
-//     existing `cust:<stripe_id>` / `email:<email>` if email matches).
+//   - First GH sign-in creates user `gh:<github_id>`. Existing GH mappings stay
+//     stable; an unverified checkout email is never proof of account ownership.
 //   - Sessions stored server-side in KEYS KV (see session.ts).
 //
 // Phase B will reuse the same `oauth_state` machinery + token storage for the
@@ -24,6 +24,7 @@ import {
 } from "./session";
 import { issueKey } from "./auth";
 import { saveProviderToken } from "./token_vault";
+import { track } from "./metrics";
 
 type Env = {
   KEYS: KVNamespace;
@@ -40,7 +41,7 @@ export async function githubStart(c: Context<{ Bindings: Env }>) {
   if (!client_id) {
     return c.json({ error: "github_oauth_not_configured" }, 503);
   }
-  const redirect_to = c.req.query("redirect_to") || "/dashboard";
+  const redirect_to = safeReturn(c.req.query("redirect_to"));
   const state = await createOauthState(c.env, { provider: "github", redirect_to });
   const origin = new URL(c.req.url).origin;
   const params = new URLSearchParams({
@@ -136,7 +137,7 @@ export async function githubCallback(c: Context<{ Bindings: Env }>) {
     if (pri) primaryEmail = pri.email;
   }
 
-  // 3. Resolve to a wmcp user_id (link by email if a customer record exists)
+  // 3. Resolve by stable GitHub identity, never by checkout email alone.
   const user_id = await resolveOrCreateUser(c.env, {
     github_id: ghUser.id,
     github_login: ghUser.login,
@@ -169,7 +170,10 @@ export async function githubCallback(c: Context<{ Bindings: Env }>) {
     github_login: ghUser.login,
   });
 
-  const target = statePayload.redirect_to || "/dashboard";
+  if (c.req.header("dnt") !== "1" && c.req.header("sec-gpc") !== "1") {
+    track(c.env, c.executionCtx, "account_signed_in");
+  }
+  const target = safeReturn(statePayload.redirect_to);
   return new Response(null, {
     status: 302,
     headers: {
@@ -192,6 +196,7 @@ export async function logout(c: Context<{ Bindings: Env }>) {
 
 // /api/v1/me — who am I? Reads cookie session and returns the user view.
 export async function me(c: Context<{ Bindings: Env }>) {
+  c.header("Cache-Control", "no-store");
   const sid = readSessionCookie(c);
   if (!sid) return c.json({ authenticated: false });
   const raw = await c.env.KEYS.get(`session:${sid}`);
@@ -200,19 +205,27 @@ export async function me(c: Context<{ Bindings: Env }>) {
   // Look up the user record for keys + plan
   const userRaw = await c.env.KEYS.get(`user:${sess.user_id}`);
   const user = userRaw ? JSON.parse(userRaw) : null;
+  const keys = (await Promise.all((user?.keys || []).map(async (key: string) => {
+    const raw = await c.env.KEYS.get(`key:${key}`);
+    if (!raw) return null;
+    const record = JSON.parse(raw);
+    return record.status === "active" && record.user_id === sess.user_id ? key : null;
+  }))).filter(Boolean);
   return c.json({
     authenticated: true,
     user_id: sess.user_id,
     email: sess.email,
     github_login: sess.github_login,
     plan: user?.plan || "free",
-    keys: user?.keys || [],
+    keys,
     connections: sess.connections || [],
   });
 }
 
 // /api/v1/me/keys — issue a new key for the logged-in user (free tier ok).
 export async function issueOwnKey(c: Context<{ Bindings: Env }>) {
+  c.header("Cache-Control", "no-store");
+  if (c.req.header("origin") !== new URL(c.req.url).origin) return c.json({ error: "same_origin_required" }, 403);
   const sid = readSessionCookie(c);
   if (!sid) return c.json({ error: "not_authenticated" }, 401);
   const raw = await c.env.KEYS.get(`session:${sid}`);
@@ -221,10 +234,23 @@ export async function issueOwnKey(c: Context<{ Bindings: Env }>) {
   const userRaw = await c.env.KEYS.get(`user:${sess.user_id}`);
   const user = userRaw ? JSON.parse(userRaw) : { plan: "free", keys: [] };
   const key = await issueKey(c.env as any, sess.user_id, user.plan || "free");
+  if (c.req.header("dnt") !== "1" && c.req.header("sec-gpc") !== "1") {
+    track(c.env, c.executionCtx, "key_issued", { plan: user.plan || "free" });
+  }
   return c.json({ key, plan: user.plan || "free" });
 }
 
 // ====================== helpers ======================
+
+function safeReturn(value?: string): string {
+  try {
+    const u = new URL(value || "/dashboard", "https://wmcp.sh");
+    if (u.origin === "https://wmcp.sh" && ["/start", "/dashboard"].includes(u.pathname)) {
+      return u.pathname + u.search + u.hash;
+    }
+  } catch {}
+  return "/dashboard";
+}
 
 async function resolveOrCreateUser(
   env: Env,
@@ -240,26 +266,7 @@ async function resolveOrCreateUser(
   const existingGhUserId = await env.KEYS.get(`gh_user:${who.github_id}`);
   if (existingGhUserId) return existingGhUserId;
 
-  // 2. If email matches a Stripe customer or email-indexed user, link to it.
-  if (who.email) {
-    const byEmail = await env.KEYS.get(`email:${who.email.toLowerCase()}`);
-    if (byEmail) {
-      // Backfill the gh → user link so future logins are fast.
-      await env.KEYS.put(`gh_user:${who.github_id}`, byEmail);
-      // Annotate the user record with github info.
-      const userRaw = await env.KEYS.get(`user:${byEmail}`);
-      if (userRaw) {
-        const u = JSON.parse(userRaw);
-        u.github_id = who.github_id;
-        u.github_login = who.github_login;
-        if (!u.email) u.email = who.email;
-        await env.KEYS.put(`user:${byEmail}`, JSON.stringify(u));
-      }
-      return byEmail;
-    }
-  }
-
-  // 3. New user. Create a fresh user record keyed by GitHub.
+  // New identities stay separate from email-only checkout accounts.
   const user_id = ghKey;
   await env.KEYS.put(
     `user:${user_id}`,
@@ -274,7 +281,7 @@ async function resolveOrCreateUser(
     })
   );
   await env.KEYS.put(`gh_user:${who.github_id}`, user_id);
-  if (who.email) {
+  if (who.email && !await env.KEYS.get(`email:${who.email.toLowerCase()}`)) {
     await env.KEYS.put(`email:${who.email.toLowerCase()}`, user_id);
   }
   return user_id;

@@ -13,7 +13,7 @@
 // API). See the spec rationale baked into the inline notes below.
 
 import type { Context } from "hono";
-import { resolveAuth, consume, PLAN_LIMITS, type AuthCtx } from "./auth";
+import { bearer, resolveAuth, consume, PLAN_LIMITS, type AuthCtx } from "./auth";
 import { base64urlDecode } from "./u";
 import { resolveTools, executeTool, type EngineEnv } from "./engine";
 import { loadToolsetUrls } from "./toolsets";
@@ -127,6 +127,9 @@ async function handleOne(c: McpCtx, msg: any): Promise<Response> {
   }
 
   const auth = await resolveAuth(c as any);
+  if (bearer(c) && auth.key !== bearer(c)) {
+    return c.json(rpcError(id, -32001, "Invalid or revoked API key. Get an active key in Dashboard."));
+  }
 
   switch (method) {
     case "initialize": {
@@ -155,6 +158,9 @@ async function handleOne(c: McpCtx, msg: any): Promise<Response> {
         return rpcPaywall(c, id, -32000, "quota_exceeded", auth, "quota_reads", { limit: usage.limit });
       }
       const { tools } = await buildToolIndex(c, urls, auth.user_id);
+      if (tools.length && !auth.anonymous && c.req.header("dnt") !== "1" && c.req.header("sec-gpc") !== "1") {
+        track(c.env, c.executionCtx, "discovery_verified", { plan: auth.plan });
+      }
       return c.json(rpcResult(id, { tools }));
     }
 
@@ -201,6 +207,7 @@ async function handleOne(c: McpCtx, msg: any): Promise<Response> {
 }
 
 export async function mcpHandler(c: McpCtx): Promise<Response> {
+  c.header("Cache-Control", "no-store");
   const msg = await c.req.json().catch(() => null);
   if (msg === null) return c.json(rpcError(null, -32700, "Parse error"));
   if (Array.isArray(msg)) {

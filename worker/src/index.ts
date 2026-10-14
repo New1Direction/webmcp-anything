@@ -74,7 +74,7 @@ app.use("*", cors({
 // signups" number into top-landing-pages + top-referrers, read from the land:/
 // ref: KV counters or GET /api/v1/admin/metrics. Fire-and-forget, never blocks.
 app.use("*", async (c, next) => {
-  if (c.req.method === "GET") {
+  if (c.req.method === "GET" && c.req.header("dnt") !== "1" && c.req.header("sec-gpc") !== "1") {
     try {
       const u = new URL(c.req.url);
       trackView(
@@ -100,6 +100,17 @@ app.use("*", async (c, next) => {
 // --------------------- routes ---------------------
 
 app.get("/", (c) => c.html(landingHtml(new URL(c.req.url).origin)));
+
+app.get("/start", async (c) => {
+  const { activationHtml } = await import("./activation_page");
+  c.header("Cache-Control", "no-store");
+  c.header("Referrer-Policy", "no-referrer");
+  return c.html(activationHtml());
+});
+app.post("/api/v1/activation/preview", gate("read"), async (c) => {
+  const { previewActivation } = await import("./activation");
+  return previewActivation(c);
+});
 
 // Privacy policy — required by the Chrome Web Store listing (host_permissions).
 app.get("/privacy", async (c) => {
