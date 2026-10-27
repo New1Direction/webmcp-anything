@@ -125,7 +125,8 @@ function captureFetch() {
 }
 
 async function fireOn(env: any, obj: any, type = "checkout.session.completed") {
-  const raw = JSON.stringify({ type, created: Math.floor(Date.now() / 1000), data: { object: obj } });
+  const paidSession = type.startsWith("checkout.session.") ? { payment_status: "paid", ...obj } : obj;
+  const raw = JSON.stringify({ type, created: Math.floor(Date.now() / 1000), data: { object: paidSession } });
   const c = makeCtx({ env, body: raw, headers: { "stripe-signature": signStripe(raw, WHSEC) } });
   const res = await stripeWebhook(c);
   await Promise.all(c.__waited);

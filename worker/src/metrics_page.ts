@@ -40,7 +40,9 @@ export function metricsPageHtml(origin: string): string {
 
   <div id="assets" class="statgrid"></div>
 
+  <section><h2>Revenue readiness</h2><p class="muted">Configuration checks only. Passing does not confirm a successful live payment or Stripe webhook.</p><div id="readiness" class="card"><span class="muted">Load to view.</span></div></section>
   <section><h2>Conversion funnel</h2><div id="funnel" class="card fnl"><span class="muted">Load to view.</span></div></section>
+  <section><h2>Paid fulfillment <span id="ordercount" class="muted"></span></h2><p class="muted">Only mark a paid fix complete after delivering it and recording an HTTPS evidence link. Verification is never granted at checkout.</p><div id="paid-orders" class="card"><span class="muted">Load to view.</span></div></section>
   <section><h2>Recent leads <span id="leadcount" class="muted" style="font-weight:400"></span></h2><div id="leadsWrap"><span class="muted">Load to view.</span></div></section>
   <section><h2>By day</h2><div id="byday"><span class="muted">Load to view.</span></div></section>
 
@@ -58,17 +60,44 @@ export function metricsPageHtml(origin: string): string {
 
   function statCard(v,l){ return '<div class="card stat"><div class="v">'+v+'</div><div class="l">'+l+'</div></div>'; }
 
+  var paidOrders=[];
   function load(){
     var t=$("token").value.trim(); localStorage.setItem(KEY,t); $("err").textContent="";
     var h={headers:{"x-admin-token":t}};
     Promise.all([
       fetch(ORIGIN+"/api/v1/admin/metrics",h).then(function(r){return r.json().then(function(d){return{s:r.status,d:d};});}),
-      fetch(ORIGIN+"/api/v1/admin/leads",h).then(function(r){return r.json().then(function(d){return{s:r.status,d:d};});}).catch(function(){return{s:0,d:{}};})
+      fetch(ORIGIN+"/api/v1/admin/leads",h).then(function(r){return r.json().then(function(d){return{s:r.status,d:d};});}).catch(function(){return{s:0,d:{}};}),
+      fetch(ORIGIN+"/api/v1/admin/revenue-readiness",h).then(function(r){return r.json().then(function(d){return{s:r.status,d:d};});}).catch(function(){return{s:0,d:{}};}),
+      fetch(ORIGIN+"/api/v1/admin/paid-orders",h).then(function(r){return r.json().then(function(d){return{s:r.status,d:d};});}).catch(function(){return{s:0,d:{}};})
     ]).then(function(res){
-      var mr=res[0], lr=res[1];
+      var mr=res[0], lr=res[1], rr=res[2], or=res[3];
       if(mr.s!==200){ $("err").textContent=(mr.d&&mr.d.error)||("Failed ("+mr.s+")"); return; }
       var m=mr.d, a=m.assets||{}, totals=m.totals||{}, funnel=m.funnel||{}, byDay=m.byDay||{};
       var leads=(lr.d&&lr.d.leads)||[], hot=(lr.d&&lr.d.hot)||0;
+
+      // Secret-free, config-only sales preflight.
+      if(rr.s===200 && rr.d && rr.d.checks){
+        var checks=Object.keys(rr.d.checks).map(function(k){
+          return '<div style="display:flex;justify-content:space-between;gap:12px;margin:5px 0"><span>'+esc(k.replace(/_/g," "))+'</span><strong style="color:'+(rr.d.checks[k]?'var(--green)':'var(--red)')+'">'+(rr.d.checks[k]?'set':'missing')+'</strong></div>';
+        }).join("");
+        var warnings=(rr.d.warnings||[]).map(function(w){return '<li>'+esc(w)+'</li>';}).join("");
+        $("readiness").innerHTML='<p><strong>Subscriptions:</strong> '+(rr.d.subscriptions_configured?'configured':'incomplete')+' · <strong>Fix orders:</strong> '+(rr.d.agent_ready_fix_configured?'configured':'incomplete')+'</p>'+checks+(warnings?'<ul>'+warnings+'</ul>':'<p class="muted">No missing settings detected. Test a real checkout before launch.</p>');
+      } else {
+        $("readiness").textContent="Could not load readiness checks. Confirm the admin token and endpoint.";
+      }
+
+      // Paid order queue (trusted operator access only).
+      paidOrders=or.s===200 ? (or.d.orders||[]) : [];
+      $("ordercount").textContent=or.s===200?"("+or.d.pending_count+" pending)":"";
+      if(or.s!==200) $("paid-orders").textContent="Could not load orders.";
+      else if(!paidOrders.length) $("paid-orders").textContent="No paid fulfillment orders found.";
+      else {
+        var rows=paidOrders.slice(0,25).map(function(o,i){
+          var pending=o.kind==="agent_ready_fix"&&o.status==="paid_pending_fulfillment";
+          return "<tr><td>"+esc(o.kind)+"</td><td>"+esc(o.site_url)+"</td><td>"+esc(o.email)+"</td><td>"+esc(o.status)+"</td><td>"+(pending?'<button class="btn btn-ghost" data-complete="'+i+'">Mark delivered</button>':"—")+"</td></tr>";
+        }).join("");
+        $("paid-orders").innerHTML='<table class="tbl"><thead><tr><th>Kind</th><th>Site</th><th>Email</th><th>Status</th><th>Fulfillment</th></tr></thead><tbody>'+rows+'</tbody></table>';
+      }
 
       // asset + headline cards
       $("assets").innerHTML=
@@ -108,6 +137,22 @@ export function metricsPageHtml(origin: string): string {
       }
     }).catch(function(e){ $("err").textContent=String(e); });
   }
+  $("paid-orders").addEventListener("click",function(ev){
+    var button=ev.target.closest("button[data-complete]");
+    if(!button)return;
+    var o=paidOrders[Number(button.getAttribute("data-complete"))];
+    if(!o||o.kind!=="agent_ready_fix"||o.status!=="paid_pending_fulfillment")return;
+    var proof=prompt("HTTPS link to the delivered integration, PR, or handoff evidence:");
+    if(!proof)return;
+    if(!/^https:\/\//i.test(proof)){alert("An HTTPS evidence URL is required.");return;}
+    if(!confirm("Confirm the work is delivered to this customer. This will mark the site Verified."))return;
+    button.disabled=true;
+    fetch(ORIGIN+"/api/v1/admin/paid-fixes/complete",{
+      method:"POST",headers:{"content-type":"application/json","x-admin-token":$("token").value.trim()},
+      body:JSON.stringify({order_key:o.order_key,evidence_url:proof})
+    }).then(function(r){return r.json().then(function(d){if(!r.ok)throw Error(d.error||"Fulfillment failed");return d;});})
+      .then(function(){load();}).catch(function(e){alert(e.message);button.disabled=false;});
+  });
   $("load").addEventListener("click",load);
   if($("token").value) load();
 })();

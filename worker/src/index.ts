@@ -1150,6 +1150,20 @@ app.get("/api/v1/admin/metrics", async (c) => {
   const m = await import("./metrics");
   return m.getMetrics(c as any);
 });
+// Admin-only, secret-free preflight for subscriptions and one-time services.
+app.get("/api/v1/admin/revenue-readiness", async (c) => {
+  const { revenueReadiness } = await import("./revenue_readiness");
+  return revenueReadiness(c as any);
+});
+// Paid one-time services: human-review queue and evidence-gated completion.
+app.get("/api/v1/admin/paid-orders", async (c) => {
+  const { paidOrderQueue } = await import("./paid_orders");
+  return paidOrderQueue(c as any);
+});
+app.post("/api/v1/admin/paid-fixes/complete", async (c) => {
+  const { completePaidFix } = await import("./paid_orders");
+  return completePaidFix(c as any);
+});
 // Buyer-finding funnel: ranked prospect list from real account/usage signals.
 app.get("/api/v1/admin/leads", async (c) => {
   const m = await import("./leads");
