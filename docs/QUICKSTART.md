@@ -1,145 +1,96 @@
-# Quickstart — wmcp.sh in 5 minutes
+# Quickstart — WMCP in 5 minutes
 
-You have an AI agent (Claude Desktop, Cursor, Codex, OpenAI's Agents SDK, or a custom Python/TypeScript loop). You want it to call tools on real websites. This is the fastest path.
+WMCP provides (1) a REST discovery API and (2) a separate, real Model Context Protocol endpoint. **Do not use the REST /api/v1/tools URL as an MCP server URL.** This guide covers both.
 
-## 30-second test (no install)
+## 1. Discover candidate tools, no account required
 
-```bash
-curl 'https://wmcp.sh/api/v1/tools?url=https://www.allbirds.com/products/mens-wool-runners' | jq '.tools[] | .name'
-```
+### Terminal
 
-You should see something like:
+Clone the repository and run the dependency-free inspector (Node.js 18+):
 
-```
-"get_price"
-"list_variants"
-"add_to_cart"
-"get_inventory"
-```
+~~~sh
+git clone https://github.com/New1Direction/webmcp-anything
+cd webmcp-anything
+node cli/wmcp.mjs inspect https://petstore3.swagger.io/api/v3/openapi.json
+~~~
 
-That's a live Shopify storefront, compiled to MCP tools at the edge in under 50ms. No API key, no install, no per-site adapter you have to write.
+Or skip the clone and make an ordinary REST request:
 
-## Connect Claude Desktop in 60 seconds
+~~~sh
+curl -sS 'https://wmcp.sh/api/v1/tools?url=https://petstore3.swagger.io/api/v3/openapi.json'
+~~~
 
-1. Open Claude Desktop → **Settings** → **Developer** → **Edit Config**.
-2. Add to your `mcpServers`:
+The returned schemas are discovery candidates; they are not proof of usable, safe or authorized live actions. The hosted service may fetch or cache submitted URLs. Do not send credentials or signed/private URLs.
 
-   ```json
-   {
-     "mcpServers": {
-       "wmcp": {
-         "type": "streamable-http",
-         "url": "https://wmcp.sh/api/v1/tools"
-       }
-     }
-   }
-   ```
-3. Restart Claude Desktop. The tools appear under the wrench icon in the chat input.
-4. Try a prompt:
-   > "Get the price of https://www.allbirds.com/products/mens-wool-runners"
+## 2. Verify real MCP protocol support
 
-The agent calls `get_price` against the cached tool extraction and returns the result.
+~~~sh
+node cli/wmcp.mjs mcp https://petstore3.swagger.io/api/v3/openapi.json
+~~~
 
-Full step-by-step screenshots at [wmcp.sh/how-to/install-claude-desktop-mcp](https://wmcp.sh/how-to/install-claude-desktop-mcp).
+The CLI sends a JSON-RPC initialize request, then tools/list, to a per-URL MCP endpoint. **It never executes tools/call.** It prints discovered names, protocol version, and the endpoint.
 
-## Connect Cursor
+Build a client config for the same URL:
 
-Cursor reads the same `mcpServers` config shape. Open `~/.cursor/mcp.json` and add the wmcp entry above. Restart Cursor.
+~~~sh
+node cli/wmcp.mjs config https://petstore3.swagger.io/api/v3/openapi.json
+~~~
 
-## Connect Codex CLI
+Copy the resulting URL into the remote-MCP configuration supported by your client. Its shape is:
 
-`~/.codex/config.toml`:
+~~~json
+{
+  "mcpServers": {
+    "wmcp": {
+      "type": "http",
+      "url": "https://wmcp.sh/mcp/u/<base64url-encoded-target>"
+    }
+  }
+}
+~~~
 
-```toml
-[mcp_servers.wmcp]
-type = "streamable-http"
-url = "https://wmcp.sh/api/v1/tools"
-```
+The angle-bracket token above is a placeholder. Run the CLI to get the correctly encoded URL.
 
-## Connect a custom agent (Python)
+**Claude, Cursor, Codex and other clients have different configuration syntax and supported transports.** Consult the client's current documentation and adapt the generated endpoint. For clients that do not support remote Streamable HTTP directly, use a compatible transport bridge.
 
-```python
-import httpx, anthropic
+## 3. Want live tool execution?
 
-WMCP = "https://wmcp.sh/api/v1/tools"
+Reading a tool list is free within rate limits. Calling an action needs a paid account/API key or an appropriate authenticated provider connection, plus the target site's permissions.
 
-# 1. Fetch tools for a URL
-tools = httpx.get(WMCP, params={"url": "https://www.allbirds.com/products/mens-wool-runners"}).json()["tools"]
+1. Visit [wmcp.sh/dashboard](https://wmcp.sh/dashboard), review the terms, and obtain an API key.
+2. Configure your MCP client to send an Authorization: Bearer header to WMCP. Never include the key in a URL, GitHub issue, commit or chat.
+3. Only call site actions you have permission to use. Confirm purchases, writes, transfers and other consequential operations.
 
-# 2. Hand them to Claude
-client = anthropic.Anthropic()
-msg = client.messages.create(
-    model="claude-sonnet-4-6",
-    max_tokens=1024,
-    tools=tools,
-    messages=[{"role": "user", "content": "What's the price of the wool runners?"}],
-)
+Authenticated provider connections live under the WMCP dashboard and use separate server-side proxy routes. A browser WebMCP tool uses the site owner's browser session and **does not automatically become remotely callable** through a URL-based gateway.
 
-# 3. Iterate the tool_use → tool_result loop
-for block in msg.content:
-    if block.type == "tool_use":
-        # ... call wmcp.sh execute endpoint with block.input, return result ...
-        pass
-```
+## 4. Try a website's own browser-native WebMCP tools
 
-Code-complete version with the execute loop: [wmcp.sh/blog/claude-code-mcp-integration-tutorial](https://wmcp.sh/blog/claude-code-mcp-integration-tutorial).
+Open the dependency-free [native taskboard demo](../examples/browser-demo/README.md):
 
-## Connect a custom agent (TypeScript)
+~~~sh
+cd examples/browser-demo
+python3 -m http.server 8000
+~~~
 
-```bash
-npm install @wmcp/sdk @anthropic-ai/sdk
-```
+Visit http://localhost:8000 from a browser with native WebMCP support or the relevant experimental flag. The page registers list_tasks, add_task and complete_task via document.modelContext. An agent can invoke them and the visible UI changes. If the native API is absent, you can still use the taskboard normally.
 
-```typescript
-import { WmcpClient } from "@wmcp/sdk";
-import Anthropic from "@anthropic-ai/sdk";
+This is not a remote MCP connection and does not require a WMCP subscription.
 
-const wmcp = new WmcpClient();
-const { tools } = await wmcp.tools("https://api.stripe.com/openapi.yaml");
+## 5. Build or extend WMCP
 
-const anthropic = new Anthropic();
-const msg = await anthropic.messages.create({
-  model: "claude-sonnet-4-6",
-  max_tokens: 1024,
-  tools,
-  messages: [{ role: "user", content: "List my last 5 Stripe invoices." }],
-});
-// → handle msg.content tool_use blocks
-```
+- [Adapter contract](../adapters/CONTRACT.md) — make a read-only public-site adapter
+- [Contribution guide](../CONTRIBUTING.md) — fixtures, test harness, PR process
+- [Architecture](ARCHITECTURE.md) — worker caching, authentication, integration
+- [API reference](API.md) — routes, authentication, responses
+- [Self-hosting](SELF_HOSTING.md) — run your own deployment
+- [CLI guide](../cli/README.md) — local read-only commands
 
-## What can I point wmcp.sh at?
+Run tests:
 
-| URL shape | Adapter tier | Latency |
-|---|---|---|
-| `https://yourshop.myshopify.com/products/...` | Shopify (~4M storefronts) | <50ms |
-| `https://store.com/product/...` with `<script type="application/ld+json">` | JSON-LD | <50ms |
-| `https://api.example.com/openapi.yaml` (or `.json`) | OpenAPI compiler | 100-300ms first call, <50ms cached |
-| `https://api.stripe.com`, `https://api.github.com`, etc. (known providers) | Provider adapter | <50ms |
-| Anything else | LLM-fallback (Claude 3.5 Haiku) | 1-3s first call, <50ms cached |
+~~~sh
+node --test cli/*.test.mjs
+node adapters/_test/run.mjs
+cd worker && npm install && npm run verify
+~~~
 
-## Need auth?
-
-Many APIs require OAuth or API keys. wmcp.sh ships an OAuth 2.1 PKCE proxy + encrypted credential vault.
-
-1. Open [wmcp.sh/dashboard](https://wmcp.sh/dashboard)
-2. Sign in with GitHub
-3. Connect the providers you need (Stripe, Slack, Notion, Linear, Discord, Google, etc.)
-4. Use the provider-specific MCP endpoint:
-
-   ```
-   https://wmcp.sh/mcp/stripe
-   https://wmcp.sh/mcp/slack
-   https://wmcp.sh/mcp/notion
-   ```
-
-   The worker injects your stored bearer token; your agent context never sees raw credentials.
-
-See [docs/ARCHITECTURE.md](./ARCHITECTURE.md#oauth-vault) for the security model.
-
-## Next steps
-
-- [docs/API.md](./API.md) — every endpoint, request/response shapes
-- [docs/ARCHITECTURE.md](./ARCHITECTURE.md) — how the 5-tier chain + OAuth vault + edge runtime fit together
-- [docs/SELF_HOSTING.md](./SELF_HOSTING.md) — fork and deploy your own wmcp.sh instance
-- [wmcp.sh/blog](https://wmcp.sh/blog) — 24 long-form posts on the engineering decisions
-- [ADAPTERS_WANTED.md](../ADAPTERS_WANTED.md) — sites we want PRs for
+Please report a bug if the docs don't match actual behavior—working first-run examples are a core part of the product.
