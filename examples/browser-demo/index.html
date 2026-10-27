@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>WMCP · WebMCP Native Tool Demo</title>
+  <style>
+    :root { color-scheme:dark; font-family:ui-sans-serif,system-ui,sans-serif; background:#0b1118; color:#edf7f7 }
+    * { box-sizing:border-box }
+    body { margin:0; background:radial-gradient(ellipse at 100% 0%, #10382f 0%, #0b1118 50%); min-height:100vh }
+    main { max-width:760px; margin:0 auto; padding:54px 20px }
+    a { color:#84e9c6 } header { display:flex; align-items:center; justify-content:space-between }
+    .eyebrow { color:#7fe3c2; letter-spacing:.14em; text-transform:uppercase; font-size:11px; font-weight:800 }
+    h1 { font-size:clamp(2rem,5vw,3.5rem); letter-spacing:-.045em; margin:24px 0 12px }
+    p { color:#abbcbe; line-height:1.65 } code { color:#8eeed0; overflow-wrap:anywhere }
+    .status { border:1px solid #405968; border-radius:100px; padding:6px 12px; font-size:12px; color:#e1eef0 }
+    .status.ok { border-color:#42c49e; color:#8eefce }
+    .panel { background:#111c27; border:1px solid #314251; padding:24px; border-radius:18px; margin:26px 0 }
+    h2 { font-size:18px; margin:0 0 12px }
+    label { display:block; color:#b5ccd0; margin-bottom:6px }
+    form { display:flex; gap:8px; flex-wrap:wrap }
+    input { flex:1; min-width:220px; padding:13px; background:#09121c; border:1px solid #41606a; border-radius:9px; color:#fff; font:inherit }
+    button { background:#78ecc0; border:0; border-radius:9px; padding:13px 16px; color:#09291f; font:700 14px system-ui; cursor:pointer }
+    button:focus-visible,input:focus-visible { outline:2px solid #acf8e0; outline-offset:2px }
+    ol { list-style:none; padding:0; margin:14px 0 0; display:grid; gap:8px }
+    li { padding:12px 15px; border:1px solid #37505a; border-radius:9px; display:flex; gap:12px; align-items:center }
+    li button { margin-left:auto; padding:8px 10px; font-size:12px; background:#24443f; color:#a5efcd }
+    li.done .task-name { text-decoration:line-through; color:#7d9a9d }
+    .num { font:12px ui-monospace,monospace; color:#79dab9 }
+    .note { font-size:13px }
+    .log { font:12px/1.7 ui-monospace,monospace; color:#b8d2d5; background:#081219; border:1px solid #28434a; border-radius:10px; padding:14px; min-height:70px; white-space:pre-wrap; overflow-wrap:anywhere }
+  </style>
+</head>
+<body>
+<main>
+  <header><strong class="eyebrow">WMCP · Native WebMCP</strong><span id="status" class="status" role="status">Detecting browser API…</span></header>
+  <h1>A website that agents can actually use.</h1>
+  <p>This tiny taskboard exposes its real application actions as structured WebMCP tools. If the browser supports <code>document.modelContext</code>, an AI agent can call them and the same UI updates instantly. The data stays in this tab.</p>
+  <section class="panel" aria-label="Taskboard">
+    <h2>Tasks</h2>
+    <form id="form">
+      <label for="task" class="sr-only">Task name</label>
+      <input id="task" name="task" placeholder="Add a task..." maxlength="120" required>
+      <button type="submit">Add task</button>
+    </form>
+    <ol id="list" aria-live="polite"></ol>
+    <p class="note">These buttons call the same functions exposed to WebMCP. No cloud database or credentials.</p>
+  </section>
+  <section class="panel">
+    <h2>Agent-callable tools</h2>
+    <p class="note"><code>list_tasks()</code> · <code>add_task({text})</code> · <code>complete_task({id})</code></p>
+    <div id="log" class="log" aria-live="polite">Starting demo…</div>
+    <p class="note" id="fallback">In a browser without native WebMCP you can still use the form, but no tools are registered. Enable browser WebMCP testing / an eligible origin trial to test agent calls.</p>
+  </section>
+  <p class="note"><a href="https://github.com/New1Direction/webmcp-anything">Source on GitHub</a> · This example requires no wallet, payment, or API token. Run it from localhost for a trustworthy origin.</p>
+</main>
+<script>
+(() => {
+  // Keep application state in the active document, not a remote cache.
+  let nextId = 3;
+  const tasks = [{ id: 1, text: "Explore the WebMCP API", done: false }, { id: 2, text: "Try an agent tool call", done: false }];
+  const list = document.getElementById("list");
+  const status = document.getElementById("status");
+  const log = document.getElementById("log");
+  function record(msg) { log.textContent = msg + "\n" + log.textContent.slice(0, 1000); }
+  function render() {
+    list.replaceChildren();
+    for (const task of tasks) {
+      const li = document.createElement("li");
+      if (task.done) li.classList.add("done");
+      const number = document.createElement("span"); number.className = "num"; number.textContent = "#" + task.id;
+      const name = document.createElement("span"); name.className = "task-name"; name.textContent = task.text;
+      const button = document.createElement("button"); button.textContent = task.done ? "Complete" : "Mark done";
+      button.disabled = task.done;
+      button.addEventListener("click", () => completeTask(task.id));
+      li.append(number, name, button); list.append(li);
+    }
+  }
+  function addTask(text) {
+    if (typeof text !== "string" || !text.trim() || text.length > 120) throw Error("text must be 1–120 characters");
+    const task = { id: nextId++, text: text.trim(), done: false };
+    tasks.push(task); render(); record("Added #" + task.id + ": " + task.text); return task;
+  }
+  function completeTask(id) {
+    if (!Number.isInteger(id)) throw Error("id must be an integer");
+    const task = tasks.find((item) => item.id === id);
+    if (!task) throw Error("Unknown task id");
+    task.done = true; render(); record("Completed #" + task.id); return task;
+  }
+  document.getElementById("form").addEventListener("submit", (event) => {
+    event.preventDefault();
+    const input = document.getElementById("task");
+    try { addTask(input.value); input.value = ""; }
+    catch (error) { record("Input rejected: " + error.message); }
+  });
+  render();
+  const ctx = document.modelContext;
+  if (!ctx || typeof ctx.registerTool !== "function") {
+    status.textContent = "Native API unavailable";
+    log.textContent = "UI works. Native WebMCP registration requires a supported browser.";
+    return;
+  }
+  const controller = new AbortController();
+  const tools = [
+    { name: "list_tasks", description: "List all tasks in this demo page",
+      annotations: { readOnlyHint: true },
+      inputSchema: { type: "object", properties: {} },
+      execute: async () => ({ content: [{ type: "text", text: JSON.stringify(tasks) }] }) },
+    { name: "add_task", description: "Add a task to the active taskboard and update the visible UI",
+      inputSchema: { type: "object", properties: { text: { type: "string", maxLength: 120 } }, required: ["text"] },
+      execute: async ({ text }) => ({ content: [{ type: "text", text: JSON.stringify(addTask(text)) }] }) },
+    { name: "complete_task", description: "Mark a task as complete on the active taskboard",
+      inputSchema: { type: "object", properties: { id: { type: "integer" } }, required: ["id"] },
+      execute: async ({ id }) => ({ content: [{ type: "text", text: JSON.stringify(completeTask(id)) }] }) },
+  ];
+  window.addEventListener("pagehide", () => controller.abort(), { once: true });
+  Promise.allSettled(tools.map((tool) => ctx.registerTool(tool, { signal: controller.signal })))
+    .then((results) => {
+      const successful = results.filter((result) => result.status === "fulfilled").length;
+      status.textContent = successful + "/3 tools registered";
+      status.classList.toggle("ok", successful === tools.length);
+      record("WebMCP tools registered: " + successful + "/3");
+      for (const result of results) if (result.status === "rejected") record("Registration error: " + result.reason);
+    });
+})();
+</script>
+</body>
+</html>

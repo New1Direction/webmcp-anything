@@ -22,3 +22,16 @@ jobs:
       # that could mask a red build (that masking is what let a broken tsc merge).
       - name: Verify (typecheck + tests)
         run: npm run verify
+
+  developer-quickstart:
+    name: read-only CLI + native demo
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Check CLI JavaScript syntax
+        run: node --check cli/wmcp.mjs
+      - name: Test CLI and browser demo
+        run: node --test cli/*.test.mjs
