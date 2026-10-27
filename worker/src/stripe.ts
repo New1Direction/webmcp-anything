@@ -546,9 +546,15 @@ async function handleNonPlanCheckout(
   }
 
   if (kind === "deep_audit") {
-    // One-time mode=payment → only checkout.session.completed fires. Record the
-    // audit job for the operator; the human deliverable follows. NEVER a key.
-    if (eventType === "checkout.session.completed") {
+    // Stripe can settle an asynchronous test/live payment after Checkout.
+    // One paid checkout must produce one audit job and one delivery email.
+    // KV replay guards are best-effort (not transactional across regions).
+    const isPaidSession = eventType === "checkout.session.completed" ||
+      eventType === "checkout.session.async_payment_succeeded";
+    const checkoutId = String(obj.id || "");
+    if (isPaidSession && checkoutId) {
+      const existing = await c.env.KEYS.get(`deepauditsession:${checkoutId}`);
+      if (existing) return c.json({ ok: true, action: "deep_audit_already_recorded", host: obj.metadata?.host });
       const now = Date.now();
       const reverseTs = (Number.MAX_SAFE_INTEGER - now).toString().padStart(16, "0");
       const rand = Array.from(crypto.getRandomValues(new Uint8Array(4))).map((b) => b.toString(16).padStart(2, "0")).join("");
@@ -562,9 +568,12 @@ async function handleNonPlanCheckout(
         }),
         { expirationTtl: 365 * 86400, metadata: { host: obj.metadata?.host, status: "paid_pending_fulfillment" } }
       );
+      await c.env.KEYS.put(`deepauditsession:${checkoutId}`, `deepaudit:${reverseTs}:${rand}`, {
+        expirationTtl: 365 * 86400,
+      });
     }
     const auditEmail = obj.customer_email || obj.customer_details?.email || obj.metadata?.email;
-    if (eventType === "checkout.session.completed" && auditEmail && obj.metadata?.host) {
+    if (isPaidSession && auditEmail && obj.metadata?.host) {
       // Instant deliverable: the full machine audit lands in the inbox now; the
       // human review recorded above follows.
       c.executionCtx.waitUntil(sendFindingsEmail(c.env as any, auditEmail, obj.metadata.host, "audit").catch(() => {}));
