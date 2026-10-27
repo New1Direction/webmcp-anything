@@ -1,0 +1,34 @@
+name: Feature proposal
+description: Suggest a developer-focused improvement that can be demonstrated and tested.
+title: "[Feature] "
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Developer problem
+      description: Describe a workflow that is currently difficult.
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Expected outcome and how to verify it
+      description: A reproducible example, test case, or observable success condition is best.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Optional solution ideas
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Area
+      options:
+        - Native WebMCP interoperability
+        - MCP protocol compatibility
+        - Adapter coverage
+        - CLI or SDK
+        - Security and privacy
+        - Developer documentation
+        - Other
