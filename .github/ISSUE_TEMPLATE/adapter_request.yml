@@ -1,0 +1,39 @@
+name: Request an adapter
+description: Propose support for a public data source with measurable agent value.
+title: "[Adapter] "
+body:
+  - type: markdown
+    attributes:
+      value: "Please start with read-only public data. No bypasses for login, CAPTCHA, paywalls or access controls."
+  - type: input
+    id: url
+    attributes:
+      label: Example PUBLIC URL
+      description: No API keys, private account pages or signed query parameters.
+      placeholder: "https://example.com/public-item"
+    validations:
+      required: true
+  - type: textarea
+    id: task
+    attributes:
+      label: What should an agent accomplish?
+      placeholder: "Read availability and variant information without screenshots."
+    validations:
+      required: true
+  - type: textarea
+    id: fields
+    attributes:
+      label: Proposed read-only tool names and fields
+      placeholder: "get_availability({itemId}) -> status, quantity"
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Known public data source or test fixture
+      description: Describe a documented public API or structured data field, if known.
+  - type: checkboxes
+    id: rights
+    attributes:
+      label: Access and safety
+      options:
+        - label: This request does not rely on circumventing access controls or sharing private credentials.
+          required: true
