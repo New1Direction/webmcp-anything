@@ -35,3 +35,23 @@ jobs:
         run: node --check cli/wmcp.mjs
       - name: Test CLI and browser demo
         run: node --test cli/*.test.mjs
+
+  browser-acceptance:
+    name: Chromium WebMCP acceptance (simulated native API)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: worker
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install worker and browser test dependencies
+        run: |
+          npm install
+          npm install --no-save playwright@1.56.1
+      - name: Install Chromium and system dependencies
+        run: npx playwright install --with-deps chromium
+      - name: Exercise actual browser DOM bridge
+        run: node --test --test-concurrency=1 test/webmcp_browser.acceptance.mjs test/webmcp_mv3.acceptance.mjs

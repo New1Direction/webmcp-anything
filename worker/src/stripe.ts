@@ -11,6 +11,7 @@
 import type { Context } from "hono";
 import { resolveAuth, type Plan } from "./auth";
 import { track } from "./metrics";
+import { fireAlert } from "./alerts";
 import { emailEnabled, sendEmail } from "./email";
 import { isPaidPlan, requestOrigin } from "./paywall";
 import { sendFindingsEmail } from "./trust_delivery";
@@ -51,6 +52,7 @@ type Env = {
   STRIPE_PRICE_GUIDE?: string;
   RESEND_API_KEY?: string;
   RESEND_FROM?: string;
+  LEAD_ALERT_WEBHOOK?: string;
 };
 
 export { STRIPE_API };
@@ -133,8 +135,6 @@ export async function createCheckout(c: Context<{ Bindings: Env }>) {
   form.set("success_url", `${origin}/dashboard?session_id={CHECKOUT_SESSION_ID}#billing`);
   form.set("cancel_url", `${origin}/dashboard?canceled=1&upgrade=${plan}#plans`);
 
-  track(c.env, c.executionCtx, "checkout_started", { plan, source, account: account ? "signed_in" : "email" });
-
   const res = await fetch(`${STRIPE_API}/checkout/sessions`, {
     method: "POST",
     headers: {
@@ -150,6 +150,7 @@ export async function createCheckout(c: Context<{ Bindings: Env }>) {
       502
     );
   }
+  track(c.env, c.executionCtx, "checkout_started", { plan, source, account: account ? "signed_in" : "email" });
   return c.json({ url: j.url, id: j.id });
 }
 
@@ -336,18 +337,26 @@ export async function stripeWebhook(c: Context<{ Bindings: Env }>) {
 
   switch (event.type) {
     case "checkout.session.completed":
+    case "checkout.session.async_payment_succeeded":
     case "customer.subscription.created":
     case "customer.subscription.updated": {
       const obj = event.data.object;
       // Session vs Subscription discriminator.
-      const isSession = event.type === "checkout.session.completed";
+      const isSession = event.type === "checkout.session.completed" || event.type === "checkout.session.async_payment_succeeded";
       const kind = obj.metadata?.kind as string | undefined;
-      if (isSession) {
+      const settled = isSession && (obj.payment_status === "paid" || obj.payment_status === "no_payment_required");
+      // Checkout opened/completed is not synonymous with money collected.
+      if (isSession && obj.payment_status === "paid") {
         track(c.env, c.executionCtx, "paid", {
           kind: kind || "plan",
           plan: kind && kind !== "plan" ? undefined : obj.metadata?.plan,
           source: obj.metadata?.source,
         });
+      }
+      // Do not deliver a paid SKU from an unpaid async checkout. Stripe later
+      // sends checkout.session.async_payment_succeeded when funds settle.
+      if (isSession && kind && kind !== "plan" && !settled) {
+        return c.json({ ok: true, action: "payment_pending", kind });
       }
 
       // FAIL-CLOSED SKU GUARD. Any checkout whose metadata.kind is set and is
@@ -476,10 +485,14 @@ async function handleNonPlanCheckout(
   }
 
   if (kind === "agent_ready_fix") {
-    // One-time mode=payment → only checkout.session.completed fires. Record the
-    // fulfillment job for the operator and flip the badge to Verified now; the
-    // human deliverable follows. NEVER issue an API key.
-    if (eventType === "checkout.session.completed") {
+    // One-time service: record the paid order only after Stripe confirms payment.
+    // Retry-safe per checkout session; verification happens AFTER delivery.
+    // NEVER issue an API key or an early Verified badge.
+    if (eventType === "checkout.session.completed" || eventType === "checkout.session.async_payment_succeeded") {
+      const sessionId = String(obj.id || "");
+      if (!sessionId) return c.json({ error: "missing_checkout_session" }, 400);
+      const existing = await c.env.KEYS.get(`fixsession:${sessionId}`);
+      if (existing) return c.json({ ok: true, action: "fix_already_recorded", slug });
       const now = Date.now();
       const reverseTs = (Number.MAX_SAFE_INTEGER - now).toString().padStart(16, "0");
       const rand = Array.from(crypto.getRandomValues(new Uint8Array(4)))
@@ -492,6 +505,7 @@ async function handleNonPlanCheckout(
       await c.env.KEYS.put(
         `fix:${reverseTs}:${rand}`,
         JSON.stringify({
+          checkout_session_id: sessionId,
           received_at: now,
           received_at_iso: new Date(now).toISOString(),
           slug,
@@ -503,11 +517,13 @@ async function handleNonPlanCheckout(
         }),
         { expirationTtl: 365 * 86400, metadata: { slug, email, status: "paid_pending_fulfillment" } }
       );
-      if (slug) {
-        await c.env.KEYS.put(`verified:${slug}`, "1", {
-          metadata: { ts: now, via: "agent_ready_fix" },
-        });
-      }
+      await c.env.KEYS.put(`fixsession:${sessionId}`, `fix:${reverseTs}:${rand}`, {
+        expirationTtl: 365 * 86400,
+      });
+      fireAlert(c.env, c.executionCtx,
+        "💰 Paid agent-ready fix needs fulfillment · " + String(obj.metadata?.site_url || slug).slice(0, 200) +
+        " · " + String(email || "email unavailable").slice(0, 180) +
+        " · checkout " + sessionId.slice(0, 80));
     }
     return c.json({ ok: true, action: "fix_recorded", slug });
   }
@@ -530,9 +546,15 @@ async function handleNonPlanCheckout(
   }
 
   if (kind === "deep_audit") {
-    // One-time mode=payment → only checkout.session.completed fires. Record the
-    // audit job for the operator; the human deliverable follows. NEVER a key.
-    if (eventType === "checkout.session.completed") {
+    // Stripe can settle an asynchronous test/live payment after Checkout.
+    // One paid checkout must produce one audit job and one delivery email.
+    // KV replay guards are best-effort (not transactional across regions).
+    const isPaidSession = eventType === "checkout.session.completed" ||
+      eventType === "checkout.session.async_payment_succeeded";
+    const checkoutId = String(obj.id || "");
+    if (isPaidSession && checkoutId) {
+      const existing = await c.env.KEYS.get(`deepauditsession:${checkoutId}`);
+      if (existing) return c.json({ ok: true, action: "deep_audit_already_recorded", host: obj.metadata?.host });
       const now = Date.now();
       const reverseTs = (Number.MAX_SAFE_INTEGER - now).toString().padStart(16, "0");
       const rand = Array.from(crypto.getRandomValues(new Uint8Array(4))).map((b) => b.toString(16).padStart(2, "0")).join("");
@@ -546,9 +568,12 @@ async function handleNonPlanCheckout(
         }),
         { expirationTtl: 365 * 86400, metadata: { host: obj.metadata?.host, status: "paid_pending_fulfillment" } }
       );
+      await c.env.KEYS.put(`deepauditsession:${checkoutId}`, `deepaudit:${reverseTs}:${rand}`, {
+        expirationTtl: 365 * 86400,
+      });
     }
     const auditEmail = obj.customer_email || obj.customer_details?.email || obj.metadata?.email;
-    if (eventType === "checkout.session.completed" && auditEmail && obj.metadata?.host) {
+    if (isPaidSession && auditEmail && obj.metadata?.host) {
       // Instant deliverable: the full machine audit lands in the inbox now; the
       // human review recorded above follows.
       c.executionCtx.waitUntil(sendFindingsEmail(c.env as any, auditEmail, obj.metadata.host, "audit").catch(() => {}));
