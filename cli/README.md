@@ -16,9 +16,9 @@ From the repository root:
 - **grade** — reads WMCP's independent A–F trust report. A risk indicator, not proof of safety.
 - **doctor** — connects directly to an MCP Streamable HTTP server, negotiates the protocol, follows tool-list pagination and emits compatibility findings. Use `--strict` for a CI exit code. It never calls tools. [Doctor documentation](../docs/MCP_DOCTOR.md).
 
-Use `doctor --json > mcp-baseline.json` followed by `doctor --baseline mcp-baseline.json --strict` to flag added, removed or changed tool definitions. This is contract-drift detection, not proof that the server's behavior is safe. See [the Doctor guide](../docs/MCP_DOCTOR.md).
+Use `doctor --json > mcp-baseline.json` followed by `doctor --baseline mcp-baseline.json --strict` to flag added, removed or changed tool definitions. This is contract-drift detection, not proof that the server's behavior is safe. See [the Doctor guide](../docs/MCP_DOCTOR.md), including the reusable GitHub Action for CI.
 
-Use --json for raw output, and --base http://localhost:8787 to try your local Worker. Authenticated *reads* can use the WMCP_API_KEY environment variable. The CLI does not echo the key or run paid tool actions.
+Use --json for raw output, and --base http://localhost:8787 to try your local Worker. Authenticated reads to wmcp.sh can use the WMCP_API_KEY environment variable. The CLI does not echo the key or run paid tool actions. **Custom --base origins never receive that API key unless you explicitly pass --send-key-to-base.** Only opt in for a server you trust. The doctor command targets the provided MCP endpoint directly and may send the supplied WMCP_API_KEY to that endpoint; review the target before using credentials.
 
 **Privacy:** Supply PUBLIC HTTPS URLs only. The hosted service may fetch, cache, or index them. The CLI refuses URL credentials, query strings and fragments to reduce accidental sharing of signed/private URLs. For local/private systems run your own controlled deployment and do not submit secrets to the public service.
 
