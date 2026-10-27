@@ -116,6 +116,8 @@ test("in-browser discovery, tab-local execution, stale navigation cleanup, and f
       }, location.origin);
       await new Promise(resolve => setTimeout(resolve, 70));
       const resultBlocked = window.__extensionMessages.every(m => m.type !== "EXECUTE_TOOL");
+      // SPA route no longer owns the previously registered site-native tool.
+      window.__siteTools = [];
       history.pushState({}, "", "/new-path");
       await new Promise(resolve => setTimeout(resolve, 1650));
       const stale = await popup({ type: "EXECUTE_NATIVE_TOOL", name: "set_title", args: { title: "Should be denied" } });
