@@ -26,14 +26,14 @@ Thanks for wanting to make the agentic web bigger. Most contributions land as **
    node adapters/_test/run.mjs
    ```
    It should print `ok 1 - etsy` (or your adapter ID).
-7. **Wire it into the worker.** Add an import + push to `ADAPTERS` in `worker/src/index.ts`. The order matters — most-specific adapters first, generic fallbacks last.
+7. **Wire it into the current extraction dispatcher.** Examine worker/src/engine.ts and extension/background.js. Add the adapter to the appropriate runtime(s), updating both only if the adapter really supports both contexts. Shopify, OpenAPI, crypto/data, JSON-LD and LLM fallback have different detection paths; do not assume an ADAPTERS array in worker/src/index.ts.
 8. **PR.** Reference the issue if one exists. Include:
    - What sites it covers (URL patterns)
    - What tools it produces (`get_price`, `add_to_cart`, etc.)
    - Whether `actions` are live or stubbed
    - Anything weird about the site (bot protection, regional pages, etc.)
 
-We'll review within a few days, run the test suite, and merge.
+A maintainer will review the proposal when capacity permits. CI must pass; a PR is not a commitment to merge.
 
 ## What we will and won't accept
 
@@ -62,10 +62,23 @@ By contributing you agree your code is released under the [MIT License](./LICENS
 
 ## What you get out of it
 
-- Your GitHub handle in the credits and on the [directory](https://wmcp.sh/directory) for every URL your adapter handles
-- A Pro plan key on the house if you ship a non-trivial adapter (open an issue and we'll DM)
-- The petty satisfaction of having taught a thousand AI agents to interact with the site you cared about
+- Credit in the Git history and the satisfaction of a working, reviewed integration that other developers can reuse. Optional hosted-service rewards are not guaranteed and should be agreed to separately.
+
+
+## Other good first contributions
+
+The repository also includes a read-only Node.js CLI and a minimal native WebMCP browser demo. These are excellent places to contribute protocol tests, accessibility fixes, and clearer troubleshooting—without taking responsibility for live actions or payments.
+
+From repository root:
+
+~~~sh
+node --test cli/*.test.mjs
+node adapters/_test/run.mjs
+cd worker && npm install && npm run verify
+~~~
+
+Use the provided [issue templates](.github/ISSUE_TEMPLATE) to supply a public reproduction. A passing test plus a concise explanation is much more useful than adding an untested site name or claims of universal coverage.
 
 ## Questions
 
-Open a GitHub Discussion, or ping the email in the repo's `package.json`.
+Open a public GitHub issue for a non-sensitive question or reproduction. Do not post credentials, session tokens or private customer data.
