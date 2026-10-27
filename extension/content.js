@@ -143,40 +143,14 @@ window.addEventListener("message", async (event) => {
   }
 
   if (msg.dir === "page->bridge" && msg.type === "EXECUTE") {
-    const { requestId, args, name } = msg.payload || {};
-    try {
-      // Never trust an action supplied by the page message: only execute
-      // a server-extracted action for the current URL, using its saved definition.
-      const allowed = lastToolList.find((t) => t.name === name && t.action);
-      if (!allowed || lastToolUrl !== location.href)
-        throw new Error("WebMCP tool is not authorized for this page");
-      const resp = await chrome.runtime.sendMessage({
-        type: "EXECUTE_TOOL",
-        action: allowed.action,
-        args,
-        name,
-        url: lastToolUrl,
-      });
-      window.postMessage(
-        {
-          source: NS,
-          dir: "bridge->page",
-          type: "EXECUTE_RESULT",
-          payload: { requestId, ok: resp?.ok, value: resp?.value, error: resp?.error },
-        },
-        "*"
-      );
-    } catch (err) {
-      window.postMessage(
-        {
-          source: NS,
-          dir: "bridge->page",
-          type: "EXECUTE_RESULT",
-          payload: { requestId, ok: false, error: String(err?.message || err) },
-        },
-        "*"
-      );
-    }
+    // A site can forge any postMessage. It must never turn a browser page
+    // message into a privileged extension background write action.
+    // Use the trusted extension popup's explicit Run control instead.
+    const requestId = msg.payload?.requestId;
+    window.postMessage({
+      source: NS, dir: "bridge->page", type: "EXECUTE_RESULT",
+      payload: { requestId, ok: false, error: "Inferred write actions require explicit extension-popup approval" },
+    }, location.origin);
   }
 });
 
