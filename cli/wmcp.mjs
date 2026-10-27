@@ -21,6 +21,7 @@ const HELP = [
   "  --strict         Doctor exits 2 if any warning or error exists",
   "  --baseline path  Compare Doctor output with a local JSON report",
   "  --base <origin>  Another WMCP service; HTTP only for local development",
+  "  --send-key-to-base  Explicitly allow your API key to be sent to --base",
   "",
   "All commands are read-only. Use PUBLIC HTTPS URLs without credentials, query",
   "parameters or tokens: the remote service may fetch and cache target URLs.",
@@ -58,10 +59,11 @@ export function parseArgs(args) {
   if (!args.length || args.includes("--help") || args.includes("-h")) return { help: true };
   const [command, ...rest] = args;
   if (!CMDS.includes(command)) throw Error("Unknown command: " + command + ". Use --help.");
-  let json = false, strict = false, base = BASE, url = null, baselinePath = null;
+  let json = false, strict = false, base = BASE, url = null, baselinePath = null, sendKeyToBase = false;
   for (let i = 0; i < rest.length; i++) {
     const arg = rest[i];
     if (arg === "--json") json = true;
+    else if (arg === "--send-key-to-base") sendKeyToBase = true;
     else if (arg === "--strict") strict = true;
     else if (arg === "--baseline") {
       baselinePath = rest[++i];
@@ -77,11 +79,12 @@ export function parseArgs(args) {
   if (!url) throw Error("Missing target URL");
   if (strict && command !== "doctor") throw Error("--strict is available only with doctor");
   if (baselinePath && command !== "doctor") throw Error("--baseline is available only with doctor");
+  if (sendKeyToBase && command === "doctor") throw Error("doctor sends credentials only to its explicit target; --send-key-to-base is not applicable");
   if (command === "doctor") {
     if (base !== BASE) throw Error("doctor probes the supplied endpoint directly; do not use --base");
     return { command, url: validateEndpoint(url), base: validateBase(base), json, strict, ...(baselinePath ? { baselinePath } : {}) };
   }
-  return { command, url: validateTarget(url), base: validateBase(base), json };
+  return { command, url: validateTarget(url), base: validateBase(base), json, ...(sendKeyToBase ? { sendKeyToBase: true } : {}) };
 }
 
 async function jsonRequest(url, options = {}, key = "", request = fetch) {
@@ -112,15 +115,18 @@ async function jsonRequest(url, options = {}, key = "", request = fetch) {
   return data;
 }
 
-export async function execute({ command, url, base = BASE, baselinePath = null }, { request = fetch, apiKey = "" } = {}) {
+export async function execute({ command, url, base = BASE, baselinePath = null, sendKeyToBase = false }, { request = fetch, apiKey = "" } = {}) {
   const origin = validateBase(base);
+  // WMCP_API_KEY is trusted only for the public WMCP host by default.
+  // A custom base may be a third-party endpoint: avoid exfiltrating keys.
+  const scopedApiKey = origin === BASE || sendKeyToBase ? apiKey : "";
   if (command === "config") {
     // A live key must never be serialized into terminal / chat logs.
     return { mcpServers: { wmcp: { type: "http", url: mcpEndpoint(url, origin) } } };
   }
-  if (command === "inspect") return jsonRequest(origin + "/api/v1/tools?url=" + encodeURIComponent(url), {}, apiKey, request);
-  if (command === "grade") return jsonRequest(origin + "/api/v1/mcp/grade?url=" + encodeURIComponent(url), {}, apiKey, request);
-  if (command === "mcp") return inspectMcpEndpoint(mcpEndpoint(url, origin), { request, apiKey });
+  if (command === "inspect") return jsonRequest(origin + "/api/v1/tools?url=" + encodeURIComponent(url), {}, scopedApiKey, request);
+  if (command === "grade") return jsonRequest(origin + "/api/v1/mcp/grade?url=" + encodeURIComponent(url), {}, scopedApiKey, request);
+  if (command === "mcp") return inspectMcpEndpoint(mcpEndpoint(url, origin), { request, apiKey: scopedApiKey });
   if (command === "doctor") {
     let baseline = null;
     if (baselinePath) {
