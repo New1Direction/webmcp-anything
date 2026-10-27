@@ -1,0 +1,37 @@
+name: WMCP Doctor
+description: "Read-only MCP compatibility and tool-contract drift validation for CI."
+author: New1Direction
+branding:
+  icon: activity
+  color: green
+inputs:
+  endpoint:
+    description: "Public HTTPS MCP Streamable HTTP endpoint, or localhost for testing. No query strings or credentials."
+    required: true
+  strict:
+    description: "Return a failing step if the Doctor finds compatibility warnings or contract drift."
+    required: false
+    default: "true"
+  baseline:
+    description: "Optional relative path to a previously reviewed JSON report, checked out in the calling repository."
+    required: false
+    default: ""
+  auth-token:
+    description: "Optional API token sent ONLY to the explicit endpoint. Prefer a short-lived, read-only token."
+    required: false
+    default: ""
+runs:
+  using: composite
+  steps:
+    - name: Install Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: "22"
+    - name: Read-only MCP Doctor
+      shell: bash
+      env:
+        WMCP_DOCTOR_ENDPOINT: ${{ inputs.endpoint }}
+        WMCP_DOCTOR_STRICT: ${{ inputs.strict }}
+        WMCP_DOCTOR_BASELINE: ${{ inputs.baseline }}
+        WMCP_API_KEY: ${{ inputs.auth-token }}
+      run: node "${{ github.action_path }}/run.mjs"

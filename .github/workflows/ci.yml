@@ -34,4 +34,29 @@ jobs:
       - name: Check CLI JavaScript syntax
         run: node --check cli/wmcp.mjs
       - name: Test CLI and browser demo
-        run: node --test cli/*.test.mjs
+        run: node --test cli/*.test.mjs actions/mcp-doctor/*.test.mjs
+
+  doctor-action-smoke:
+    name: reusable MCP Doctor GitHub Action
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Start local read-only MCP fixture
+        shell: bash
+        run: |
+          set -euo pipefail
+          node actions/mcp-doctor/smoke-server.mjs > "$RUNNER_TEMP/mcp-doctor-smoke.log" 2>&1 &
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:8765/health >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat "$RUNNER_TEMP/mcp-doctor-smoke.log"
+          exit 1
+      - name: Verify local endpoint through reusable composite action
+        uses: ./actions/mcp-doctor
+        with:
+          endpoint: http://127.0.0.1:8765/mcp
+          strict: "true"

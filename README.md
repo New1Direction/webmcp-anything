@@ -105,6 +105,19 @@ You can also save `doctor --json` output as a reviewed baseline, then use `--bas
 
 The endpoint is an example placeholder. Read [the Doctor guide](docs/MCP_DOCTOR.md) for supported checks, limits, and exit codes.
 
+**Run the same check in another repository with the [WMCP Doctor GitHub Action](actions/mcp-doctor/):**
+
+~~~yaml
+- uses: New1Direction/webmcp-anything/actions/mcp-doctor@main
+  with:
+    endpoint: https://your-mcp.example/mcp
+    strict: "true"
+    # Optional: a reviewed report file from your repository:
+    # baseline: .github/mcp-baseline.json
+~~~
+
+For production, replace `@main` with a reviewed **full commit SHA**. The action only calls MCP initialize and tools/list; it does not invoke tools or certify security. See [usage and credential guidance](docs/MCP_DOCTOR.md#github-actions-integration).
+
 ## Live browser-native example
 
 This repository also includes a small WebMCP taskboard with real, in-page state—three tools (list, add, complete) and a UI that updates when a tool runs.

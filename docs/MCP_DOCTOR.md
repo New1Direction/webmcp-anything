@@ -75,6 +75,56 @@ jobs:
 
 Substitute your own MCP endpoint. This snippet assumes it is added to the WMCP repository; other projects should vendor the CLI from a reviewed release/commit rather than running unreviewed GitHub branches.
 
+## GitHub Actions integration
+
+You can run Doctor in another GitHub repository using the checked-in composite
+action instead of copying its JavaScript or installing npm dependencies. It
+probes the **explicit endpoint** using read-only MCP operations.
+
+After this action is published on the default branch, add a workflow:
+
+~~~yaml
+name: MCP contract
+on: [workflow_dispatch, pull_request]
+
+jobs:
+  doctor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: New1Direction/webmcp-anything/actions/mcp-doctor@main
+        with:
+          endpoint: https://your-mcp-server.example/mcp
+          strict: "true"
+          # Optional: a reviewed baseline checked into YOUR repo.
+          # baseline: .github/mcp-baseline.json
+          # Optional: a read-only token for your trusted MCP endpoint.
+          # auth-token: ${{ secrets.MCP_READ_TOKEN }}
+~~~
+
+The moving `@main` reference is for initial evaluation. For production
+pipelines, **pin the action to a full reviewed commit SHA** to prevent
+unexpected changes. The composite action runs Node.js 22 and propagates
+Doctor's exit codes: 0 for success, 1 for errors, 2 for strict warnings/drift.
+It does not call tools/call, mutate server state intentionally, or automatically
+update a baseline.
+
+Set `baseline` to a previously reviewed JSON file from your project. A
+baseline mismatch is a warning and fails when strict is true. Never silently
+regenerate the baseline in the same CI run; that would approve contract drift.
+
+The optional `auth-token` is sent as a Bearer header to the supplied
+MCP endpoint. Use a **short-lived, read-only secret** and only a server
+you control or trust. Do not pass tokens in the endpoint URL.
+
+### Local read-only checks
+
+The CLI also accepts `--base` for alternative WMCP service origins. It
+will not forward `WMCP_API_KEY` to custom bases by default. If you
+specifically intend to authorize a self-hosted WMCP service, use
+`--send-key-to-base` with a service you trust. This flag does not apply
+to Doctor, which targets an explicit MCP endpoint.
+
 ## Design references
 
 - MCP 2025-11-25 tools specification: https://github.com/modelcontextprotocol/modelcontextprotocol/blob/main/docs/specification/2025-11-25/server/tools.mdx
