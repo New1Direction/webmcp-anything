@@ -3,7 +3,7 @@
 // From ONE extraction (resolveTools) we serve BOTH:
 //   - the server-side MCP config (already shipped at /mcp/u/<b64url>), and
 //   - a drop-in WebMCP shim (/webmcp/<b64url>.js) that loops the same
-//     {name,description,inputSchema} tools into navigator.modelContext
+//     {name,description,inputSchema} tools into document.modelContext
 //     .registerTool() — closing the MCP↔WebMCP gap from a single source.
 //
 // Strategy: this is the distribution wedge for the durable take-rates. Every
@@ -29,22 +29,41 @@ function slim(tools: any[]): SlimTool[] {
 /** The drop-in WebMCP shim served at /webmcp/<b64url>.js (content-type JS). */
 export function webmcpShimJs(siteUrl: string, tools: any[], origin: string): string {
   const t = slim(tools);
-  return `/* wmcp.sh WebMCP shim — exposes ${t.length} agent-callable tool(s) for ${siteUrl}
-   to in-browser agents via navigator.modelContext (Chrome WebMCP origin trial).
+  return `/* wmcp.sh WebMCP shim — exposes ${t.length} agent-callable tool(s).
+   to in-browser agents via document.modelContext (Chrome WebMCP origin trial).
    One line: <script src="${origin}/webmcp/${base64urlEncode(siteUrl)}.js" async></script>
-   Read tools resolve instantly; live actions run through wmcp.sh (graded + metered). */
+   Read tools are embedded snapshots. Live actions require authenticated integration. */
 (function () {
-  if (typeof navigator === "undefined" || !navigator.modelContext || typeof navigator.modelContext.registerTool !== "function") return;
+  // Prefer the October 2026 W3C Community Group draft; retain legacy preview support.
+  var MC = typeof document !== "undefined" && document.modelContext && typeof document.modelContext.registerTool === "function"
+    ? document.modelContext
+    : typeof navigator !== "undefined" && navigator.modelContext && typeof navigator.modelContext.registerTool === "function"
+      ? navigator.modelContext : null;
+  if (!MC) return;
   var WMCP = ${JSON.stringify(origin)};
   var SITE = ${JSON.stringify(siteUrl)};
   var TOOLS = ${JSON.stringify(t)};
-  TOOLS.forEach(function (tool) {
+  // The embed is only valid on its intended site's origin.
+  if (new URL(SITE).origin !== location.origin) return;
+  // Re-initialization removes only registrations owned by this shim.
+  if (window.__wmcpBridgeController && typeof window.__wmcpBridgeController.abort === "function") window.__wmcpBridgeController.abort();
+  var ctl = new AbortController();
+  window.__wmcpBridgeController = ctl;
+  (async function registerTools() {
+    // Prefer tools explicitly authored by the website over inferred duplicates.
+    var existing = [];
     try {
-      navigator.modelContext.registerTool({
+      if (typeof MC.getTools === "function") existing = await MC.getTools();
+    } catch (e) { /* some previews do not expose getTools */ }
+    if (ctl.signal.aborted) return;
+    var nativeNames = new Set((existing || []).map(function (item) { return item.name; }));
+    TOOLS.filter(function (tool) { return !nativeNames.has(tool.name); }).forEach(async function (tool) {
+    try {
+      await MC.registerTool({
         name: tool.name,
         description: tool.description || tool.name,
         inputSchema: tool.inputSchema,
-        execute: async function (args) {
+        execute: async function (args, options) {
           if (tool.result !== undefined) {
             return { content: [{ type: "text", text: typeof tool.result === "string" ? tool.result : JSON.stringify(tool.result) }] };
           }
@@ -53,10 +72,11 @@ export function webmcpShimJs(siteUrl: string, tools: any[], origin: string): str
               method: "POST",
               headers: { "content-type": "application/json" },
               body: JSON.stringify({ url: SITE, tool: tool.name, args: args || {} }),
+              signal: options && options.signal,
             });
             var data = await res.json();
             if (!res.ok || (data && data.error)) {
-              var hint = res.status === 402 ? " (live actions need a wmcp.sh plan or x402 payment)" : "";
+              var hint = res.status === 402 ? " (live browser actions require an authenticated backend integration; see https://wmcp.sh/managed)" : "";
               return { content: [{ type: "text", text: "wmcp.sh: " + ((data && data.error) || res.status) + hint }], isError: true };
             }
             return { content: [{ type: "text", text: typeof data.value === "string" ? data.value : JSON.stringify(data.value) }] };
@@ -64,9 +84,13 @@ export function webmcpShimJs(siteUrl: string, tools: any[], origin: string): str
             return { content: [{ type: "text", text: "wmcp.sh tool error: " + String(e) }], isError: true };
           }
         },
-      });
-    } catch (e) { /* one bad tool shouldn't break the rest */ }
-  });
+        annotations: tool.result !== undefined ? { readOnlyHint: true } : { consequentialHint: true },
+      }, { signal: ctl.signal });
+    } catch (e) {
+      if (!ctl.signal.aborted) console.warn("[wmcp.sh] WebMCP tool registration failed:", tool.name, e);
+    }
+    });
+  })();
 })();
 `;
 }
@@ -89,7 +113,7 @@ export function bridgeDescriptor(siteUrl: string, tools: any[], origin: string) 
     webmcp: {
       script_url: `${origin}/webmcp/${b64}.js`,
       snippet: `<script src="${origin}/webmcp/${b64}.js" async></script>`,
-      note: "Drop into your page <head>. In-browser agents (Chrome WebMCP origin trial) get these tools via navigator.modelContext — no backend changes.",
+      note: "Drop into a page you control for read-only tool snapshots. Authenticated live actions require a separate backend integration; a paid API plan does not automatically authenticate this script.",
     },
     grade: {
       report: `${origin}/mcp/grade/${eh}`,
@@ -108,17 +132,17 @@ export function webmcpHubHtml(origin: string): string {
   const example = "https://www.allbirds.com/products/mens-wool-runners";
   const exampleShim = `${origin}/webmcp/${base64urlEncode(example)}.js`;
   const ld = {
-    "@context": "https://schema.org", "@type": "SoftwareApplication", name: "WebMCP shim by wmcp.sh",
+    "@context": "https://schema.org", "@type": "SoftwareApplication", name: "WebMCP read-tool shim by wmcp.sh",
     applicationCategory: "DeveloperApplication", operatingSystem: "Any", url: `${origin}/webmcp`,
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" }, publisher: { "@type": "Organization", name: "wmcp.sh", url: origin },
   };
   return `<!doctype html><html lang="en"><head>
 <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>WebMCP — make any website agent-ready in one line | wmcp.sh</title>
-<meta name="description" content="WebMCP exposes a website's tools to in-browser AI agents via navigator.modelContext. Drop in one script tag and any site becomes agent-ready — the same tools also emit as a server-side MCP endpoint. Free."/>
+<title>WebMCP — generate browser tool previews + MCP endpoints | wmcp.sh</title>
+<meta name="description" content="Generate a read-tool WebMCP preview for a website you control and a server-side MCP endpoint. Authenticated live actions require an additional integration."/>
 <link rel="canonical" href="${origin}/webmcp"/>
 <meta property="og:title" content="WebMCP — make any website agent-ready in one line | wmcp.sh"/>
-<meta property="og:description" content="One script tag turns any site into agent-callable tools via navigator.modelContext. Dual-emits as MCP too."/>
+<meta property="og:description" content="One extraction produces a WebMCP read preview and an MCP endpoint. Paid live actions require authenticated integration."/>
 <meta property="og:image" content="${origin}/og.png"/>
 <script type="application/ld+json">${JSON.stringify(ld)}</script>
 <style>${uiCss(820)}
@@ -128,8 +152,8 @@ ${uiNav(origin)}
 <div class="wrap">
   <header class="hero">
     <p class="crumbs"><a href="${origin}/connect">The MCP hub</a> <span class="sep">›</span> WebMCP</p>
-    <h1>Make any website agent-ready in one line</h1>
-    <p class="lede">WebMCP exposes a site's tools to in-browser AI agents through <code>navigator.modelContext</code>. Drop in one script tag and your pages become agent-callable. The same extraction also emits a server-side MCP endpoint, so you cover both protocols from one source.</p>
+    <h1>Preview website tools in one line</h1>
+    <p class="lede">WebMCP exposes a site's tools to in-browser AI agents through <code>document.modelContext</code>. Add the script to a page you control to expose read-tool snapshots. The same extraction emits a remote MCP endpoint. For live transactions, connect an authenticated backend instead of putting API keys in browser JavaScript.</p>
     <div class="pillrow">
       <a class="pill" href="${origin}/connect">🔌 The MCP hub</a>
       <a class="pill" href="${origin}/mcp/leaderboard">🛡️ Trust leaderboard</a>
@@ -144,7 +168,7 @@ ${uiNav(origin)}
       <input id="u" type="url" placeholder="https://yourstore.com/products/thing" value="${esc(example)}" />
       <div class="muted" style="font-size:.82rem;margin-top:14px">Paste this one line into your page &lt;head&gt;:</div>
       <pre class="snip" id="out" style="margin-top:8px">&lt;script src="${esc(exampleShim)}" defer&gt;&lt;/script&gt;</pre>
-      <div class="muted" style="font-size:.8rem;margin-top:10px">Read tools resolve instantly from the embedded extraction. Live actions route through wmcp.sh's graded, metered execute path.</div>
+      <div class="muted" style="font-size:.8rem;margin-top:10px">Read tools use an embedded snapshot. This script alone does not authorize write actions. Never embed an API key in publicly served JavaScript.</div>
     </div>
   </section>
 
@@ -153,14 +177,14 @@ ${uiNav(origin)}
     <div class="grid c3">
       <div class="card step"><div class="n">1 · One extraction</div><p>wmcp.sh reads your page (JSON-LD, OpenAPI, Shopify, and more) and turns it into tools.</p></div>
       <div class="card step"><div class="n">2 · Dual-emit</div><p>The same tools serve as a WebMCP shim for in-browser agents and a server-side MCP endpoint for Claude, Cursor, and Codex.</p></div>
-      <div class="card step"><div class="n">3 · Governed actions</div><p>Reads are free and instant. Live actions flow through the metered, graded execute path with kill switch and audit.</p></div>
+      <div class="card step"><div class="n">3 · Live integration</div><p>For purchases or other write actions, connect a server-side MCP client with a paid account, or request a custom integration.</p></div>
     </div>
   </section>
 
   <section>
     <h2>Why WebMCP</h2>
-    <p class="muted" style="max-width:680px">Browser agents are arriving, and they look for tools on the page via <code>navigator.modelContext</code>. Sites that expose tools get used by those agents; sites that don't are invisible to them. This is the cheapest way to be on the right side of that shift, and it doubles as a server-side MCP endpoint.</p>
-    <div class="row" style="margin-top:18px"><a class="btn btn-primary" href="${origin}/connect">Grade, connect and build at the MCP hub →</a></div>
+    <p class="muted" style="max-width:680px">WebMCP lets browser agents discover site-authored tools through <code>document.modelContext</code>. WMCP adds an adapter-based fallback for read discovery. Actual API calls remain governed by their own authentication and browser permissions.</p>
+    <div class="row" style="margin-top:18px"><a class="btn btn-primary" href="${origin}/managed?source=webmcp">Get an agent-ready integration · from $499 →</a> <a class="btn" href="${origin}/pricing?source=webmcp">Self-serve API plans →</a></div>
   </section>
 
   ${adSlot()}

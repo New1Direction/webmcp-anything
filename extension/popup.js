@@ -33,20 +33,70 @@ async function load() {
 
   initWatch(tab);
   initCapture(tab);
+  initWebmcp(tab);
+  await refreshCurrentTools(tab);
+}
 
-  const bg = await chrome.runtime.sendMessage({ type: "GET_TAB_TOOLS", tabId: tab.id });
-  if (bg?.tools?.length) {
-    currentTools = bg.tools;
-    return render(bg.tools);
-  }
-
+async function refreshCurrentTools(tab) {
+  // Prefer the live tab: native browser tools exist only in the page realm.
   try {
     const cs = await chrome.tabs.sendMessage(tab.id, { type: "GET_TOOLS_FOR_PAGE" });
-    currentTools = cs?.tools || [];
-    render(currentTools, cs?.tools?.length ? null : "no tools detected");
-  } catch {
-    render([], "reload the page after installing the extension");
+    if (cs?.ok && cs.url === tab.url) {
+      currentTools = cs.tools || [];
+      return render(currentTools, currentTools.length ? null : "no tools detected");
+    }
+  } catch { /* on unsupported tabs, fall back to the existing adapter cache */ }
+
+  const bg = await chrome.runtime.sendMessage({ type: "GET_TAB_TOOLS", tabId: tab.id });
+  currentTools = bg?.url === tab.url ? (bg.tools || []) : [];
+  render(currentTools, currentTools.length ? null : "reload the page after installing the extension");
+}
+
+// On-demand activation uses Chrome's existing activeTab + scripting permission.
+// It does not silently expand host permissions or run on unrelated tabs.
+function initWebmcp(tab) {
+  const btn = document.getElementById("wmcp-enable");
+  const note = document.getElementById("wmcp-enable-note");
+  if (!btn) return;
+  if (!/^https?:\/\//.test(tab.url || "")) {
+    btn.disabled = true;
+    note.textContent = "Open a normal website to activate WebMCP.";
+    return;
   }
+  btn.addEventListener("click", async () => {
+    btn.disabled = true;
+    btn.textContent = "Loading WebMCP…";
+    try {
+      let active = false;
+      try {
+        const res = await chrome.tabs.sendMessage(tab.id, { type: "GET_TOOLS_FOR_PAGE" });
+        active = res?.ok === true && res.url === tab.url;
+      } catch { /* not active on this tab */ }
+      if (!active) {
+        // Keep the injected helper private to this one page. The MAIN-world
+        // script is installed through Chrome's scripting API so the resource
+        // needs no <all_urls> web_accessible_resources permission.
+        await chrome.scripting.executeScript({
+          target: { tabId: tab.id }, world: "ISOLATED",
+          func: () => { globalThis.__wmcpManualInjection = true; },
+        });
+        await chrome.scripting.executeScript({
+          target: { tabId: tab.id }, world: "ISOLATED", files: ["content.js"],
+        });
+        await chrome.scripting.executeScript({
+          target: { tabId: tab.id }, world: "MAIN", files: ["injected.js"],
+        });
+      }
+      await refreshCurrentTools(tab);
+      btn.textContent = "↻ Refresh WebMCP tools";
+      note.textContent = "Active in this tab only. Native tool calls stay local.";
+    } catch (err) {
+      btn.textContent = "🔌 Enable WMCP on this tab";
+      note.textContent = String(err?.message || err).slice(0, 160);
+    } finally {
+      btn.disabled = false;
+    }
+  });
 }
 
 function render(tools, errorMsg) {
@@ -70,7 +120,7 @@ function render(tools, errorMsg) {
   dot.classList.add("ok");
   status.textContent = `${tools.length} tools live`;
 
-  const adapter = tools[0]?.action?.kind?.split("_")[0] || "auto";
+  const adapter = tools.some((t) => t.source === "native") ? "native WebMCP + inferred" : (tools[0]?.action?.kind?.split("_")[0] || "auto");
   main.innerHTML =
     `<div class="adapter-tag">${escapeHtml(adapter)} adapter</div>` +
     tools.map((t, i) => toolCard(t, i)).join("");
@@ -143,7 +193,18 @@ async function runTool(idx) {
 
   try {
     let value;
-    if (tool.result !== undefined) {
+    if (tool.source === "native") {
+      // Tool annotations are supplied by the site and cannot prove an action is
+      // harmless. Require another explicit confirmation for non-read-only tools.
+      if (!tool.annotations?.readOnlyHint &&
+          !confirm('Run "' + tool.name + '" on ' + new URL(currentTab.url).origin +
+            '? This website tool may modify data or trigger a transaction.')) return;
+      const resp = await chrome.tabs.sendMessage(currentTab.id, {
+        type: "EXECUTE_NATIVE_TOOL", name: tool.name, args,
+      });
+      if (!resp?.ok) throw new Error(resp?.error || "native WebMCP tool failed");
+      value = resp.value;
+    } else if (tool.result !== undefined) {
       value = tool.result;
     } else {
       const resp = await chrome.runtime.sendMessage({

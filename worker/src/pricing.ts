@@ -103,7 +103,8 @@ ${uiNav(origin)}
 <div class="wrap">
   <header style="padding:30px 0 4px">
     <h1>Pricing</h1>
-    <p class="lead">Turn any website into agent-callable tools. Start free; pay to run live tool calls at scale — or have us build and run it for you.</p>
+    <p class="lead">Turn a website into agent-callable tools. Preview a URL for free, then pay for live API execution or have us deliver a verified integration.</p>
+    <p><a class="btn btn-ghost" href="/start?source=pricing">Try a free URL preview</a> <a class="btn btn-primary" href="/agent-ready/fix?source=pricing">Get a done-for-you fix</a></p>
   </header>
 
   <div class="freebox">★ The independent A–F <a href="/mcp/grade">MCP trust grade</a> is free and identical whether or not you pay — we never charge for the grade. Paid plans are for using the API; the managed tiers are for done-for-you work.</div>
@@ -115,7 +116,7 @@ ${uiNav(origin)}
 
   <div id="co">
     <strong id="co-title">Continue to checkout</strong>
-    <p style="color:var(--muted);font-size:.86rem;margin:6px 0 0">Enter your email — your API key is tied to it so you can recover it anytime. No password.</p>
+    <p id="co-note" style="color:var(--muted);font-size:.86rem;margin:6px 0 0">Enter your email — your API key is tied to it so you can recover it anytime. Already signed in? We'll use your existing account.</p>
     <div class="crow">
       <input id="co-email" type="email" placeholder="you@company.com" />
       <button class="btn btn-primary" id="co-go">Continue →</button>
@@ -136,18 +137,29 @@ ${uiNav(origin)}
 var ORIGIN=${JSON.stringify(origin)};
 (function(){
   var box=document.getElementById("co"),title=document.getElementById("co-title"),email=document.getElementById("co-email"),go=document.getElementById("co-go"),err=document.getElementById("co-err");
-  var plan="builder",labels={builder:"Builder — $39/mo",pro:"Pro — $99/mo",reseller:"Reseller — $299/mo"};
+  var plan="builder",signedIn=false,labels={builder:"Builder — $39/mo",pro:"Pro — $99/mo",reseller:"Reseller — $299/mo"};
+  fetch(ORIGIN+"/api/v1/me",{credentials:"include"}).then(function(r){return r.json();}).then(function(user){
+    if(user&&user.authenticated){
+      signedIn=true;
+      email.style.display="none";
+      document.getElementById("co-note").textContent="Your subscription and API key will stay with your signed-in WMCP account.";
+    }
+  }).catch(function(){});
+  var q=new URLSearchParams(location.search);
+  var requested=q.get("upgrade");
+  if(labels[requested])plan=requested;
   document.querySelectorAll("button.pick[data-plan]").forEach(function(b){
     b.addEventListener("click",function(){
       plan=b.getAttribute("data-plan");
       title.textContent="Continue to checkout · "+(labels[plan]||plan);
       box.classList.add("show");err.textContent="";
-      box.scrollIntoView({behavior:"smooth",block:"center"});email.focus();
+      box.scrollIntoView({behavior:"smooth",block:"center"});if(!signedIn)email.focus();
     });
   });
   function start(){
     var addr=(email.value||"").trim();err.textContent="";
-    if(!addr||addr.indexOf("@")<0){err.textContent="Enter a valid email.";return;}
+    if(!signedIn&&(!addr||addr.indexOf("@")<0)){err.textContent="Enter a valid email or sign in first.";return;}
+    if(addr&&(!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(addr))){err.textContent="Enter a valid email.";return;}
     go.disabled=true;go.textContent="Loading…";
     var src=(new URLSearchParams(location.search).get("source")||"pricing").replace(/[^a-z0-9_.:-]/gi,"").slice(0,40)||"pricing";
     fetch(ORIGIN+"/api/v1/stripe/checkout",{method:"POST",credentials:"include",headers:{"content-type":"application/json"},body:JSON.stringify({email:addr,plan:plan,source:src})})

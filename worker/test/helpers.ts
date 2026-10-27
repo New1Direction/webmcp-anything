@@ -125,6 +125,7 @@ export function checkoutCompleted(metadata: Record<string, string>, extra: any =
         subscription: "sub_test_1",
         amount_total: 12900,
         currency: "usd",
+        payment_status: "paid",
         metadata,
         ...extra,
       },

@@ -15,10 +15,26 @@ function injectPageScript() {
   (document.head || document.documentElement).appendChild(s);
 }
 
-injectPageScript();
+if (!globalThis.__wmcpManualInjection) injectPageScript();
 
 // 2. Ask background to extract tools as soon as the page is ready
 let lastToolList = [];
+let lastToolUrl = null;
+let extractionGeneration = 0;
+let nativeToolsForPage = [];
+let nativeToolsUrl = null;
+const nativePending = new Map();
+const nativeRefreshWaiters = new Set();
+
+function displayTools() {
+  const native = nativeToolsUrl === location.href ? nativeToolsForPage : [];
+  const names = new Set(native.map((t) => t.name));
+  return [...native, ...lastToolList.filter((t) => !names.has(t.name))];
+}
+
+function requestNativeRefresh() {
+  window.postMessage({ source: NS, dir: "bridge->page", type: "REFRESH_NATIVE_TOOLS" }, "*");
+}
 
 function collectJsonLd() {
   const out = [];
@@ -45,6 +61,8 @@ function collectMeta() {
 }
 
 async function requestTools() {
+  const generation = ++extractionGeneration;
+  const targetUrl = location.href;
   try {
     const html = document.documentElement?.outerHTML?.slice(0, 50_000) || "";
     const jsonld = collectJsonLd();
@@ -52,20 +70,22 @@ async function requestTools() {
     const title = document.title || "";
     const resp = await chrome.runtime.sendMessage({
       type: "EXTRACT_TOOLS",
-      url: location.href,
+      url: targetUrl,
       html,
       jsonld,
       meta,
       title,
     });
-    if (resp?.ok && Array.isArray(resp.tools) && resp.tools.length) {
+    if (generation !== extractionGeneration || targetUrl !== location.href) return;
+    if (resp?.ok && Array.isArray(resp.tools)) {
       lastToolList = resp.tools;
+      lastToolUrl = targetUrl;
       window.postMessage(
         { source: NS, dir: "bridge->page", type: "REGISTER_TOOLS", payload: { tools: resp.tools } },
         "*"
       );
       // Cache for popup
-      chrome.runtime.sendMessage({ type: "CACHE_TOOLS_FOR_TAB", tools: resp.tools, url: location.href });
+      chrome.runtime.sendMessage({ type: "CACHE_TOOLS_FOR_TAB", tools: resp.tools, url: targetUrl });
     }
   } catch (err) {
     console.warn("[WebMCP Anything] extract failed:", err);
@@ -81,8 +101,41 @@ if (document.readyState === "loading") {
 }
 
 window.addEventListener("message", async (event) => {
+  if (event.source !== window || event.origin !== location.origin) return;
   const msg = event.data;
   if (!msg || msg.source !== NS) return;
+
+  if (msg.dir === "page->bridge" && msg.type === "NATIVE_TOOLS") {
+    const data = msg.payload || {};
+    if (data.url !== location.href || !Array.isArray(data.tools)) return;
+    nativeToolsUrl = data.url;
+    nativeToolsForPage = data.tools.slice(0, 64).filter((tool) =>
+      tool && typeof tool.name === "string" && tool.name.length <= 128 &&
+      tool.source === "native").map((tool) => ({
+      name: tool.name,
+      description: String(tool.description || "").slice(0, 2000),
+      source: "native",
+      annotations: {
+        readOnlyHint: tool.annotations?.readOnlyHint === true,
+        consequentialHint: tool.annotations?.consequentialHint === true,
+      },
+      inputSchema: tool.inputSchema && typeof tool.inputSchema === "object" &&
+        !Array.isArray(tool.inputSchema) ? tool.inputSchema : { type: "object", properties: {} },
+    }));
+    for (const resolve of nativeRefreshWaiters) resolve();
+    nativeRefreshWaiters.clear();
+    return;
+  }
+
+  if (msg.dir === "page->bridge" && msg.type === "NATIVE_RESULT") {
+    const { requestId, ok, value, error } = msg.payload || {};
+    const pending = nativePending.get(requestId);
+    if (!pending) return;
+    nativePending.delete(requestId);
+    clearTimeout(pending.timer);
+    pending.resolve(ok ? { ok: true, value } : { ok: false, error: error || "native tool failed" });
+    return;
+  }
 
   if (msg.dir === "page->bridge" && msg.type === "PAGE_READY") {
     // also retry once when page script is ready, in case earlier attempt raced
@@ -90,14 +143,19 @@ window.addEventListener("message", async (event) => {
   }
 
   if (msg.dir === "page->bridge" && msg.type === "EXECUTE") {
-    const { requestId, action, args, name } = msg.payload;
+    const { requestId, args, name } = msg.payload || {};
     try {
+      // Never trust an action supplied by the page message: only execute
+      // a server-extracted action for the current URL, using its saved definition.
+      const allowed = lastToolList.find((t) => t.name === name && t.action);
+      if (!allowed || lastToolUrl !== location.href)
+        throw new Error("WebMCP tool is not authorized for this page");
       const resp = await chrome.runtime.sendMessage({
         type: "EXECUTE_TOOL",
-        action,
+        action: allowed.action,
         args,
         name,
-        url: location.href,
+        url: lastToolUrl,
       });
       window.postMessage(
         {
@@ -127,7 +185,19 @@ let lastUrl = location.href;
 setInterval(() => {
   if (location.href !== lastUrl) {
     lastUrl = location.href;
+    lastToolList = [];
+    lastToolUrl = null;
+    nativeToolsForPage = [];
+    nativeToolsUrl = null;
+    for (const pending of nativePending.values()) {
+      clearTimeout(pending.timer);
+      pending.resolve({ ok: false, error: "page navigated before WebMCP tool completed" });
+    }
+    nativePending.clear();
+    // Remove old tools immediately; do not wait for the next extraction to succeed.
+    window.postMessage({ source: NS, dir: "bridge->page", type: "REGISTER_TOOLS", payload: { tools: [] } }, "*");
     requestTools();
+    requestNativeRefresh();
   }
 }, 1500);
 
@@ -249,7 +319,52 @@ function qcUpgradeBanner() {
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", () => qcResume(), { once: true });
 else qcResume();
 
-// Tool queries for the popup (watch start/stop is owned by the background).
+// Native WebMCP calls only originate from the extension popup and are
+// executed in the active page. No browser credentials or results reach wmcp.sh.
 chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
-  if (msg?.type === "GET_TOOLS_FOR_PAGE") { sendResponse({ ok: true, tools: lastToolList, url: location.href }); return; }
+  if (msg?.type === "GET_TOOLS_FOR_PAGE") {
+    const url = location.href;
+    const timeout = setTimeout(() => {
+      nativeRefreshWaiters.delete(done);
+      done();
+    }, 400);
+    let sent = false;
+    function done() {
+      if (sent) return;
+      sent = true;
+      clearTimeout(timeout);
+      sendResponse({ ok: true, tools: displayTools(), url });
+    }
+    nativeRefreshWaiters.add(done);
+    requestNativeRefresh();
+    return true;
+  }
+  if (msg?.type === "EXECUTE_NATIVE_TOOL") {
+    const name = msg.name;
+    if (nativeToolsUrl !== location.href ||
+        !nativeToolsForPage.some((t) => t.name === name)) {
+      sendResponse({ ok: false, error: "Native WebMCP tool is unavailable in this tab" });
+      return;
+    }
+    const args = msg.args || {};
+    if (!args || typeof args !== "object" || Array.isArray(args)) {
+      sendResponse({ ok: false, error: "Tool arguments must be an object" });
+      return;
+    }
+    const requestId = crypto.randomUUID();
+    const timer = setTimeout(() => {
+      const entry = nativePending.get(requestId);
+      if (entry) {
+        nativePending.delete(requestId);
+        entry.resolve({ ok: false, error: "Native WebMCP tool timed out" });
+      }
+    }, 20000);
+    const response = new Promise((resolve) => nativePending.set(requestId, { resolve, timer }));
+    window.postMessage({
+      source: NS, dir: "bridge->page", type: "INVOKE_NATIVE",
+      payload: { requestId, name, args },
+    }, "*");
+    response.then(sendResponse);
+    return true;
+  }
 });

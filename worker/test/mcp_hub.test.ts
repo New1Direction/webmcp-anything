@@ -44,7 +44,9 @@ describe("MCP trust leaderboard", () => {
 describe("WebMCP hub", () => {
   it("markets the shim with a generator + links the hub", () => {
     const html = webmcpHubHtml(origin);
-    expect(html).toContain("navigator.modelContext");
+    expect(html).toContain("document.modelContext");
+    expect(html).toContain("read-tool snapshots");
+    expect(html).toContain("/managed?source=webmcp");
     expect(html).toContain(`${origin}/webmcp/`); // example shim snippet
     expect(html).toContain(`${origin}/connect`);
     expect(html).toContain(`${origin}/mcp/leaderboard`);
