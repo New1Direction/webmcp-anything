@@ -195,6 +195,25 @@ describe("Monitoring fulfillment", () => {
 });
 
 describe("Deep Audit + grade-page lead deliver immediately", () => {
+  it("holds an unpaid audit and fulfills a later signed async settlement only once", async () => {
+    const env = mailEnv();
+    await env.CACHE.put("grade:mcp.x.com", JSON.stringify(GRADE));
+    const calls = captureFetch();
+    const metadata = { kind: "deep_audit", host: "mcp.x.com", target_url: "https://mcp.x.com/mcp" };
+    const session = { id: "cs_async_audit", customer_email: "buyer@x.com", metadata };
+    const pending = await fireOn(env, { ...session, payment_status: "unpaid" });
+    expect(pending.body.action).toBe("payment_pending");
+    expect(env.KEYS.__keys("deepaudit:")).toHaveLength(0);
+    const paid = await fireOn(env, { ...session, payment_status: "paid" }, "checkout.session.async_payment_succeeded");
+    expect(paid.body.action).toBe("deep_audit_recorded");
+    const retry = await fireOn(env, { ...session, payment_status: "paid" }, "checkout.session.async_payment_succeeded");
+    expect(retry.body.action).toBe("deep_audit_already_recorded");
+    expect(env.KEYS.__keys("deepaudit:")).toHaveLength(1);
+    const emails = calls.filter(c => c.url.includes("resend.com"));
+    expect(emails).toHaveLength(1);
+    expect(env.KEYS.__keys("key:")).toHaveLength(0);
+  });
+
   it("a paid Deep Audit emails the machine audit to the buyer", async () => {
     const env = mailEnv();
     await env.CACHE.put("grade:mcp.x.com", JSON.stringify(GRADE));
