@@ -54,4 +54,4 @@ jobs:
       - name: Install Chromium and system dependencies
         run: npx playwright install --with-deps chromium
       - name: Exercise actual browser DOM bridge
-        run: node --test test/webmcp_browser.acceptance.mjs
+        run: node --test --test-concurrency=1 test/webmcp_browser.acceptance.mjs test/webmcp_mv3.acceptance.mjs
