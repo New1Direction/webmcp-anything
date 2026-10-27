@@ -7,7 +7,7 @@
 [![Node.js 18+](https://img.shields.io/badge/CLI-Node.js%2018%2B-239a73)](cli/README.md)
 [![Open MCP](https://img.shields.io/badge/protocol-MCP-4da6dc)](https://modelcontextprotocol.io)
 
-**[Try WMCP](https://wmcp.sh/start)** · **[Read-only CLI](cli/README.md)** · **[Native browser demo](examples/browser-demo/README.md)** · **[MCP Trust Leaderboard](https://wmcp.sh/mcp/leaderboard)** · **[API docs](docs/API.md)**
+**[Try WMCP](https://wmcp.sh/start)** · **[MCP Doctor](docs/MCP_DOCTOR.md)** · **[Read-only CLI](cli/README.md)** · **[Native browser demo](examples/browser-demo/README.md)** · **[MCP Trust Leaderboard](https://wmcp.sh/mcp/leaderboard)** · **[API docs](docs/API.md)**
 
 WMCP is a hosted **URL-to-MCP gateway** for Claude, Cursor, Codex and custom AI agents. It extracts candidate tools from public pages, structured data and documented APIs; exposes them over MCP; and offers separate trust grading for MCP servers. You can use the public service or self-host the Worker.
 
@@ -92,6 +92,18 @@ Schema + tools ---> Hosted MCP endpoint or JSON REST response
 Detection depends on each site's metadata, network accessibility and authentication. Client-side applications may require a separately installed browser integration.
 
 **WebMCP is not the same as backend MCP.** The [WebMCP draft](https://webmachinelearning.github.io/webmcp/) uses document.modelContext to expose site-owned JavaScript tools in the browser. WMCP's current hosted product is primarily a backend URL adapter and MCP gateway. [Native browser interoperability is being developed in PR #75](https://github.com/New1Direction/webmcp-anything/pull/75); do not assume a remote MCP endpoint can execute browser-session tools without a consented session bridge.
+
+## Diagnose MCP servers in CI
+
+WMCP Doctor checks a direct MCP HTTP endpoint without calling tools. It handles protocol initialization, session IDs, tool pagination, and basic input-schema hygiene. Use it as a lightweight CI preflight, not a formal audit or replacement for the official MCP Inspector.
+
+~~~sh
+node cli/wmcp.mjs doctor https://YOUR_MCP_HOST.example/mcp --json --strict
+~~~
+
+You can also save `doctor --json` output as a reviewed baseline, then use `--baseline path --strict` to flag MCP tool-contract changes in CI.
+
+The endpoint is an example placeholder. Read [the Doctor guide](docs/MCP_DOCTOR.md) for supported checks, limits, and exit codes.
 
 ## Live browser-native example
 

@@ -73,12 +73,13 @@ describe("read-only WMCP CLI", () => {
         assert.equal(opts.headers.authorization, "Bearer test_key");
         messages.push(JSON.parse(opts.body));
         if (messages.length === 1) return fakeResponse({ jsonrpc: "2.0", id: 1,
-          result: { protocolVersion: "2025-11-25", serverInfo: { name: "wmcp.sh" } } });
+          result: { protocolVersion: "2025-11-25", capabilities: { tools: {} }, serverInfo: { name: "wmcp.sh" } } });
+        if (messages.length === 2) return fakeResponse("", 202);
         return fakeResponse({ jsonrpc: "2.0", id: 2,
           result: { tools: [{ name: "get_info", inputSchema: { type: "object", properties: {} } }] } });
       },
     });
-    assert.deepEqual(messages.map((m) => m.method), ["initialize", "tools/list"]);
+    assert.deepEqual(messages.map((m) => m.method), ["initialize", "notifications/initialized", "tools/list"]);
     assert.equal(result.tools.length, 1);
     assert.ok(summarize("mcp", result).includes("get_info"));
   });
