@@ -8,11 +8,15 @@ From the repository root:
     node cli/wmcp.mjs mcp https://petstore3.swagger.io/api/v3/openapi.json
     node cli/wmcp.mjs config https://petstore3.swagger.io/api/v3/openapi.json
     node cli/wmcp.mjs grade https://example.com/mcp
+    node cli/wmcp.mjs doctor https://example.com/mcp --strict --json
 
 - **inspect** — calls the WMCP REST discovery API and prints extracted tools.
 - **mcp** — sends actual JSON-RPC initialize and tools/list to WMCP's URL-specific MCP endpoint. It never executes tools/call.
 - **config** — prints a copyable MCP client configuration with no secrets embedded.
-- **grade** — reads the independent A–F MCP trust report. This is a risk indicator, not proof of safety.
+- **grade** — reads WMCP's independent A–F trust report. A risk indicator, not proof of safety.
+- **doctor** — connects directly to an MCP Streamable HTTP server, negotiates the protocol, follows tool-list pagination and emits compatibility findings. Use `--strict` for a CI exit code. It never calls tools. [Doctor documentation](../docs/MCP_DOCTOR.md).
+
+Use `doctor --json > mcp-baseline.json` followed by `doctor --baseline mcp-baseline.json --strict` to flag added, removed or changed tool definitions. This is contract-drift detection, not proof that the server's behavior is safe. See [the Doctor guide](../docs/MCP_DOCTOR.md).
 
 Use --json for raw output, and --base http://localhost:8787 to try your local Worker. Authenticated *reads* can use the WMCP_API_KEY environment variable. The CLI does not echo the key or run paid tool actions.
 
