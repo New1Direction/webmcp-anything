@@ -1,0 +1,53 @@
+name: Bug report
+description: Report a reproducible problem with extraction, MCP, SDKs, or docs.
+title: "[Bug] "
+body:
+  - type: markdown
+    attributes:
+      value: "Do not post API keys, credentials, signed/private URLs or user data. Please use public test sources."
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: Provide an exact command or a public reproducible example.
+      placeholder: "node cli/wmcp.mjs inspect https://example.com/public"
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior and sanitized errors
+    validations:
+      required: true
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Product surface
+      options:
+        - CLI / developer quickstart
+        - URL extraction / adapters
+        - Remote MCP
+        - Browser WebMCP demo / extension
+        - SDKs
+        - Hosted service / API
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Node/browser version and operating system, if relevant.
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Public issue safety
+      options:
+        - label: I have removed API keys, tokens, private URLs and personal data.
+          required: true
