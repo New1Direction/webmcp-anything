@@ -152,7 +152,11 @@
     }
     if (signal.aborted) return;
     const nativeNames = new Set(existing.map((t) => t.name));
-    const candidates = tools.filter((t) => !nativeNames.has(t.name));
+    // Page scripts can impersonate any window.postMessage sender. Until there
+    // is a real consent-bound browser session, synthesized writes must NOT be
+    // registered as callable browser tools. They remain available as a
+    // user-clicked action through the trusted extension popup instead.
+    const candidates = tools.filter((t) => t.result !== undefined && !nativeNames.has(t.name));
     const results = await Promise.allSettled(candidates.map(async (tool) => {
       const readOnly = tool.result !== undefined;
       await context.registerTool({
