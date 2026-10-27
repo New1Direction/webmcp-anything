@@ -48,14 +48,14 @@ describe("extension's WebMCP registration", () => {
     page.emit("REGISTER_TOOLS", { tools: [read, live] });
     await drain();
     expect(modelContext.getTools).toHaveBeenCalled();
-    expect(inserted.map((i) => i.tool.name)).toEqual(["add_to_cart"]);
-    expect(inserted[0].tool.annotations.consequentialHint).toBe(true);
+    expect(inserted.map((i) => i.tool.name)).toEqual([]);
+    expect(inserted).toHaveLength(0);
     expect(legacy.registerTool).not.toHaveBeenCalled();
-    const firstSignal = inserted[0].opts.signal;
+    const firstSignal = page.win.webmcp?.signal || null;
     page.emit("REGISTER_TOOLS", { tools: [live] });
     await drain();
-    expect(firstSignal.aborted).toBe(true);
-    expect(inserted[1].opts.signal.aborted).toBe(false);
+    expect(firstSignal).toBeNull();
+    expect(inserted).toHaveLength(0);
   });
 
   it("does not impersonate a native API when the browser lacks WebMCP", async () => {
@@ -148,13 +148,8 @@ describe("extension's WebMCP registration", () => {
     const page = boot({ registerTool: async (tool: any) => { registrations.push(tool); } });
     page.emit("REGISTER_TOOLS", { tools: [live] });
     await drain();
-    const pending = registrations[0].execute({ quantity: 2 });
-    const msg = page.sent.find((message) => message.type === "EXECUTE");
-    expect(msg.payload.name).toBe("add_to_cart");
-    expect(msg.payload.args).toEqual({ quantity: 2 });
-    expect(msg.payload.action).toBeUndefined();
-    page.emit("EXECUTE_RESULT", { requestId: msg.payload.requestId, ok: true, value: "done" });
-    expect(await pending).toBe("done");
+    expect(registrations).toHaveLength(0);
+    expect(page.sent.some((message) => message.type === "EXECUTE")).toBe(false);
   });
 });
 
@@ -211,6 +206,17 @@ describe("extension content relay — browser-local native calls", () => {
     p.receivePageMessage("NATIVE_RESULT", { requestId: "native-call-1", ok: true, value: "2 orders" });
     await Promise.resolve();
     expect(answer).toEqual({ ok: true, value: "2 orders" });
+  });
+
+  it("ignores forged page-to-extension execution messages without invoking privileged background actions", async () => {
+    const p = bootContent();
+    p.receivePageMessage("NATIVE_TOOLS", { url: SITE, tools: [] });
+    p.receivePageMessage("EXECUTE", { requestId: "attack", name: "add_to_cart", args: { quantity: 1 } });
+    await Promise.resolve();
+    expect(p.posted.some((message) =>
+      message.type === "EXECUTE_RESULT" &&
+      message.payload.requestId === "attack" &&
+      message.payload.ok === false)).toBe(true);
   });
 
   it("rejects unregistered names and ignores cross-origin discovery", () => {
