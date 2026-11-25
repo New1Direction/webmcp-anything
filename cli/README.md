@@ -29,3 +29,7 @@ Tests (zero dependencies):
     node --test cli/*.test.mjs
 
 Read the platform guide: ../docs/QUICKSTART.md
+
+## Browser WebMCP
+
+Run `node cli/wmcp.mjs doctor web https://site.example/tools --strict` with a WebMCP-capable Chrome build to observe native registrations. The [WebMCP Doctor guide](../docs/WEBMCP_DOCTOR.md) covers reporting, preview baselines, pairing, and CI.

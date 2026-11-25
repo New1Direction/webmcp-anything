@@ -44,7 +44,11 @@ describe("MCP trust leaderboard", () => {
 describe("WebMCP hub", () => {
   it("markets the shim with a generator + links the hub", () => {
     const html = webmcpHubHtml(origin);
-    expect(html).toContain("navigator.modelContext");
+    expect(html).toContain("document.modelContext");
+    expect(html).toContain("/demo/webmcp-doctor.html");
+    const inline = html.match(/<script>\s*([\s\S]*?)<\/script>/)?.[1];
+    expect(inline).toBeTruthy();
+    expect(() => new Function(inline!)).not.toThrow();
     expect(html).toContain(`${origin}/webmcp/`); // example shim snippet
     expect(html).toContain(`${origin}/connect`);
     expect(html).toContain(`${origin}/mcp/leaderboard`);

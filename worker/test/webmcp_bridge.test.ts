@@ -25,22 +25,22 @@ describe("bridgeDescriptor — one extraction, both protocols", () => {
 });
 
 describe("webmcpShimJs", () => {
-  it("targets navigator.modelContext + the execute path + embeds the site", () => {
+  it("prefers document.modelContext and retains the legacy fallback", () => {
     const js = webmcpShimJs(SITE, tools, "https://wmcp.sh");
-    expect(js).toContain("navigator.modelContext.registerTool");
+    expect(js).toContain("document.modelContext");
+    expect(js).toContain("navigator.modelContext");
     expect(js).toContain('"get_price"');
     expect(js).toContain('"add_to_cart"');
     expect(js).toContain("/api/v1/tools/execute");
     expect(js).toContain(SITE);
-    expect(js).toContain('typeof navigator === "undefined"'); // SSR/no-WebMCP guard
   });
 
   it("actually runs: registers every tool, and a read-tool handler returns the embedded result with no fetch", async () => {
     const js = webmcpShimJs(SITE, tools, "https://wmcp.sh");
     const registered: any[] = [];
-    const fakeNavigator = { modelContext: { registerTool: (t: any) => registered.push(t) } };
-    // Execute the shim IIFE with our fake navigator in scope.
-    new Function("navigator", js)(fakeNavigator);
+    const fakeDocument = { modelContext: { registerTool: (t: any) => registered.push(t) } };
+    const legacy = { modelContext: { registerTool: () => { throw Error("Legacy API should be ignored"); } } };
+    new Function("document", "navigator", js)(fakeDocument, legacy);
     expect(registered.map((t) => t.name).sort()).toEqual(["add_to_cart", "get_price"]);
 
     const getPrice = registered.find((t) => t.name === "get_price");
@@ -49,7 +49,16 @@ describe("webmcpShimJs", () => {
     expect(out.content[0].text).toContain("$98"); // embedded read result, no network
   });
 
-  it("does nothing when navigator.modelContext is absent (no throw)", () => {
+  it("registers tools in older browsers using navigator.modelContext", () => {
+    const js = webmcpShimJs(SITE, tools, "https://wmcp.sh");
+    const registered: string[] = [];
+    new Function("document", "navigator", js)({}, { modelContext: {
+      registerTool: (tool: { name: string }) => registered.push(tool.name),
+    } });
+    expect(registered).toEqual(["get_price", "add_to_cart"]);
+  });
+
+  it("does nothing when WebMCP is unavailable", () => {
     const js = webmcpShimJs(SITE, tools, "https://wmcp.sh");
     expect(() => new Function("navigator", js)({})).not.toThrow();
   });

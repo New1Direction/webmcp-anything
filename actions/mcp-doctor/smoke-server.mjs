@@ -13,6 +13,13 @@ const server = createServer(async (req, res) => {
     res.writeHead(200, { "content-type": "text/plain" });
     res.end("ok"); return;
   }
+  if (req.url === "/web" && req.method === "GET") {
+    res.writeHead(200, { "content-type": "text/html" });
+    res.end(`<script>document.modelContext?.registerTool({
+      ...${JSON.stringify(tools[0])}, execute: () => ({content: []})
+    })</script>`);
+    return;
+  }
   if (req.url !== "/mcp" || req.method !== "POST") {
     res.writeHead(404); res.end(); return;
   }

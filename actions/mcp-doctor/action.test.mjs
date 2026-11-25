@@ -1,4 +1,4 @@
-import { describe, it } from "node:test";
+import { describe, it, test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { actionArgs, actionRun } from "./run.mjs";
@@ -54,4 +54,12 @@ describe("GitHub Action: MCP Doctor", () => {
     assert.ok(!manifest.includes("curl | bash"));
     assert.ok(!manifest.includes("tools/call"));
   });
+});
+
+test("browser action passes a page and pair without a credential", () => {
+  assert.deepEqual(actionArgs({ WMCP_DOCTOR_PAGE: "https://example.com/preview", WMCP_DOCTOR_PAIR: "https://example.com/mcp",
+    WMCP_DOCTOR_CHROME: "/opt/chrome with spaces", WMCP_DOCTOR_WAIT: "500", WMCP_DOCTOR_ALLOW_PREVIEW: "true" }),
+  ["doctor", "web", "https://example.com/preview", "--pair", "https://example.com/mcp", "--chrome", "/opt/chrome with spaces",
+    "--wait-ms", "500", "--allow-preview-origin", "--strict"]);
+  assert.throws(() => actionArgs({ WMCP_DOCTOR_PAGE: "https://example.com", WMCP_API_KEY: "test" }), /auth-token/);
 });

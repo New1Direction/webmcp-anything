@@ -60,3 +60,28 @@ jobs:
         with:
           endpoint: http://127.0.0.1:8765/mcp
           strict: "true"
+      - name: Verify browser page and paired endpoint through the same composite action
+        uses: ./actions/mcp-doctor
+        with:
+          page: http://127.0.0.1:8765/web
+          paired-endpoint: http://127.0.0.1:8765/mcp
+          strict: "true"
+
+  webmcp-native:
+    name: native Chrome WebMCP regression
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install Worker dependencies
+        working-directory: worker
+        run: npm ci
+      - name: Verify the legacy failure and fixed shim in Chrome
+        working-directory: worker
+        run: |
+          export WMCP_CHROME="$(command -v google-chrome)"
+          test -x "$WMCP_CHROME"
+          "$WMCP_CHROME" --version
+          npm test -- test/webmcp_native.test.ts
