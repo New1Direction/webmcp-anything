@@ -1,0 +1,63 @@
+name: WMCP Doctor
+description: "Read-only browser WebMCP and remote MCP tool-contract checks for CI."
+author: New1Direction
+branding:
+  icon: activity
+  color: green
+inputs:
+  endpoint:
+    description: "Public HTTPS MCP Streamable HTTP endpoint, or localhost for testing. No query strings or credentials."
+    required: false
+    default: ""
+  page:
+    description: "Page to observe in an installed WebMCP-capable Chrome. Use page or endpoint."
+    required: false
+    default: ""
+  paired-endpoint:
+    description: "Optional public MCP endpoint to compare with the browser page."
+    required: false
+    default: ""
+  chrome:
+    description: "Optional path to a WebMCP-capable Chrome executable."
+    required: false
+    default: ""
+  wait-ms:
+    description: "Optional observation window after page load, in milliseconds."
+    required: false
+    default: ""
+  allow-preview-origin:
+    description: "Allow a browser baseline from the same path on another origin."
+    required: false
+    default: "false"
+  strict:
+    description: "Return a failing step if the Doctor finds compatibility warnings or contract drift."
+    required: false
+    default: "true"
+  baseline:
+    description: "Optional relative path to a previously reviewed JSON report, checked out in the calling repository."
+    required: false
+    default: ""
+  auth-token:
+    description: "Optional API token sent ONLY to the explicit endpoint. Prefer a short-lived, read-only token."
+    required: false
+    default: ""
+runs:
+  using: composite
+  steps:
+    - name: Install Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: "22"
+    - name: Read-only WMCP Doctor
+      shell: bash
+      env:
+        WMCP_DOCTOR_ENDPOINT: ${{ inputs.endpoint }}
+        WMCP_DOCTOR_PAGE: ${{ inputs.page }}
+        WMCP_DOCTOR_PAIR: ${{ inputs.paired-endpoint }}
+        WMCP_DOCTOR_CHROME: ${{ inputs.chrome }}
+        WMCP_DOCTOR_WAIT: ${{ inputs.wait-ms }}
+        WMCP_DOCTOR_ALLOW_PREVIEW: ${{ inputs.allow-preview-origin }}
+        WMCP_DOCTOR_STRICT: ${{ inputs.strict }}
+        WMCP_DOCTOR_BASELINE: ${{ inputs.baseline }}
+        WMCP_API_KEY: ${{ inputs.auth-token }}
+      run: node "${{ github.action_path }}/run.mjs"

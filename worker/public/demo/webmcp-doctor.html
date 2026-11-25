@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WebMCP regression demo · WMCP Doctor</title>
+<style>
+:root {color-scheme:dark;font:16px/1.55 system-ui,sans-serif;background:#101316;color:#eef0ea}
+* {box-sizing:border-box}
+body {margin:0}
+main {width:min(860px,calc(100% - 40px));margin:clamp(28px,8vw,94px) auto}
+a {color:#c9f190;text-underline-offset:4px}
+h1 {font-size:clamp(2.4rem,6.5vw,4.3rem);line-height:1;letter-spacing:-.06em;margin:30px 0 18px;max-width:13ch}
+p {color:#bfc8c2;max-width:62ch}
+button {font:inherit;background:#1c2422;color:inherit;border:1px solid #53605a;border-radius:9px;padding:8px 15px;cursor:pointer}
+button[aria-pressed="true"] {background:#d8f6a6;color:#15210f;border-color:#d8f6a6;font-weight:650}
+button:focus-visible,a:focus-visible {outline:2px solid #e9fac8;outline-offset:4px}
+.controls {display:flex;gap:9px;flex-wrap:wrap;margin:26px 0 12px}
+.result {background:#171d1b;border:1px solid #39483d;border-radius:14px;overflow:hidden}
+.caption {background:#222d26;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:13px 18px;color:#dce9d8}
+.status {color:#ffa69a;font-weight:750}
+.status.pass {color:#c6f38c}
+pre {font: .91rem/1.65 ui-monospace,monospace;margin:0;padding:20px;white-space:pre-wrap;overflow-wrap:anywhere;min-height:9em}
+.footer {margin-top:24px;display:flex;gap:20px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<main>
+  <a href="https://github.com/New1Direction/webmcp-anything">WMCP Doctor</a>
+  <h1>Catch the tool that disappeared.</h1>
+  <p>The old WMCP shim checked <code>navigator.modelContext</code>. Chrome observed zero tools. Switch to the fixed build to see what came back.</p>
+  <div class="controls" aria-label="Compare recorded Chrome runs">
+    <button type="button" id="before" aria-pressed="true">Before the fix</button>
+    <button type="button" id="after" aria-pressed="false">After the fix</button>
+  </div>
+  <section class="result" aria-label="Recorded check output" aria-live="polite">
+    <div class="caption"><span>Native Chrome 160.0.8183.0 · recorded run</span><span id="status" class="status">FAIL · exit 2</span></div>
+    <pre id="output">Tools: 0
+removed: list_tasks
+Chrome observed zero top-level WebMCP tools during the observation window.
+Browser tool definitions changed since the baseline.</pre>
+  </section>
+  <div class="footer">
+    <a href="https://github.com/New1Direction/webmcp-anything/blob/main/docs/WEBMCP_DOCTOR.md">Run the check on your site</a>
+    <a href="https://github.com/New1Direction/webmcp-anything/blob/main/worker/test/webmcp_native.test.ts">Reproduce this test</a>
+  </div>
+</main>
+<script>
+  const before = document.querySelector('#before');
+  const after = document.querySelector('#after');
+  const output = document.querySelector('#output');
+  const resultStatus = document.querySelector('#status');
+  const failure = output.textContent;
+  function show(fixed) {
+    before.setAttribute('aria-pressed', String(!fixed));
+    after.setAttribute('aria-pressed', String(fixed));
+    resultStatus.classList.toggle('pass', fixed);
+    resultStatus.textContent = fixed ? 'PASS · exit 0' : 'FAIL · exit 2';
+    output.textContent = fixed ? 'Tools: 1\nlist_tasks' : failure;
+  }
+  before.addEventListener('click', () => show(false));
+  after.addEventListener('click', () => show(true));
+</script>
+</body>
+</html>

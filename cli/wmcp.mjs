@@ -4,6 +4,7 @@ import { pathToFileURL } from "node:url";
 import { readFileSync, statSync } from "node:fs";
 import { inspectMcpEndpoint, validateEndpoint } from "./mcp-read.mjs";
 import { doctorMcp, formatDoctor } from "./doctor.mjs";
+import { doctorWeb, formatDoctorWeb, validateWebPage } from "./doctor-web.mjs";
 const BASE = "https://wmcp.sh";
 const CMDS = ["inspect", "mcp", "grade", "config", "doctor"];
 const HELP = [
@@ -15,12 +16,18 @@ const HELP = [
   "  node cli/wmcp.mjs grade   <mcp-endpoint-url> [--json]",
   "  node cli/wmcp.mjs config  <public-url>",
   "  node cli/wmcp.mjs doctor  <mcp-endpoint-url> [--json] [--strict] [--baseline path]",
+  "  node cli/wmcp.mjs doctor web <page-url> [--json] [--strict] [--baseline path]",
   "",
   "Options:",
   "  --json           Print machine-readable JSON",
   "  --strict         Doctor exits 2 if any warning or error exists",
   "  --baseline path  Compare Doctor output with a local JSON report",
   "  --base <origin>  Another WMCP service; HTTP only for local development",
+  "  --send-key-to-base  Explicitly allow your API key to be sent to --base",
+  "  --chrome path    Chrome executable for doctor web (or set WMCP_CHROME)",
+  "  --wait-ms n      Observe for n milliseconds after load (doctor web, default 1000)",
+  "  --pair url       Compare with this public MCP endpoint (doctor web)",
+  "  --allow-preview-origin  Allow baseline for the same path on another origin",
   "",
   "All commands are read-only. Use PUBLIC HTTPS URLs without credentials, query",
   "parameters or tokens: the remote service may fetch and cache target URLs.",
@@ -58,10 +65,13 @@ export function parseArgs(args) {
   if (!args.length || args.includes("--help") || args.includes("-h")) return { help: true };
   const [command, ...rest] = args;
   if (!CMDS.includes(command)) throw Error("Unknown command: " + command + ". Use --help.");
-  let json = false, strict = false, base = BASE, url = null, baselinePath = null;
-  for (let i = 0; i < rest.length; i++) {
+  const web = command === "doctor" && rest[0] === "web";
+  let json = false, strict = false, base = BASE, url = null, baselinePath = null, sendKeyToBase = false;
+  const browserOptions = {};
+  for (let i = web ? 1 : 0; i < rest.length; i++) {
     const arg = rest[i];
     if (arg === "--json") json = true;
+    else if (arg === "--send-key-to-base") sendKeyToBase = true;
     else if (arg === "--strict") strict = true;
     else if (arg === "--baseline") {
       baselinePath = rest[++i];
@@ -70,6 +80,16 @@ export function parseArgs(args) {
     else if (arg === "--base") {
       base = rest[++i];
       if (!base) throw Error("--base requires an origin URL");
+    } else if (web && arg === "--allow-preview-origin") browserOptions.allowPreviewOrigin = true;
+    else if (web && (arg === "--chrome" || arg === "--pair" || arg === "--wait-ms")) {
+      const value = rest[++i];
+      if (!value || value.startsWith("--")) throw Error(arg + " requires a value");
+      if (arg === "--chrome") browserOptions.chrome = value;
+      if (arg === "--pair") browserOptions.endpoint = validateEndpoint(value);
+      if (arg === "--wait-ms") {
+        if (!/^\d+$/.test(value) || Number(value) > 10_000) throw Error("--wait-ms must be an integer between 0 and 10000");
+        browserOptions.waitMs = Number(value);
+      }
     } else if (arg.startsWith("-")) throw Error("Unknown flag: " + arg);
     else if (url === null) url = arg;
     else throw Error("Only one target URL is supported");
@@ -77,11 +97,13 @@ export function parseArgs(args) {
   if (!url) throw Error("Missing target URL");
   if (strict && command !== "doctor") throw Error("--strict is available only with doctor");
   if (baselinePath && command !== "doctor") throw Error("--baseline is available only with doctor");
+  if (sendKeyToBase && command === "doctor") throw Error("doctor sends credentials only to its explicit target; --send-key-to-base is not applicable");
   if (command === "doctor") {
     if (base !== BASE) throw Error("doctor probes the supplied endpoint directly; do not use --base");
+    if (web) return { command: "doctor-web", url: validateWebPage(url), json, strict, baselinePath, ...browserOptions };
     return { command, url: validateEndpoint(url), base: validateBase(base), json, strict, ...(baselinePath ? { baselinePath } : {}) };
   }
-  return { command, url: validateTarget(url), base: validateBase(base), json };
+  return { command, url: validateTarget(url), base: validateBase(base), json, ...(sendKeyToBase ? { sendKeyToBase: true } : {}) };
 }
 
 async function jsonRequest(url, options = {}, key = "", request = fetch) {
@@ -112,16 +134,19 @@ async function jsonRequest(url, options = {}, key = "", request = fetch) {
   return data;
 }
 
-export async function execute({ command, url, base = BASE, baselinePath = null }, { request = fetch, apiKey = "" } = {}) {
+export async function execute({ command, url, base = BASE, baselinePath = null, sendKeyToBase = false, chrome, waitMs, endpoint, allowPreviewOrigin }, { request = fetch, apiKey = "", scan } = {}) {
   const origin = validateBase(base);
+  // WMCP_API_KEY is trusted only for the public WMCP host by default.
+  // A custom base may be a third-party endpoint: avoid exfiltrating keys.
+  const scopedApiKey = origin === BASE || sendKeyToBase ? apiKey : "";
   if (command === "config") {
     // A live key must never be serialized into terminal / chat logs.
     return { mcpServers: { wmcp: { type: "http", url: mcpEndpoint(url, origin) } } };
   }
-  if (command === "inspect") return jsonRequest(origin + "/api/v1/tools?url=" + encodeURIComponent(url), {}, apiKey, request);
-  if (command === "grade") return jsonRequest(origin + "/api/v1/mcp/grade?url=" + encodeURIComponent(url), {}, apiKey, request);
-  if (command === "mcp") return inspectMcpEndpoint(mcpEndpoint(url, origin), { request, apiKey });
-  if (command === "doctor") {
+  if (command === "inspect") return jsonRequest(origin + "/api/v1/tools?url=" + encodeURIComponent(url), {}, scopedApiKey, request);
+  if (command === "grade") return jsonRequest(origin + "/api/v1/mcp/grade?url=" + encodeURIComponent(url), {}, scopedApiKey, request);
+  if (command === "mcp") return inspectMcpEndpoint(mcpEndpoint(url, origin), { request, apiKey: scopedApiKey });
+  if (command === "doctor" || command === "doctor-web") {
     let baseline = null;
     if (baselinePath) {
       const stat = statSync(baselinePath);
@@ -129,6 +154,7 @@ export async function execute({ command, url, base = BASE, baselinePath = null }
       try { baseline = JSON.parse(readFileSync(baselinePath, "utf8")); }
       catch { throw Error("Doctor baseline contains invalid JSON"); }
     }
+    if (command === "doctor-web") return doctorWeb(url, { request, scan, baseline, chrome, waitMs, endpoint, allowPreviewOrigin });
     return doctorMcp(url, { request, apiKey, baseline });
   }
   throw Error("Unsupported command");
@@ -137,6 +163,7 @@ export async function execute({ command, url, base = BASE, baselinePath = null }
 export function summarize(command, value, json = false) {
   if (json || command === "config") return JSON.stringify(value, null, 2);
   if (command === "doctor") return formatDoctor(value);
+  if (command === "doctor-web") return formatDoctorWeb(value);
   if (command === "grade") return "MCP trust grade: " + (value.grade ?? "?") + "\n" +
       "Server: " + (value.host || value.url || "unknown") + "\n" +
       "Full report: " + (value.report_url || "https://wmcp.sh/mcp/grade");
@@ -155,9 +182,9 @@ export async function main(argv = process.argv.slice(2), options = {}) {
   try {
     const args = parseArgs(argv);
     if (args.help) { console.log(HELP); return 0; }
-    const data = await execute(args, { request: options.request || fetch, apiKey: options.apiKey ?? process.env.WMCP_API_KEY ?? "" });
+    const data = await execute(args, { request: options.request || fetch, apiKey: options.apiKey ?? process.env.WMCP_API_KEY ?? "", scan: options.scan });
     console.log(summarize(args.command, data, args.json));
-    if (args.command === "doctor" && args.strict && data.status !== "pass") return 2;
+    if (args.strict && data.status !== "pass") return 2;
     return 0;
   } catch (error) {
     console.error("wmcp: " + String(error.message || error));

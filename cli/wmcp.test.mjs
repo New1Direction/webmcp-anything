@@ -70,7 +70,7 @@ describe("read-only WMCP CLI", () => {
       apiKey: "test_key",
       request: async (url, opts) => {
         assert.equal(url, mcpEndpoint(TARGET, BASE));
-        assert.equal(opts.headers.authorization, "Bearer test_key");
+        assert.equal(opts.headers.authorization, undefined); // custom base never receives WMCP keys implicitly
         messages.push(JSON.parse(opts.body));
         if (messages.length === 1) return fakeResponse({ jsonrpc: "2.0", id: 1,
           result: { protocolVersion: "2025-11-25", capabilities: { tools: {} }, serverInfo: { name: "wmcp.sh" } } });
@@ -82,6 +82,38 @@ describe("read-only WMCP CLI", () => {
     assert.deepEqual(messages.map((m) => m.method), ["initialize", "notifications/initialized", "tools/list"]);
     assert.equal(result.tools.length, 1);
     assert.ok(summarize("mcp", result).includes("get_info"));
+  });
+
+  it("does not leak WMCP_API_KEY to third-party --base origins", async () => {
+    const token = "wmcp_private_live_key";
+    const otherBase = "https://custom.example";
+    const request = async (url, opts) => {
+      assert.equal(String(url).startsWith(otherBase), true);
+      assert.equal(opts.headers.authorization, undefined);
+      return fakeResponse({ tools: [] });
+    };
+    await execute({ command: "inspect", url: TARGET, base: otherBase }, { apiKey: token, request });
+    const opted = parseArgs(["inspect", TARGET, "--base", otherBase, "--send-key-to-base"]);
+    assert.equal(opted.sendKeyToBase, true);
+    await execute(opted, {
+      apiKey: token,
+      request: async (_, opts) => {
+        assert.equal(opts.headers.authorization, "Bearer " + token);
+        return fakeResponse({ tools: [] });
+      },
+    });
+    assert.throws(() => parseArgs(["doctor", "https://custom.example/mcp", "--send-key-to-base"]));
+  });
+
+  it("continues to authorize reads against the official WMCP host", async () => {
+    await execute({ command: "inspect", url: TARGET }, {
+      apiKey: "signed-in-key",
+      request: async (url, opts) => {
+        assert.equal(new URL(url).origin, "https://wmcp.sh");
+        assert.equal(opts.headers.authorization, "Bearer signed-in-key");
+        return fakeResponse({ tools: [] });
+      },
+    });
   });
 
   it("detects JSON-RPC failures, HTTP errors, and SSE tool-list responses", async () => {

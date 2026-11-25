@@ -68,13 +68,11 @@ export function diagnoseMcp(snapshot) {
 function stable(value) {
   if (Array.isArray(value)) return value.map(stable);
   if (value && typeof value === "object") {
-    const obj = {};
-    for (const key of Object.keys(value).sort()) obj[key] = stable(value[key]);
-    return obj;
+    return Object.fromEntries(Object.keys(value).sort().map((key) => [key, stable(value[key])]));
   }
   return value;
 }
-function digest(value) {
+export function digest(value) {
   return createHash("sha256").update(JSON.stringify(stable(value))).digest("hex");
 }
 export function fingerprintSurface(tools) {
@@ -99,8 +97,12 @@ export function diffSurface(current, previous) {
     throw Error("Baseline belongs to a different MCP endpoint");
   if (previous.complete === false || current.complete === false)
     throw Error("Cannot compare incomplete tool listings; increase limits or fix pagination");
-  const older = new Map(previous.toolFingerprints.map((t) => [t.name, t.sha256]));
-  const newer = new Map(current.toolFingerprints.map((t) => [t.name, t.sha256]));
+  return compareToolFingerprints(current.toolFingerprints, previous.toolFingerprints);
+}
+
+export function compareToolFingerprints(current, previous) {
+  const older = new Map(previous.map((tool) => [tool.name, tool.sha256]));
+  const newer = new Map(current.map((tool) => [tool.name, tool.sha256]));
   const added = [...newer.keys()].filter((name) => !older.has(name)).sort();
   const removed = [...older.keys()].filter((name) => !newer.has(name)).sort();
   const changed = [...newer.keys()].filter((name) =>

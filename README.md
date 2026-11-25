@@ -7,11 +7,22 @@
 [![Node.js 18+](https://img.shields.io/badge/CLI-Node.js%2018%2B-239a73)](cli/README.md)
 [![Open MCP](https://img.shields.io/badge/protocol-MCP-4da6dc)](https://modelcontextprotocol.io)
 
-**[Try WMCP](https://wmcp.sh/start)** · **[MCP Doctor](docs/MCP_DOCTOR.md)** · **[Read-only CLI](cli/README.md)** · **[Native browser demo](examples/browser-demo/README.md)** · **[MCP Trust Leaderboard](https://wmcp.sh/mcp/leaderboard)** · **[API docs](docs/API.md)**
+**[Try WMCP](https://wmcp.sh/start)** · **[WebMCP CI check](docs/WEBMCP_DOCTOR.md)** · **[MCP Doctor](docs/MCP_DOCTOR.md)** · **[Read-only CLI](cli/README.md)** · **[Native browser demo](examples/browser-demo/README.md)** · **[MCP Trust Leaderboard](https://wmcp.sh/mcp/leaderboard)** · **[API docs](docs/API.md)**
 
 WMCP is a hosted **URL-to-MCP gateway** for Claude, Cursor, Codex and custom AI agents. It extracts candidate tools from public pages, structured data and documented APIs; exposes them over MCP; and offers separate trust grading for MCP servers. You can use the public service or self-host the Worker.
 
 Not every website is compatible. Discovery is best-effort, and a discovered tool is **not** proof that an action can actually run, that the site permits it, or that it is safe. Authenticated live actions require authorization and applicable plan entitlements.
+
+## Catch missing WebMCP tools before merge
+
+`wmcp doctor web` opens your preview in Chrome and flags tools that disappear or change. It can also compare the page’s tools with a paired remote MCP endpoint.
+
+| Real Chrome 160 run | Browser saw | Strict exit |
+| --- | --- | --- |
+| Legacy WMCP shim | No tools, `list_tasks` removed | `2` |
+| Fixed WMCP shim | `list_tasks` restored | `0` |
+
+[Reproduce the demo and add the GitHub Action](docs/WEBMCP_DOCTOR.md).
 
 ## Try it in 30 seconds
 
@@ -91,7 +102,7 @@ Schema + tools ---> Hosted MCP endpoint or JSON REST response
 
 Detection depends on each site's metadata, network accessibility and authentication. Client-side applications may require a separately installed browser integration.
 
-**WebMCP is not the same as backend MCP.** The [WebMCP draft](https://webmachinelearning.github.io/webmcp/) uses document.modelContext to expose site-owned JavaScript tools in the browser. WMCP's current hosted product is primarily a backend URL adapter and MCP gateway. [Native browser interoperability is being developed in PR #75](https://github.com/New1Direction/webmcp-anything/pull/75); do not assume a remote MCP endpoint can execute browser-session tools without a consented session bridge.
+**WebMCP is not the same as backend MCP.** The [WebMCP draft](https://webmachinelearning.github.io/webmcp/) uses document.modelContext to expose site-owned JavaScript tools in the browser. WMCP provides a URL-to-MCP gateway, a browser shim for site owners, and a WebMCP compatibility check. The [browser extension draft in PR #75](https://github.com/New1Direction/webmcp-anything/pull/75) covers a separate, optional in-tab integration.
 
 ## Diagnose MCP servers in CI
 
@@ -104,6 +115,19 @@ node cli/wmcp.mjs doctor https://YOUR_MCP_HOST.example/mcp --json --strict
 You can also save `doctor --json` output as a reviewed baseline, then use `--baseline path --strict` to flag MCP tool-contract changes in CI.
 
 The endpoint is an example placeholder. Read [the Doctor guide](docs/MCP_DOCTOR.md) for supported checks, limits, and exit codes.
+
+**Run the same check in another repository with the [WMCP Doctor GitHub Action](actions/mcp-doctor/):**
+
+~~~yaml
+- uses: New1Direction/webmcp-anything/actions/mcp-doctor@main
+  with:
+    endpoint: https://your-mcp.example/mcp
+    strict: "true"
+    # Optional: a reviewed report file from your repository:
+    # baseline: .github/mcp-baseline.json
+~~~
+
+For production, replace `@main` with a reviewed **full commit SHA**. The action only calls MCP initialize and tools/list; it does not invoke tools or certify security. See [usage and credential guidance](docs/MCP_DOCTOR.md#github-actions-integration).
 
 ## Live browser-native example
 
