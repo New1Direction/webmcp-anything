@@ -4,124 +4,296 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="dark">
-  <title>WMCP · WebMCP Native Tool Demo</title>
+  <title>Taskboard · WMCP</title>
   <style>
-    :root { color-scheme:dark; font-family:ui-sans-serif,system-ui,sans-serif; background:#0b1118; color:#edf7f7 }
-    * { box-sizing:border-box }
-    body { margin:0; background:radial-gradient(ellipse at 100% 0%, #10382f 0%, #0b1118 50%); min-height:100vh }
-    main { max-width:760px; margin:0 auto; padding:54px 20px }
-    a { color:#84e9c6 } header { display:flex; align-items:center; justify-content:space-between }
-    .eyebrow { color:#7fe3c2; letter-spacing:.14em; text-transform:uppercase; font-size:11px; font-weight:800 }
-    h1 { font-size:clamp(2rem,5vw,3.5rem); letter-spacing:-.045em; margin:24px 0 12px }
-    p { color:#abbcbe; line-height:1.65 } code { color:#8eeed0; overflow-wrap:anywhere }
-    .status { border:1px solid #405968; border-radius:100px; padding:6px 12px; font-size:12px; color:#e1eef0 }
-    .status.ok { border-color:#42c49e; color:#8eefce }
-    .panel { background:#111c27; border:1px solid #314251; padding:24px; border-radius:18px; margin:26px 0 }
-    h2 { font-size:18px; margin:0 0 12px }
-    label { display:block; color:#b5ccd0; margin-bottom:6px }
-    form { display:flex; gap:8px; flex-wrap:wrap }
-    input { flex:1; min-width:220px; padding:13px; background:#09121c; border:1px solid #41606a; border-radius:9px; color:#fff; font:inherit }
-    button { background:#78ecc0; border:0; border-radius:9px; padding:13px 16px; color:#09291f; font:700 14px system-ui; cursor:pointer }
-    button:focus-visible,input:focus-visible { outline:2px solid #acf8e0; outline-offset:2px }
-    ol { list-style:none; padding:0; margin:14px 0 0; display:grid; gap:8px }
-    li { padding:12px 15px; border:1px solid #37505a; border-radius:9px; display:flex; gap:12px; align-items:center }
-    li button { margin-left:auto; padding:8px 10px; font-size:12px; background:#24443f; color:#a5efcd }
-    li.done .task-name { text-decoration:line-through; color:#7d9a9d }
-    .num { font:12px ui-monospace,monospace; color:#79dab9 }
-    .note { font-size:13px }
-    .log { font:12px/1.7 ui-monospace,monospace; color:#b8d2d5; background:#081219; border:1px solid #28434a; border-radius:10px; padding:14px; min-height:70px; white-space:pre-wrap; overflow-wrap:anywhere }
+    :root { color-scheme: dark; font-family: system-ui, sans-serif; background: #0c1218; color: #edf2f4; line-height: 1.5 }
+    * { box-sizing: border-box }
+    body { margin: 0 }
+    main { width: min(100% - 2rem, 44rem); margin: clamp(2rem, 8vw, 5rem) auto }
+    h1, h2 { line-height: 1.15; margin: 0 0 .75rem }
+    h1 { font-size: clamp(2rem, 7vw, 3.25rem); letter-spacing: -.045em }
+    h2 { font-size: 1.2rem }
+    p { margin: .5rem 0 }
+    a { color: #a6e9d6 }
+    .hint, footer { color: #adbac3; font-size: .9rem }
+    section { margin: 1.75rem 0; padding: clamp(1rem, 5vw, 1.6rem); border: 1px solid #364451; border-radius: 1rem; background: #141e27 }
+    section > h2 { margin-bottom: 1rem }
+    label { display: block; font-weight: 650 }
+    .form-row { display: flex; flex-wrap: wrap; align-items: start; gap: .75rem; margin-top: .5rem }
+    input, button { font: inherit; min-height: 2.75rem; border-radius: .55rem; padding: .5rem .8rem }
+    input { flex: 1 1 12rem; min-width: 0; max-width: 100%; color: inherit; background: #0a1016; border: 1px solid #768894 }
+    button { cursor: pointer; font-weight: 650; background: #a6e9d6; color: #10251f; border: 1px solid transparent }
+    .secondary { color: #e1edf1; background: #263541; border-color: #738490 }
+    button:focus-visible, input:focus-visible, a:focus-visible { outline: 3px solid #ffdc89; outline-offset: 3px }
+    .message { min-height: 1.5em; overflow-wrap: anywhere }
+    .error { color: #ffb7ad }
+    .error:empty { margin: 0; min-height: 0 }
+    [aria-invalid="true"] { border-color: #ffb7ad }
+    ol { list-style: none; padding: 0; margin: 0; display: grid; gap: .65rem }
+    .task { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem 1rem; padding: .75rem; border: 1px solid #425360; border-radius: .65rem }
+    .task-body { flex: 1 1 12rem; min-width: 0; overflow-wrap: anywhere }
+    .id { color: #a6e9d6; font-variant-numeric: tabular-nums; font-size: .8em }
+    .state { display: block; color: #adbac3; font-size: .82rem }
+    dialog { width: min(100% - 2rem, 30rem); padding: 1.25rem; color: inherit; background: #141e27; border: 1px solid #738490; border-radius: .8rem }
+    dialog::backdrop { background: #080e13d9 }
+    dialog p { overflow-wrap: anywhere }
+    .dialog-actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1rem }
+    footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .6rem }
   </style>
 </head>
 <body>
 <main>
-  <header><strong class="eyebrow">WMCP · Native WebMCP</strong><span id="status" class="status" role="status">Detecting browser API…</span></header>
-  <h1>A website that agents can actually use.</h1>
-  <p>This tiny taskboard exposes its real application actions as structured WebMCP tools. If the browser supports <code>document.modelContext</code>, an AI agent can call them and the same UI updates instantly. The data stays in this tab.</p>
-  <section class="panel" aria-label="Taskboard">
-    <h2>Tasks</h2>
-    <form id="form">
-      <label for="task" class="sr-only">Task name</label>
-      <input id="task" name="task" placeholder="Add a task..." maxlength="120" required>
-      <button type="submit">Add task</button>
+  <h1>Taskboard</h1>
+  <p class="hint">Tasks stay in this tab.</p>
+
+  <section aria-labelledby="add-heading">
+    <h2 id="add-heading">New task</h2>
+    <form id="form" novalidate>
+      <label for="task">Task name</label>
+      <p id="task-hint" class="hint">Use 1 to 120 characters on one line.</p>
+      <div class="form-row">
+        <input id="task" name="task" required aria-describedby="task-hint task-error" autocomplete="off">
+        <button id="add-task" type="submit">Add task</button>
+      </div>
+      <p id="task-error" class="message error" role="alert"></p>
     </form>
-    <ol id="list" aria-live="polite"></ol>
-    <p class="note">These buttons call the same functions exposed to WebMCP. No cloud database or credentials.</p>
+    <p id="feedback" class="message" role="status"></p>
   </section>
-  <section class="panel">
-    <h2>Agent-callable tools</h2>
-    <p class="note"><code>list_tasks()</code> · <code>add_task({text})</code> · <code>complete_task({id})</code></p>
-    <div id="log" class="log" aria-live="polite">Starting demo…</div>
-    <p class="note" id="fallback">In a browser without native WebMCP you can still use the form, but no tools are registered. Enable browser WebMCP testing / an eligible origin trial to test agent calls.</p>
+
+  <section aria-labelledby="tasks-heading">
+    <h2 id="tasks-heading">Tasks</h2>
+    <ol id="list" role="list" aria-labelledby="tasks-heading"></ol>
   </section>
-  <p class="note"><a href="https://github.com/New1Direction/webmcp-anything">Source on GitHub</a> · This example requires no wallet, payment, or API token. Run it from localhost for a trustworthy origin.</p>
+
+  <footer>
+    <span id="status">Checking agent tools…</span>
+    <a href="https://github.com/New1Direction/webmcp-anything">Source on GitHub</a>
+  </footer>
 </main>
+
+<dialog id="agent-review" aria-labelledby="review-title" aria-describedby="review-detail">
+  <h2 id="review-title">Review agent request</h2>
+  <p id="review-detail"></p>
+  <div class="dialog-actions">
+    <button id="review-cancel" class="secondary" type="button" autofocus>Cancel</button>
+    <button id="review-approve" type="button"></button>
+  </div>
+</dialog>
+
 <script>
 (() => {
-  // Keep application state in the active document, not a remote cache.
+  const get = (id) => document.getElementById(id);
+  const list = get("list");
+  const input = get("task");
+  const feedback = get("feedback");
+  const error = get("task-error");
+  const status = get("status");
+  const dialog = get("agent-review");
+  const approve = get("review-approve");
+  const controller = new AbortController();
+  const titles = { list: get("tasks-heading").textContent, add: get("add-task").textContent, complete: "Mark complete" };
+  const namePattern = "^(?!\\s*$)[^\\r\\n]+$";
+  const validName = new RegExp(namePattern, "u");
+  const tasks = [
+    { id: 1, text: "Explore the WebMCP API", done: false },
+    { id: 2, text: "Try an agent tool call", done: false },
+  ];
+  const rows = new Map();
   let nextId = 3;
-  const tasks = [{ id: 1, text: "Explore the WebMCP API", done: false }, { id: 2, text: "Try an agent tool call", done: false }];
-  const list = document.getElementById("list");
-  const status = document.getElementById("status");
-  const log = document.getElementById("log");
-  function record(msg) { log.textContent = msg + "\n" + log.textContent.slice(0, 1000); }
-  function render() {
-    list.replaceChildren();
-    for (const task of tasks) {
-      const li = document.createElement("li");
-      if (task.done) li.classList.add("done");
-      const number = document.createElement("span"); number.className = "num"; number.textContent = "#" + task.id;
-      const name = document.createElement("span"); name.className = "task-name"; name.textContent = task.text;
-      const button = document.createElement("button"); button.textContent = task.done ? "Complete" : "Mark done";
-      button.disabled = task.done;
-      button.addEventListener("click", () => completeTask(task.id));
-      li.append(number, name, button); list.append(li);
-    }
+  let pendingReview;
+
+  function checkName(value) {
+    if (typeof value !== "string" || !value.trim()) throw Error("Enter a task name.");
+    if (!validName.test(value)) throw Error("Use one line for the task name.");
+    if ([...value].length > 120) throw Error("Use 120 characters or fewer.");
+    return value.trim();
   }
-  function addTask(text) {
-    if (typeof text !== "string" || !text.trim() || text.length > 120) throw Error("text must be 1–120 characters");
-    const task = { id: nextId++, text: text.trim(), done: false };
-    tasks.push(task); render(); record("Added #" + task.id + ": " + task.text); return task;
+
+  function openTask(id) {
+    if (!Number.isSafeInteger(id) || id < 1) throw Error("Use the Task ID shown beside the task.");
+    const task = tasks.find((candidate) => candidate.id === id);
+    if (!task) throw Error("Task #" + id + " could not be found.");
+    if (task.done) throw Error("Task #" + id + " is already completed.");
+    return task;
   }
+
+  function nextFocus(id) {
+    const earlier = tasks.filter((task) => task.id < id && !task.done).at(-1);
+    const next = tasks.find((task) => task.id > id && !task.done) ?? earlier;
+    (next ? rows.get(next.id).button : input).focus();
+  }
+
   function completeTask(id) {
-    if (!Number.isInteger(id)) throw Error("id must be an integer");
-    const task = tasks.find((item) => item.id === id);
-    if (!task) throw Error("Unknown task id");
-    task.done = true; render(); record("Completed #" + task.id); return task;
+    const task = openTask(id);
+    const row = rows.get(id);
+    const hadFocus = document.activeElement === row.button;
+    task.done = true;
+    row.state.textContent = "Completed";
+    row.button.remove();
+    if (hadFocus) nextFocus(id);
+    feedback.textContent = "Completed task #" + id + ", " + task.text + ".";
+    return task;
   }
-  document.getElementById("form").addEventListener("submit", (event) => {
+
+  function appendTask(task) {
+    const row = document.createElement("li");
+    row.className = "task";
+    const body = document.createElement("div");
+    body.className = "task-body";
+    const number = document.createElement("span");
+    number.id = "task-number-" + task.id;
+    number.className = "id";
+    number.textContent = "#" + task.id;
+    const name = document.createElement("span");
+    name.id = "task-name-" + task.id;
+    name.textContent = task.text;
+    const state = document.createElement("span");
+    state.className = "state";
+    state.textContent = "Open";
+    body.append(number, " ", name, state);
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "secondary";
+    button.id = "complete-" + task.id;
+    button.textContent = titles.complete;
+    button.setAttribute("aria-labelledby", button.id + " " + name.id + " " + number.id);
+    button.addEventListener("click", () => completeTask(task.id));
+    row.append(body, button);
+    list.append(row);
+    rows.set(task.id, { button, state });
+  }
+
+  function addTask(text) {
+    const task = { id: nextId++, text, done: false };
+    tasks.push(task);
+    appendTask(task);
+    feedback.textContent = "Added task #" + task.id + ", " + task.text + ".";
+    return task;
+  }
+
+  get("form").addEventListener("submit", (event) => {
     event.preventDefault();
-    const input = document.getElementById("task");
-    try { addTask(input.value); input.value = ""; }
-    catch (error) { record("Input rejected: " + error.message); }
+    try {
+      const name = checkName(input.value);
+      error.textContent = "";
+      input.removeAttribute("aria-invalid");
+      addTask(name);
+      input.value = "";
+    } catch (failure) {
+      feedback.textContent = "";
+      input.setAttribute("aria-invalid", "true");
+      error.textContent = failure.message;
+    }
+    input.focus();
   });
-  render();
+  input.addEventListener("input", () => {
+    if (error.textContent) {
+      error.textContent = "";
+      input.removeAttribute("aria-invalid");
+    }
+  });
+  tasks.forEach(appendTask);
+
+  function finishReview(allowed) {
+    const review = pendingReview;
+    if (!review) return;
+    pendingReview = undefined;
+    review.removeAbortListener();
+    if (dialog.open) dialog.close();
+    if (allowed && !controller.signal.aborted) review.resolve();
+    else review.reject(Error("Agent request canceled."));
+  }
+
+  function reviewAction(title, detail, signal) {
+    signal?.throwIfAborted();
+    if (controller.signal.aborted) throw Error("This taskboard is no longer active.");
+    if (pendingReview) throw Error("Another agent request is awaiting a decision.");
+    get("review-detail").textContent = detail;
+    approve.textContent = title;
+    return new Promise((resolve, reject) => {
+      const onAbort = () => finishReview(false);
+      const removeAbortListener = () => signal?.removeEventListener("abort", onAbort);
+      pendingReview = { resolve, reject, removeAbortListener };
+      signal?.addEventListener("abort", onAbort, { once: true });
+      try { dialog.showModal(); }
+      catch (failure) {
+        pendingReview = undefined;
+        removeAbortListener();
+        reject(failure);
+      }
+    });
+  }
+
+  get("review-cancel").addEventListener("click", () => finishReview(false));
+  approve.addEventListener("click", (event) => {
+    if (event.isTrusted) finishReview(true);
+  });
+  dialog.addEventListener("cancel", (event) => {
+    event.preventDefault();
+    finishReview(false);
+  });
+  dialog.addEventListener("close", () => {
+    if (!dialog.open) finishReview(false);
+  });
+  window.addEventListener("pagehide", () => {
+    controller.abort();
+    finishReview(false);
+  }, { once: true });
+
   const ctx = document.modelContext;
   if (!ctx || typeof ctx.registerTool !== "function") {
-    status.textContent = "Native API unavailable";
-    log.textContent = "UI works. Native WebMCP registration requires a supported browser.";
+    status.textContent = "Agent tools unavailable in this browser.";
     return;
   }
-  const controller = new AbortController();
+  function argument(inputObject, key) {
+    if (!inputObject || typeof inputObject !== "object" || Array.isArray(inputObject) ||
+        Object.keys(inputObject).length !== (key === undefined ? 0 : 1) ||
+        (key !== undefined && !Object.hasOwn(inputObject, key))) {
+      throw Error(key === undefined ? "This tool takes no arguments." : "Provide only the " + key + " argument.");
+    }
+    return inputObject[key];
+  }
+  const result = (value) => ({ content: [{ type: "text", text: JSON.stringify(value) }] });
   const tools = [
-    { name: "list_tasks", description: "List all tasks in this demo page",
-      annotations: { readOnlyHint: true },
-      inputSchema: { type: "object", properties: {} },
-      execute: async () => ({ content: [{ type: "text", text: JSON.stringify(tasks) }] }) },
-    { name: "add_task", description: "Add a task to the active taskboard and update the visible UI",
-      inputSchema: { type: "object", properties: { text: { type: "string", maxLength: 120 } }, required: ["text"] },
-      execute: async ({ text }) => ({ content: [{ type: "text", text: JSON.stringify(addTask(text)) }] }) },
-    { name: "complete_task", description: "Mark a task as complete on the active taskboard",
-      inputSchema: { type: "object", properties: { id: { type: "integer" } }, required: ["id"] },
-      execute: async ({ id }) => ({ content: [{ type: "text", text: JSON.stringify(completeTask(id)) }] }) },
+    { name: "list_tasks", title: titles.list, description: titles.list + ". Read the names, IDs, and completion states of tasks in this tab.",
+      annotations: { readOnlyHint: true, untrustedContentHint: true },
+      inputSchema: { type: "object", properties: {}, additionalProperties: false },
+      execute: async (inputObject) => {
+        argument(inputObject);
+        return result(tasks);
+      } },
+    { name: "add_task", title: titles.add, description: titles.add + ". Create an open task from its Task name. Requires confirmation in this tab.",
+      annotations: { readOnlyHint: false, untrustedContentHint: true },
+      inputSchema: { type: "object", properties: {
+        text: { type: "string", description: "Task name", minLength: 1, maxLength: 120, pattern: namePattern },
+      }, required: ["text"], additionalProperties: false },
+      execute: async (inputObject, options) => {
+        const name = checkName(argument(inputObject, "text"));
+        const signal = options?.signal;
+        await reviewAction(titles.add, "Add task “" + name + "”?", signal);
+        signal?.throwIfAborted();
+        controller.signal.throwIfAborted();
+        return result(addTask(name));
+      } },
+    { name: "complete_task", title: titles.complete, description: titles.complete + ". Complete an open task by its Task ID. Requires confirmation in this tab.",
+      annotations: { readOnlyHint: false, untrustedContentHint: true },
+      inputSchema: { type: "object", properties: {
+        id: { type: "integer", description: "Task ID shown beside the task", minimum: 1, maximum: Number.MAX_SAFE_INTEGER },
+      }, required: ["id"], additionalProperties: false },
+      execute: async (inputObject, options) => {
+        const id = argument(inputObject, "id");
+        const task = openTask(id);
+        const signal = options?.signal;
+        await reviewAction(titles.complete, "Mark complete for task #" + id + ", “" + task.text + "”?", signal);
+        signal?.throwIfAborted();
+        controller.signal.throwIfAborted();
+        return result(completeTask(id));
+      } },
   ];
-  window.addEventListener("pagehide", () => controller.abort(), { once: true });
   Promise.allSettled(tools.map((tool) => ctx.registerTool(tool, { signal: controller.signal })))
-    .then((results) => {
-      const successful = results.filter((result) => result.status === "fulfilled").length;
-      status.textContent = successful + "/3 tools registered";
-      status.classList.toggle("ok", successful === tools.length);
-      record("WebMCP tools registered: " + successful + "/3");
-      for (const result of results) if (result.status === "rejected") record("Registration error: " + result.reason);
+    .then((registrations) => {
+      const count = registrations.filter((registration) => registration.status === "fulfilled").length;
+      status.textContent = count + " of " + tools.length + " agent tools available.";
     });
 })();
 </script>

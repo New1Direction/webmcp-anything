@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "wmcp-tool-contract/v1",
+  "name": "publish_snapshot",
+  "inputSchema": {
+    "type": "object",
+    "required": ["requestKey", "rowCount"],
+    "properties": {
+      "requestKey": { "type": "string", "minLength": 1 },
+      "rowCount": { "type": "integer", "minimum": 0 }
+    },
+    "additionalProperties": false
+  },
+  "outputSchema": {
+    "type": "object",
+    "required": ["receiptId", "rowCount"],
+    "properties": {
+      "receiptId": { "type": "string" },
+      "rowCount": { "type": "integer", "minimum": 0 }
+    },
+    "additionalProperties": false
+  },
+  "authorization": {
+    "anyOf": [[
+      { "scheme": "dataset-grant", "boundary": "dataset:fixture-inventory", "permissions": ["snapshot:publish"] },
+      { "scheme": "lab-session", "boundary": "process:fixture", "permissions": [] }
+    ]],
+    "confirmation": "always"
+  },
+  "sideEffects": [{ "kind": "dataset.snapshot.publish", "boundary": "dataset:fixture-inventory" }],
+  "idempotency": {
+    "mode": "keyed",
+    "keyPointer": "/requestKey",
+    "boundary": "process:fixture-inventory",
+    "windowSeconds": 60
+  },
+  "failures": {
+    "access-denied": { "effects": "not-applied", "recovery": "stop" },
+    "key-conflict": { "effects": "not-applied", "recovery": "stop" },
+    "receipt-timeout": { "effects": "unknown", "recovery": "retry" }
+  }
+}

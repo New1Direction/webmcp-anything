@@ -1,0 +1,206 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Service operations"
+  },
+  "servers": [
+    {
+      "url": "https://ops.example/api"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "session": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  },
+  "paths": {
+    "/services/{id}/status": {
+      "get": {
+        "operationId": "service_status",
+        "summary": "Read the current health of a service",
+        "tags": [
+          "status"
+        ],
+        "responses": {
+          "200": {
+            "description": "Observed result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "healthy"
+                  ],
+                  "properties": {
+                    "healthy": {
+                      "type": "boolean"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/incidents": {
+      "get": {
+        "operationId": "list_incidents",
+        "summary": "List active incidents affecting customers",
+        "tags": [
+          "status"
+        ],
+        "responses": {
+          "200": {
+            "description": "Observed result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "incidents"
+                  ],
+                  "properties": {
+                    "incidents": {
+                      "type": "array"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/maintenance": {
+      "get": {
+        "operationId": "maintenance_windows",
+        "summary": "Read the schedule for upcoming maintenance",
+        "tags": [
+          "status"
+        ],
+        "responses": {
+          "200": {
+            "description": "Observed result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "windows"
+                  ],
+                  "properties": {
+                    "windows": {
+                      "type": "array"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/alerts/{id}/ack": {
+      "post": {
+        "operationId": "acknowledge_alert",
+        "summary": "Acknowledge an alert to record operator receipt",
+        "tags": [
+          "alerts"
+        ],
+        "responses": {
+          "200": {
+            "description": "Observed result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "acknowledged"
+                  ],
+                  "properties": {
+                    "acknowledged": {
+                      "type": "boolean"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ]
+      }
+    },
+    "/incidents/{id}": {
+      "get": {
+        "operationId": "incident_get",
+        "summary": "Read the timeline and details for one incident",
+        "tags": [
+          "status"
+        ],
+        "responses": {
+          "200": {
+            "description": "Observed result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "timeline"
+                  ],
+                  "properties": {
+                    "timeline": {
+                      "type": "array"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

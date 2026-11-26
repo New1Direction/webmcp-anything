@@ -17,12 +17,20 @@ From the repository root:
 
 Open **http://localhost:8000**. Chrome with WebMCP support / experimental flag may expose the page tools to a compatible browser agent. When the feature is not available, the app works as a regular taskboard and clearly reports that no browser tools are registered.
 
-The demo uses the current draft's document.modelContext.registerTool with an AbortSignal lifecycle. A compatible browser agent can discover the site-owned tools and invoke them to change the UI. This is different from a remote MCP endpoint: the application code runs in the page's own browser environment.
+The demo uses the current draft's document.modelContext.registerTool with an AbortSignal lifecycle. A compatible browser agent can discover the site-owned tools and request changes. Every agent write opens a review dialog for the specific task and requires a separate confirmation. This is different from a remote MCP endpoint: the application code runs in the page's own browser environment.
 
 Useful prompts for a compatible agent:
 - "List the tasks on this page."
 - "Add a task called Write a WebMCP example."
 - "Mark task 1 as complete."
+
+## Compile the taskboard contract
+
+From the repository root, run the compiler to see the documented page state, landmarks, native tool inputs and observable results.
+
+    node cli/wmcp.mjs compile examples/browser-demo/capabilities.json
+
+[Capability compiler guide](../../docs/capability-compiler.md).
 
 ## Security notes
 
@@ -34,4 +42,8 @@ Specification: https://webmachinelearning.github.io/webmcp/
 
     node --test cli/*.test.mjs
 
-That checks CLI behavior and parses/smoke-tests the browser example's JavaScript. It is **not** proof of actual browser-origin-trial compatibility; manually test with Chrome/Edge builds that advertise native WebMCP support.
+Run the real-browser checks from the repository root with Playwright Python and a WebMCP-capable Chrome executable.
+
+    python3 scripts/test-taskboard-affordances.py --chrome /path/to/chrome-headless-shell
+
+[Affordance design language and test coverage](../../docs/affordance-design-language.md).

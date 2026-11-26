@@ -1,0 +1,584 @@
+{
+  "schemaVersion": "wmcp-discovery-catalog/v1",
+  "sources": [
+    {
+      "id": "taskboard",
+      "file": "../browser-demo/capabilities.json"
+    },
+    {
+      "id": "work",
+      "file": "work.json"
+    },
+    {
+      "id": "shop",
+      "file": "shop.json"
+    },
+    {
+      "id": "ops",
+      "file": "ops.json"
+    },
+    {
+      "id": "docs",
+      "file": "docs.json"
+    }
+  ],
+  "types": [
+    {
+      "id": "task-id",
+      "jsonType": "integer"
+    },
+    {
+      "id": "task-title",
+      "jsonType": "string"
+    },
+    {
+      "id": "sku",
+      "jsonType": "string"
+    },
+    {
+      "id": "postal-code",
+      "jsonType": "string"
+    },
+    {
+      "id": "order-id",
+      "jsonType": "string"
+    },
+    {
+      "id": "service-id",
+      "jsonType": "string"
+    },
+    {
+      "id": "alert-id",
+      "jsonType": "string"
+    },
+    {
+      "id": "incident-id",
+      "jsonType": "string"
+    },
+    {
+      "id": "comment-set",
+      "jsonType": "array"
+    },
+    {
+      "id": "refund-id",
+      "jsonType": "string"
+    },
+    {
+      "id": "comment-query",
+      "jsonType": "string"
+    }
+  ],
+  "concepts": [
+    {
+      "id": "manage-work",
+      "label": "Manage tasks",
+      "aliases": [
+        "to do list",
+        "work items"
+      ]
+    },
+    {
+      "id": "view-work",
+      "label": "Show unfinished work",
+      "aliases": [
+        "pending work",
+        "what needs attention",
+        "see open items"
+      ],
+      "broader": [
+        "manage-work"
+      ]
+    },
+    {
+      "id": "finish-work",
+      "label": "Complete a task",
+      "aliases": [
+        "cross off",
+        "mark finished",
+        "tick off",
+        "close out a work item"
+      ],
+      "broader": [
+        "manage-work"
+      ]
+    },
+    {
+      "id": "add-work",
+      "label": "Create a task",
+      "aliases": [
+        "make a to do",
+        "add a reminder",
+        "capture a task"
+      ],
+      "broader": [
+        "manage-work"
+      ]
+    },
+    {
+      "id": "move-work",
+      "label": "Open the queue",
+      "aliases": [
+        "switch to the queue",
+        "go to the queue"
+      ],
+      "broader": [
+        "manage-work"
+      ]
+    },
+    {
+      "id": "resolve-work",
+      "label": "Find a task identifier",
+      "aliases": [
+        "find the record",
+        "find a task by name"
+      ],
+      "broader": [
+        "manage-work"
+      ]
+    },
+    {
+      "id": "assign-work",
+      "label": "Assign responsibility",
+      "aliases": [
+        "hand this to",
+        "set the owner"
+      ],
+      "broader": [
+        "manage-work"
+      ]
+    },
+    {
+      "id": "archive-work",
+      "label": "Archive completed work",
+      "aliases": [
+        "clear away finished items",
+        "hide finished items"
+      ],
+      "broader": [
+        "manage-work"
+      ]
+    },
+    {
+      "id": "search-comments",
+      "label": "Find private comments",
+      "aliases": [
+        "internal discussion",
+        "private discussion"
+      ],
+      "broader": [
+        "manage-work"
+      ]
+    },
+    {
+      "id": "shopping-cart",
+      "label": "Shopping cart",
+      "aliases": [
+        "basket",
+        "cart"
+      ]
+    },
+    {
+      "id": "add-product",
+      "label": "Add to cart",
+      "aliases": [
+        "put in basket",
+        "put one",
+        "add one item"
+      ],
+      "broader": [
+        "shopping-cart"
+      ]
+    },
+    {
+      "id": "remove-product",
+      "label": "Remove from cart",
+      "aliases": [
+        "take out",
+        "out of basket",
+        "take this item out"
+      ],
+      "broader": [
+        "shopping-cart"
+      ]
+    },
+    {
+      "id": "find-product",
+      "label": "Look up a product SKU",
+      "aliases": [
+        "inventory code",
+        "stock keeping unit"
+      ]
+    },
+    {
+      "id": "in-stock",
+      "label": "Check product availability",
+      "aliases": [
+        "sold out",
+        "still buy",
+        "available to buy"
+      ],
+      "related": [
+        "find-product"
+      ]
+    },
+    {
+      "id": "track-order",
+      "label": "Track an order",
+      "aliases": [
+        "on its way",
+        "where is my parcel",
+        "order tracking"
+      ]
+    },
+    {
+      "id": "shipping-price",
+      "label": "Estimate shipping",
+      "aliases": [
+        "cost to get",
+        "delivery cost",
+        "cost to ship"
+      ]
+    },
+    {
+      "id": "refund-order",
+      "label": "Refund an order",
+      "aliases": [
+        "money back",
+        "reverse the charge"
+      ]
+    },
+    {
+      "id": "service-condition",
+      "label": "Check service health",
+      "aliases": [
+        "having trouble",
+        "service online",
+        "working right now"
+      ]
+    },
+    {
+      "id": "ongoing-incident",
+      "label": "Find active incidents",
+      "aliases": [
+        "customer facing interruptions",
+        "ongoing outages"
+      ],
+      "related": [
+        "service-condition"
+      ]
+    },
+    {
+      "id": "incident-timeline",
+      "label": "Read an incident timeline",
+      "aliases": [
+        "sequence of events",
+        "when did the incident start"
+      ],
+      "related": [
+        "ongoing-incident"
+      ]
+    },
+    {
+      "id": "scheduled-downtime",
+      "label": "Find planned downtime",
+      "aliases": [
+        "scheduled outage",
+        "next planned downtime"
+      ]
+    },
+    {
+      "id": "ack-alert",
+      "label": "Acknowledge an alert",
+      "aliases": [
+        "confirming receipt",
+        "ack a page",
+        "signal receipt"
+      ]
+    },
+    {
+      "id": "setup-guide",
+      "label": "Find setup instructions",
+      "aliases": [
+        "instructions for installing",
+        "getting started",
+        "connect an integration"
+      ]
+    },
+    {
+      "id": "settings",
+      "label": "Look up a setting",
+      "aliases": [
+        "which setting",
+        "configuration option"
+      ]
+    },
+    {
+      "id": "compatibility",
+      "label": "Check version support",
+      "aliases": [
+        "older runtime",
+        "which versions work"
+      ]
+    },
+    {
+      "id": "release-notes",
+      "label": "Read release notes",
+      "aliases": [
+        "what changed",
+        "previous release"
+      ]
+    }
+  ],
+  "capabilities": {
+    "taskboard:list_tasks": {
+      "outcomes": [
+        "view-work"
+      ]
+    },
+    "taskboard:add_task": {
+      "outcomes": [
+        "add-work"
+      ],
+      "inputs": [
+        {
+          "type": "task-title",
+          "pointer": "/text"
+        }
+      ]
+    },
+    "taskboard:complete_task": {
+      "outcomes": [
+        "finish-work"
+      ],
+      "inputs": [
+        {
+          "type": "task-id",
+          "pointer": "/id"
+        }
+      ]
+    },
+    "work:open_queue": {
+      "outcomes": [
+        "move-work"
+      ]
+    },
+    "work:read_queue": {
+      "outcomes": [
+        "view-work"
+      ]
+    },
+    "work:find_by_title": {
+      "outcomes": [
+        "resolve-work"
+      ],
+      "inputs": [
+        {
+          "type": "task-title",
+          "pointer": "/title"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "task-id",
+          "pointer": "/itemId"
+        }
+      ]
+    },
+    "work:complete_queue_item": {
+      "outcomes": [
+        "finish-work"
+      ],
+      "inputs": [
+        {
+          "type": "task-id",
+          "pointer": "/itemId"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "task-id",
+          "pointer": "/itemId"
+        }
+      ]
+    },
+    "work:assign_owner": {
+      "outcomes": [
+        "assign-work"
+      ],
+      "inputs": [
+        {
+          "type": "task-id",
+          "pointer": "/itemId"
+        }
+      ]
+    },
+    "work:archive_completed": {
+      "outcomes": [
+        "archive-work"
+      ]
+    },
+    "work:search_comments": {
+      "outcomes": [
+        "search-comments"
+      ],
+      "outputs": [
+        {
+          "type": "comment-set",
+          "pointer": "/comments"
+        }
+      ],
+      "inputs": [
+        {
+          "type": "comment-query",
+          "pointer": "/query"
+        }
+      ]
+    },
+    "shop:catalog_lookup": {
+      "outcomes": [
+        "find-product"
+      ],
+      "outputs": [
+        {
+          "type": "sku",
+          "pointer": "/sku"
+        }
+      ]
+    },
+    "shop:cart_line_create": {
+      "outcomes": [
+        "add-product"
+      ],
+      "inputs": [
+        {
+          "type": "sku",
+          "pointer": "/path/sku"
+        }
+      ]
+    },
+    "shop:cart_line_remove": {
+      "outcomes": [
+        "remove-product"
+      ],
+      "inputs": [
+        {
+          "type": "sku",
+          "pointer": "/path/sku"
+        }
+      ]
+    },
+    "shop:delivery_progress": {
+      "outcomes": [
+        "track-order"
+      ],
+      "inputs": [
+        {
+          "type": "order-id",
+          "pointer": "/path/id"
+        }
+      ]
+    },
+    "shop:shipping_quote": {
+      "outcomes": [
+        "shipping-price"
+      ],
+      "inputs": [
+        {
+          "type": "postal-code",
+          "pointer": "/query/postalCode"
+        }
+      ]
+    },
+    "shop:item_availability": {
+      "outcomes": [
+        "in-stock"
+      ],
+      "inputs": [
+        {
+          "type": "sku",
+          "pointer": "/path/sku"
+        }
+      ]
+    },
+    "shop:start_refund": {
+      "outcomes": [
+        "refund-order"
+      ],
+      "inputs": [
+        {
+          "type": "order-id",
+          "pointer": "/path/id"
+        }
+      ],
+      "outputs": [
+        {
+          "type": "refund-id",
+          "pointer": "/refundId"
+        }
+      ]
+    },
+    "ops:service_status": {
+      "outcomes": [
+        "service-condition"
+      ],
+      "inputs": [
+        {
+          "type": "service-id",
+          "pointer": "/path/id"
+        }
+      ]
+    },
+    "ops:list_incidents": {
+      "outcomes": [
+        "ongoing-incident"
+      ]
+    },
+    "ops:maintenance_windows": {
+      "outcomes": [
+        "scheduled-downtime"
+      ]
+    },
+    "ops:acknowledge_alert": {
+      "outcomes": [
+        "ack-alert"
+      ],
+      "inputs": [
+        {
+          "type": "alert-id",
+          "pointer": "/path/id"
+        }
+      ]
+    },
+    "ops:incident_get": {
+      "outcomes": [
+        "incident-timeline"
+      ],
+      "inputs": [
+        {
+          "type": "incident-id",
+          "pointer": "/path/id"
+        }
+      ]
+    },
+    "docs:find_guides": {
+      "outcomes": [
+        "setup-guide"
+      ]
+    },
+    "docs:lookup_config_reference": {
+      "outcomes": [
+        "settings"
+      ]
+    },
+    "docs:check_version_compatibility": {
+      "outcomes": [
+        "compatibility"
+      ]
+    },
+    "docs:get_changelog": {
+      "outcomes": [
+        "release-notes"
+      ]
+    }
+  }
+}

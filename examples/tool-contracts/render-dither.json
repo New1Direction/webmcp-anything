@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "wmcp-tool-contract/v1",
+  "name": "render_dither",
+  "inputSchema": {
+    "type": "object",
+    "required": ["seed"],
+    "properties": { "seed": { "type": "integer", "minimum": 0, "maximum": 4294967295 } },
+    "additionalProperties": false
+  },
+  "outputSchema": {
+    "type": "object",
+    "required": ["path", "mediaType", "sha256"],
+    "properties": {
+      "path": { "type": "string", "minLength": 1 },
+      "mediaType": { "const": "image/x-portable-bitmap" },
+      "sha256": { "type": "string", "minLength": 64, "maxLength": 64 }
+    },
+    "additionalProperties": false
+  },
+  "authorization": {
+    "anyOf": [[{ "scheme": "workspace-grant", "boundary": "workspace:fixture-artifacts", "permissions": ["artifact:create"] }]],
+    "confirmation": "always"
+  },
+  "sideEffects": [{ "kind": "artifact.create", "boundary": "workspace:fixture-artifacts" }],
+  "idempotency": { "mode": "non-idempotent" },
+  "failures": {
+    "access-denied": { "effects": "not-applied", "recovery": "stop" },
+    "artifact-interrupted": { "effects": "partial", "recovery": "reconcile" },
+    "receipt-timeout": { "effects": "unknown", "recovery": "reconcile" }
+  }
+}

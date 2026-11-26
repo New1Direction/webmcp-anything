@@ -1,0 +1,11 @@
+{
+  "sourceIds": [
+    "work"
+  ],
+  "states": {
+    "work": "queue"
+  },
+  "availableTypes": [
+    "task-title"
+  ]
+}

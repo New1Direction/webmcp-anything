@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Meeting room booking</title><link rel="stylesheet" href="/site.css"></head>
+<body>
+<main>
+<h1>Meeting room booking</h1>
+<div aria-label="Morning slots" role="region">
+  <button id="slot-nine" disabled>9:00 AM</button>
+  <button id="slot-eleven">11:00 AM</button>
+</div>
+<p id="receipt" role="status" aria-label="Booking status"></p>
+</main>
+<script>
+document.getElementById("slot-eleven").addEventListener("click", () => {
+  document.getElementById("receipt").textContent = "Reserved 11:00 AM";
+});
+</script>
+</body>
+</html>

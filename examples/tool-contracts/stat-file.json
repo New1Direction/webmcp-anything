@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "wmcp-tool-contract/v1",
+  "name": "stat_file",
+  "inputSchema": {
+    "type": "string",
+    "enum": ["notes.txt", "missing.txt"]
+  },
+  "outputSchema": { "type": "integer", "minimum": 0 },
+  "authorization": {
+    "anyOf": [[{ "scheme": "workspace-grant", "boundary": "workspace:fixture", "permissions": ["stat"] }]],
+    "confirmation": "never"
+  },
+  "sideEffects": [],
+  "idempotency": { "mode": "idempotent" },
+  "failures": {
+    "access-denied": { "effects": "not-applied", "recovery": "stop" },
+    "not-found": { "effects": "not-applied", "recovery": "stop" }
+  }
+}

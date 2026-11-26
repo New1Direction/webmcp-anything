@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "wmcp-workflow-policy/v1",
+  "source": "work",
+  "origin": "https://work.example",
+  "access": "public",
+  "tools": {
+    "work:open_queue": {
+      "permissions": [],
+      "sideEffect": {
+        "kind": "navigate",
+        "state": "queue"
+      }
+    },
+    "work:find_by_title": {
+      "permissions": [],
+      "sideEffect": {
+        "kind": "none"
+      }
+    },
+    "work:complete_queue_item": {
+      "permissions": [],
+      "sideEffect": {
+        "kind": "write",
+        "operation": "complete-queue-item",
+        "target": "/itemId",
+        "resultTarget": "/itemId",
+        "outcome": "/completed",
+        "value": true
+      }
+    }
+  }
+}

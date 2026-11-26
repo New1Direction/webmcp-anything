@@ -1,0 +1,28 @@
+{
+  "schemaVersion": "wmcp-selection-task/v1",
+  "profile": "reconcile-settled-ledger/v1",
+  "input": {
+    "entries": [
+      { "amountCents": 100, "settled": true },
+      { "amountCents": -25, "settled": true },
+      { "amountCents": 99, "settled": false }
+    ]
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": { "totalCents": { "type": "integer" } },
+    "required": ["totalCents"]
+  },
+  "requiredChecks": ["exact-total", "handles-refunds"],
+  "preferredChecks": ["includes-breakdown"],
+  "limits": {
+    "currency": "USD",
+    "maxSpendMicros": 12000,
+    "maxP95LatencyMs": 110,
+    "minTrials": 200,
+    "minCorrectness": 0.97,
+    "minReliability": 0.97,
+    "confidence": 0.95
+  },
+  "prefer": ["latency", "price", "reliability", "suitability"]
+}

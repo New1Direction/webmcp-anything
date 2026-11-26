@@ -1,0 +1,408 @@
+{
+  "schemaVersion": "wmcp-discovery-tasks/v1",
+  "tasks": [
+    {
+      "id": "onboard",
+      "goal": "Where can I find instructions for installing this integration?",
+      "expected": [
+        "docs:find_guides"
+      ],
+      "suite": "curated"
+    },
+    {
+      "id": "compatibility",
+      "goal": "Does this release run on the older runtime?",
+      "expected": [
+        "docs:check_version_compatibility"
+      ],
+      "suite": "curated"
+    },
+    {
+      "id": "release-diff",
+      "goal": "What changed since the previous release?",
+      "expected": [
+        "docs:get_changelog"
+      ],
+      "suite": "curated"
+    },
+    {
+      "id": "configuration",
+      "goal": "Which setting controls the callback endpoint?",
+      "expected": [
+        "docs:lookup_config_reference"
+      ],
+      "suite": "curated"
+    },
+    {
+      "id": "status",
+      "goal": "Is the payments service having trouble right now?",
+      "expected": [
+        "ops:service_status"
+      ],
+      "suite": "curated"
+    },
+    {
+      "id": "customer-impact",
+      "goal": "Show customer-facing interruptions that are still active.",
+      "expected": [
+        "ops:list_incidents"
+      ],
+      "suite": "curated"
+    },
+    {
+      "id": "maintenance",
+      "goal": "When is the next planned downtime?",
+      "expected": [
+        "ops:maintenance_windows"
+      ],
+      "suite": "curated"
+    },
+    {
+      "id": "alert-receipt",
+      "goal": "Signal that someone saw the pager notification by confirming receipt.",
+      "expected": [
+        "ops:acknowledge_alert"
+      ],
+      "suite": "curated"
+    },
+    {
+      "id": "incident-history",
+      "goal": "Show the sequence of events for case INC-42.",
+      "expected": [
+        "ops:incident_get"
+      ],
+      "suite": "curated"
+    },
+    {
+      "id": "delivery",
+      "goal": "How far along is order H103 on its way to me?",
+      "expected": [
+        "shop:delivery_progress"
+      ],
+      "suite": "curated"
+    },
+    {
+      "id": "stock",
+      "goal": "Can I still buy this size or is it sold out?",
+      "expected": [
+        "shop:item_availability"
+      ],
+      "suite": "curated"
+    },
+    {
+      "id": "freight",
+      "goal": "What would it cost to get this delivered to T5T 4J2?",
+      "expected": [
+        "shop:shipping_quote"
+      ],
+      "suite": "curated"
+    },
+    {
+      "id": "basket-add",
+      "goal": "Put one of this item in my basket.",
+      "expected": [
+        "shop:cart_line_create"
+      ],
+      "suite": "curated"
+    },
+    {
+      "id": "basket-remove",
+      "goal": "Take this item out of the basket.",
+      "expected": [
+        "shop:cart_line_remove"
+      ],
+      "suite": "curated"
+    },
+    {
+      "id": "refund",
+      "goal": "Give the customer their money back for this order.",
+      "expected": [
+        "shop:start_refund"
+      ],
+      "suite": "curated"
+    },
+    {
+      "id": "product-code",
+      "goal": "Look up the inventory code for the Arc Lamp.",
+      "expected": [
+        "shop:catalog_lookup"
+      ],
+      "context": {
+        "outputType": "sku"
+      },
+      "suite": "curated"
+    },
+    {
+      "id": "finish-without-id",
+      "goal": "Cross off the queue entry called Replace modem.",
+      "expected": [
+        "work:complete_queue_item"
+      ],
+      "context": {
+        "sourceIds": [
+          "work"
+        ],
+        "states": {
+          "work": "queue"
+        },
+        "availableTypes": [
+          "task-title"
+        ]
+      },
+      "plan": [
+        "work:find_by_title",
+        "work:complete_queue_item"
+      ],
+      "suite": "curated"
+    },
+    {
+      "id": "open-then-read",
+      "goal": "Show me what needs attention in the queue.",
+      "expected": [
+        "work:read_queue"
+      ],
+      "context": {
+        "sourceIds": [
+          "work"
+        ],
+        "states": {
+          "work": "overview"
+        },
+        "availableTypes": [],
+        "effects": [
+          "read",
+          "navigate"
+        ]
+      },
+      "plan": [
+        "work:open_queue",
+        "work:read_queue"
+      ],
+      "suite": "curated"
+    },
+    {
+      "id": "work-id",
+      "goal": "Find the record named Replace modem and give me its identifier.",
+      "expected": [
+        "work:find_by_title"
+      ],
+      "context": {
+        "sourceIds": [
+          "work"
+        ],
+        "states": {
+          "work": "queue"
+        },
+        "availableTypes": [
+          "task-title"
+        ],
+        "outputType": "task-id"
+      },
+      "suite": "curated"
+    },
+    {
+      "id": "work-owner",
+      "goal": "Hand this to the backup operator.",
+      "expected": [
+        "work:assign_owner"
+      ],
+      "context": {
+        "sourceIds": [
+          "work"
+        ],
+        "states": {
+          "work": "queue"
+        },
+        "availableTypes": [
+          "task-id"
+        ]
+      },
+      "suite": "curated"
+    },
+    {
+      "id": "archive",
+      "goal": "Hide finished items from the current work list.",
+      "expected": [
+        "work:archive_completed"
+      ],
+      "context": {
+        "sourceIds": [
+          "work"
+        ],
+        "states": {
+          "work": "queue"
+        },
+        "availableTypes": [
+          "task-title"
+        ]
+      },
+      "suite": "curated"
+    },
+    {
+      "id": "discussion",
+      "goal": "Find the internal discussion attached to this queue entry.",
+      "expected": [
+        "work:search_comments"
+      ],
+      "suite": "curated"
+    },
+    {
+      "id": "new-task",
+      "goal": "Make a to-do so I remember to call Avery.",
+      "expected": [
+        "taskboard:add_task"
+      ],
+      "context": {
+        "sourceIds": [
+          "taskboard"
+        ]
+      },
+      "suite": "curated"
+    },
+    {
+      "id": "public-read",
+      "goal": "See the current delivery fees using only public tools.",
+      "expected": [
+        "shop:shipping_quote"
+      ],
+      "context": {
+        "publicOnly": true,
+        "effects": [
+          "read"
+        ],
+        "sourceIds": [
+          "shop"
+        ]
+      },
+      "suite": "curated"
+    },
+    {
+      "id": "blocked-session",
+      "goal": "Show private discussion in the work queue.",
+      "expected": [],
+      "context": {
+        "publicOnly": true,
+        "sourceIds": [
+          "work"
+        ],
+        "outputType": "comment-set"
+      },
+      "suite": "curated"
+    },
+    {
+      "id": "blocked-write",
+      "goal": "Issue a refund.",
+      "expected": [],
+      "context": {
+        "sourceIds": [
+          "shop"
+        ],
+        "effects": [
+          "read"
+        ],
+        "outputType": "refund-id"
+      },
+      "suite": "curated"
+    },
+    {
+      "id": "paraphrase-node",
+      "goal": "Is this plugin compatible with Node 20?",
+      "expected": [
+        "docs:check_version_compatibility"
+      ],
+      "suite": "paraphrase"
+    },
+    {
+      "id": "paraphrase-retry",
+      "goal": "Explain the available retry parameters.",
+      "expected": [
+        "docs:lookup_config_reference"
+      ],
+      "suite": "paraphrase"
+    },
+    {
+      "id": "paraphrase-postage",
+      "goal": "How many dollars will delivery run me at this ZIP code?",
+      "expected": [
+        "shop:shipping_quote"
+      ],
+      "suite": "paraphrase"
+    },
+    {
+      "id": "paraphrase-carrier",
+      "goal": "Has the carrier handed over my package yet?",
+      "expected": [
+        "shop:delivery_progress"
+      ],
+      "suite": "paraphrase"
+    },
+    {
+      "id": "paraphrase-impact",
+      "goal": "Which ongoing disruptions are customers experiencing?",
+      "expected": [
+        "ops:list_incidents"
+      ],
+      "suite": "paraphrase"
+    },
+    {
+      "id": "paraphrase-calendar",
+      "goal": "Any scheduled service interruptions on the calendar?",
+      "expected": [
+        "ops:maintenance_windows"
+      ],
+      "suite": "paraphrase"
+    },
+    {
+      "id": "paraphrase-reimburse",
+      "goal": "I want the customer reimbursed on purchase 731.",
+      "expected": [
+        "shop:start_refund"
+      ],
+      "suite": "paraphrase"
+    },
+    {
+      "id": "paraphrase-finish",
+      "suite": "paraphrase",
+      "goal": "Mark item 402 as dealt with.",
+      "expected": [
+        "work:complete_queue_item"
+      ],
+      "context": {
+        "sourceIds": [
+          "work"
+        ],
+        "availableTypes": [
+          "task-id"
+        ],
+        "states": {
+          "work": "queue"
+        }
+      }
+    },
+    {
+      "id": "paraphrase-standup",
+      "suite": "paraphrase",
+      "goal": "Collect the outstanding items for my stand-up.",
+      "expected": [
+        "work:read_queue"
+      ],
+      "context": {
+        "sourceIds": [
+          "work"
+        ],
+        "availableTypes": [],
+        "states": {
+          "work": "overview"
+        },
+        "effects": [
+          "read",
+          "navigate"
+        ]
+      },
+      "plan": [
+        "work:open_queue",
+        "work:read_queue"
+      ]
+    }
+  ]
+}

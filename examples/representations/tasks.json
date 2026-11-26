@@ -1,0 +1,478 @@
+{
+  "schemaVersion": "wmcp-representation-tasks/v1",
+  "tasks": [
+    {
+      "id": "navigate-to-orders",
+      "page": "index.html",
+      "request": {
+        "intent": "navigate",
+        "target": {
+          "name": "Orders",
+          "role": "link"
+        }
+      },
+      "expected": "/orders.html",
+      "facts": [
+        {
+          "kind": "node",
+          "target": {
+            "name": "Orders",
+            "role": "link"
+          },
+          "field": "role",
+          "equals": "link"
+        },
+        {
+          "kind": "node",
+          "target": {
+            "name": "Orders",
+            "role": "link"
+          },
+          "field": "href",
+          "equals": "/orders.html"
+        }
+      ]
+    },
+    {
+      "id": "orders-link-destination",
+      "page": "index.html",
+      "request": {
+        "intent": "answer",
+        "kind": "node",
+        "target": {
+          "name": "Orders",
+          "role": "link"
+        },
+        "field": "href"
+      },
+      "expected": "/orders.html",
+      "facts": [
+        {
+          "kind": "node",
+          "target": {
+            "name": "Orders",
+            "role": "link"
+          },
+          "field": "href",
+          "equals": "/orders.html"
+        }
+      ]
+    },
+    {
+      "id": "shipment-live-status",
+      "page": "orders.html",
+      "request": {
+        "intent": "answer",
+        "kind": "node",
+        "target": {
+          "name": "Parcel status",
+          "role": "status"
+        },
+        "field": "value"
+      },
+      "expected": "Awaiting pickup",
+      "facts": [
+        {
+          "kind": "node",
+          "target": {
+            "name": "Parcel status",
+            "role": "status"
+          },
+          "field": "value",
+          "equals": "Awaiting pickup"
+        }
+      ]
+    },
+    {
+      "id": "offscreen-archive-destination",
+      "page": "orders.html",
+      "request": {
+        "intent": "answer",
+        "kind": "node",
+        "target": {
+          "name": "Archive orders",
+          "role": "link"
+        },
+        "field": "href"
+      },
+      "expected": "/orders.html?view=archive",
+      "facts": [
+        {
+          "kind": "node",
+          "target": {
+            "name": "Archive orders",
+            "role": "link"
+          },
+          "field": "href",
+          "equals": "/orders.html?view=archive"
+        }
+      ]
+    },
+    {
+      "id": "unavailable-booking",
+      "page": "booking.html",
+      "request": {
+        "intent": "answer",
+        "kind": "node",
+        "target": {
+          "name": "9:00 AM",
+          "role": "button",
+          "scope": "Morning slots"
+        },
+        "field": "disabled"
+      },
+      "expected": true,
+      "facts": [
+        {
+          "kind": "node",
+          "target": {
+            "name": "9:00 AM",
+            "role": "button",
+            "scope": "Morning slots"
+          },
+          "field": "disabled",
+          "equals": true
+        }
+      ]
+    },
+    {
+      "id": "reserve-first-available",
+      "page": "booking.html",
+      "request": {
+        "intent": "reserve",
+        "options": [
+          {
+            "name": "9:00 AM",
+            "role": "button",
+            "scope": "Morning slots"
+          },
+          {
+            "name": "11:00 AM",
+            "role": "button",
+            "scope": "Morning slots"
+          }
+        ],
+        "authorized": true
+      },
+      "expected": "Reserved 11:00 AM",
+      "facts": [
+        {
+          "kind": "node",
+          "target": {
+            "name": "9:00 AM",
+            "role": "button",
+            "scope": "Morning slots"
+          },
+          "field": "disabled",
+          "equals": true
+        },
+        {
+          "kind": "node",
+          "target": {
+            "name": "11:00 AM",
+            "role": "button",
+            "scope": "Morning slots"
+          },
+          "field": "disabled",
+          "equals": false
+        }
+      ]
+    },
+    {
+      "id": "create-ticket",
+      "page": "support.html",
+      "request": {
+        "intent": "submit",
+        "target": {
+          "name": "Ticket title",
+          "role": "textbox"
+        },
+        "submit": {
+          "name": "Create ticket",
+          "role": "button"
+        },
+        "value": "Replace modem",
+        "authorized": true
+      },
+      "expected": "Created: Replace modem",
+      "facts": [
+        {
+          "kind": "node",
+          "target": {
+            "name": "Ticket title",
+            "role": "textbox"
+          },
+          "field": "role",
+          "equals": "textbox"
+        },
+        {
+          "kind": "node",
+          "target": {
+            "name": "Ticket title",
+            "role": "textbox"
+          },
+          "field": "required",
+          "equals": true
+        },
+        {
+          "kind": "node",
+          "target": {
+            "name": "Create ticket",
+            "role": "button"
+          },
+          "field": "role",
+          "equals": "button"
+        }
+      ]
+    },
+    {
+      "id": "validation-message",
+      "page": "support.html?state=error",
+      "request": {
+        "intent": "answer",
+        "kind": "node",
+        "target": {
+          "name": "Ticket error",
+          "role": "alert"
+        },
+        "field": "value"
+      },
+      "expected": "A title is required",
+      "facts": [
+        {
+          "kind": "node",
+          "target": {
+            "name": "Ticket error",
+            "role": "alert"
+          },
+          "field": "value",
+          "equals": "A title is required"
+        }
+      ]
+    },
+    {
+      "id": "disambiguate-balance",
+      "page": "billing.html",
+      "request": {
+        "intent": "answer",
+        "kind": "node",
+        "target": {
+          "name": "Balance due",
+          "role": "status",
+          "scope": "Personal workspace"
+        },
+        "field": "value"
+      },
+      "expected": "$18.00",
+      "facts": [
+        {
+          "kind": "node",
+          "target": {
+            "name": "Balance due",
+            "role": "status",
+            "scope": "Personal workspace"
+          },
+          "field": "value",
+          "equals": "$18.00"
+        }
+      ]
+    },
+    {
+      "id": "typed-export-arguments",
+      "page": "billing.html",
+      "request": {
+        "intent": "answer",
+        "kind": "tool",
+        "tool": "export_billing",
+        "field": "inputSchema"
+      },
+      "expected": {
+        "type": "object",
+        "properties": {
+          "period": {
+            "type": "string"
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "csv",
+              "json"
+            ]
+          }
+        },
+        "required": [
+          "period",
+          "format"
+        ]
+      },
+      "facts": [
+        {
+          "kind": "tool",
+          "tool": "export_billing",
+          "field": "inputSchema",
+          "equals": {
+            "type": "object",
+            "properties": {
+              "period": {
+                "type": "string"
+              },
+              "format": {
+                "type": "string",
+                "enum": [
+                  "csv",
+                  "json"
+                ]
+              }
+            },
+            "required": [
+              "period",
+              "format"
+            ]
+          }
+        },
+        {
+          "kind": "tool",
+          "tool": "export_billing",
+          "field": "postconditions",
+          "equals": [
+            {
+              "kind": "result-equals",
+              "pointer": "/exported",
+              "value": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "withhold-unconfirmed-export",
+      "page": "billing.html",
+      "request": {
+        "intent": "guard",
+        "tool": "export_billing",
+        "authorized": false
+      },
+      "expected": "approval-required",
+      "facts": [
+        {
+          "kind": "tool",
+          "tool": "export_billing",
+          "field": "effect",
+          "equals": "write"
+        },
+        {
+          "kind": "tool",
+          "tool": "export_billing",
+          "field": "preconditions",
+          "equals": [
+            {
+              "kind": "authentication",
+              "boundary": "$fixture-origin",
+              "anyOf": [
+                {
+                  "allOf": [
+                    {
+                      "type": "site-session",
+                      "permissions": [
+                        "billing:read"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "user-authorization",
+              "when": "always",
+              "scope": "this-capability-and-input"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "live-alert-toggle",
+      "page": "preferences.html",
+      "request": {
+        "intent": "answer",
+        "kind": "node",
+        "target": {
+          "name": "Alerts",
+          "role": "button"
+        },
+        "field": "pressed"
+      },
+      "expected": true,
+      "facts": [
+        {
+          "kind": "node",
+          "target": {
+            "name": "Alerts",
+            "role": "button"
+          },
+          "field": "pressed",
+          "equals": true
+        }
+      ]
+    },
+    {
+      "id": "live-form-value",
+      "page": "preferences.html",
+      "request": {
+        "intent": "answer",
+        "kind": "node",
+        "target": {
+          "name": "Draft note",
+          "role": "textbox"
+        },
+        "field": "value"
+      },
+      "expected": "Quarterly update",
+      "facts": [
+        {
+          "kind": "node",
+          "target": {
+            "name": "Draft note",
+            "role": "textbox"
+          },
+          "field": "value",
+          "equals": "Quarterly update"
+        }
+      ]
+    },
+    {
+      "id": "visual-route-north",
+      "page": "map.html",
+      "request": {
+        "intent": "answer",
+        "kind": "visual",
+        "color": "red"
+      },
+      "expected": "North route",
+      "facts": [
+        {
+          "kind": "visual",
+          "color": "red",
+          "equals": "North route"
+        }
+      ]
+    },
+    {
+      "id": "visual-route-south",
+      "page": "map.html?route=south",
+      "request": {
+        "intent": "answer",
+        "kind": "visual",
+        "color": "red"
+      },
+      "expected": "South route",
+      "facts": [
+        {
+          "kind": "visual",
+          "color": "red",
+          "equals": "South route"
+        }
+      ]
+    }
+  ]
+}

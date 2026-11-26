@@ -24,6 +24,101 @@ Not every website is compatible. Discovery is best-effort, and a discovered tool
 
 [Reproduce the demo and add the GitHub Action](docs/WEBMCP_DOCTOR.md).
 
+## Compile a website capability specification
+
+`wmcp compile` reads a local site contract or OpenAPI document and emits typed capabilities with explicit preconditions, observable postconditions, and authentication requirements. Site contracts also describe semantic landmarks and navigation states.
+
+~~~sh
+node cli/wmcp.mjs compile examples/browser-demo/capabilities.json
+~~~
+
+[Read the compiler guide](docs/capability-compiler.md).
+
+## Find tools by outcome
+
+Search a capability catalog with a plain-language goal. WMCP returns ranked tools, their applicability constraints, and a documented prerequisite when one fits.
+
+~~~sh
+node cli/wmcp.mjs discover examples/capability-discovery/catalog.json 'When is the next planned downtime?'
+~~~
+
+[Capability ontology and benchmark](docs/capability-discovery.md).
+
+## Compose authorized workflows
+
+Find compatible WebMCP tools under an explicit policy, verify a reusable workflow, and replay its success and failure conditions against fixtures.
+
+~~~sh
+node cli/wmcp.mjs compose examples/capability-discovery/catalog.json \
+  --policy examples/workflows/queue-policy.json
+~~~
+
+[Workflow composition guide](docs/workflow-composition.md).
+
+## Measure what an agent needs from a page
+
+Compare DOM, accessibility, metadata, and screenshot evidence on live browser fixtures, then measure how much targeted context can retain.
+
+[Website representation benchmark](docs/website-representation.md).
+
+## Give people and agents the same action labels
+
+The taskboard ties visible labels, accessible names, tool schemas, review, and outcome feedback together.
+
+[Affordance design language and browser checks](docs/affordance-design-language.md).
+
+## Inspect MCP communication locally
+
+Explore tool discovery, schema checks, request timing, and execution receipts in a redacted timeline and typed dependency graph.
+
+~~~sh
+node examples/mcp-inspector/server.mjs
+~~~
+
+[Inspector guide and local fixtures](docs/mcp-inspector.md).
+
+## Map a tool ecosystem
+
+Explore capability clusters, service overlaps, integration gaps, and policy-checked workflow opportunities. Agents can search the same map over MCP.
+
+~~~sh
+node examples/ecosystem-map/server.mjs
+~~~
+
+[Ecosystem map and agent navigation](docs/ecosystem-map.md).
+
+## Audit a minimal tool contract
+
+Describe logical inputs, outputs, authority, effects, repeat guarantees, and failure recovery without changing how a tool runs.
+
+~~~sh
+node cli/wmcp.mjs contract examples/tool-contracts/publish-snapshot.json
+~~~
+
+[Tool contract and cross-domain evaluation](docs/tool-contract.md).
+
+## Select tools within a budget
+
+Check required outcomes and service objectives, then compare feasible tools by price, p95 latency, reliability, and suitability.
+
+~~~sh
+node examples/tool-selection/evaluate.mjs --evidence > /tmp/wmcp-selection-evidence.json
+node cli/wmcp.mjs select examples/tool-selection/task.json /tmp/wmcp-selection-evidence.json
+~~~
+
+[Selection policy and reproducible evaluation](docs/tool-selection.md).
+
+## Try the local tool marketplace
+
+List compatible providers by outcome and run a version-pinned MCP tool comparison with a test-credit quote and a developer payout receipt.
+
+~~~sh
+node examples/tool-marketplace/demo.mjs --list --goal 'compare MCP snapshots'
+node examples/tool-marketplace/demo.mjs --max-credits 10
+~~~
+
+[Marketplace design and pilot criteria](docs/tool-marketplace.md).
+
 ## Try it in 30 seconds
 
 **Option 1: browser, no install.** Paste a public URL into [wmcp.sh/start](https://wmcp.sh/start), review the inferred tools, then choose whether to connect an MCP client.

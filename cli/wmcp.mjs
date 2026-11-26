@@ -1,12 +1,20 @@
 #!/usr/bin/env node
 // WMCP read-only developer CLI. No hosted credentials and no dependencies.
 import { pathToFileURL } from "node:url";
+import { parseArgs as parseOptions } from "node:util";
 import { readFileSync, statSync } from "node:fs";
 import { inspectMcpEndpoint, validateEndpoint } from "./mcp-read.mjs";
 import { doctorMcp, formatDoctor } from "./doctor.mjs";
 import { doctorWeb, formatDoctorWeb, validateWebPage } from "./doctor-web.mjs";
+import { compileFile, readLocalJson } from "./compile.mjs";
+import { loadOntology } from "./capability-ontology.mjs";
+import { createDiscovery } from "./discover.mjs";
+import { composeWorkflow, findCompositions } from "./compose.mjs";
+import { replayWorkflow } from "./replay.mjs";
+import { inspectToolContract } from "./tool-contract.mjs";
+import { selectToolFiles } from "./select-tool.mjs";
 const BASE = "https://wmcp.sh";
-const CMDS = ["inspect", "mcp", "grade", "config", "doctor"];
+const CMDS = ["inspect", "mcp", "grade", "config", "doctor", "compile", "ontology", "discover", "compose", "replay", "contract", "select"];
 const HELP = [
   "wmcp — inspect websites and MCP servers without setting up an agent",
   "",
@@ -17,6 +25,15 @@ const HELP = [
   "  node cli/wmcp.mjs config  <public-url>",
   "  node cli/wmcp.mjs doctor  <mcp-endpoint-url> [--json] [--strict] [--baseline path]",
   "  node cli/wmcp.mjs doctor web <page-url> [--json] [--strict] [--baseline path]",
+  "  node cli/wmcp.mjs compile <source.json> [--json]",
+  "  node cli/wmcp.mjs contract <contract.json>",
+  "  node cli/wmcp.mjs contract <capability-source.json> --tool <name>",
+  "  node cli/wmcp.mjs select <task.json> <evidence.json>",
+  "  node cli/wmcp.mjs ontology <catalog.json>",
+  "  node cli/wmcp.mjs discover <catalog.json> <goal> [--method lexical|embedding|graph]",
+  "    [--context <context.json>] [--embeddings <vectors.json>] [--limit n]",
+  "  node cli/wmcp.mjs compose <catalog.json> [workflow.json] --policy <policy.json>",
+  "  node cli/wmcp.mjs replay <catalog.json> <workflow.json> <fixture.json> --policy <policy.json>",
   "",
   "Options:",
   "  --json           Print machine-readable JSON",
@@ -29,6 +46,7 @@ const HELP = [
   "  --pair url       Compare with this public MCP endpoint (doctor web)",
   "  --allow-preview-origin  Allow baseline for the same path on another origin",
   "",
+  "Compile reads a local OpenAPI 3.0/3.1 or WMCP site JSON file and emits JSON.",
   "All commands are read-only. Use PUBLIC HTTPS URLs without credentials, query",
   "parameters or tokens: the remote service may fetch and cache target URLs.",
   "WMCP_API_KEY enables authenticated reads; its value is never printed.",
@@ -65,6 +83,49 @@ export function parseArgs(args) {
   if (!args.length || args.includes("--help") || args.includes("-h")) return { help: true };
   const [command, ...rest] = args;
   if (!CMDS.includes(command)) throw Error("Unknown command: " + command + ". Use --help.");
+  if (command === "compile") {
+    const paths = rest.filter((arg) => arg !== "--json");
+    if (paths.length !== 1 || paths[0].startsWith("-")) throw Error("Usage: compile <local-source.json> [--json]");
+    return { command, sourcePath: paths[0] };
+  }
+  if (command === "contract") {
+    const { values, positionals } = parseOptions({ args: rest, options: { tool: { type: "string" } }, allowPositionals: true });
+    if (positionals.length !== 1) throw Error("Usage: contract <local-json-file> [--tool <name>]");
+    return { command, sourcePath: positionals[0], tool: values.tool };
+  }
+  if (command === "select") {
+    const { positionals } = parseOptions({ args: rest, options: {}, allowPositionals: true });
+    if (positionals.length !== 2) throw Error("Usage: select <task.json> <evidence.json>");
+    const [taskPath, evidencePath] = positionals;
+    return { command, taskPath, evidencePath };
+  }
+  if (command === "ontology" || command === "discover") {
+    const options = command === "discover" ? {
+      method: { type: "string" },
+      context: { type: "string" },
+      embeddings: { type: "string" },
+      limit: { type: "string" },
+    } : {};
+    const { values, positionals } = parseOptions({ args: rest, options, allowPositionals: true });
+    const [catalogPath, goal] = positionals;
+    if (positionals.length !== (command === "ontology" ? 1 : 2) || !catalogPath.trim() || (goal !== undefined && !goal.trim())) {
+      throw Error(command === "ontology" ? "Usage: ontology <catalog.json>" : "Usage: discover <catalog.json> <goal>");
+    }
+    const limit = values.limit === undefined ? undefined : Number(values.limit);
+    return { command, catalogPath, goal, method: values.method, contextPath: values.context, embeddingsPath: values.embeddings, limit };
+  }
+  if (command === "compose" || command === "replay") {
+    const { values, positionals } = parseOptions({
+      args: rest, options: { policy: { type: "string" } }, allowPositionals: true,
+    });
+    const validCount = command === "compose" ? [1, 2].includes(positionals.length) : positionals.length === 3;
+    if (!values.policy || !validCount) {
+      throw Error(command === "compose" ? "Expected a catalog, optional workflow, and --policy" :
+        "Expected a catalog, workflow, fixture, and --policy");
+    }
+    const [catalogPath, workflowPath, fixturePath] = positionals;
+    return { command, catalogPath, workflowPath, fixturePath, policyPath: values.policy };
+  }
   const web = command === "doctor" && rest[0] === "web";
   let json = false, strict = false, base = BASE, url = null, baselinePath = null, sendKeyToBase = false;
   const browserOptions = {};
@@ -134,7 +195,26 @@ async function jsonRequest(url, options = {}, key = "", request = fetch) {
   return data;
 }
 
-export async function execute({ command, url, base = BASE, baselinePath = null, sendKeyToBase = false, chrome, waitMs, endpoint, allowPreviewOrigin }, { request = fetch, apiKey = "", scan } = {}) {
+export async function execute({ command, url, base = BASE, baselinePath = null, sendKeyToBase = false, chrome, waitMs, endpoint, allowPreviewOrigin,
+  sourcePath, catalogPath, goal, method, contextPath, embeddingsPath, limit, workflowPath, policyPath, fixturePath, tool,
+  taskPath, evidencePath }, { request = fetch, apiKey = "", scan } = {}) {
+  if (command === "compile") return compileFile(sourcePath);
+  if (command === "contract") return inspectToolContract(sourcePath, tool);
+  if (command === "select") return selectToolFiles(taskPath, evidencePath);
+  if (command === "ontology" || command === "discover") {
+    const ontology = loadOntology(catalogPath);
+    if (command === "ontology") return ontology;
+    const embeddings = embeddingsPath === undefined ? undefined : readLocalJson(embeddingsPath, "Embeddings", 16_000_000);
+    const context = contextPath === undefined ? undefined : readLocalJson(contextPath, "Discovery context");
+    return createDiscovery(ontology, { embeddings })(goal, { method, context, limit });
+  }
+  if (command === "compose" || command === "replay") {
+    const ontology = loadOntology(catalogPath);
+    const policy = readLocalJson(policyPath, "Workflow policy");
+    if (workflowPath === undefined) return findCompositions(ontology, policy);
+    const plan = composeWorkflow(ontology, readLocalJson(workflowPath, "Workflow"), policy);
+    return command === "compose" ? plan : replayWorkflow(plan, readLocalJson(fixturePath, "Workflow fixture"));
+  }
   const origin = validateBase(base);
   // WMCP_API_KEY is trusted only for the public WMCP host by default.
   // A custom base may be a third-party endpoint: avoid exfiltrating keys.
@@ -161,7 +241,7 @@ export async function execute({ command, url, base = BASE, baselinePath = null, 
 }
 
 export function summarize(command, value, json = false) {
-  if (json || command === "config") return JSON.stringify(value, null, 2);
+  if (json || ["config", "compile", "ontology", "discover", "compose", "replay", "contract", "select"].includes(command)) return JSON.stringify(value, null, 2);
   if (command === "doctor") return formatDoctor(value);
   if (command === "doctor-web") return formatDoctorWeb(value);
   if (command === "grade") return "MCP trust grade: " + (value.grade ?? "?") + "\n" +
@@ -184,7 +264,9 @@ export async function main(argv = process.argv.slice(2), options = {}) {
     if (args.help) { console.log(HELP); return 0; }
     const data = await execute(args, { request: options.request || fetch, apiKey: options.apiKey ?? process.env.WMCP_API_KEY ?? "", scan: options.scan });
     console.log(summarize(args.command, data, args.json));
-    if (args.strict && data.status !== "pass") return 2;
+    if ((args.strict && data.status !== "pass") || (args.command === "compile" && !data.complete) ||
+        (args.command === "replay" && data.status !== "completed") || (args.command === "contract" && !data.valid) ||
+        (args.command === "select" && data.status === "no-feasible-tool")) return 2;
     return 0;
   } catch (error) {
     console.error("wmcp: " + String(error.message || error));

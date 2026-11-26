@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "wmcp-workflow-fixture/v1",
+  "input": {
+    "title": "Replace modem"
+  },
+  "observations": {
+    "open": {
+      "status": "ok",
+      "before": {
+        "origin": "https://work.example",
+        "state": "overview"
+      },
+      "after": {
+        "origin": "https://work.example",
+        "state": "queue"
+      }
+    },
+    "find": {
+      "status": "ok",
+      "before": {
+        "origin": "https://work.example",
+        "state": "queue"
+      },
+      "after": {
+        "origin": "https://work.example",
+        "state": "queue"
+      },
+      "result": {
+        "itemId": 42
+      }
+    },
+    "complete": {
+      "status": "ok",
+      "before": {
+        "origin": "https://work.example",
+        "state": "queue"
+      },
+      "after": {
+        "origin": "https://work.example",
+        "state": "queue"
+      },
+      "result": {
+        "itemId": 42,
+        "completed": true
+      },
+      "approval": {
+        "workflow": "complete-by-title",
+        "step": "complete",
+        "capability": "work:complete_queue_item",
+        "origin": "https://work.example",
+        "subject": null,
+        "input": {
+          "itemId": 42
+        }
+      }
+    }
+  }
+}
