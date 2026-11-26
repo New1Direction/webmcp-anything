@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "wmcp-doctor-web/v1",
+  "page": "https://example.com/taskboard",
+  "observedPage": "https://example.com/taskboard",
+  "browser": "Fixture",
+  "waitMs": 1000,
+  "complete": true,
+  "status": "pass",
+  "toolCount": 1,
+  "toolFingerprints": [
+    {
+      "name": "list_tasks",
+      "sha256": "62778f59a883190afe22486b8aa7a200ecb44f77a16aa348b7c9e69a7f13b08e"
+    }
+  ],
+  "surfaceHash": "653539dae799150e4e2f8ea90addc1e5964b39d90db6e3634cae64f7b1503971",
+  "drift": null,
+  "pair": null,
+  "findings": []
+}

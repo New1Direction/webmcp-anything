@@ -55,11 +55,11 @@ test("jsonld detects schema.org Product", async () => {
   assert.ok(ctx, "detect should return a context for a Product node");
 });
 
-test("jsonld ignores pages with no Product node", async () => {
+test("jsonld ignores pages with only unclassified JSON-LD", async () => {
   const jsonld = await import("../jsonld.js");
   assert.equal(
     jsonld.detect({
-      jsonld: [{ "@type": "Article" }],
+      jsonld: [{ "@type": "WebPage" }],
       meta: {},
       url: "https://blog.example.com/post",
       title: "A blog post",

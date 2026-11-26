@@ -43,6 +43,10 @@ Pin `REVIEWED_COMMIT_SHA` to a commit that contains `doctor web`. In the preview
 
 Run the check for pages you are authorized to load. Chrome runs the page’s normal scripts on navigation in an anonymous profile. The probe covers the top-level page during a bounded observation window, so authenticated states, iframe-only tools, and tools requiring UI interaction are outside this check.
 
+## Compare two captures offline
+
+Save the JSON from each run and compare the captured browser tool fingerprints with `node cli/wmcp.mjs doctor diff baseline.json preview.json --strict`. This is useful when preview and baseline reports come from separate jobs. See the [setup and runnable missing-tool fixture](../tools/doctor-diff/).
+
 ## Reproduce the regression
 
 ~~~sh

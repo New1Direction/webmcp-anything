@@ -43,3 +43,5 @@ Read the platform guide: ../docs/QUICKSTART.md
 ## Browser WebMCP
 
 Run `node cli/wmcp.mjs doctor web https://site.example/tools --strict` with a WebMCP-capable Chrome build to observe native registrations. The [WebMCP Doctor guide](../docs/WEBMCP_DOCTOR.md) covers reporting, preview baselines, pairing, and CI.
+
+`node cli/wmcp.mjs doctor diff --help` shows how to compare two saved Doctor reports entirely offline. This optional command uses Node.js 22.18+, Effect 4, and a Rust engine. See the [setup and fixture](../tools/doctor-diff/).

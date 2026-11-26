@@ -1,0 +1,54 @@
+name: Doctor diff
+
+on:
+  push:
+    branches: [main]
+    paths: &paths
+      - ".github/workflows/doctor-diff.yml"
+      - "cli/wmcp.mjs"
+      - "cli/doctor*.mjs"
+      - "cli/mcp-read.mjs"
+      - "tools/doctor-diff/**"
+  pull_request:
+    branches: [main]
+    paths: *paths
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install dependencies and check TypeScript
+        run: |
+          npm ci --prefix tools/doctor-diff
+          npm run typecheck --prefix tools/doctor-diff
+      - name: Build and test Rust engine
+        run: |
+          cargo test --locked --manifest-path tools/doctor-diff/native/Cargo.toml
+          cargo build --locked --manifest-path tools/doctor-diff/native/Cargo.toml
+      - name: Test offline CLI
+        run: npm test --prefix tools/doctor-diff
+
+  lean:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: tools/doctor-diff/formal
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify Lean model and regenerate the classification table
+        shell: bash
+        run: |
+          version="$(cut -d: -f2 lean-toolchain)"
+          archive="lean-${version#v}-linux.tar.zst"
+          curl --fail --silent --show-error --location "https://github.com/leanprover/lean4/releases/download/${version}/${archive}" -o "$RUNNER_TEMP/$archive"
+          printf '%s  %s\n' '2b7ab1ed8b92d2e6abfaf41344823b510064dbc9c0260cac73eb496ab2dea6eb' "$RUNNER_TEMP/$archive" | sha256sum --check
+          tar --zstd -xf "$RUNNER_TEMP/$archive" -C "$RUNNER_TEMP"
+          "$RUNNER_TEMP/${archive%.tar.zst}/bin/lean" --run Drift.lean > "$RUNNER_TEMP/classifications.tsv"
+          diff -u classifications.tsv "$RUNNER_TEMP/classifications.tsv"

@@ -1,49 +1,38 @@
-# GitHub adoption plan — earn stars by being useful
+# GitHub launch for WMCP Doctor
 
-Baseline taken October 27, 2026 from GitHub public metadata:
-- webmachinelearning/webmcp (specification): about 4,759 stars
-- MiguelsPizza/WebMCP (MCP-B): about 1,109
-- GoogleChromeLabs/webmcp-tools: about 723
-- New1Direction/webmcp-anything: 8
+The last public baseline checked on November 25, 2026 was **8 stars and 2 forks**. Use the WebMCP CI check as the launch story. It gives site owners a problem they can reproduce and a GitHub Action they can adopt.
 
-Stars change and this is not a forecast. Competing directly with a widely cited official specification is substantially harder than leading a practical toolkit niche.
+## GitHub About
 
-## Positioning: a working, trustworthy developer toolkit
+**Description**
 
-Don't compete on "we implement WebMCP" alone. The browser specification is becoming standard platform infrastructure, and major vendors are shipping site integration. Win by reducing a developer's path from **URL / site → visible tools → tested agent workflow → secure execution**.
+> Catch WebMCP tool regressions in Chrome and MCP contract drift in CI. Compare saved reports offline.
 
-Three differentiated capabilities with independent evidence:
-1. Read-only URL-to-MCP discovery across supported public sites, plus the fully working CLI.
-2. First-party native WebMCP page example, explicit about lack of support in unenabled browsers.
-3. Independent MCP trust grading and observable schema drift checks. Grades are never purchased and do not certify a server.
+**Topics** — `webmcp`, `mcp`, `model-context-protocol`, `github-actions`, `chrome-devtools-protocol`, `typescript`, `effect-ts`, `rust`, `openapi`, `cloudflare-workers`
 
-Native browser↔remote MCP relay is **not** an existing capability. Keep it on a separate security-reviewed release track.
+Keep `wmcp.sh` as the website. Use the same one-sentence description and missing-tool example in release notes, the demo, and directory entries.
 
-## Product milestones (not promises)
+## Launch draft
 
-**10 → 100 stars:** land PR #76 (CLI, native demo, honest setup), merge only after all CI and manual checks; add exact screencast showing setup in a clean repository clone; link from README; publish a technical explanation rather than asking for stars up front.
+**Title**
 
-**100 → 1,000 stars:** collect 10 independently reproducible adapters or compatibility improvements from outside contributors; label easy issues, respond to reproducible bugs, keep the quickstart passing, add a changelog with real release artifacts.
+> WMCP Doctor catches missing WebMCP tools before merge
 
-**1,000 → 5,000+ stars:** become the genuinely recommended toolkit for users needing both backend URL→MCP adapters and native browser interoperability. That requires production-grade consent, session isolation, meaningful benchmark evidence and strong maintenance—not just a large README.
+**Copy**
 
-## What to measure
+> A shim update on our test taskboard caused Chrome to report zero WebMCP tools. WMCP Doctor compared the preview with the reviewed baseline, reported that `list_tasks` had disappeared, and failed the check. With the fixed shim, Chrome saw `list_tasks` again.
+>
+> The GitHub Action checks browser registrations and remote MCP tool listings without invoking any tools. If your preview and baseline run in separate jobs, you can compare the saved JSON offline with a TypeScript/Effect 4 CLI and a Rust diff engine.
+>
+> Run the fixture or try the Action on a preview: https://github.com/New1Direction/webmcp-anything
+>
+> I’d like to hear which changes you want a check to flag on your own WebMCP page.
 
-Weekly from GitHub: new stars (not purchased), unique contributors, merged external PRs, open bug age, demo/quickstart success, issue-to-fix cycle time. From hosted operations: public URL preview success/failure by adapter class, signups, paid activations and refunds. Never expose individual visitor identities or secrets for growth tracking.
+Use the draft as a release announcement or technical post. If submitting to Show HN, check its [guidelines](https://news.ycombinator.com/showhn.html) and link directly to the runnable demo.
 
-The real proof is **independent projects adopting the toolkit and linking back to it**. GitHub stars are a proxy, not an end-user outcome.
+## Release and follow-up
 
-## Distribution checklist
-
-- Add the repository's missing **webmcp** topic via GitHub's About → Topics editor. It currently has broader MCP tags but no exact webmcp topic. Suggested additional applicable tags: browser-agents, model-context-protocol. Do not spam unrelated tags.
-- Create a short, factual before/after video showing a URL recognized, an MCP tools/list response, and a task completed only when execution permissions actually allow it.
-- After a CI-green, published release, submit a useful, accurate entry to curated WebMCP resources (e.g. webmachinelearning/awesome-webmcp) that accept third-party projects; follow each project's contribution rules and disclose affiliation.
-- Offer a reproducible issue/PR with fixes to upstream tools when genuinely relevant. Don't inject unrelated promotional links.
-- Write one technical note per solved problem: why REST is not MCP, browser-native vs backend tools, native permission boundaries, MCP drift verification, public-cache privacy.
-- Share specific demos with relevant developer communities **where self-promotion is allowed**, and respond to feedback. No fake stars, star exchanges, bought traffic, bot accounts or spam outreach.
-
-## Release gate
-
-PR #76: Node CLI and browser-demo tests; current worker CI; verify docs URLs and a genuine public endpoint manually. PR #75: separate browser/production feature, requires explicit integration and payments acceptance testing. Do not advertise merged or deployed capabilities before they are.
-
-If the CLI will be distributed via npm later, publish only after checking name ownership, version, provenance, license, package contents, release security and that npm install actually works. Do not claim a nonexistent package is available.
+1. Land the reviewed change after CI. Run the missing-tool fixture from a clean clone and check the native Chrome regression before cutting the release. Link the runnable fixture and the standalone HTML demo. The hosted demo returned HTTP 404 on November 25, 2026, so check it before putting that URL in release copy.
+2. Update GitHub About and open two focused starter issues. Ask for a browser-registration regression fixture and a saved MCP report that should compare cleanly after a backwards-compatible change. Link the setup and what a passing test looks like.
+3. Share the release with communities that accept project demos. Once an independent project uses the check, link that public example and submit a concise entry to a relevant curated list that accepts additions.
+4. Track weekly new stars, unique clones, external Action adoptions you can verify, and first-time contributor PRs. Keep a short log of which links and demos led people to try the Action.

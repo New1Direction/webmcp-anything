@@ -1,123 +1,24 @@
-# WMCP — turn websites into tools for AI agents
+# WMCP — catch WebMCP tool regressions before merge
 
-**One URL → discover tools → connect an MCP client → evaluate trust.**
+Record the tools Chrome sees on a page, then fail CI when a preview drops or changes them. WMCP also exposes candidate tools from supported public URLs over remote MCP.
 
 [![CI](https://github.com/New1Direction/webmcp-anything/actions/workflows/ci.yml/badge.svg)](https://github.com/New1Direction/webmcp-anything/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-56cda0)](LICENSE)
 [![Node.js 18+](https://img.shields.io/badge/CLI-Node.js%2018%2B-239a73)](cli/README.md)
 [![Open MCP](https://img.shields.io/badge/protocol-MCP-4da6dc)](https://modelcontextprotocol.io)
 
-**[Try WMCP](https://wmcp.sh/start)** · **[WebMCP CI check](docs/WEBMCP_DOCTOR.md)** · **[MCP Doctor](docs/MCP_DOCTOR.md)** · **[Read-only CLI](cli/README.md)** · **[Native browser demo](examples/browser-demo/README.md)** · **[MCP Trust Leaderboard](https://wmcp.sh/mcp/leaderboard)** · **[API docs](docs/API.md)**
+[**Add WebMCP Doctor to CI**](docs/WEBMCP_DOCTOR.md) · [**Try the offline fixture**](tools/doctor-diff/) · [**Explore a public URL**](https://wmcp.sh/start)
 
-WMCP is a hosted **URL-to-MCP gateway** for Claude, Cursor, Codex and custom AI agents. It extracts candidate tools from public pages, structured data and documented APIs; exposes them over MCP; and offers separate trust grading for MCP servers. You can use the public service or self-host the Worker.
+## See a missing tool before it ships
 
-Not every website is compatible. Discovery is best-effort, and a discovered tool is **not** proof that an action can actually run, that the site permits it, or that it is safe. Authenticated live actions require authorization and applicable plan entitlements.
+The `doctor web` regression test runs Chrome and reads its native registrations. In the taskboard fixture, the legacy shim hid `list_tasks`. The fixed shim restored it.
 
-## Catch missing WebMCP tools before merge
+| Chrome 160 run | Tool observed | Strict exit |
+|---|---|---|
+| Legacy shim | No tools | `2` |
+| Fixed shim | `list_tasks` | `0` |
 
-`wmcp doctor web` opens your preview in Chrome and flags tools that disappear or change. It can also compare the page’s tools with a paired remote MCP endpoint.
-
-| Real Chrome 160 run | Browser saw | Strict exit |
-| --- | --- | --- |
-| Legacy WMCP shim | No tools, `list_tasks` removed | `2` |
-| Fixed WMCP shim | `list_tasks` restored | `0` |
-
-[Reproduce the demo and add the GitHub Action](docs/WEBMCP_DOCTOR.md).
-
-## Compile a website capability specification
-
-`wmcp compile` reads a local site contract or OpenAPI document and emits typed capabilities with explicit preconditions, observable postconditions, and authentication requirements. Site contracts also describe semantic landmarks and navigation states.
-
-~~~sh
-node cli/wmcp.mjs compile examples/browser-demo/capabilities.json
-~~~
-
-[Read the compiler guide](docs/capability-compiler.md).
-
-## Find tools by outcome
-
-Search a capability catalog with a plain-language goal. WMCP returns ranked tools, their applicability constraints, and a documented prerequisite when one fits.
-
-~~~sh
-node cli/wmcp.mjs discover examples/capability-discovery/catalog.json 'When is the next planned downtime?'
-~~~
-
-[Capability ontology and benchmark](docs/capability-discovery.md).
-
-## Compose authorized workflows
-
-Find compatible WebMCP tools under an explicit policy, verify a reusable workflow, and replay its success and failure conditions against fixtures.
-
-~~~sh
-node cli/wmcp.mjs compose examples/capability-discovery/catalog.json \
-  --policy examples/workflows/queue-policy.json
-~~~
-
-[Workflow composition guide](docs/workflow-composition.md).
-
-## Measure what an agent needs from a page
-
-Compare DOM, accessibility, metadata, and screenshot evidence on live browser fixtures, then measure how much targeted context can retain.
-
-[Website representation benchmark](docs/website-representation.md).
-
-## Give people and agents the same action labels
-
-The taskboard ties visible labels, accessible names, tool schemas, review, and outcome feedback together.
-
-[Affordance design language and browser checks](docs/affordance-design-language.md).
-
-## Inspect MCP communication locally
-
-Explore tool discovery, schema checks, request timing, and execution receipts in a redacted timeline and typed dependency graph.
-
-~~~sh
-node examples/mcp-inspector/server.mjs
-~~~
-
-[Inspector guide and local fixtures](docs/mcp-inspector.md).
-
-## Map a tool ecosystem
-
-Explore capability clusters, service overlaps, integration gaps, and policy-checked workflow opportunities. Agents can search the same map over MCP.
-
-~~~sh
-node examples/ecosystem-map/server.mjs
-~~~
-
-[Ecosystem map and agent navigation](docs/ecosystem-map.md).
-
-## Audit a minimal tool contract
-
-Describe logical inputs, outputs, authority, effects, repeat guarantees, and failure recovery without changing how a tool runs.
-
-~~~sh
-node cli/wmcp.mjs contract examples/tool-contracts/publish-snapshot.json
-~~~
-
-[Tool contract and cross-domain evaluation](docs/tool-contract.md).
-
-## Select tools within a budget
-
-Check required outcomes and service objectives, then compare feasible tools by price, p95 latency, reliability, and suitability.
-
-~~~sh
-node examples/tool-selection/evaluate.mjs --evidence > /tmp/wmcp-selection-evidence.json
-node cli/wmcp.mjs select examples/tool-selection/task.json /tmp/wmcp-selection-evidence.json
-~~~
-
-[Selection policy and reproducible evaluation](docs/tool-selection.md).
-
-## Try the local tool marketplace
-
-List compatible providers by outcome and run a version-pinned MCP tool comparison with a test-credit quote and a developer payout receipt.
-
-~~~sh
-node examples/tool-marketplace/demo.mjs --list --goal 'compare MCP snapshots'
-node examples/tool-marketplace/demo.mjs --max-credits 10
-~~~
-
-[Marketplace design and pilot criteria](docs/tool-marketplace.md).
+Open [the standalone demo HTML](worker/public/demo/webmcp-doctor.html) from a clone to replay the two results. [Run the native regression or add the GitHub Action](docs/WEBMCP_DOCTOR.md). You can also [compare two saved reports offline](tools/doctor-diff/) with the TypeScript and Effect 4 CLI and its Rust diff engine.
 
 ## Try it in 30 seconds
 
@@ -260,6 +161,16 @@ node cli/wmcp.mjs grade https://example.com/mcp
 | Browser extension | Retail-scoped browser extraction and QuickCatch flows | [Extension](extension/) |
 
 The installed extension's existing site coverage is **not** blanket all-site permission. A broader opt-in integration is proposed in [PR #75](https://github.com/New1Direction/webmcp-anything/pull/75).
+
+## Capability tooling and examples
+
+| I want to | Start here |
+|---|---|
+| Compile tool contracts from OpenAPI or a site contract | [Capability compiler](docs/capability-compiler.md) · [Minimal tool contracts](docs/tool-contract.md) |
+| Find tools by outcome and compare tradeoffs | [Discovery benchmark](docs/capability-discovery.md) · [Selection policy](docs/tool-selection.md) |
+| Check and replay a workflow against fixtures | [Workflow composition](docs/workflow-composition.md) |
+| Build accessible tools and evaluate page evidence | [Affordance design](docs/affordance-design-language.md) · [Representation benchmark](docs/website-representation.md) |
+| Explore local tool traces or provider catalogs | [MCP Inspector](docs/mcp-inspector.md) · [Ecosystem map](docs/ecosystem-map.md) · [Marketplace prototype](docs/tool-marketplace.md) |
 
 ## Pricing and hosting
 

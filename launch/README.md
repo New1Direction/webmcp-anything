@@ -1,6 +1,6 @@
 # launch/
 
-Launch-day assets for the public release of WebMCP Anything. All editable, version-tracked alongside the code.
+For the next WMCP Doctor release, use the [GitHub launch plan](github-growth.md). The material below is from the original public launch.
 
 ## Files
 
