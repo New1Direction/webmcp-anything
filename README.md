@@ -191,6 +191,7 @@ Start with [CONTRIBUTING.md](CONTRIBUTING.md), the [adapter contract](adapters/C
 node adapters/_test/run.mjs
 cd worker && npm install && npm run verify
 # From the repository root:
+cargo build --locked --manifest-path tools/wmcp-stats/Cargo.toml
 node --test cli/*.test.mjs
 ~~~
 

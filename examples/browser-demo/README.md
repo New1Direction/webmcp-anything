@@ -64,6 +64,7 @@ To check a running Worker, pass `--origin http://127.0.0.1:8787` to the same scr
 
 ## Testing
 
+    cargo build --locked --manifest-path tools/wmcp-stats/Cargo.toml
     node --test cli/*.test.mjs
 
 Run the real-browser checks from the repository root with Playwright Python and a WebMCP-capable Chrome executable.

@@ -2,7 +2,7 @@ import { readLocalJson } from "./compile.mjs";
 import { record, toolName } from "./compile-schema.mjs";
 import { compositionSchema, preserves } from "./composition-schema.mjs";
 import { auditContract, checkToolValue } from "./tool-contract.mjs";
-import { lowerRate, upperP95 } from "./selection-stats.mjs";
+import { statsBatch } from "./selection-stats.mjs";
 
 const TASK = "wmcp-selection-task/v1";
 const EVIDENCE = "wmcp-selection-evidence/v1";
@@ -52,21 +52,11 @@ function validateEvidence(evidence, profile) {
   }
 }
 
-function measure(candidate, { required, preferred }, alpha) {
-  const { trials } = candidate;
-  const completed = trials.filter(({ status }) => status === "completed");
-  const correct = completed.filter(({ checks }) => required.every((check) => checks[check] === true));
-  const suitable = preferred.length ? correct.filter(({ checks }) => preferred.every((check) => checks[check] === true)) : null;
-  return {
-    attempts: trials.length,
-    correctness: lowerRate(correct.length, trials.length, alpha),
-    reliability: lowerRate(completed.length, trials.length, alpha),
-    suitability: suitable ? lowerRate(suitable.length, trials.length, alpha) : null,
-    latency: upperP95(trials.map(({ status, latencyMs }) => status === "completed" ? latencyMs : Infinity), alpha),
-  };
+function measureAll(candidates, { required, preferred }, alpha) {
+  return statsBatch(candidates.map(({ trials }) => ({ op: "trials", alpha, trials, required, preferred })));
 }
 
-function assess(candidate, task, settings, alpha) {
+function assess(candidate, task, settings, metrics) {
   const { required, limits, expected } = settings;
   const reasons = [];
   const conformance = Object.fromEntries(required.map((check) => [check,
@@ -96,7 +86,6 @@ function assess(candidate, task, settings, alpha) {
     if (candidate.trials.some(({ costMicros }) => costMicros > price)) reasons.push({ code: "price-ceiling-breached" });
   }
 
-  const metrics = measure(candidate, settings, alpha);
   if (metrics.attempts < limits.minTrials) reasons.push({ code: "insufficient-trials" });
   if (metrics.correctness.lower === null || metrics.correctness.lower < limits.minCorrectness) reasons.push({ code: "correctness-slo" });
   if (metrics.reliability.lower === null || metrics.reliability.lower < limits.minReliability) reasons.push({ code: "reliability-slo" });
@@ -136,7 +125,8 @@ export function selectTool(task, evidence) {
   const metricsPerCandidate = settings.preferred.length ? 4 : 3;
   const boundCount = metricsPerCandidate * evidence.candidates.length;
   const alpha = boundCount ? (1 - settings.limits.confidence) / boundCount : null;
-  const candidates = evidence.candidates.map((candidate) => assess(candidate, task, settings, alpha));
+  const measured = measureAll(evidence.candidates, settings, alpha);
+  const candidates = evidence.candidates.map((candidate, index) => assess(candidate, task, settings, measured[index]));
   const eligible = candidates.filter(({ eligible }) => eligible);
   const frontier = eligible.filter((candidate) => !eligible.some((other) => dominates(other, candidate)))
     .sort((a, b) => compare(a, b, settings.order));

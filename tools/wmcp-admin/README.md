@@ -1,6 +1,6 @@
 # wmcp-admin
 
-The standard command-line tools for wmcp.sh directory and coverage operations. Install Rust and Cargo, then run these commands from the repository root. The original Python scripts remain available as legacy fallbacks.
+The standard command-line tools for wmcp.sh directory and coverage operations. Install Rust and Cargo, then run these commands from the repository root.
 
 ```sh
 cargo run --manifest-path tools/wmcp-admin/Cargo.toml -- seed --list-categories
@@ -40,3 +40,5 @@ ADMIN_TOKEN=... cargo run --manifest-path tools/wmcp-admin/Cargo.toml -- resume 
 ```
 
 The original recovery file is retained. If a resumed submission fails, a new recovery file is written. `--base-url` on the original command selects the target; resume uses the destination recorded in the file. Batch sizes must be positive.
+
+The [Lean safety model](formal/Safety.lean) proves selected decision properties for incomplete crawls, confirmation thresholds, and retryable HTTP statuses. Lean generates confirmation and retry cases that Rust tests also exercise. This checks the shared cases; it does not prove the Rust HTTP or filesystem implementation correct.

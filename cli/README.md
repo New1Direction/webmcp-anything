@@ -1,6 +1,10 @@
 # WMCP developer CLI (read-only)
 
-No installation needed after cloning this repository. Requires Node.js 18+.
+Requires Node.js 18+. Most commands work directly after cloning. The `select` command and full CLI test suite additionally require the Rust selection engine:
+
+    cargo build --locked --manifest-path tools/wmcp-stats/Cargo.toml
+
+For an optimized engine, build with `--release` and set `WMCP_STATS_ENGINE` to `tools/wmcp-stats/target/release/wmcp-stats` (use an absolute path when running outside the repository root). The engine runs as a separate local process; for small inputs, process startup can take longer than the computation itself.
 
 From the repository root:
 
@@ -34,7 +38,7 @@ Use --json for raw output, and --base http://localhost:8787 to try your local Wo
 
 This CLI is included in source; we are not claiming an npm package is published. Do not recommend npx wmcp until it is actually released.
 
-Tests (zero dependencies):
+Tests (build the Rust selection engine first):
 
     node --test cli/*.test.mjs
 

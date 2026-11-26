@@ -1,5 +1,9 @@
 # Tool selection under a spending limit
 
+The selection command uses a Rust statistics engine. Build it first from the repository root with `cargo build --locked --manifest-path tools/wmcp-stats/Cargo.toml`.
+
+The [Lean count model](../tools/wmcp-stats/formal/Counts.lean) proves bounds on valid trial counts; shared cases test the Rust input checks. It does not prove the floating-point statistical computations.
+
 `wmcp select` recommends a tool for one attempt from a supplied candidate set. It checks contract compatibility, required task outcomes, the spending ceiling, and service objectives before ranking the feasible tools. It returns the full trade-off frontier and a machine-readable reason for each rejection.
 
 ~~~sh

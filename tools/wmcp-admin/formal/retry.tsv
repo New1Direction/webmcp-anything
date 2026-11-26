@@ -1,0 +1,10 @@
+200	stop
+400	stop
+401	stop
+408	stop
+429	retry
+499	stop
+500	retry
+503	retry
+599	retry
+600	stop
