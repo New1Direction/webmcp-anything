@@ -7,7 +7,7 @@ Record the tools Chrome sees on a page, then fail CI when a preview drops or cha
 [![Node.js 18+](https://img.shields.io/badge/CLI-Node.js%2018%2B-239a73)](cli/README.md)
 [![Open MCP](https://img.shields.io/badge/protocol-MCP-4da6dc)](https://modelcontextprotocol.io)
 
-[**Add WebMCP Doctor to CI**](docs/WEBMCP_DOCTOR.md) · [**Try the offline fixture**](tools/doctor-diff/) · [**Explore a public URL**](https://wmcp.sh/start)
+[**Add WebMCP Doctor to CI**](docs/WEBMCP_DOCTOR.md) · [**Try the offline fixture**](tools/doctor-diff/) · [**Explore a public URL**](https://wmcp.sh/)
 
 ## See a missing tool before it ships
 
@@ -24,7 +24,7 @@ The [Tool Lab](examples/browser-demo/README.md#webmcp-tool-lab) tests a native H
 
 ## Try it in 30 seconds
 
-**Option 1: browser, no install.** Paste a public URL into [wmcp.sh/start](https://wmcp.sh/start), review the inferred tools, then choose whether to connect an MCP client.
+**Option 1: browser, no install.** Start at the [hosted WMCP homepage](https://wmcp.sh/).
 
 **Option 2: terminal, no dependencies.** Node.js 18+ is sufficient after cloning:
 
