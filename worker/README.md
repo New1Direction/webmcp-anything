@@ -1,81 +1,37 @@
-# WebMCP Anything — Worker
+# WMCP Worker
 
-Hosted Cloudflare Worker that exposes the same adapters as the Chrome extension over a public HTTP API.
+The Cloudflare Worker exposes URL-to-tool extraction, an MCP server, provider proxies, and related public pages. REST and URL-based MCP share the extraction and execution core in `src/engine.ts`.
 
-## Endpoints
+## Local development
 
-| Method | Path | Body / Query | Purpose |
-|---|---|---|---|
-| GET  | `/`                       | —                          | Interactive landing demo |
-| GET  | `/api/v1/health`          | —                          | Health check |
-| GET  | `/api/v1/tools`           | `?url=<product-url>&fresh=1` | Get WebMCP tool schema for any URL |
-| POST | `/api/v1/tools/execute`   | `{ url, tool, args? }`     | Execute a tool (Shopify live, JSON-LD snapshot) |
-| POST | `/api/v1/cache`           | `{ url, payload }`         | Extension pushes pre-extracted schemas |
-
-## Local dev
-
-```bash
+```sh
 cd worker
 npm install
-npm run dev          # spins up localhost:8787 with in-memory KV
+npm run dev
 ```
 
-Then visit `http://localhost:8787/` for the demo, or:
+The default local address is `http://localhost:8787`. Local KV data is managed by Wrangler. The checked-in configuration sets `ENVIRONMENT = "production"`; explicitly use a development configuration or override to enable development-only behavior.
 
-```bash
-# Live Shopify
-curl 'http://localhost:8787/api/v1/tools?url=https://www.allbirds.com/products/mens-wool-runners' | jq
-
-# JSON-LD on an unprotected retailer
-curl 'http://localhost:8787/api/v1/tools?url=https://www.bestbuy.com/site/sony-wh1000xm5/6505728.p' | jq
-
-# Execute a live Shopify tool
-curl -X POST http://localhost:8787/api/v1/tools/execute \
-  -H 'content-type: application/json' \
-  -d '{"url":"https://www.allbirds.com/products/mens-wool-runners","tool":"get_price"}' | jq
+```sh
+curl -sS http://localhost:8787/api/v1/health
+curl -sS 'http://localhost:8787/api/v1/tools?url=https://petstore3.swagger.io/api/v3/openapi.json'
 ```
 
-## Deploy
+The tools request fetches the supplied external URL. For execution, the REST gate checks the resolved plan and quota. A development-only `webmcp_dev_local_anything` key exists only when `ENVIRONMENT` is `development`.
 
-1. `npx wrangler login`
-2. Create the KV namespace:
-   ```bash
-   npx wrangler kv:namespace create CACHE
-   npx wrangler kv:namespace create CACHE --preview
-   ```
-3. Paste the returned IDs into `wrangler.toml` (`id` and `preview_id`).
-4. `npm run deploy`
+## Main interfaces
 
-The worker will be live at `https://webmcp-anything.<your-subdomain>.workers.dev`. Add a custom domain (e.g. `wmcp.sh`) via the Cloudflare dashboard.
+| Method | Path | Purpose |
+|---|---|---|
+| GET | `/api/v1/health` | Health response |
+| GET | `/api/v1/tools?url=...&fresh=1` | Discover tools; `fresh=1` bypasses the cache read |
+| POST | `/api/v1/tools/execute` | Execute `{ url, tool, args? }` under the execute gate |
+| POST | `/api/v1/cache` | Store `{ url, payload }` under the push quota gate |
+| POST | `/mcp/u/<encoded>` or `/mcp/url?url=...` | Stateless URL-based MCP JSON-RPC |
+| ALL | `/mcp/<provider>` | Proxy supported connected providers |
 
-## Architecture
+The Worker tries cache, Shopify, OpenAPI, crypto/data adapters, JSON-LD, and the optional LLM fallback in that order. Site fetches can fail or return incomplete data. See [architecture](../docs/ARCHITECTURE.md) and the [API reference](../docs/API.md) for behavior and limits.
 
-```
-GET /api/v1/tools?url=...
-       │
-       ▼
-   ┌─────────────┐
-   │  KV cache   │  60s for live, 7d for pushed
-   └──────┬──────┘
-          │ miss
-          ▼
-   ┌─────────────────┐
-   │ Shopify adapter │  if URL matches /products/{handle}
-   └──────┬──────────┘
-          │ no match / failed
-          ▼
-   ┌────────────────────┐
-   │ fetchAndParse(url) │  HTMLRewriter extracts JSON-LD + meta
-   └──────┬─────────────┘
-          ▼
-   ┌──────────────────┐
-   │ jsonld adapter   │  parses Product schema → WebMCP tools
-   └──────────────────┘
-```
+## Test and deploy
 
-## Notes & limits
-
-- Cloudflare egress IPs are often blocked by Akamai/Imperva. For sites like Pokemon Center, BestBuy, Nike, etc., the server-side fetch may fail with 403/406. That's the failure mode for which we have the Chrome extension push path (`POST /api/v1/cache`).
-- The `JSON-LD` adapter returns **snapshots** — no live re-execution for non-Shopify sites yet.
-- No auth on `/api/v1/cache` in v0. Add a shared secret before public deploy.
-- No rate limiting yet — rely on Cloudflare's free tier defaults (10 req/s/IP) and add per-key limits when billing arrives.
+Run `npm run verify` in `worker/`. Before deploying a fork, replace the configured KV namespace IDs with your own and review the variables and secrets; see [self-hosting](../docs/SELF_HOSTING.md). Do not use the existing `deploy.sh` as automatic namespace provisioning for a fork: it expects placeholders that are no longer present in the checked-in configuration.

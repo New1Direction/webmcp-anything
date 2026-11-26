@@ -1,164 +1,62 @@
-# Self-hosting wmcp.sh
+# Self-hosting WMCP
 
-Fork the repo and run your own instance on Cloudflare Workers — either as your team's private MCP gateway, or as a fully-branded fork. Both worker code (TypeScript) and adapters (ES modules) are MIT-licensed.
+The Worker runs on Cloudflare Workers with three KV bindings and the static assets in `worker/public`. This guide covers a separate deployment; it does not modify the hosted wmcp.sh service.
 
-This guide assumes you've already got a Cloudflare account and `wrangler` CLI logged in.
+## Run locally
 
-## 1. Fork + clone
+From the repository root:
 
-```bash
-gh repo fork New1Direction/webmcp-anything --clone
-cd webmcp-anything/worker
+```sh
+cd worker
 npm install
+npm run dev
 ```
 
-## 2. Create your KV namespaces
+Wrangler serves the Worker locally, normally at `http://localhost:8787`, with local KV storage. In a second terminal:
 
-```bash
-./node_modules/.bin/wrangler kv:namespace create CACHE
-./node_modules/.bin/wrangler kv:namespace create KEYS
-./node_modules/.bin/wrangler kv:namespace create USAGE
+```sh
+curl -sS http://localhost:8787/api/v1/health
+curl -sS 'http://localhost:8787/api/v1/tools?url=https://petstore3.swagger.io/api/v3/openapi.json'
 ```
 
-Each command prints the new namespace ID. Update `wrangler.toml`:
+The second request fetches an external URL. The checked-in `wrangler.toml` sets `ENVIRONMENT` to `production`; to exercise development-only behavior such as the local dev API key, override it explicitly for the local process or use a separate development configuration. Put local secrets in the ignored `worker/.dev.vars` file, not in source control. See [Cloudflare's local environment-variable guide](https://developers.cloudflare.com/workers/local-development/environment-variables/).
 
-```toml
-[[kv_namespaces]]
-binding = "CACHE"
-id = "<your-CACHE-id>"
+## Configure a separate Cloudflare deployment
 
-[[kv_namespaces]]
-binding = "KEYS"
-id = "<your-KEYS-id>"
+1. Authenticate Wrangler for your Cloudflare account and choose a distinct Worker name.
+2. **Replace the checked-in namespace IDs.** The repository's `worker/wrangler.toml` is configured for the original deployment. Create your own `CACHE`, `KEYS`, and `USAGE` namespaces, including preview namespaces if you use them. Never deploy a fork with another environment's IDs.
 
-[[kv_namespaces]]
-binding = "USAGE"
-id = "<your-USAGE-id>"
-```
+   ```sh
+   cd worker
+   npx wrangler kv namespace create CACHE
+   npx wrangler kv namespace create KEYS
+   npx wrangler kv namespace create USAGE
+   ```
 
-## 3. Set secrets
+   Put the returned IDs in the matching `[[kv_namespaces]]` entries. See [Cloudflare's KV setup](https://developers.cloudflare.com/kv/get-started/).
+3. Review `[vars]`, `[assets]`, and `[triggers]` in `wrangler.toml`. In particular, decide whether the scheduled jobs and `PROXY_FREE_CALLS_PER_DAY` are appropriate for your deployment. The scheduler is implemented in `worker/src/index.ts` and `worker/src/scheduled.ts`.
+4. Configure secrets for the features you enable using `npx wrangler secret put <NAME>`. Admin operations use `ADMIN_TOKEN`; the provider-token vault needs `TOKEN_ENC_KEY`; the LLM fallback can use `ANTHROPIC_API_KEY`; and OAuth providers need their own client credentials. The relevant binding types and feature modules under `worker/src/` define additional settings.
+5. Run `npm run verify`, then deploy with `npx wrangler deploy` when ready. Configure your own hostname through Cloudflare if needed.
 
-```bash
-# Required
-echo "<random 64-hex>" | ./node_modules/.bin/wrangler secret put ADMIN_TOKEN
-node -e "console.log(require('crypto').randomBytes(32).toString('hex'))" | ./node_modules/.bin/wrangler secret put TOKEN_ENC_KEY
+The old `worker/deploy.sh` assumes placeholder namespace IDs, whereas the checked-in configuration contains populated IDs. Do not rely on that script to create or replace the bindings for a fork.
 
-# OAuth providers you want to support
-echo "<gh-client-id>"     | ./node_modules/.bin/wrangler secret put GITHUB_CLIENT_ID
-echo "<gh-client-secret>" | ./node_modules/.bin/wrangler secret put GITHUB_CLIENT_SECRET
-# ...repeat for GOOGLE_*, SLACK_*, NOTION_*, LINEAR_*, DISCORD_*, STRIPE_*, ANTHROPIC_API_KEY (for the LLM-fallback adapter), etc.
-```
+**Keep a secure backup of `TOKEN_ENC_KEY`.** Changing or losing it makes existing encrypted provider tokens unreadable; plan token migration and rotation before changing it. Treat each environment's KV bindings and secrets as separate.
 
-The full secret list lives in `worker/src/env.d.ts`.
+## Optional integrations
 
-⚠️ **If you lose `TOKEN_ENC_KEY`, every stored OAuth token in KV becomes unreadable.** Treat it like a database backup key — store in 1Password or your KMS.
+- **GitHub sign-in:** register a GitHub OAuth app for your own deployment with callback `https://<your-host>/api/v1/auth/github/callback`, then configure `GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET`. Other providers have their own requirements in `worker/src/providers.ts` and the provider OAuth modules.
+- **Stripe:** use an isolated test account first. API-plan checkout uses `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, and `STRIPE_PRICE_TO_PLAN`, which maps Stripe price IDs to `builder`, `pro`, or `reseller`. Other products have separate price settings; consult `worker/src/stripe.ts` and [release acceptance](RELEASE_ACCEPTANCE.md). Configure the webhook for the events used by the features you enable. Production rejects unsigned webhooks.
+- **Extension:** load the extension as described in [extension/README.md](../extension/README.md), and configure its Worker endpoint if using a fork.
 
-## 4. Optional: set your own domain
+Review the application before exposing your deployment: published copy, links, limits, provider settings, webhook configuration, and access policies may need to be changed for your use. A self-hosted deployment does not automatically become a private network gateway.
 
-```bash
-./node_modules/.bin/wrangler deploy
-# By default this deploys to <worker-name>.<account>.workers.dev
+## Customize adapters
 
-# Then add a custom domain (Cloudflare dashboard):
-#   Workers & Pages → your worker → Settings → Triggers → Custom Domains → Add Custom Domain
-#   Enter: yourbrand.com
-```
+From the repository root:
 
-Cloudflare provisions the cert + DNS automatically. Custom Domain is preferred over Worker Route — Routes don't auto-provision certs and have gotchas with caching.
-
-## 5. Customize branding
-
-The brand identity is intentionally light-touch — change these to make it yours:
-
-| File | What |
-|---|---|
-| `worker/src/landing.ts` | Homepage hero, copy, CTAs |
-| `worker/src/og.ts` | OG image SVG generator |
-| `worker/public/og.png` | Static fallback OG image (1200×630) |
-| `worker/src/blog.ts` `BRAND_CSS` | Blog brand colors (default: dark purple/cyan) |
-| `worker/src/u.ts` `llmsTxt()` | /llms.txt navigation copy |
-
-CSS variable names are consistent across pages — change one set and it propagates:
-
-```css
-:root {
-  --bg:      #07070d;
-  --card:    #16161f;
-  --bg2:     #11111c;
-  --border:  #26263a;
-  --text:    #ececf5;
-  --muted:   #8a8aa8;
-  --accent:  #7c5cff;  /* primary brand */
-  --accent2: #00e5ff;  /* secondary brand */
-}
-```
-
-## 6. Optional: customize adapters
-
-The `adapters/` directory is the shared adapter library — same files run in both the worker and the Chrome extension. To add an adapter for a site we don't yet support:
-
-```bash
-cp -r adapters/_template adapters/yoursite
-# edit adapters/yoursite/adapter.js — implement detect() + extract()
+```sh
+cp adapters/_template/adapter.js adapters/yoursite.js
 node adapters/_test/run.mjs
 ```
 
-See [`adapters/CONTRACT.md`](../adapters/CONTRACT.md) for the interface.
-
-## 7. Deploy
-
-```bash
-./node_modules/.bin/wrangler deploy
-```
-
-A typical full-deploy is ~5 seconds — CF builds, uploads (~1.2 MB compressed), and rotates traffic.
-
-To deploy in stages, use `--env staging` (you'll need a `[env.staging]` section in wrangler.toml).
-
-## 8. Cron
-
-The default `wrangler.toml` ships with `cron: 0 */2 * * *` — re-seeds the directory + refreshes stale tool caches every 2 hours. The handler is at `worker/src/cron.ts`. You can change the schedule or remove the cron block entirely.
-
-## 9. Optional: GitHub OAuth for /dashboard sign-in
-
-If you want users to sign in to your fork via GitHub:
-
-1. https://github.com/settings/developers → New OAuth App
-2. Homepage URL: `https://yourbrand.com`
-3. Authorization callback URL: `https://yourbrand.com/api/v1/auth/github/callback`
-4. Copy Client ID + secret into wrangler secrets (`GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`)
-
-Repeat the same pattern for each provider in `worker/src/providers.ts`.
-
-## 10. Optional: Stripe billing
-
-If you want self-serve Pro/Enterprise billing:
-
-1. Stripe dashboard → create products + prices ($999/mo Pro, $4,999/mo Enterprise — or your own pricing)
-2. Add Price IDs to `worker/src/stripe.ts`
-3. Create a webhook endpoint pointing at `https://yourbrand.com/api/v1/stripe/webhook`
-4. Set secrets: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_PRO`, `STRIPE_PRICE_ENTERPRISE`
-
-## What you get for free
-
-- Sub-50ms edge response anywhere in the world (CF's ~300 POPs)
-- KV-backed caching with no extra cost for the first 100K reads/day
-- Auto SSL + DDoS via CF
-- 1.2 MB worker bundle ships in <2s deploys
-- 5-tier adapter chain works out of the box for ~4M+ Shopify storefronts + every site with JSON-LD or OpenAPI
-
-## What you have to bring
-
-- An Anthropic API key (`ANTHROPIC_API_KEY` secret) if you want the LLM-fallback adapter active
-- OAuth app credentials per provider (the worker won't proxy a provider without its client_id + secret)
-- A domain (optional but recommended — *.workers.dev URLs look weird in MCP configs)
-
-## What you should NOT change without thinking
-
-- `TOKEN_ENC_KEY` after launch — every stored OAuth token in KV becomes unreadable
-- The KV key prefix patterns in `worker/src/directory_capture.ts` / `directory_admin.ts` — `dirsub:`, `lead:`, `verified:`, `featured:` are load-bearing across the admin endpoints
-- The reverse-ts sort pattern — switching to forward-ts breaks the newest-first guarantee on `KV.list({prefix})`
-
----
-
-Questions? Open an issue at [github.com/New1Direction/webmcp-anything/issues](https://github.com/New1Direction/webmcp-anything/issues) or check the original deployment at [wmcp.sh](https://wmcp.sh).
+Implement and register the adapter according to [CONTRIBUTING.md](../CONTRIBUTING.md) and [the adapter contract](../adapters/CONTRACT.md). Keep the shared adapter files compatible with the Worker and extension runtimes.

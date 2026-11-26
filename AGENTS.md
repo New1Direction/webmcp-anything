@@ -35,7 +35,7 @@ This file is the single source of truth. If `CLAUDE.md`, `.cursorrules`, or any 
 │   └── tsconfig.json
 ├── extension/               Chrome MV3 extension (cache-back path)
 ├── sdks/
-│   ├── python/wmcp/         Python SDK (pip install wmcp)
+│   ├── python/wmcp/         Python SDK source
 │   └── javascript/src/      TypeScript SDK (@wmcp/sdk)
 ├── tools/wmcp-admin/        Rust CLI for directory seeding and coverage operations
 └── ADAPTERS_WANTED.md       sites where PRs are welcome

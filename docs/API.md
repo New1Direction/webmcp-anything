@@ -1,10 +1,8 @@
 # API reference
 
-Every public endpoint exposed by wmcp.sh. Base URL: `https://wmcp.sh`.
+Reference for the principal API routes in this repository. Base URL: `https://wmcp.sh`. For the complete current route list, see `worker/src/index.ts`.
 
-Routes prefixed `/api/v1/admin/*` require `x-admin-token` header.
-Routes prefixed `/mcp/*` and `/api/v1/keys/me` require `Authorization: Bearer <api-key>` from the key issued at `/dashboard`.
-All other routes are public.
+Authentication and quotas vary by endpoint. Admin routes and the key-issuance and revocation routes check `x-admin-token`. URL-based MCP discovery and API reads support anonymous use; URL-based MCP tool calls and REST execution require a plan that permits execution. Provider proxies require a non-anonymous account and the relevant connection. Browser dashboard and provider-management routes use sessions. Send API keys in `Authorization: Bearer <api-key>` rather than URLs.
 
 ## Tool extraction
 
@@ -14,75 +12,57 @@ Extract MCP tools from any URL.
 
 **Query params**
 - `url` (required) — the source URL to extract tools from
-- `force_refresh` (optional, default `false`) — bypass the cache layer
+- `fresh=1` (optional) — bypass the cache read
 
 **Response (200)**
 ```json
 {
-  "source_url": "https://www.allbirds.com/products/mens-wool-runners",
   "adapter": "shopify",
-  "cached_at": 1779898000,
-  "ttl_remaining_s": 600,
+  "from": "live",
   "tools": [
     {
-      "name": "get_price",
-      "description": "Get current price for this product.",
-      "input_schema": { "type": "object", "properties": {}, "required": [] }
-    },
-    {
-      "name": "add_to_cart",
-      "description": "Add this product (default variant) to cart.",
-      "input_schema": {
-        "type": "object",
-        "properties": {
-          "variant_id": { "type": "string" },
-          "quantity":   { "type": "integer", "minimum": 1 }
-        },
-        "required": ["variant_id"]
-      }
+      "name": "list_variants",
+      "description": "List all available variants.",
+      "inputSchema": { "type": "object", "properties": {}, "required": [] },
+      "result": []
     }
-  ],
-  "product": {
-    "title": "Wool Runner Mizzles",
-    "vendor": "Allbirds",
-    "variants": [...]
-  }
+  ]
 }
 ```
 
-**Errors**
-- `400 invalid_url` — URL fails `new URL(s)` parse
-- `403 blocked_host` — host is on the wmcp.sh denylist
-- `429 rate_limited` — per-IP or per-key rate limit hit
-- `502 upstream_fetch_failed` — origin returned 5xx or timed out
-- `503 no_adapter_matched` — none of the 5 tiers produced tools (rare; usually upstream blocking)
+This is an abbreviated illustrative response; tools and optional `product` and `variants` fields depend on the adapter. `from` is `cache`, `live`, or `llm`; cached responses can include `cached_at` in milliseconds.
+
+**Common errors:** missing `url` returns 400; quota exhaustion returns 429; a failed page fetch can return 502 `fetch_failed`; and no extracted tools can return 404 `no_tools_extracted`. Exact failures depend on the adapter and upstream.
 
 **Cache behavior**
-- Cache key: `tools:<normalized-url>` in KV (`CACHE` namespace)
-- TTL: 60s for live-data adapters (Pyth, oracle feeds), 1h for Shopify, 24h for OpenAPI/LLM extractions
-- `Cache-Control: public, max-age=900, s-maxage=900` on the response
+- Cache key: `v1:<normalized-url>` in `CACHE`; `seen:<normalized-url>` maintains the directory index.
+- Storage TTL varies by adapter: Shopify 1h, OpenAPI 24h, JSON-LD 6h, LLM 30 days, and crypto/data adapters 60s–24h. The extraction path currently accepts a cached entry up to 60 seconds old regardless of its storage TTL.
+
+### `POST /api/v1/tools/execute`
+
+Execute a named tool with `{ "url": "https://example.com/product", "tool": "get_price", "args": {} }`. The execute gate requires an eligible paid plan and meters execution quota. Success is `{ "ok": true, "value": ... }`; the value depends on the tool. Review the returned tool schema and site permissions before invoking an action.
 
 ### `POST /api/v1/cache`
 
 Push a pre-extracted tool list (used by the Chrome extension to share schemas for auth-walled sites).
 
-**Auth**: `Authorization: Bearer <push-tier-key>`
+**Quota**: the push gate resolves an API key or session, or an anonymous free-plan identity. It meters pushes; this route is not restricted to paid keys by the gate.
 
 **Body**
 ```json
 {
   "url": "https://example.com/products/foo",
   "payload": {
-    "tools": [...],
+    "tools": [],
     "adapter": "extension-jsonld",
-    "product": {...}
+    "product": { "title": "Example" }
   }
 }
 ```
 
 **Response**
 ```json
-{ "ok": true, "key": "tools:example.com/products/foo", "pushed_by": "user_123" }
+{ "ok": true, "key": "v1:https://example.com/products/foo", "pushed_by": "user_123" }
 ```
 
 ## Directory
@@ -93,6 +73,7 @@ List indexed URLs, newest-first with featured entries pinned to the top.
 
 **Query params**
 - `limit` (optional, default 200, max 500)
+- `per_host` (optional, default 3; `0` disables the per-host cap)
 
 **Response**
 ```json
@@ -108,7 +89,9 @@ List indexed URLs, newest-first with featured entries pinned to the top.
       "featured_rank": 10
     }
   ],
-  "list_complete": false
+  "list_complete": false,
+  "distinct_hosts": 1,
+  "per_host_cap": 3
 }
 ```
 
@@ -141,6 +124,8 @@ Submit a URL for directory inclusion. Triggers an async tools-probe to warm the 
 }
 ```
 
+The handler currently returns a slug-based `listing_url`; verify it against your deployment before linking to it, since the `/u/` page route expects an encoded URL.
+
 **Errors**
 - `400 missing_required_field` / `400 invalid_email` / `400 invalid_site_url`
 - `429 rate_limited` — 5 submissions/hour/IP
@@ -171,16 +156,19 @@ OAuth-bearer-injecting MCP proxy for known providers. The agent points its MCP c
 2. Loads the user's stored OAuth token for that provider from KV (`oauth:<user>:<provider>`)
 3. Decrypts it in memory (AES-GCM-256, `TOKEN_ENC_KEY`)
 4. Substitutes the token into the upstream request as `Authorization: Bearer <provider-token>`
-5. Refreshes the token if 401 + retry transparently
+5. Attempts refresh for an expired token when a refresh token is available
 
 The agent context never sees the raw provider token.
 
-**Providers supported (as of 2026-05-28)**
-`stripe`, `github`, `google`, `slack`, `notion`, `linear`, `discord`, `anthropic`, `airtable`, `openai`
+The published proxy list is determined by `mcpProxy` and `mcpUrl` in `worker/src/providers.ts`; provider connection and subscription requirements vary.
 
 ### `GET /mcp`
 
-List the proxies available for the calling user (which providers they've connected). Gated like the proxy itself.
+Returns the published proxy catalog as JSON, or an HTML catalog for browsers that request HTML. It does not report the current user's connections; use `/api/v1/me/connections` for those.
+
+### URL-based MCP server
+
+`POST /mcp/u/<base64url-encoded-url>` serves one URL; `POST /mcp/url?url=<url>&url=<url>` composes URLs; and `POST /mcp/set/<id>` serves a saved toolset. They use stateless JSON-RPC over HTTP. `initialize` and `tools/list` work anonymously subject to quota; `tools/call` requires an eligible paid plan. GET on these three MCP endpoints returns 405, not a server-initiated SSE stream. See [Quickstart](QUICKSTART.md) for configuration.
 
 ## Keys + auth
 
@@ -260,7 +248,7 @@ The UI for these lives at [/dashboard/submissions](https://wmcp.sh/dashboard/sub
 | Endpoint | Purpose |
 |---|---|
 | `POST /api/v1/stripe/webhook` | Stripe webhook receiver |
-| `POST /api/v1/stripe/checkout` | Create a Checkout session for Pro tier |
+| `POST /api/v1/stripe/checkout` | Create a Checkout session for a configured paid API plan |
 | `GET /api/v1/keys/by-checkout?session_id=` | Recover key after successful checkout |
 | `POST /api/v1/keys/recover` | Email-based key recovery |
 
@@ -271,7 +259,7 @@ The UI for these lives at [/dashboard/submissions](https://wmcp.sh/dashboard/sub
 Public counter — total URLs cached. Used by the landing page.
 
 ```json
-{ "cached_urls": 12847 }
+{ "cached_urls": 12847, "graded_servers": 1000 }
 ```
 
 ### `GET /api/v1/health`
@@ -295,6 +283,4 @@ Health check.
 
 ## Rate limits
 
-Anonymous: 60 req/min per IP on `/api/v1/tools`. Authed: 600 req/min per key on the Pro plan, higher on /managed.
-
-Other endpoints have their own limits — see `worker/src/auth.ts` and per-endpoint `gate(...)` middleware.
+The `gate` middleware tracks daily read, execute, and push quotas by plan, resetting at 00:00 UTC. Anonymous callers use the free plan keyed by IP. The checked-in limits are defined in `PLAN_LIMITS` in `worker/src/auth.ts`; other endpoints may impose separate limits. Provider-proxy free calls can also be configured with `PROXY_FREE_CALLS_PER_DAY`.

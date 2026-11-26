@@ -163,6 +163,8 @@ node cli/wmcp.mjs grade https://example.com/mcp
 | JavaScript SDK | Programmatic API client / model adapters | [JavaScript](sdks/javascript/) |
 | Browser extension | Retail-scoped browser extraction and QuickCatch flows | [Extension](extension/README.md) |
 
+The SDKs are available from this repository; see their guides for local installation and current package registry availability.
+
 The extension runs automatically on the retail sites listed in its manifest. On other HTTP(S) sites, users can explicitly enable it for the current tab; see the [browser integration guide](docs/BROWSER_WEBMCP.md).
 
 ## Capability tooling and examples
