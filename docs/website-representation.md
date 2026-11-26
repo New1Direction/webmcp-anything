@@ -28,6 +28,30 @@ python3 -m venv /tmp/wmcp-representations
 
 The runner also accepts `--chrome /path/to/chrome-headless-shell`. The measured run used the [Linux x64 Chrome for Testing archive](https://storage.googleapis.com/chrome-for-testing-public/151.0.7922.34/linux64/chrome-headless-shell-linux64.zip) with that option. The JSON includes each task result, retained and missing facts, incorrect facts, byte counts, timings, acquired sources, and unexpected writes. Run the projection checks with `python3 -m unittest discover -s scripts -p test_representation_context.py`.
 
+## Compare JSON and markup on the same tasks
+
+Run the source comparison with an installed Chromium or Chrome. This selection omits the pixel decoder and runs without Tesseract:
+
+```sh
+python scripts/benchmark-representations.py --chrome /path/to/chrome \
+  --methods dom-only dom json-ld tool-contract-json metadata accessibility semantic-json \
+  > representation-results.json
+```
+
+| Method | Evidence decoded |
+| --- | --- |
+| `dom-only` | Serialized element markup, including current attributes and initial input value attributes |
+| `dom` | The same markup plus embedded JSON documents |
+| `json-ld` | Only the declared schema.org JSON-LD documents |
+| `tool-contract-json` | Only the typed WMCP capability contract |
+| `metadata` | Both kinds of embedded JSON |
+| `accessibility` | Chromium's full accessibility tree as structured data |
+| `semantic-json` | Browser queries for named controls, current properties, and relevant action handles |
+
+`dom` and `dom-only` acquire the same serialized HTML. Their scores isolate the effect of decoding embedded metadata. The JSON sources express different kinds of evidence. JSON-LD can carry a stale status, a tool contract can explain an action's inputs, and live browser queries can read the current form state. An HTML input's runtime value can differ from its markup attribute. [HTML standard](https://html.spec.whatwg.org/multipage/input.html#concept-input-value-dirty-flag)
+
+The [GitHub workflow](../.github/workflows/representation-benchmark.yml) runs this comparison and publishes the JSON results. Playwright serves the local fixtures at a reserved test origin by intercepting the browser's requests. It blocks other origins, so the run needs neither a network connection nor a listening HTTP server after dependencies and the browser are installed.
+
 ## Benchmark scope and measurements
 
 The [task suite](../examples/representations/tasks.json) contains 15 tasks across seven fixture pages. A single deterministic interpreter receives the same request in every arm and uses only that arm's extracted evidence. Success means an exact answer, the expected browser navigation or mock form effect, or withholding an unapproved action with the correct reason. The runner checks effects on the live fixture. It captures a fresh document for every trial, rotates method order, and repeats each trial three times with a fixed 1024×720 viewport.
@@ -39,11 +63,11 @@ The 21 facts per pass are scored against independent fixture expectations. They 
 
 The evaluated compact variants preserve the same document envelope and choose evidence by request. `compact` projects the accessibility tree and can read a single missing link attribute from the DOM. `compact-targeted` asks the browser for scoped matching controls and their current properties. `compact-live-dom` projects serialized markup and reads a live control property when required. `compact-markup` omits that live-property read. All four use the same targeted metadata and visual branches.
 
-## Results
+## Earlier full-source results
 
 | Representation | Tasks correct | Facts retained | Capture median | Capture p95 | Acquired bytes per task | Agent bytes per task |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| Serialized DOM | 12/15 | 54/63 | 4.45 ms | 7.86 ms | 884 | 534 |
+| Serialized DOM with embedded JSON | 12/15 | 54/63 | 4.45 ms | 7.86 ms | 884 | 534 |
 | Accessibility tree | 11/15 | 45/63 | 4.25 ms | 7.18 ms | 7,416 | 349 |
 | Structured metadata | 4/15 | 21/63 | 4.18 ms | 8.79 ms | 228 | 280 |
 | Screenshot OCR and pixels | 5/15 | 12/63 | 192.08 ms | 237.07 ms | 18,282 | 533 |

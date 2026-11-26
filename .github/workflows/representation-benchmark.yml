@@ -1,0 +1,74 @@
+name: Representation benchmark
+
+on:
+  push:
+    branches: [main]
+    paths: &representation_paths
+      - ".github/workflows/representation-benchmark.yml"
+      - "docs/website-representation.md"
+      - "examples/representations/**"
+      - "scripts/benchmark-representations.py"
+      - "scripts/representation_context.py"
+      - "scripts/test_representation_context.py"
+  pull_request:
+    branches: [main]
+    paths: *representation_paths
+
+permissions:
+  contents: read
+
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install benchmark dependencies
+        run: python -m pip install playwright==1.62.0 lxml==6.1.1 pillow==13.0.0 numpy==2.3.5
+      - name: Verify evidence projection
+        run: python -m unittest discover -s scripts -p test_representation_context.py
+      - name: Compare markup and JSON evidence in Chrome
+        shell: bash
+        run: |
+          python scripts/benchmark-representations.py --chrome "$(command -v google-chrome)" \
+            --methods dom-only dom json-ld tool-contract-json metadata accessibility semantic-json \
+            > "$RUNNER_TEMP/representation-results.json"
+          python - "$RUNNER_TEMP/representation-results.json" <<'PY' | tee -a "$GITHUB_STEP_SUMMARY"
+          import json
+          import sys
+
+          with open(sys.argv[1], encoding="utf-8") as report_file:
+              report = json.load(report_file)
+          print(f"Chrome {report['browser']}, {report['repetitions']} repetitions per task\n")
+          print("| Method | Tasks correct | Facts retained | Capture p50 (ms) | Acquired bytes/task | Agent bytes/task |")
+          print("| --- | ---: | ---: | ---: | ---: | ---: |")
+          for method, results in report["methods"].items():
+              stats = results["summary"]
+              print(f"| {method} | {stats['correctTasks']}/{stats['tasks']} | "
+                    f"{stats['factsRetained']}/{stats['factsTotal']} | {stats['medianCaptureMs']} | "
+                    f"{stats['meanAcquiredBytes']} | {stats['meanAgentBytes']} |")
+          if any(results["summary"]["unauthorizedWrites"] for results in report["methods"].values()):
+              sys.exit("Unexpected write in a benchmark fixture")
+          comparisons = [
+              ("dom-only", "live-form-value", "Initial draft"),
+              ("semantic-json", "live-form-value", "Quarterly update"),
+              ("json-ld", "shipment-live-status", "Processing"),
+              ("semantic-json", "shipment-live-status", "Awaiting pickup"),
+              ("dom-only", "withhold-unconfirmed-export", "missing-contract"),
+              ("tool-contract-json", "withhold-unconfirmed-export", "approval-required"),
+          ]
+          print("\n| Method | Fixture | Observed answer |")
+          print("| --- | --- | --- |")
+          for method, task, expected in comparisons:
+              answers = [trial["answer"] for trial in report["methods"][method]["tasks"][task]]
+              if answers != [expected] * report["repetitions"]:
+                  sys.exit(f"{method} gave unexpected evidence for {task}: {answers}")
+              print(f"| {method} | {task} | {expected} |")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: representation-results
+          path: ${{ runner.temp }}/representation-results.json
