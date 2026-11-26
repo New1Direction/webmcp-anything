@@ -13,9 +13,9 @@ Thanks for wanting to make the agentic web bigger. Most contributions land as **
    ```
 3. **Copy the template.**
    ```bash
-   cp -r adapters/_template adapters/etsy
+   cp adapters/_template/adapter.js adapters/etsy.js
    ```
-   Rename the file inside to `etsy.js` and update the `ID`.
+   Update the `ID` and fill in the template.
 4. **Implement `detect()` + `extract()`.** Read [adapters/CONTRACT.md](./adapters/CONTRACT.md) for the exact interface. Keep the file dependency-free.
 5. **Capture a fixture.**
    ```bash
@@ -25,7 +25,7 @@ Thanks for wanting to make the agentic web bigger. Most contributions land as **
    ```bash
    node adapters/_test/run.mjs
    ```
-   It should print `ok 1 - etsy` (or your adapter ID).
+   Verify that the new case and the existing adapter tests pass.
 7. **Wire it into the current extraction dispatcher.** Examine worker/src/engine.ts and extension/background.js. Add the adapter to the appropriate runtime(s), updating both only if the adapter really supports both contexts. Shopify, OpenAPI, crypto/data, JSON-LD and LLM fallback have different detection paths; do not assume an ADAPTERS array in worker/src/index.ts.
 8. **PR.** Reference the issue if one exists. Include:
    - What sites it covers (URL patterns)
@@ -72,6 +72,7 @@ The repository also includes a read-only Node.js CLI and a minimal native WebMCP
 From repository root:
 
 ~~~sh
+cargo build --locked --manifest-path tools/wmcp-stats/Cargo.toml
 node --test cli/*.test.mjs
 node adapters/_test/run.mjs
 cd worker && npm install && npm run verify

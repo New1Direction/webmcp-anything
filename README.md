@@ -26,7 +26,7 @@ The [Tool Lab](examples/browser-demo/README.md#webmcp-tool-lab) tests a native H
 
 **Option 1: browser, no install.** Start at the [hosted WMCP homepage](https://wmcp.sh/).
 
-**Option 2: terminal, no dependencies.** Node.js 18+ is sufficient after cloning:
+**Option 2: terminal.** Node.js 18+ is sufficient for the commands below after cloning:
 
 ~~~sh
 git clone https://github.com/New1Direction/webmcp-anything.git
@@ -42,7 +42,7 @@ node cli/wmcp.mjs mcp https://petstore3.swagger.io/api/v3/openapi.json
 node cli/wmcp.mjs config https://petstore3.swagger.io/api/v3/openapi.json
 ~~~
 
-The CLI performs **read-only** requests. It does not install another agent, make purchases, or call any tool. Run the Node test command below to execute its tests and the browser demo smoke tests.
+The CLI performs **read-only** requests. It does not install another agent, make purchases, or call any tool. The `select` command and full CLI test suite also require the Rust selection engine; build instructions are below.
 
 **Option 3: cURL, no clone:**
 
@@ -100,7 +100,7 @@ Schema + tools ---> Hosted MCP endpoint or JSON REST response
 
 Detection depends on each site's metadata, network accessibility and authentication. Client-side applications may require a separately installed browser integration.
 
-**WebMCP is not the same as backend MCP.** The [WebMCP draft](https://webmachinelearning.github.io/webmcp/) uses document.modelContext to expose site-owned JavaScript tools in the browser. WMCP provides a URL-to-MCP gateway, a browser shim for site owners, and a WebMCP compatibility check. The [browser extension draft in PR #75](https://github.com/New1Direction/webmcp-anything/pull/75) covers a separate, optional in-tab integration.
+**WebMCP is not the same as backend MCP.** The [WebMCP draft](https://webmachinelearning.github.io/webmcp/) uses document.modelContext to expose site-owned JavaScript tools in the browser. WMCP provides a URL-to-MCP gateway, a browser shim for site owners, a compatibility check, and an optional [in-tab extension integration](docs/BROWSER_WEBMCP.md).
 
 ## Diagnose MCP servers in CI
 
@@ -161,9 +161,9 @@ node cli/wmcp.mjs grade https://example.com/mcp
 | Trust grading | Inspect observable MCP server signals | [Leaderboard](https://wmcp.sh/mcp/leaderboard) |
 | Python SDK | Programmatic API client | [Python](sdks/python/) |
 | JavaScript SDK | Programmatic API client / model adapters | [JavaScript](sdks/javascript/) |
-| Browser extension | Retail-scoped browser extraction and QuickCatch flows | [Extension](extension/) |
+| Browser extension | Retail-scoped browser extraction and QuickCatch flows | [Extension](extension/README.md) |
 
-The installed extension's existing site coverage is **not** blanket all-site permission. A broader opt-in integration is proposed in [PR #75](https://github.com/New1Direction/webmcp-anything/pull/75).
+The extension runs automatically on the retail sites listed in its manifest. On other HTTP(S) sites, users can explicitly enable it for the current tab; see the [browser integration guide](docs/BROWSER_WEBMCP.md).
 
 ## Capability tooling and examples
 
@@ -189,8 +189,7 @@ Start with [CONTRIBUTING.md](CONTRIBUTING.md), the [adapter contract](adapters/C
 
 ~~~sh
 node adapters/_test/run.mjs
-cd worker && npm install && npm run verify
-# From the repository root:
+(cd worker && npm install && npm run verify)
 cargo build --locked --manifest-path tools/wmcp-stats/Cargo.toml
 node --test cli/*.test.mjs
 ~~~

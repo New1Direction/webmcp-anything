@@ -10,8 +10,8 @@ This file is the single source of truth. If `CLAUDE.md`, `.cursorrules`, or any 
 
 **wmcp.sh** — a hosted Cloudflare Worker that turns any URL into agent-callable MCP tools, plus a Chrome extension, plus open-source adapters, plus SDKs.
 
-- Production worker: `https://wmcp.sh` (Cloudflare account `aisle9angel@gmail.com`, zone `0284dbcc5d7326bc016b28e3295f4dca`)
-- Public repo: `https://github.com/New1Direction/webmcp-anything` (private during pre-launch, will flip public)
+- Production worker: `https://wmcp.sh`
+- Public repo: `https://github.com/New1Direction/webmcp-anything`
 - Stack: Hono + Cloudflare Workers + KV. TypeScript in `worker/`, plain ES modules in `adapters/`.
 
 ---
@@ -104,7 +104,7 @@ Match existing style in the file you're touching. The codebase has no monolithic
 
 These pages are public + indexed. They have legal/SEO/credibility surface area and have to clear all of these. Mistakes from the 2026-05-28 audit are catalogued here so they don't recur:
 
-1. **Zero PII.** Never use "Alex Hearts", "alexhearts", "connordochuk99", any real person's name, real email, or absolute path containing `/Users/alexhearts/`. Use only `Acme Corp`, `support@example.com`, `<repo>`, etc.
+1. **Zero PII.** Do not include real names, personal email addresses, or local absolute paths. Use `Acme Corp`, `support@example.com`, `<repo>`, etc.
 2. **Pricing tiers are LOCKED — and there are TWO separate ladders; never conflate them.** (a) **Done-for-you service** (`/managed`): Starter $499 one-time / **Managed Retainer** $999/mo / Enterprise $4,999+/mo. The $999 tier was renamed from "Pro" → "Managed Retainer" on 2026-05-28 because "Pro" collided with the API plan — **never call the $999 tier "Pro" again.** (b) **Self-serve API plans** (`/dashboard`): Free / Builder $39/mo / Pro $99/mo / Reseller $299/mo (switched CAD→USD + Builder tier added 2026-06-03; this SUPERSEDES the old "Pro $29 / Reseller $99" figures — live site + Stripe now charge $39/$99/$299). So `$99/mo Pro` and `$299/mo Reseller` are CORRECT for the API plans; **NEVER invent** other numbers ($9/mo, $19/mo, $49/mo, free trials, "first month free"). This includes integration/use-case/comparison pages.
 3. **No fabricated URLs.** Before citing any third-party GitHub repo, docs URL, or OpenAPI spec URL, WebFetch and confirm 200. Wrong orgs caught in prior audit: `anthropic/anthropic-openapi` (correct: `anthropics/anthropic-sdk-python`), `Airtable/airtable-openapi` (does not exist).
 4. **No libel.** Don't claim competitors are "broken", "insecure", "dying", or store data "in plain-text." Comparative claims must be factual + neutral. Prior audit flagged a "plain-text" claim about Composio's token storage — that was reverted.
@@ -119,8 +119,8 @@ These pages are public + indexed. They have legal/SEO/credibility surface area a
 When the writer agent (Gemini daemon, etc.) produces new pages, run this audit grep before wiring:
 
 ```bash
-# PII — must be empty
-git ls-files | xargs grep -lEi "alex ?hearts|alexhearts|connordochuk99" 2>/dev/null
+# Check new pages for email addresses and local paths; review names separately.
+rg -n -i '([[:alnum:]._%+-]+@[[:alnum:].-]+\.[[:alpha:]]{2,}|/Users/)' worker/src/<new-pattern>*.ts
 
 # Forbidden lower-tier pricing — must be empty
 xargs -a <(ls worker/src/<new-pattern>*.ts) /usr/bin/grep -nE '\$(9|19|29|49|99)/mo'
@@ -140,7 +140,7 @@ done
 
 ```bash
 # from repo root
-node adapters/_test/run.mjs    # all 9 tests must pass
+node adapters/_test/run.mjs    # all adapter tests must pass
 ```
 
 ### 4.2 After modifying anything under `worker/src/`
@@ -148,10 +148,10 @@ node adapters/_test/run.mjs    # all 9 tests must pass
 ```bash
 cd worker
 npm run typecheck              # tsc --noEmit, must be clean
-./node_modules/.bin/wrangler deploy
+npm run verify                 # typecheck and tests
 ```
 
-`wrangler deploy` ships to production. Pre-deploy: verify typecheck passes. Post-deploy: smoke test the affected route with `curl -i`.
+`wrangler deploy` ships to production. Run it only when deployment has been authorized, then smoke test the affected route with `curl -i`.
 
 ### 4.3 After adding cached URLs (for SEO)
 
@@ -236,7 +236,7 @@ The CF zone has AI Audit / Manage robots.txt enabled. Our worker's `/robots.txt`
 
 When asked about architecture, **don't re-derive** these from scratch:
 
-- The 4-adapter pipeline order in `/api/v1/tools`: shopify → openapi → jsonld → llm-fallback. Adapter detection is URL-pattern-first; only the LLM adapter requires HTML signals.
+- The extraction order in `worker/src/engine.ts`: cache → Shopify → OpenAPI → crypto/data adapters → JSON-LD → LLM fallback. Adapter detection is URL-pattern-first where possible.
 - The OAuth model: **Phase A** (`/api/v1/auth/github/*` → sessions) for sign-in, **Phase B** (`/api/v1/providers/<id>/*` → token vault) for per-provider connectors. They share the `oauth_state:` machinery in `worker/src/session.ts`.
 - Token injection: when an OpenAPI tool's action handler runs, the worker passes a `resolveToken(host)` closure. The adapter calls it before falling back to `args._auth`. See `worker/src/token_resolver.ts`.
 
