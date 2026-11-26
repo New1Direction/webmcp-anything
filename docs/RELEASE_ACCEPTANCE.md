@@ -1,14 +1,14 @@
-# PR #75 — Browser and Stripe acceptance gate (October 2026)
+# Browser and Stripe release acceptance
 
 This document separates automated simulation from actual external-system acceptance.
 **Do not claim production readiness from mocked Chrome or Stripe results.**
 
-## Automated tests on the branch
+## Automated tests
 
 - `cd worker && npm run verify`: TypeScript, Vitest, signed Stripe-webhook/unit checks, checkout-to-fulfillment simulation, malicious page-message rejection, and URL/origin controls.
 - GitHub Actions `browser-acceptance`: headless Chromium executes the actual `extension/content.js` and `extension/injected.js` and tests discovery, browser-local tool execution, same-tab navigation and forged write blocking using a simulated `document.modelContext`.
 - Also loads the real unpacked MV3 extension in headless Chromium using a **temporary localhost-only host permission in the test fixture**, without changing the shipped extension permissions.
-- The tests do not use a real browser-origin-trial WebMCP implementation or a real Stripe account.
+- The separate `webmcp-native` CI job runs `worker/test/webmcp_native.test.ts` in Chrome with native WebMCP enabled. The tool-lab workflow also checks native browser contracts. These tests do not replace the manual checks below or use a real Stripe account.
 
 ## Manual native-WebMCP acceptance (still required)
 
@@ -43,9 +43,8 @@ Do not claim "real Stripe test-mode validated" unless you possess the appropriat
 ## Current release policy
 
 - Branch/PR automated tests passing: necessary but not sufficient.
-- Native browser test with actual gated WebMCP API: **pending**.
-- Stripe external test-account checkout + webhook: **pending**.
-- QuickCatch packaged-extension regression: pending manual checks.
+- Record the outcome of the manual native-browser and QuickCatch packaged-extension checks for each release.
+- Record the outcome of a Stripe test-account checkout and webhook before claiming external Stripe validation.
 - Production promotion is a separate action; merging code is not the same as deploying Cloudflare Worker or publishing a Chrome Web Store extension.
 
-Keep the PR in draft until the external acceptance tests are explicitly recorded.
+Record external acceptance results before promoting a release that depends on them.

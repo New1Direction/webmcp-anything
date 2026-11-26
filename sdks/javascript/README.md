@@ -4,16 +4,20 @@ JavaScript/TypeScript SDK for [wmcp.sh](https://wmcp.sh). One-line tool integrat
 
 ## Install
 
+The package source is in this repository. The public npm registry returned 404 for `@wmcp/sdk` when checked on 2026-11-26; install from a checkout rather than assuming a published release.
+
 ```bash
-npm install @wmcp/sdk
+# From your application directory, replace the path with your checkout location:
+npm install /path/to/webmcp-anything/sdks/javascript
 # plus your framework of choice (peer deps, optional):
 npm install @anthropic-ai/sdk
 npm install openai
 npm install ai            # Vercel AI SDK
+npm install @ai-sdk/openai # provider used by the Vercel example below
 npm install @langchain/core
 ```
 
-Zero required dependencies — uses native `fetch`. Works in Node 18+, Bun, Deno, Cloudflare Workers, and browsers (for CORS-permitted endpoints).
+The package exports TypeScript source, including syntax that Node's type-stripping mode cannot handle on its own. Use a TypeScript-aware bundler or runtime such as `tsx`; the package does not currently provide a precompiled JavaScript entry point. The client uses native `fetch` and has no required runtime dependencies.
 
 ## Quick start
 
@@ -38,7 +42,7 @@ const url = "https://www.allbirds.com/products/mens-wool-runners";
 
 const anthropic = new Anthropic();
 const msg = await anthropic.messages.create({
-  model: "claude-opus-4-7",
+  model: "YOUR_ANTHROPIC_MODEL_ID",
   max_tokens: 1024,
   tools: toAnthropicTools(await client.tools(url)),
   messages: [{ role: "user", content: "Add size 10 to my cart." }],

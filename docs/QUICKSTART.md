@@ -71,7 +71,7 @@ Dogu connects to the remote MCP endpoint. For the browser tab's own `document.mo
 
 ## 3. Want live tool execution?
 
-Reading a tool list is free within rate limits. Calling an action needs a paid account/API key or an appropriate authenticated provider connection, plus the target site's permissions.
+Reading a tool list is free within rate limits. Calling tools on a URL-based MCP endpoint requires an eligible paid-plan API key and the target site's permissions. Provider proxy routes have separate connection and quota requirements.
 
 1. Visit [wmcp.sh/dashboard](https://wmcp.sh/dashboard), review the terms, and obtain an API key.
 2. Configure your MCP client to send an Authorization: Bearer header to WMCP. Never include the key in a URL, GitHub issue, commit or chat.

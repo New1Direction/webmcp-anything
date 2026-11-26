@@ -31,7 +31,7 @@ Only local HTTP is allowed. Public endpoints require HTTPS without embedded cred
 5. Presence of descriptions and structural sanity of inputSchema, outputSchema and required/properties.
 6. Server-declared tools capability and whether the listing was complete.
 
-The output includes a pass / warning / fail status and specific findings. It does **not** validate entire JSON Schemas, execute tools, perform OAuth, scan for vulnerabilities, compare response fingerprints over time or assert that annotations are trustworthy. A clean report is a compatibility smoke check only.
+The output includes a pass / warning / fail status and specific findings. It does **not** validate entire JSON Schemas, execute tools, perform OAuth, scan for vulnerabilities, or assert that annotations are trustworthy. Optional baseline comparison detects changes in published tool-contract fingerprints; it does not verify runtime behavior. A clean report is a compatibility smoke check only.
 
 The reader limits each response body to 2 MB, list traversal to 12 pages and tool entries to 2,000, to avoid unbounded operations. Listings that hit a limit are reported as incomplete.
 
@@ -81,7 +81,7 @@ You can run Doctor in another GitHub repository using the checked-in composite
 action instead of copying its JavaScript or installing npm dependencies. It
 probes the **explicit endpoint** using read-only MCP operations.
 
-After this action is published on the default branch, add a workflow:
+Add a workflow:
 
 ~~~yaml
 name: MCP contract

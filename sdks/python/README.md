@@ -4,11 +4,14 @@ One-line tool integration for any AI agent. Hands [wmcp.sh](https://wmcp.sh) too
 
 ## Install
 
+The package is available in this repository. The public PyPI endpoint for `wmcp` returned 404 when checked on 2026-11-26, so install from a checkout rather than assuming a published release.
+
 ```bash
-pip install wmcp                    # core (no deps)
-pip install 'wmcp[anthropic]'       # + Anthropic SDK
-pip install 'wmcp[openai]'          # + OpenAI SDK
-pip install 'wmcp[langchain]'       # + LangChain
+# From the repository root, preferably in a virtual environment:
+python -m pip install ./sdks/python
+python -m pip install './sdks/python[anthropic]'  # optional Anthropic dependency
+python -m pip install './sdks/python[openai]'     # optional OpenAI dependency
+python -m pip install './sdks/python[langchain]'  # optional LangChain dependency
 ```
 
 ## Quick start
@@ -35,7 +38,7 @@ url = "https://www.allbirds.com/products/mens-wool-runners"
 
 anthropic = Anthropic()
 msg = anthropic.messages.create(
-    model="claude-opus-4-7",
+    model="YOUR_ANTHROPIC_MODEL_ID",
     max_tokens=1024,
     tools=to_anthropic_tools(client.tools(url)),
     messages=[{"role": "user", "content": "Add size 10 to my cart."}],
