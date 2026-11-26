@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Support desk</title><link rel="stylesheet" href="/site.css"></head>
+<body>
+<main>
+<h1>Support desk</h1>
+<form id="ticket-form">
+  <input id="ticket" aria-label="Ticket title" required autocomplete="off">
+  <button id="create-ticket" type="submit">Create ticket</button>
+</form>
+<p id="ticket-receipt" role="status" aria-label="Ticket result"></p>
+<p id="initial-error" role="alert" aria-label="Ticket error" hidden>Ticket error: A title is required</p>
+</main>
+<script>
+if (new URLSearchParams(location.search).get("state") === "error") {
+  document.getElementById("initial-error").hidden = false;
+}
+document.getElementById("ticket-form").addEventListener("submit", (event) => {
+  event.preventDefault();
+  document.getElementById("ticket-receipt").textContent = "Created: " + document.getElementById("ticket").value;
+});
+</script>
+</body>
+</html>

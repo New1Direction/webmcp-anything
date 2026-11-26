@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Notification settings</title><link rel="stylesheet" href="/site.css"></head>
+<body>
+<main>
+<h1>Notification settings</h1>
+<button id="alerts" aria-pressed="false">Alerts</button>
+<label for="draft">Draft note</label>
+<input id="draft" value="Initial draft" autocomplete="off">
+</main>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebPage", "additionalProperty": [{"@type": "PropertyValue", "name": "Alerts", "value": false}]}</script>
+<script>
+document.getElementById("alerts").setAttribute("aria-pressed", "true");
+document.getElementById("draft").value = "Quarterly update";
+</script>
+</body>
+</html>

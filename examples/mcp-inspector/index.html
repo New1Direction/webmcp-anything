@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>MCP Inspector · WMCP</title>
+  <link rel="stylesheet" href="/style.css">
+  <script type="module" src="/app.mjs"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand"><span class="brand-icon" aria-hidden="true"><i></i><i></i><i></i></span><strong>wmcp</strong><span class="divider"></span><span>Inspector</span></div>
+      <div class="top-actions">
+        <span class="local"><span aria-hidden="true"></span> Local session</span>
+        <button type="button" id="import" class="button quiet"><span aria-hidden="true">↑</span> Import trace</button>
+        <button type="button" id="export" class="button quiet" disabled><span aria-hidden="true">↓</span> Export redacted</button>
+        <input type="file" id="file" accept=".json,application/json" hidden>
+      </div>
+    </div>
+  </header>
+  <main>
+    <section class="intro" aria-labelledby="page-title">
+      <div>
+        <h1 id="page-title">MCP Inspector</h1>
+        <p>Follow tool discovery, schema checks, and execution over the wire.</p>
+      </div>
+      <div class="fixture-controls">
+        <div class="fixture-field">
+          <label for="fixture">Protocol fixture</label>
+          <select id="fixture">
+            <option value="lifecycle">Tool lifecycle</option>
+            <option value="failures">Failure states</option>
+            <option value="schemas">Schema validation</option>
+          </select>
+        </div>
+        <button type="button" id="run" class="button primary">Run fixture</button>
+      </div>
+    </section>
+    <p id="notice" class="notice" role="status"></p>
+    <dl class="metrics" id="metrics" aria-label="Trace summary"></dl>
+    <div class="workbench">
+      <section class="panel main-panel" aria-labelledby="trace-title">
+        <header class="panel-header">
+          <div><h2 id="trace-title">Trace</h2><p id="trace-subtitle">Loading fixture…</p></div>
+          <span id="protocol" class="environment">MCP</span>
+        </header>
+        <nav class="tabs" role="tablist" aria-label="Trace views">
+          <button type="button" class="tab" id="tab-timeline" role="tab" aria-controls="view" aria-selected="true" data-tab="timeline">Timeline</button>
+          <button type="button" class="tab" id="tab-graph" role="tab" aria-controls="view" aria-selected="false" tabindex="-1" data-tab="graph">Dependency graph</button>
+          <button type="button" class="tab" id="tab-tools" role="tab" aria-controls="view" aria-selected="false" tabindex="-1" data-tab="tools">Tools</button>
+        </nav>
+        <div class="toolbar" id="toolbar">
+          <div class="filter-group">
+            <input id="query" type="search" aria-label="Filter requests" placeholder="Filter by method or tool">
+            <select id="filter" aria-label="Request type">
+              <option value="all">All requests</option>
+              <option value="calls">Tool calls</option>
+              <option value="failures">Failures</option>
+              <option value="pending">Unfinished</option>
+            </select>
+          </div>
+          <button type="button" id="play" class="button quiet" disabled><span aria-hidden="true">▷</span> Replay</button>
+        </div>
+        <div class="scrubber" id="scrubber">
+          <label for="position">Playback position</label>
+          <input id="position" type="range" min="0" max="0" step="1" value="0" disabled>
+          <output id="position-label" for="position">0 ms</output>
+        </div>
+        <div id="view" role="tabpanel" aria-labelledby="tab-timeline"></div>
+      </section>
+      <aside class="panel detail-panel" aria-labelledby="detail-title">
+        <header class="panel-header"><div><h2 id="detail-title">Details</h2><p id="detail-subtitle">Select a request or tool</p></div></header>
+        <div id="details"></div>
+      </aside>
+    </div>
+  </main>
+</body>
+</html>

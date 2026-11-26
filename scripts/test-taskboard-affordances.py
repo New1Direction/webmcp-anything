@@ -1,0 +1,209 @@
+#!/usr/bin/env python3
+"""Exercise the demo through keyboard input, Chromium AX, and native WebMCP."""
+
+import argparse
+import json
+from functools import partial
+from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
+from threading import Thread
+
+from playwright.sync_api import expect, sync_playwright
+
+DEMO = Path(__file__).resolve().parents[1] / "examples" / "browser-demo"
+
+
+class QuietHandler(SimpleHTTPRequestHandler):
+    def log_message(self, *_):
+        pass
+
+
+def focus(page, selector):
+    active = page.locator(selector)
+    expect(active).to_be_focused()
+    indicator = active.evaluate("""node => {
+      const style = getComputedStyle(node);
+      return node.matches(':focus-visible') && style.outlineStyle !== 'none'
+        && parseFloat(style.outlineWidth) >= 2;
+    }""")
+    assert indicator, f"Expected visible focus on {selector}"
+
+
+def keyboard_checks(page, origin):
+    page.goto(origin)
+    page.keyboard.press("Tab")
+    focus(page, "#task")
+    page.keyboard.press("Enter")
+    expect(page.get_by_role("alert")).to_have_text("Enter a task name.")
+    expect(page.get_by_role("textbox", name="Task name")).to_have_attribute("aria-invalid", "true")
+    focus(page, "#task")
+    page.keyboard.insert_text("Keyboard task")
+    page.keyboard.press("Enter")
+    expect(page.get_by_role("status")).to_have_text("Added task #3, Keyboard task.")
+    focus(page, "#task")
+
+    page.keyboard.press("Tab")
+    focus(page, "#add-task")
+    page.keyboard.press("Tab")
+    focus(page, "#complete-1")
+    page.keyboard.press("Space")
+    expect(page.get_by_role("status")).to_have_text("Completed task #1, Explore the WebMCP API.")
+    expect(page.locator("#complete-1")).to_have_count(0)
+    focus(page, "#complete-2")
+    page.keyboard.press("Enter")
+    focus(page, "#complete-3")
+    page.keyboard.press("Space")
+    focus(page, "#task")
+    expect(page.locator("#list .state")).to_have_text(["Completed", "Completed", "Completed"])
+
+    page.set_viewport_size({"width": 360, "height": 740})
+    page.keyboard.insert_text("W" * 120)
+    page.keyboard.press("Enter")
+    assert page.evaluate("document.documentElement.scrollWidth === document.documentElement.clientWidth")
+    expect(page.locator("#list .state")).to_have_text(["Completed", "Completed", "Completed", "Open"])
+
+
+def ax_checks(page, origin):
+    page.goto(origin)
+    session = page.context.new_cdp_session(page)
+
+    def observed(role):
+        return [node for node in session.send("Accessibility.getFullAXTree")["nodes"]
+                if not node.get("ignored") and node.get("role", {}).get("value") == role]
+
+    def value(node, key):
+        return node.get(key, {}).get("value")
+
+    regions = [value(node, "name") for node in observed("region")]
+    assert set(regions) == {"New task", "Tasks"}, regions
+    field, = observed("textbox")
+    assert value(field, "name") == "Task name"
+    assert value(field, "description") == "Use 1 to 120 characters on one line."
+    assert any(prop["name"] == "required" and value(prop, "value") is True for prop in field["properties"])
+    assert [value(node, "name") for node in observed("list")] == ["Tasks"]
+
+    buttons = [value(node, "name") for node in observed("button")]
+    assert buttons == ["Add task", "Mark complete Explore the WebMCP API #1", "Mark complete Try an agent tool call #2"], buttons
+
+    page.keyboard.press("Tab")
+    page.keyboard.press("Enter")
+    expect(page.get_by_role("alert")).to_have_text("Enter a task name.")
+    assert observed("alert")
+    assert any(value(node, "name") == "Enter a task name." for node in observed("StaticText"))
+    page.keyboard.insert_text("Accessibility task")
+    page.keyboard.press("Enter")
+    expect(page.get_by_role("status")).to_have_text("Added task #3, Accessibility task.")
+    status, = observed("status")
+    assert any(prop["name"] == "live" and value(prop, "value") == "polite" for prop in status["properties"]), status
+    assert "Mark complete Accessibility task #3" in [value(node, "name") for node in observed("button")]
+    session.detach()
+
+
+def native_checks(page, origin):
+    observed = []
+    cdp = page.context.new_cdp_session(page)
+    cdp.on("WebMCP.toolsAdded", lambda event: observed.extend(event["tools"]))
+    cdp.send("WebMCP.enable")
+    page.goto(origin)
+    expect(page.locator("#status")).to_have_text("3 of 3 agent tools available.")
+    actions = json.loads((DEMO / "capabilities.json").read_text(encoding="utf-8"))["actions"]
+    assert len(observed) == len(actions), observed
+    by_signifier = {}
+    for action in actions:
+        tool, = [candidate for candidate in observed if candidate["name"] == action["name"]]
+        title = tool.get("title") or tool["description"].partition(".")[0]
+        assert title == action["title"], tool
+        assert tool["description"] == action["description"]
+        schema = tool["inputSchema"]
+        assert (json.loads(schema) if isinstance(schema, str) else schema) == action["inputSchema"]
+        by_signifier[title] = tool["name"]
+
+    def begin(title, arguments):
+        page.evaluate("""({name, input}) => {
+          window.pendingInvocation = navigator.modelContextTesting.executeTool(name, JSON.stringify(input))
+            .then(result => ({result}), error => ({error: String(error)}));
+        }""", {"name": by_signifier[title], "input": arguments})
+
+    def result():
+        handle = page.evaluate("() => window.pendingInvocation")
+        if "error" in handle:
+            return handle
+        return json.loads(json.loads(handle["result"])["content"][0]["text"])
+
+    def review(title, detail):
+        dialog = page.get_by_role("dialog", name="Review agent request")
+        expect(dialog).to_be_visible()
+        expect(dialog).to_have_accessible_description(detail)
+        expect(dialog.get_by_role("button", name=title, exact=True)).to_be_visible()
+        expect(dialog.get_by_role("button", name="Cancel")).to_be_focused()
+        return dialog
+
+    def approve(dialog, title):
+        page.keyboard.press("Tab")
+        expect(dialog.get_by_role("button", name=title, exact=True)).to_be_focused()
+        page.keyboard.press("Enter")
+        expect(dialog).to_have_count(0)
+
+    begin("Tasks", {})
+    assert len(result()) == 2
+    expect(page.get_by_role("dialog")).to_have_count(0)
+
+    begin("Add task", {"text": "Review this task"})
+    dialog = review("Add task", "Add task “Review this task”?")
+    expect(page.locator("#list li")).to_have_count(2)
+    page.evaluate("document.getElementById('review-approve').click()")
+    expect(dialog).to_be_visible()
+    page.keyboard.press("Escape")
+    assert "error" in result()
+    expect(page.locator("#list li")).to_have_count(2)
+
+    begin("Add task", {"text": "Review this task"})
+    approve(review("Add task", "Add task “Review this task”?"), "Add task")
+    created = result()
+    assert created == {"text": "Review this task", "id": 3, "done": False}, created
+    expect(page.get_by_role("status")).to_have_text("Added task #3, Review this task.")
+
+    begin("Mark complete", {"id": created["id"]})
+    dialog = review("Mark complete", "Mark complete for task #3, “Review this task”?")
+    expect(page.locator("#complete-3")).to_have_count(1)
+    approve(dialog, "Mark complete")
+    assert result() == {**created, "done": True}
+    expect(page.locator("#complete-3")).to_have_count(0)
+    expect(page.get_by_role("status")).to_have_text("Completed task #3, Review this task.")
+
+    begin("Mark complete", {"id": created["id"]})
+    assert "error" in result()
+    expect(page.get_by_role("dialog")).to_have_count(0)
+    cdp.detach()
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--chrome", help="Chrome executable with the WebMCP testing API")
+    args = parser.parse_args()
+    with ThreadingHTTPServer(("127.0.0.1", 0), partial(QuietHandler, directory=DEMO)) as server:
+        thread = Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        origin = f"http://127.0.0.1:{server.server_port}/"
+        try:
+            with sync_playwright() as playwright:
+                flags = ["--enable-features=WebMCP,WebMCPTesting,DevToolsWebMCPSupport"]
+                with playwright.chromium.launch(executable_path=args.chrome, args=flags) as browser:
+                    context = browser.new_context(viewport={"width": 1024, "height": 800})
+                    context.route("**/*", lambda route: route.continue_()
+                                  if route.request.url.startswith(origin) else route.abort())
+                    for check in (keyboard_checks, ax_checks, native_checks):
+                        page = context.new_page()
+                        page.set_default_timeout(3000)
+                        try:
+                            check(page, origin)
+                            print(f"PASS {check.__name__} ({browser.version})")
+                        finally:
+                            page.close()
+        finally:
+            server.shutdown()
+            thread.join()
+
+
+if __name__ == "__main__":
+    main()

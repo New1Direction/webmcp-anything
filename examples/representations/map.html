@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Route overview</title><link rel="stylesheet" href="/site.css"></head>
+<body>
+<main>
+<h1>Route overview</h1>
+<canvas id="routes" width="640" height="170" role="img" aria-label="Route map"></canvas>
+</main>
+<script>
+const canvas = document.getElementById("routes");
+const context = canvas.getContext("2d");
+const southIsRed = new URLSearchParams(location.search).get("route") === "south";
+const labels = ["North route", "South route"];
+for (let row = 0; row < labels.length; row++) {
+  const y = 35 + 84 * row;
+  context.fillStyle = (row === 1) === southIsRed ? "#d12a30" : "#2867c8";
+  context.fillRect(17, y - 17, 68, 21);
+  context.font = "bold 27px Arial";
+  context.fillStyle = "#172234";
+  context.fillText(labels[row], 115, y + 3);
+}
+</script>
+</body>
+</html>

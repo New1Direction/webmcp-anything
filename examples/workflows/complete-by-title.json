@@ -1,0 +1,54 @@
+{
+  "schemaVersion": "wmcp-workflow/v1",
+  "id": "complete-by-title",
+  "initialState": "overview",
+  "inputs": {
+    "title": {
+      "type": "task-title",
+      "schema": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "steps": [
+    {
+      "id": "open",
+      "tool": "work:open_queue",
+      "bindings": []
+    },
+    {
+      "id": "find",
+      "tool": "work:find_by_title",
+      "bindings": [
+        {
+          "from": {
+            "input": "title"
+          },
+          "transform": "identity",
+          "to": "/title"
+        }
+      ]
+    },
+    {
+      "id": "complete",
+      "tool": "work:complete_queue_item",
+      "bindings": [
+        {
+          "from": {
+            "step": "find",
+            "pointer": "/itemId"
+          },
+          "transform": "identity",
+          "to": "/itemId"
+        }
+      ]
+    }
+  ],
+  "outputs": {
+    "completedItem": {
+      "step": "complete",
+      "pointer": "/itemId"
+    }
+  }
+}

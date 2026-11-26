@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Tool ecosystem · WMCP</title>
+  <link rel="stylesheet" href="/style.css">
+  <script type="module" src="/app.mjs"></script>
+</head>
+<body>
+  <header class="top">
+    <div class="top-inner">
+      <div class="brand"><span class="mark" aria-hidden="true"><i></i><i></i><i></i></span><strong>wmcp</strong><span class="brand-separator"></span><span>Ecosystem</span></div>
+      <div class="top-links"><span class="local">Local catalog</span><a href="/api/map">Map JSON</a></div>
+    </div>
+  </header>
+  <main>
+    <div class="intro">
+      <div><h1>Tool ecosystem</h1><p>Explore what your tools cover, where they overlap, and what could connect them.</p></div>
+    </div>
+    <form id="search" class="search">
+      <label for="goal">Search by outcome</label>
+      <div class="search-row">
+        <input id="goal" type="search" placeholder="Try “cross off a task” or “find an alert ID”" required maxlength="600">
+        <select id="kind" aria-label="Search scope">
+          <option value="all">All node types</option>
+          <option value="capabilities">Capabilities</option>
+          <option value="clusters">Clusters</option>
+          <option value="overlaps">Overlaps</option>
+          <option value="gaps">Integration gaps</option>
+          <option value="compositions">Compositions</option>
+        </select>
+        <button class="button primary" type="submit">Search map</button>
+      </div>
+    </form>
+    <p id="status" class="status" role="status"></p>
+    <dl id="metrics" class="metrics" aria-label="Catalog summary"></dl>
+    <div class="atlas">
+      <section class="panel map-panel" aria-labelledby="map-title">
+        <div class="panel-head">
+          <div><h2 id="map-title">Capability map</h2><p id="map-subtitle">Loading catalog…</p></div>
+          <button class="button quiet" id="back" type="button" hidden>All services</button>
+        </div>
+        <div class="map-toolbar">
+          <ul class="legend" aria-label="Evidence legend">
+            <li><i class="key documented"></i>Documented</li>
+            <li><i class="key checked"></i>Policy-checked</li>
+            <li><i class="key inferred"></i>Inferred</li>
+          </ul>
+          <select id="layer" aria-label="Map connections">
+            <option value="all">All connections</option>
+            <option value="overlap">Overlaps</option>
+            <option value="gap">Integration gaps</option>
+            <option value="composition">Compositions</option>
+            <option value="documented">Documented only</option>
+          </select>
+        </div>
+        <div id="stage" class="stage"></div>
+        <div id="map-footer" class="map-footer">Select a service to explore its capabilities.</div>
+      </section>
+      <aside class="panel inspect-panel" aria-labelledby="inspect-title">
+        <div class="panel-head"><div><h2 id="inspect-title">Inspect</h2><p id="inspect-subtitle">Select a map node</p></div></div>
+        <div id="inspect"></div>
+      </aside>
+    </div>
+    <section id="findings-panel" class="panel findings-panel" aria-labelledby="findings-title">
+      <div class="panel-head"><div><h2 id="findings-title">Findings</h2><p id="findings-subtitle">Evidence across the catalog</p></div></div>
+      <div id="findings"></div>
+    </section>
+  </main>
+</body>
+</html>

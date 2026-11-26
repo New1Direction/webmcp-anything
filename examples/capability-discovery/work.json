@@ -1,0 +1,305 @@
+{
+  "schemaVersion": "wmcp-site/v1",
+  "site": {
+    "title": "Work queue",
+    "origin": "https://work.example",
+    "entryState": "overview"
+  },
+  "states": [
+    {
+      "id": "overview",
+      "title": "Overview",
+      "path": "/",
+      "access": "public",
+      "links": [
+        {
+          "label": "Queue",
+          "to": "queue"
+        }
+      ]
+    },
+    {
+      "id": "queue",
+      "title": "Queue",
+      "path": "/queue",
+      "access": "public",
+      "marker": "#work-queue",
+      "landmarks": [
+        {
+          "role": "main"
+        },
+        {
+          "role": "region",
+          "name": "Work items"
+        }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "name": "open_queue",
+      "description": "Navigate from the overview to the work queue",
+      "state": "overview",
+      "access": "public",
+      "effect": "navigate",
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {},
+        "additionalProperties": false
+      },
+      "postconditions": [
+        {
+          "kind": "state",
+          "state": "queue"
+        }
+      ],
+      "sideEffect": {
+        "kind": "navigate",
+        "state": "queue"
+      }
+    },
+    {
+      "name": "read_queue",
+      "description": "List pending items on the work queue",
+      "state": "queue",
+      "access": "public",
+      "effect": "read",
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {},
+        "additionalProperties": false
+      },
+      "postconditions": [
+        {
+          "kind": "result-schema",
+          "schema": {
+            "type": "object",
+            "required": [
+              "items"
+            ],
+            "properties": {
+              "items": {
+                "type": "array"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      ],
+      "sideEffect": {
+        "kind": "none"
+      }
+    },
+    {
+      "name": "find_by_title",
+      "description": "Resolve a named queue item to its numeric record identifier",
+      "state": "queue",
+      "access": "public",
+      "effect": "read",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "title"
+        ],
+        "properties": {
+          "title": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "postconditions": [
+        {
+          "kind": "result-schema",
+          "schema": {
+            "type": "object",
+            "required": [
+              "itemId"
+            ],
+            "properties": {
+              "itemId": {
+                "type": "integer"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      ],
+      "sideEffect": {
+        "kind": "none"
+      }
+    },
+    {
+      "name": "complete_queue_item",
+      "description": "Mark a queue item complete",
+      "state": "queue",
+      "access": "public",
+      "effect": "write",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "itemId"
+        ],
+        "properties": {
+          "itemId": {
+            "type": "integer"
+          }
+        },
+        "additionalProperties": false
+      },
+      "postconditions": [
+        {
+          "kind": "result-schema",
+          "schema": {
+            "type": "object",
+            "required": [
+              "completed",
+              "itemId"
+            ],
+            "properties": {
+              "completed": {
+                "type": "boolean"
+              },
+              "itemId": {
+                "type": "integer"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        {
+          "kind": "result-matches-input",
+          "pointer": "/itemId",
+          "inputPointer": "/itemId"
+        },
+        {
+          "kind": "result-equals",
+          "pointer": "/completed",
+          "value": true
+        }
+      ],
+      "sideEffect": {
+        "kind": "write",
+        "operation": "complete-queue-item",
+        "target": "/itemId",
+        "resultTarget": "/itemId",
+        "outcome": "/completed",
+        "value": true
+      }
+    },
+    {
+      "name": "assign_owner",
+      "description": "Assign a queue item to an owner",
+      "state": "queue",
+      "access": "session",
+      "effect": "write",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "itemId",
+          "owner"
+        ],
+        "properties": {
+          "itemId": {
+            "type": "integer"
+          },
+          "owner": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "postconditions": [
+        {
+          "kind": "result-schema",
+          "schema": {
+            "type": "object",
+            "required": [
+              "assigned"
+            ],
+            "properties": {
+              "assigned": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "archive_completed",
+      "description": "Archive completed queue items from the active view",
+      "state": "queue",
+      "access": "public",
+      "effect": "write",
+      "inputSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {},
+        "additionalProperties": false
+      },
+      "postconditions": [
+        {
+          "kind": "result-schema",
+          "schema": {
+            "type": "object",
+            "required": [
+              "archived"
+            ],
+            "properties": {
+              "archived": {
+                "type": "integer"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "search_comments",
+      "description": "Search internal comments on queue items",
+      "state": "queue",
+      "access": "session",
+      "effect": "read",
+      "inputSchema": {
+        "type": "object",
+        "required": [
+          "query"
+        ],
+        "properties": {
+          "query": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "postconditions": [
+        {
+          "kind": "result-schema",
+          "schema": {
+            "type": "object",
+            "required": [
+              "comments"
+            ],
+            "properties": {
+              "comments": {
+                "type": "array"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      ],
+      "sideEffect": {
+        "kind": "none"
+      },
+      "permissions": [
+        "comments:read"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+:root { color-scheme: light; font: 23px Arial, sans-serif; color: #172234; background: #f2f4f7 }
+body { margin: 45px; }
+main { padding: 30px 34px; background: white; max-width: 730px; min-height: 330px; border: 1px solid #c7ced6 }
+h1 { margin: 0 0 24px; font-size: 34px }
+h2 { margin: 24px 0 8px; font-size: 25px }
+p { margin: 14px 0 }
+button, input, nav a { font: inherit; padding: 10px 14px; margin: 6px 8px 6px 0 }
+button, nav a { background: #e4efff; color: #152239; border: 1px solid #7b8ea8 }
+button:disabled { background: #ebebeb; color: #868686; border-color: #b9b9b9 }
+input { display: block; border: 1px solid #778a9e; }
+canvas { display: block; background: white; }
+.spacer { min-height: 620px; }

@@ -1,0 +1,319 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Storefront"
+  },
+  "servers": [
+    {
+      "url": "https://shop.example/api"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "session": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  },
+  "paths": {
+    "/products": {
+      "get": {
+        "operationId": "catalog_lookup",
+        "summary": "Search the product catalog by title and return a matching SKU",
+        "tags": [
+          "catalog"
+        ],
+        "responses": {
+          "200": {
+            "description": "Observed result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "sku"
+                  ],
+                  "properties": {
+                    "sku": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "in": "query",
+            "name": "title",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/cart/items/{sku}": {
+      "put": {
+        "operationId": "cart_line_create",
+        "summary": "Add one unit of a product SKU to the shopping cart",
+        "tags": [
+          "cart"
+        ],
+        "responses": {
+          "200": {
+            "description": "Observed result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "lineId"
+                  ],
+                  "properties": {
+                    "lineId": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "sku",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "cart_line_remove",
+        "summary": "Remove a product SKU from the shopping cart",
+        "tags": [
+          "cart"
+        ],
+        "responses": {
+          "200": {
+            "description": "Observed result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "removed"
+                  ],
+                  "properties": {
+                    "removed": {
+                      "type": "boolean"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "sku",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ]
+      }
+    },
+    "/orders/{id}/tracking": {
+      "get": {
+        "operationId": "delivery_progress",
+        "summary": "Track shipment and delivery progress for an order",
+        "tags": [
+          "shipping"
+        ],
+        "responses": {
+          "200": {
+            "description": "Observed result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "trackingStatus"
+                  ],
+                  "properties": {
+                    "trackingStatus": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ]
+      }
+    },
+    "/shipping/rates": {
+      "get": {
+        "operationId": "shipping_quote",
+        "summary": "Calculate shipping fees for a postal code",
+        "tags": [
+          "shipping"
+        ],
+        "responses": {
+          "200": {
+            "description": "Observed result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "fee"
+                  ],
+                  "properties": {
+                    "fee": {
+                      "type": "number"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "in": "query",
+            "name": "postalCode",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/products/{sku}/availability": {
+      "get": {
+        "operationId": "item_availability",
+        "summary": "Check whether the selected product variant is in stock",
+        "tags": [
+          "catalog"
+        ],
+        "responses": {
+          "200": {
+            "description": "Observed result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "available"
+                  ],
+                  "properties": {
+                    "available": {
+                      "type": "boolean"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "sku",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/orders/{id}/refund": {
+      "post": {
+        "operationId": "start_refund",
+        "summary": "Issue a refund against an order payment",
+        "tags": [
+          "orders"
+        ],
+        "responses": {
+          "200": {
+            "description": "Observed result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "refundId"
+                  ],
+                  "properties": {
+                    "refundId": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ]
+      }
+    }
+  }
+}

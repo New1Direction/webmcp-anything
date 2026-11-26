@@ -1,0 +1,171 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Product documentation"
+  },
+  "servers": [
+    {
+      "url": "https://docs.example/api"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "session": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  },
+  "paths": {
+    "/guides": {
+      "get": {
+        "operationId": "find_guides",
+        "summary": "Search setup and installation guides for an integration",
+        "tags": [
+          "documentation"
+        ],
+        "responses": {
+          "200": {
+            "description": "Observed result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "articles"
+                  ],
+                  "properties": {
+                    "articles": {
+                      "type": "array"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "in": "query",
+            "name": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/config": {
+      "get": {
+        "operationId": "lookup_config_reference",
+        "summary": "Look up configuration keys and their accepted values",
+        "tags": [
+          "documentation"
+        ],
+        "responses": {
+          "200": {
+            "description": "Observed result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "entries"
+                  ],
+                  "properties": {
+                    "entries": {
+                      "type": "array"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "in": "query",
+            "name": "key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/compatibility": {
+      "get": {
+        "operationId": "check_version_compatibility",
+        "summary": "Check supported runtime versions for a release",
+        "tags": [
+          "documentation"
+        ],
+        "responses": {
+          "200": {
+            "description": "Observed result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "supported"
+                  ],
+                  "properties": {
+                    "supported": {
+                      "type": "array"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "in": "query",
+            "name": "release",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/changelog": {
+      "get": {
+        "operationId": "get_changelog",
+        "summary": "Read release notes and version changes",
+        "tags": [
+          "documentation"
+        ],
+        "responses": {
+          "200": {
+            "description": "Observed result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "changes"
+                  ],
+                  "properties": {
+                    "changes": {
+                      "type": "array"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

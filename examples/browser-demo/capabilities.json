@@ -1,0 +1,81 @@
+{
+  "schemaVersion": "wmcp-site/v1",
+  "site": {
+    "title": "WMCP browser taskboard",
+    "origin": "http://localhost:8000",
+    "entryState": "board"
+  },
+  "states": [
+    {
+      "id": "board",
+      "title": "Taskboard",
+      "path": "/",
+      "access": "public",
+      "marker": "#list",
+      "landmarks": [{ "role": "main" }, { "role": "region", "name": "New task" }, { "role": "region", "name": "Tasks" }]
+    }
+  ],
+  "actions": [
+    {
+      "name": "list_tasks",
+      "title": "Tasks",
+      "description": "Tasks. Read the names, IDs, and completion states of tasks in this tab.",
+      "state": "board",
+      "access": "public",
+      "effect": "read",
+      "inputSchema": { "type": "object", "properties": {}, "additionalProperties": false },
+      "postconditions": [{
+        "kind": "result-schema",
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "text", "done"],
+            "properties": { "id": { "type": "integer" }, "text": { "type": "string" }, "done": { "type": "boolean" } }
+          }
+        }
+      }]
+    },
+    {
+      "name": "add_task",
+      "title": "Add task",
+      "description": "Add task. Create an open task from its Task name. Requires confirmation in this tab.",
+      "state": "board",
+      "access": "public",
+      "effect": "write",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "text": { "type": "string", "description": "Task name", "minLength": 1, "maxLength": 120, "pattern": "^(?!\\s*$)[^\\r\\n]+$" }
+        },
+        "required": ["text"],
+        "additionalProperties": false
+      },
+      "preconditions": [{ "kind": "enabled", "selector": "#form button[type=submit]" }],
+      "postconditions": [
+        { "kind": "dom-count-increased", "selector": "#list li", "by": 1 },
+        { "kind": "result-equals", "pointer": "/done", "value": false }
+      ]
+    },
+    {
+      "name": "complete_task",
+      "title": "Mark complete",
+      "description": "Mark complete. Complete an open task by its Task ID. Requires confirmation in this tab.",
+      "state": "board",
+      "access": "public",
+      "effect": "write",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "description": "Task ID shown beside the task", "minimum": 1, "maximum": 9007199254740991 }
+        },
+        "required": ["id"],
+        "additionalProperties": false
+      },
+      "postconditions": [
+        { "kind": "result-equals", "pointer": "/done", "value": true },
+        { "kind": "result-matches-input", "pointer": "/id", "inputPointer": "/id" }
+      ]
+    }
+  ]
+}

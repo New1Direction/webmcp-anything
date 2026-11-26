@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Billing workspaces</title><link rel="stylesheet" href="/site.css"></head>
+<body>
+<main>
+<h1>Billing workspaces</h1>
+<section aria-label="Personal workspace">
+  <h2>Personal workspace</h2>
+  <p id="personal-balance" role="status" aria-label="Balance due">Balance due: $18.00</p>
+</section>
+<section aria-label="Team workspace">
+  <h2>Team workspace</h2>
+  <p id="team-balance" role="status" aria-label="Balance due">Balance due: $240.00</p>
+</section>
+<button id="export-billing" type="button">Export billing</button>
+<p id="export-result" role="status" aria-label="Export result"></p>
+</main>
+<script id="wmcp-context" type="application/json">{"schemaVersion": "wmcp-capabilities/v1", "execution": "specification-only", "tools": [{"name": "export_billing", "effect": "write", "description": "Prepare a billing export on request", "inputSchema": {"type": "object", "properties": {"period": {"type": "string"}, "format": {"type": "string", "enum": ["csv", "json"]}}, "required": ["period", "format"]}, "preconditions": [{"kind": "authentication", "boundary": "$fixture-origin", "anyOf": [{"allOf": [{"type": "site-session", "permissions": ["billing:read"]}]}]}, {"kind": "user-authorization", "when": "always", "scope": "this-capability-and-input"}], "postconditions": [{"kind": "result-equals", "pointer": "/exported", "value": true}]}]}</script>
+<script>
+document.getElementById("export-billing").addEventListener("click", () => {
+  document.getElementById("export-result").textContent = "Fixture write occurred";
+});
+</script>
+</body>
+</html>

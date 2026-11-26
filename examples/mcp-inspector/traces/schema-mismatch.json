@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "wmcp-mcp-trace/v1",
+  "events": [
+    {
+      "atMs": 0,
+      "direction": "send",
+      "headers": { "authorization": "Bearer example-placeholder", "content-type": "application/json" },
+      "message": { "jsonrpc": "2.0", "id": 1, "method": "initialize", "params": { "protocolVersion": "2025-11-25", "capabilities": {}, "clientInfo": { "name": "local-example", "version": "1.0.0" } } }
+    },
+    {
+      "atMs": 45,
+      "direction": "receive",
+      "httpStatus": 200,
+      "headers": { "mcp-session-id": "synthetic-local-session" },
+      "message": { "jsonrpc": "2.0", "id": 1, "result": { "protocolVersion": "2025-11-25", "capabilities": { "tools": {} }, "serverInfo": { "name": "local-example", "version": "1.0.0" } } }
+    },
+    {
+      "atMs": 50,
+      "direction": "send",
+      "message": { "jsonrpc": "2.0", "method": "notifications/initialized" }
+    },
+    {
+      "atMs": 55,
+      "direction": "local",
+      "kind": "accepted",
+      "httpStatus": 202
+    },
+    {
+      "atMs": 70,
+      "direction": "send",
+      "message": { "jsonrpc": "2.0", "id": 2, "method": "tools/list" }
+    },
+    {
+      "atMs": 112,
+      "direction": "receive",
+      "httpStatus": 200,
+      "message": { "jsonrpc": "2.0", "id": 2, "result": {
+        "tools": [
+          {
+            "name": "count_tasks",
+            "description": "Return the number of tasks in a queue",
+            "inputSchema": { "type": "object", "properties": { "queue": { "type": "string" } }, "required": ["queue"] },
+            "outputSchema": { "type": "object", "properties": { "count": { "type": "integer" } }, "required": ["count"] }
+          }
+        ]
+      } }
+    },
+    {
+      "atMs": 142,
+      "direction": "send",
+      "message": { "jsonrpc": "2.0", "id": 3, "method": "tools/call", "params": { "name": "count_tasks", "arguments": { "queue": "sample" } } }
+    },
+    {
+      "atMs": 233,
+      "direction": "receive",
+      "httpStatus": 200,
+      "message": { "jsonrpc": "2.0", "id": 3, "result": { "structuredContent": { "count": "14" }, "content": [{ "type": "text", "text": "Example only" }] } }
+    }
+  ]
+}

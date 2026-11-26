@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "wmcp-ecosystem-config/v1",
+  "policies": ["../workflows/queue-policy.json"],
+  "needs": [
+    {
+      "id": "queue-task-bridge",
+      "label": "Link work queue tasks to the browser taskboard",
+      "consumer": "taskboard:complete_task",
+      "input": "/id",
+      "producerSource": "work"
+    },
+    {
+      "id": "lookup-alert-id",
+      "label": "Find an alert ID before acknowledging a page",
+      "consumer": "ops:acknowledge_alert",
+      "input": "/path/id",
+      "producerSource": "ops"
+    }
+  ]
+}
