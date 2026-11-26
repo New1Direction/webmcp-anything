@@ -103,6 +103,9 @@ async function buildToolIndex(
       index.set(name, { url, originalName: t.name });
       const tool: any = { name, inputSchema: t.inputSchema ?? { type: "object", properties: {} } };
       if (t.description) tool.description = String(t.description);
+      if (t.result !== undefined && t.action === undefined) {
+        tool.annotations = { readOnlyHint: true };
+      }
       tools.push(tool);
     }
   }

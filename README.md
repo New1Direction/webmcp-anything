@@ -156,6 +156,7 @@ node cli/wmcp.mjs grade https://example.com/mcp
 |---|---|---|
 | URL discovery | Best-effort extraction through public HTML and known adapters | [REST API](docs/API.md) |
 | Remote MCP | Connect compatible clients to URL-addressed tools | [MCP quickstart](docs/QUICKSTART.md) |
+| Dogu | Discover WMCP tools as shell commands and call allowlisted tools from TypeScript | [Dogu quickstart](docs/QUICKSTART.md#use-remote-mcp-with-dogu) |
 | Native WebMCP demo | Site-authored tools using document.modelContext | [Taskboard demo](examples/browser-demo/) |
 | Trust grading | Inspect observable MCP server signals | [Leaderboard](https://wmcp.sh/mcp/leaderboard) |
 | Python SDK | Programmatic API client | [Python](sdks/python/) |
