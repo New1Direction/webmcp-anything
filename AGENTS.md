@@ -37,8 +37,7 @@ This file is the single source of truth. If `CLAUDE.md`, `.cursorrules`, or any 
 ├── sdks/
 │   ├── python/wmcp/         Python SDK (pip install wmcp)
 │   └── javascript/src/      TypeScript SDK (@wmcp/sdk)
-├── scripts/seed_directory.py  pre-cache URLs to populate /u/* SEO pages
-├── launch/                  launch-day assets (show-hn, twitter, substack, demo)
+├── tools/wmcp-admin/        Rust CLI for directory seeding and coverage operations
 └── ADAPTERS_WANTED.md       sites where PRs are welcome
 ```
 
@@ -157,9 +156,9 @@ npm run typecheck              # tsc --noEmit, must be clean
 ### 4.3 After adding cached URLs (for SEO)
 
 ```bash
-python3 scripts/seed_directory.py                  # built-in curated list
-python3 scripts/seed_directory.py < urls.txt       # stdin
-python3 scripts/seed_directory.py --rate 3         # slower for politeness
+cargo run --release --manifest-path tools/wmcp-admin/Cargo.toml -- seed                  # built-in curated list
+cargo run --release --manifest-path tools/wmcp-admin/Cargo.toml -- seed < urls.txt       # stdin
+cargo run --release --manifest-path tools/wmcp-admin/Cargo.toml -- seed --rate 0.5       # slower for politeness
 ```
 
 Each successful URL becomes one new `/u/<base64url-encoded-source>` page in the sitemap.
@@ -267,8 +266,8 @@ When asked about architecture, **don't re-derive** these from scratch:
 | Add a new landing section | `worker/src/landing.ts` |
 | Add a worker route | `worker/src/index.ts` |
 | Add an SDK helper | `sdks/python/wmcp/<file>.py` or `sdks/javascript/src/<file>.ts` |
-| Bulk-seed SEO pages | `scripts/seed_directory.py` + curated URLs |
-| Update launch copy | `launch/*.md` |
+| Bulk-seed SEO pages | `tools/wmcp-admin` `seed` command + curated URLs |
+| MCP and Shopify coverage | `tools/wmcp-admin` `crawl`, `submit`, and `shopify-coverage` commands |
 
 ---
 

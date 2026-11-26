@@ -10,6 +10,7 @@ node_modules/
 # Build output (not used yet but reserved)
 dist/
 build/
+/tools/wmcp-admin/target/
 
 # OS noise
 .DS_Store
