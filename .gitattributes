@@ -1,0 +1,28 @@
+# ---------------------------------------------------------------------------
+# GitHub Linguist overrides
+# Keep the language bar focused on the real application code.
+# ---------------------------------------------------------------------------
+
+# Scripts are tooling / CI helpers — not application source
+scripts/**        linguist-documentation
+scripts/**        linguist-detectable=false
+
+# Tools directory contains a small native helper (Rust) + build artefacts
+tools/**          linguist-documentation
+tools/**          linguist-detectable=false
+
+# sdks/python is a thin client wrapper; mark it vendored so it doesn't
+# inflate the Python percentage above the TypeScript worker
+sdks/python/**    linguist-vendored
+
+# Example files are illustrative, not production code
+examples/**       linguist-documentation
+examples/**       linguist-detectable=false
+
+# actions/ is GitHub Actions CI tooling
+actions/**        linguist-documentation
+actions/**        linguist-detectable=false
+
+# adapters/ are mostly tiny JS shims / fixtures
+adapters/_fixtures/**   linguist-documentation
+adapters/_test/**       linguist-documentation

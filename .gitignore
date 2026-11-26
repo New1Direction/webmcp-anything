@@ -56,5 +56,9 @@ wmcp-extension-*.zip
 # Offline Doctor comparison build output
 /tools/doctor-diff/native/target/
 
-# Generated Graphify output
+# Generated Graphify output (anywhere in the tree)
 graphify-out/
+**/graphify-out/
+
+# Launch / marketing ops (moved out of main)
+launch/
