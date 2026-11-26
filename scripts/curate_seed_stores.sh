@@ -9,7 +9,7 @@
 # Step 1 (safe) resets the runtime list so the cron seeds only the diverse
 # DEFAULT_STORES going forward. Steps 2-3 are optional. Run from the repo root.
 #
-# Requires: wrangler logged in to the production account (aisle9angel@gmail.com).
+# Requires: wrangler logged in to the appropriate Cloudflare account.
 set -euo pipefail
 cd "$(dirname "$0")/../worker"
 WR="./node_modules/.bin/wrangler"

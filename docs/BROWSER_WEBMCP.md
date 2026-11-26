@@ -2,7 +2,7 @@
 
 This integration has **two separate execution environments**. Treat them as distinct security boundaries.
 
-## What works on this branch
+## What the integration supports
 
 - worker/src/webmcp_bridge.ts: one extraction emits remote MCP tools and a site-owner-installed browser shim. The shim prefers document.modelContext and supports older navigator.modelContext previews, with abort-based registration cleanup.
 - extension/injected.js: discovers tools registered by the currently open website via document.modelContext.getTools(). Site-owned native tools take precedence over WMCP-inferred tools with the same name.
@@ -37,7 +37,7 @@ Do not expose native page tools as remotely executable MCP operations until the 
 - Strict cross-account and cross-origin isolation, response byte limits, auditing and kill-switch integration.
 - Tests for tab navigation, revoked permissions, browser restarts, duplicate calls and spoofed page bridge messages.
 
-Keep remote execution in a **separate reviewed change**. This branch deliberately stops at local user-triggered browser execution.
+Keep remote execution in a **separate reviewed change**. The current integration stops at local user-triggered browser execution.
 
 ## References
 
