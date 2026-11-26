@@ -82,6 +82,7 @@ def check_doctor(executable, origin, assets):
         baseline_path.write_text(json.dumps(baseline), encoding="utf-8")
         variants = [
             ("/tool-lab.html", 'value="forms"', 'value="html-forms"', "search_guides", "inputSchema"),
+            ("/tool-lab.html", "toolautosubmit", "", "search_guides", "annotations"),
             ("/tool-lab.js", 'items: { type: "string" }', 'items: { type: "number" }',
              "get_guide_results", "outputSchema"),
         ]
@@ -98,7 +99,7 @@ def check_doctor(executable, origin, assets):
             finally:
                 assets[path] = original
         assert scan("--baseline", str(baseline_path))["status"] == "pass"
-        print("Restoring both declarations returned Doctor to exit 0.")
+        print("Restoring the declarations returned Doctor to exit 0.")
 
 
 def main():

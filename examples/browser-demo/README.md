@@ -52,7 +52,7 @@ python3 -m pip install playwright==1.62.0
 python3 scripts/test-webmcp-tool-lab.py --chrome /path/to/chrome-headless-shell
 ```
 
-The run compares a regular form submission with a native WebMCP call. It then changes one select option and one output field type in separate preview variants. Each keeps its tool registration and fails Doctor strict mode with the specific schema field. Restoring the declarations passes. The [Tool Lab workflow](../../.github/workflows/webmcp-tool-lab.yml) runs this check in GitHub Actions.
+The run compares a regular form submission with a native WebMCP call. It then changes a select option, removes automatic submission, and changes an output field type in separate preview variants. Each keeps its tool registration and fails Doctor strict mode with the specific changed field. Restoring the declarations passes. The [Tool Lab workflow](../../.github/workflows/webmcp-tool-lab.yml) runs this check in GitHub Actions.
 
 ## Testing
 

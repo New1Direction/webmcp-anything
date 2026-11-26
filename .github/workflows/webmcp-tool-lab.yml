@@ -36,5 +36,11 @@ jobs:
             https://storage.googleapis.com/chrome-for-testing-public/160.0.8183.0/linux64/chrome-headless-shell-linux64.zip \
             -o "$RUNNER_TEMP/wmcp-chrome.zip"
           unzip -q "$RUNNER_TEMP/wmcp-chrome.zip" -d "$RUNNER_TEMP"
+          # Match Playwright's launch mode for this disposable runner and loopback-only fixture.
+          cat > "$RUNNER_TEMP/wmcp-fixture-chrome" <<'SH'
+          #!/bin/sh
+          exec "$RUNNER_TEMP/chrome-headless-shell-linux64/chrome-headless-shell" --no-sandbox "$@"
+          SH
+          chmod u+x "$RUNNER_TEMP/wmcp-fixture-chrome"
       - name: Test real browser behavior and Doctor drift
-        run: python scripts/test-webmcp-tool-lab.py --chrome "$RUNNER_TEMP/chrome-headless-shell-linux64/chrome-headless-shell"
+        run: python scripts/test-webmcp-tool-lab.py --chrome "$RUNNER_TEMP/wmcp-fixture-chrome"
