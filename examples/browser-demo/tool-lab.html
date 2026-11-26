@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Guide finder · WMCP Tool Lab</title>
+  <style>
+    :root { color-scheme: dark; font: 16px/1.5 system-ui, sans-serif; background: #0c1218; color: #eef3f5 }
+    * { box-sizing: border-box }
+    body { margin: 0 }
+    main { width: min(100% - 2rem, 48rem); margin: clamp(2rem, 8vw, 5rem) auto }
+    nav { display: flex; flex-wrap: wrap; gap: .5rem 1.5rem; margin-bottom: 2rem }
+    h1 { font-size: clamp(2.5rem, 8vw, 4.5rem); line-height: 1; letter-spacing: -.055em; margin: 0 }
+    h2 { font-size: 1.1rem; margin: 0 }
+    a { color: #a6e9d6; text-underline-offset: .18em }
+    p { margin: .6rem 0 }
+    .intro, .guide p, .mode { color: #becbd2 }
+    form { display: grid; grid-template-columns: 1fr 1.45fr auto; gap: .8rem; align-items: end; padding: 1rem; background: #142029; border: 1px solid #3c505d; border-radius: .8rem; margin-block: 1.4rem }
+    label { display: block; font-weight: 600; margin-bottom: .4rem }
+    input, select, button { min-height: 2.75rem; border-radius: .45rem; padding: .5rem .65rem; font: inherit }
+    input, select { width: 100%; min-width: 0; color: inherit; border: 1px solid #8196a4; background: #101a23 }
+    button { background: #a6e9d6; color: #132621; font-weight: 700; border: 1px solid transparent; cursor: pointer }
+    :focus-visible { outline: 3px solid #ffd686; outline-offset: 3px }
+    form:tool-form-active { outline: 2px solid #a6e9d6; outline-offset: 4px }
+    ul { list-style: none; margin: .7rem 0; padding: 0; border-top: 1px solid #3c505d }
+    .guide { padding: .8rem 0; border-bottom: 1px solid #3c505d; overflow-wrap: anywhere }
+    .guide p { margin: .2rem 0 0 }
+    .mode { overflow-wrap: anywhere; min-height: 1.5em }
+    @media (max-width: 560px) { form { grid-template-columns: 1fr } }
+  </style>
+  <script src="tool-lab.js" defer></script>
+</head>
+<body>
+  <main>
+    <nav aria-label="Examples">
+      <a href="./">Taskboard</a>
+      <a href="https://github.com/New1Direction/webmcp-anything">WMCP on GitHub</a>
+    </nav>
+    <h1>WebMCP guide finder</h1>
+    <p class="intro">Search a local catalog of guides. The form publishes a search tool in WebMCP-enabled browsers.</p>
+    <form id="guide-search" toolname="search_guides"
+          tooldescription="Filter the local WebMCP guide catalog and display the matching guides."
+          toolautosubmit>
+      <div>
+        <label for="topic">Topic</label>
+        <select id="topic" name="topic" required toolparamdescription="Which guide category to search.">
+          <option value="all">All topics</option>
+          <option value="forms">HTML forms</option>
+          <option value="javascript">JavaScript tools</option>
+          <option value="testing">Testing</option>
+        </select>
+      </div>
+      <div>
+        <label for="query">Keyword</label>
+        <input id="query" name="query" maxlength="120" toolparamdescription="Optional text in a guide title or summary.">
+      </div>
+      <button type="submit">Find guides</button>
+    </form>
+    <section aria-labelledby="results-heading">
+      <h2 id="results-heading">Guides</h2>
+      <p id="result-status" role="status"></p>
+      <ul id="guide-results"></ul>
+    </section>
+  </main>
+</body>
+</html>

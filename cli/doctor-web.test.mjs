@@ -40,7 +40,20 @@ test("checks removed and changed browser tools and permits the same preview path
   assert.equal(result.status, "fail");
   assert.deepEqual(result.drift.removed, ["list_items"]);
   assert.deepEqual(result.drift.changed, ["search"]);
+  assert.deepEqual(result.contractChanges, [{ name: "search", fields: ["inputSchema"] }]);
+  assert.match(formatDoctorWeb(result), /changed: search \(inputSchema\)/);
   assert.doesNotMatch(JSON.stringify(result), /Find an item/);
+});
+
+test("explains output schema and browser annotations while retaining old baselines", async () => {
+  const baseline = await doctorWeb(page, { scan: scan(initial) });
+  const updated = { ...initial, outputSchema: { type: "object" }, annotations: { autosubmit: true } };
+  const result = await doctorWeb(page, { scan: scan(updated), baseline });
+  assert.deepEqual(result.contractChanges, [{ name: "search", fields: ["outputSchema", "annotations"] }]);
+  const { toolFieldFingerprints, ...legacy } = baseline;
+  const withLegacy = await doctorWeb(page, { scan: scan(updated), baseline: legacy });
+  assert.deepEqual(withLegacy.drift, result.drift);
+  assert.deepEqual(withLegacy.contractChanges, []);
 });
 
 test("zero observed tools fail and a failed zero-tool report cannot become a baseline", async () => {

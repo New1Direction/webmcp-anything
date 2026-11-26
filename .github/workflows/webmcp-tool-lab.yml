@@ -1,0 +1,40 @@
+name: WebMCP Tool Lab
+
+on:
+  pull_request:
+    branches: [main]
+    paths: &lab_paths
+      - ".github/workflows/webmcp-tool-lab.yml"
+      - "cli/**"
+      - "examples/browser-demo/tool-lab.*"
+      - "scripts/test-webmcp-tool-lab.py"
+  push:
+    branches: [main]
+    paths: *lab_paths
+
+permissions:
+  contents: read
+
+jobs:
+  native-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install Playwright
+        run: python -m pip install playwright==1.62.0
+      - name: Get Chrome for Testing 160
+        shell: bash
+        run: |
+          curl --fail --silent --show-error --location --retry 2 --max-time 120 \
+            https://storage.googleapis.com/chrome-for-testing-public/160.0.8183.0/linux64/chrome-headless-shell-linux64.zip \
+            -o "$RUNNER_TEMP/wmcp-chrome.zip"
+          unzip -q "$RUNNER_TEMP/wmcp-chrome.zip" -d "$RUNNER_TEMP"
+      - name: Test real browser behavior and Doctor drift
+        run: python scripts/test-webmcp-tool-lab.py --chrome "$RUNNER_TEMP/chrome-headless-shell-linux64/chrome-headless-shell"
