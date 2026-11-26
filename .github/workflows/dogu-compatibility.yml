@@ -1,0 +1,46 @@
+name: Dogu compatibility
+
+on:
+  pull_request:
+    branches: [main]
+    paths: &dogu_paths
+      - ".github/workflows/dogu-compatibility.yml"
+      - "cli/**"
+      - "adapters/**"
+      - "worker/package*.json"
+      - "worker/src/**"
+      - "worker/test/mcp_dogu.test.ts"
+      - "worker/test/helpers.ts"
+  push:
+    branches: [main]
+    paths: *dogu_paths
+
+permissions:
+  contents: read
+
+jobs:
+  dogu:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install released Dogu binary
+        shell: bash
+        run: |
+          release=https://github.com/New1Direction/dogu/releases/download/v0.7.7
+          asset=dogu-x86_64-unknown-linux-musl
+          curl --fail --silent --show-error --location --retry 2 --max-time 90 "$release/$asset.tar.gz" -o "$RUNNER_TEMP/dogu.tar.gz"
+          curl --fail --silent --show-error --location --retry 2 --max-time 30 "$release/$asset.sha256" -o "$RUNNER_TEMP/dogu.sha256"
+          expected="$(awk 'NR == 1 { print $1 }' "$RUNNER_TEMP/dogu.sha256")"
+          printf '%s  %s\n' "$expected" "$RUNNER_TEMP/dogu.tar.gz" | sha256sum --check
+          tar -xzf "$RUNNER_TEMP/dogu.tar.gz" -C "$RUNNER_TEMP"
+          test "$("$RUNNER_TEMP/dogu" --version)" = 'dogu 0.7.7'
+      - name: Install Worker dependencies
+        working-directory: worker
+        run: npm ci
+      - name: Check the actual Worker MCP endpoint with Dogu
+        working-directory: worker
+        run: WMCP_DOGU_TEST_BIN="$RUNNER_TEMP/dogu" npm test -- test/mcp_dogu.test.ts
