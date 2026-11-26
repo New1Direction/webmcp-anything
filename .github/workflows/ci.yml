@@ -101,7 +101,7 @@ jobs:
 
   browser-acceptance:
     name: Chromium WebMCP acceptance (simulated native API)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: worker

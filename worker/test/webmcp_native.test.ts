@@ -47,7 +47,11 @@ it.skipIf(!process.env.WMCP_CHROME)("real Chrome detects the legacy shim regress
     expect(baseline.toolCount).toBe(1);
     await writeFile(baselinePath, JSON.stringify(baseline));
 
-    shim = fixedShim.replace("native && typeof native.registerTool === \"function\" ? native : legacy", "legacy");
+    shim = fixedShim.replace(
+      /var MC = typeof document !== "undefined"[\s\S]*?\? navigator\.modelContext : null;/,
+      'var MC = typeof navigator !== "undefined" && navigator.modelContext && typeof navigator.modelContext.registerTool === "function" ? navigator.modelContext : null;',
+    );
+    expect(shim).not.toBe(fixedShim);
     const broken = await scan("/preview", "--baseline", baselinePath).then(
       () => { throw Error("The legacy shim should fail strict mode"); },
       (error) => { expect(error.code).toBe(2); return JSON.parse(error.stdout); },
