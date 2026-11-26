@@ -4,6 +4,20 @@ from representation_context import ax_view, dom_view, enrich, lookup, project
 
 
 class RepresentationTests(unittest.TestCase):
+    def test_dom_only_omits_embedded_json_sources(self):
+        markup = (
+            '<a href="/orders.html">Orders</a>'
+            '<script type="application/ld+json">{"@context":"https://schema.org",'
+            '"additionalProperty":[{"@type":"PropertyValue","name":"Status","value":"Pending"}]}</script>'
+            '<script id="wmcp-context" type="application/json">{"schemaVersion":"wmcp-capabilities/v1",'
+            '"tools":[{"name":"export","effect":"write"}]}</script>'
+        )
+        dom, metadata = dom_view(markup)
+        self.assertEqual(dom["nodes"][0]["href"], "/orders.html")
+        self.assertEqual(metadata["nodes"], [{"name": "Status", "value": "Pending"}])
+        self.assertEqual(metadata["tools"], [{"name": "export", "effect": "write"}])
+        self.assertEqual(dom_view(markup, include_metadata=False), [dom])
+
     def test_projection_keeps_scoped_live_state_and_drops_unneeded_values(self):
         live = {"nodes": [
             {"role": "textbox", "name": "Note", "scope": "Private", "value": "Private text", "ref": {"id": "private"}},

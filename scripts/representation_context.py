@@ -54,7 +54,7 @@ def status_value(name, text):
     return clean(text[len(prefix):]) if text.startswith(prefix) else clean(text)
 
 
-def dom_view(markup):
+def dom_view(markup, *, include_metadata=True):
     root = html.fromstring(markup)
     ids = root.xpath("//*[@id]")
     labels = {element.get("id"): clean(element.text_content()) for element in ids}
@@ -91,9 +91,11 @@ def dom_view(markup):
         if role in {"status", "alert"}:
             node["value"] = status_value(name, rendered)
         nodes.append(node)
-    data = root.xpath("//script[@type='application/ld+json' or @id='wmcp-context']/text()")
-    metadata = parse_metadata(data)
-    return [{"nodes": nodes}, metadata]
+    views = [{"nodes": nodes}]
+    if include_metadata:
+        data = root.xpath("//script[@type='application/ld+json' or @id='wmcp-context']/text()")
+        views.append(parse_metadata(data))
+    return views
 
 
 def prop(node, name, default=None):

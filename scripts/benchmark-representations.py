@@ -7,9 +7,6 @@ import math
 import shutil
 import statistics
 import subprocess
-import threading
-from functools import partial
-from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from time import perf_counter_ns
 from urllib.parse import urljoin, urlsplit
@@ -24,15 +21,38 @@ from representation_context import (
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURES = ROOT / "examples" / "representations"
 MODES = (
-    "dom", "accessibility", "metadata", "screenshot", "all-sources", "compact",
+    "dom", "dom-only", "accessibility", "metadata", "json-ld", "tool-contract-json", "semantic-json",
+    "screenshot", "all-sources", "compact",
     "compact-targeted", "compact-markup", "compact-live-dom", "compact-no-ax", "compact-no-metadata", "compact-no-visual", "compact-no-dom-fallback",
 )
 VIEWPORT = {"width": 1024, "height": 720}
+FIXTURE_ORIGIN = "https://wmcp-fixtures.test"
+METADATA_SELECTORS = {
+    "metadata": "script[type='application/ld+json'], script#wmcp-context",
+    "json-ld": "script[type='application/ld+json']",
+    "tool-contract-json": "script#wmcp-context",
+}
+VISUAL_MODES = {
+    "screenshot", "all-sources", "compact", "compact-targeted", "compact-markup",
+    "compact-live-dom", "compact-no-ax", "compact-no-metadata", "compact-no-dom-fallback",
+}
 
 
-class QuietHandler(SimpleHTTPRequestHandler):
-    def log_message(self, *_):
-        pass
+def load_fixture_routes(context):
+    assets = {"/" + path.name: path for path in FIXTURES.iterdir() if path.suffix in {".html", ".css"}}
+
+    def handle(route):
+        url = route.request.url
+        if not url.startswith(FIXTURE_ORIGIN + "/"):
+            route.abort()
+            return
+        path = assets.get(urlsplit(url).path)
+        if path is None or route.request.method != "GET":
+            route.fulfill(status=404, body="Fixture not found")
+        else:
+            route.fulfill(path=path)
+
+    context.route("**/*", handle)
 
 
 def same(actual, expected):
@@ -44,21 +64,23 @@ def acquire(page, cdp, mode, request):
     colors = [request["color"]] if request.get("kind") == "visual" else []
 
     def take(kind):
-        if kind == "dom":
+        if kind in {"dom", "dom-only"}:
             serialized = page.content()
             sources[kind] = len(serialized.encode("utf-8"))
-            return dom_view(serialized)
+            return dom_view(serialized, include_metadata=kind == "dom")
         if kind == "accessibility":
             raw = cdp.send("Accessibility.getFullAXTree")
             sources[kind] = encoded_size(raw)
             address = urlsplit(page.url)
             return [ax_view(raw, address.scheme + "://" + address.netloc)]
-        if kind == "metadata":
-            raw = page.evaluate("""() => Array.from(
-                document.querySelectorAll("script[type='application/ld+json'], script#wmcp-context"),
-                (node) => node.textContent)""")
+        if kind in METADATA_SELECTORS:
+            raw = page.evaluate("""selector => Array.from(
+                document.querySelectorAll(selector), (node) => node.textContent)""", METADATA_SELECTORS[kind])
             sources[kind] = encoded_size(raw)
             return [parse_metadata(raw)]
+        if kind == "semantic-json":
+            view, sources[kind] = targeted_semantics(page, request)
+            return [view]
         png = page.screenshot(animations="disabled", scale="css")
         sources[kind] = len(png)
         return [screenshot_view(png, colors)]
@@ -74,16 +96,14 @@ def acquire(page, cdp, mode, request):
     else:
         target = request.get("target")
         if mode == "compact-targeted":
-            view, size = targeted_semantics(page, request)
-            views, sources["targeted-semantics"] = [view], size
+            views = take("semantic-json")
         elif mode in {"compact-markup", "compact-live-dom"}:
-            ui, _ = take("dom")
-            views = [ui]
+            views = take("dom-only")
             if mode == "compact-live-dom" and target and target.get("role") == "textbox" and request.get("field") == "value":
                 live, size = targeted_value(page, target, views)
                 if size:
                     sources["targeted-dom"] = size
-                    enrich(ui, live)
+                    enrich(views[0], live)
         else:
             views = [] if mode == "compact-no-ax" else take("accessibility")
             needs_href = request.get("field") == "href" or request["intent"] == "navigate"
@@ -243,32 +263,28 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--chrome", help="Chrome or Chromium executable. Default uses Playwright's installed Chromium.")
     parser.add_argument("--repeats", default=3, type=int)
+    parser.add_argument("--methods", nargs="+", choices=MODES, default=MODES,
+                        help="Compare only these representation methods. Defaults to the full suite.")
     args = parser.parse_args()
     if args.repeats < 1:
         parser.error("--repeats must be positive")
-    if not shutil.which("tesseract"):
+    selected = tuple(dict.fromkeys(args.methods))
+    if VISUAL_MODES.intersection(selected) and not shutil.which("tesseract"):
         parser.error("Tesseract with English language data is required")
     tasks = json.loads((FIXTURES / "tasks.json").read_text(encoding="utf-8"))["tasks"]
-    modes = {mode: {task["id"]: [] for task in tasks} for mode in MODES}
-    with ThreadingHTTPServer(("127.0.0.1", 0), partial(QuietHandler, directory=FIXTURES)) as server:
-        thread = threading.Thread(target=server.serve_forever, daemon=True)
-        thread.start()
-        origin = f"http://127.0.0.1:{server.server_address[1]}"
-        try:
-            with sync_playwright() as playwright:
-                with playwright.chromium.launch(executable_path=args.chrome, headless=True) as browser:
-                    context = browser.new_context(viewport=VIEWPORT, device_scale_factor=1, locale="en-US")
-                    context.route("**/*", lambda route: route.continue_() if route.request.url.startswith(origin + "/") else route.abort())
-                    for repetition in range(args.repeats):
-                        for index, task in enumerate(tasks):
-                            start = (repetition + index) % len(MODES)
-                            for mode in MODES[start:] + MODES[:start]:
-                                modes[mode][task["id"]].append(trial(context, origin, task, mode))
-                    version = browser.version
-        finally:
-            server.shutdown()
-            thread.join()
-    ocr = subprocess.check_output(["tesseract", "--version"], text=True).splitlines()[0]
+    modes = {mode: {task["id"]: [] for task in tasks} for mode in selected}
+    with sync_playwright() as playwright:
+        with playwright.chromium.launch(executable_path=args.chrome, headless=True) as browser:
+            context = browser.new_context(viewport=VIEWPORT, device_scale_factor=1, locale="en-US")
+            load_fixture_routes(context)
+            for repetition in range(args.repeats):
+                for index, task in enumerate(tasks):
+                    start = (repetition + index) % len(selected)
+                    for mode in selected[start:] + selected[:start]:
+                        modes[mode][task["id"]].append(trial(context, FIXTURE_ORIGIN, task, mode))
+            version = browser.version
+    ocr = (subprocess.check_output(["tesseract", "--version"], text=True).splitlines()[0]
+           if VISUAL_MODES.intersection(selected) else None)
     print(json.dumps({
         "schemaVersion": "wmcp-representation-benchmark/v1", "browser": version, "ocr": ocr,
         "viewport": VIEWPORT, "repetitions": args.repeats,
