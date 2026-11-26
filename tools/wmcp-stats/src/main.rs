@@ -1,9 +1,17 @@
 use serde_json::{json, Value};
+use std::collections::HashMap;
 use std::io::{self, Read};
 
 fn log_add(a: f64, b: f64) -> f64 {
     let high = a.max(b);
     high + (a.min(b) - high).exp().ln_1p()
+}
+fn log_choose(trials: usize, successes: usize) -> f64 {
+    let mut choose = 0.0;
+    for i in 1..=successes.min(trials - successes) {
+        choose += ((trials + 1 - i) as f64).ln() - (i as f64).ln();
+    }
+    choose
 }
 fn binomial_tail(trials: usize, successes: usize, probability: f64) -> f64 {
     if successes == 0 {
@@ -15,12 +23,30 @@ fn binomial_tail(trials: usize, successes: usize, probability: f64) -> f64 {
     if probability == 1.0 {
         return 1.0;
     }
+    binomial_tail_with_choose(
+        trials,
+        successes,
+        probability,
+        log_choose(trials, successes),
+    )
+}
+fn binomial_tail_with_choose(
+    trials: usize,
+    successes: usize,
+    probability: f64,
+    choose: f64,
+) -> f64 {
+    if successes == 0 {
+        return 1.0;
+    }
+    if successes > trials || probability == 0.0 {
+        return 0.0;
+    }
+    if probability == 1.0 {
+        return 1.0;
+    }
     let p = probability.ln();
     let q = (-probability).ln_1p();
-    let mut choose = 0.0;
-    for i in 1..=successes.min(trials - successes) {
-        choose += ((trials + 1 - i) as f64).ln() - (i as f64).ln();
-    }
     let mut term = choose + successes as f64 * p + (trials - successes) as f64 * q;
     let mut tail = term;
     for i in successes..trials {
@@ -35,9 +61,10 @@ fn lower_rate(successes: usize, trials: usize, alpha: f64) -> Value {
     }
     let (mut lower, mut upper) = (0.0, 1.0);
     if successes > 0 {
+        let choose = log_choose(trials, successes);
         for _ in 0..48 {
             let mid = (lower + upper) / 2.0;
-            if binomial_tail(trials, successes, mid) <= alpha {
+            if binomial_tail_with_choose(trials, successes, mid, choose) <= alpha {
                 lower = mid;
             } else {
                 upper = mid;
@@ -104,6 +131,18 @@ fn latencies(v: &Value) -> Result<Vec<Option<f64>>, String> {
         })
         .collect()
 }
+type RateCache = HashMap<(usize, usize, u64), Value>;
+fn cached_rate(cache: &mut RateCache, successes: usize, trials: usize, alpha: f64) -> Value {
+    let key = (successes, trials, alpha.to_bits());
+    if let Some(value) = cache.get(&key) {
+        return value.clone();
+    }
+    let value = lower_rate(successes, trials, alpha);
+    if cache.len() < 4096 {
+        cache.insert(key, value.clone());
+    }
+    value
+}
 fn metrics(
     n: usize,
     completed: usize,
@@ -111,10 +150,11 @@ fn metrics(
     suitable: Option<usize>,
     times: &[Option<f64>],
     alpha: f64,
+    cache: &mut RateCache,
 ) -> Value {
-    json!({"attempts":n,"correctness":lower_rate(correct,n,alpha),"reliability":lower_rate(completed,n,alpha),"suitability":suitable.map(|s| lower_rate(s,n,alpha)),"latency":upper_p95(times,alpha)})
+    json!({"attempts":n,"correctness":cached_rate(cache,correct,n,alpha),"reliability":cached_rate(cache,completed,n,alpha),"suitability":suitable.map(|s| cached_rate(cache,s,n,alpha)),"latency":upper_p95(times,alpha)})
 }
-fn calculate(v: &Value) -> Result<Value, String> {
+fn calculate(v: &Value, cache: &mut RateCache) -> Result<Value, String> {
     let a = alpha(v)?;
     match v["op"].as_str() {
         Some("rate") => {
@@ -123,7 +163,7 @@ fn calculate(v: &Value) -> Result<Value, String> {
             if s > n {
                 return Err("successes exceed trials".into());
             }
-            Ok(lower_rate(s, n, a))
+            Ok(cached_rate(cache, s, n, a))
         }
         Some("p95") => Ok(upper_p95(&latencies(v)?, a)),
         Some("measure") => {
@@ -143,7 +183,7 @@ fn calculate(v: &Value) -> Result<Value, String> {
             {
                 return Err("inconsistent trial counts".into());
             }
-            Ok(metrics(n, completed, correct, suitable, &times, a))
+            Ok(metrics(n, completed, correct, suitable, &times, a, cache))
         }
         Some("trials") => {
             let trials = v["trials"].as_array().ok_or("trials must be an array")?;
@@ -199,6 +239,7 @@ fn calculate(v: &Value) -> Result<Value, String> {
                 (!preferred.is_empty()).then_some(suitable),
                 &times,
                 a,
+                cache,
             ))
         }
         _ => Err("unknown operation".into()),
@@ -208,9 +249,10 @@ fn process(input: &Value) -> Result<Value, String> {
     let requests = input["requests"]
         .as_array()
         .ok_or("requests must be an array")?;
+    let mut cache = RateCache::new();
     requests
         .iter()
-        .map(calculate)
+        .map(|request| calculate(request, &mut cache))
         .collect::<Result<Vec<_>, _>>()
         .map(Value::Array)
 }
@@ -266,7 +308,21 @@ mod tests {
     }
     #[test]
     fn rejects_inconsistent_counts() {
-        assert!(calculate(&json!({"op":"measure","alpha":0.05,"attempts":1,"correct":2,"completed":1,"latencies":[1]})).is_err());
+        assert!(calculate(&json!({"op":"measure","alpha":0.05,"attempts":1,"correct":2,"completed":1,"latencies":[1]}), &mut RateCache::new()).is_err());
+    }
+
+    #[test]
+    fn cache_preserves_results_and_separates_confidence_levels() {
+        let mut cache = RateCache::new();
+        let first = cached_rate(&mut cache, 9, 10, 0.05);
+        assert_eq!(first, lower_rate(9, 10, 0.05));
+        assert_eq!(cached_rate(&mut cache, 9, 10, 0.05), first);
+        assert_eq!(cache.len(), 1);
+        assert_eq!(
+            cached_rate(&mut cache, 9, 10, 0.01),
+            lower_rate(9, 10, 0.01)
+        );
+        assert_eq!(cache.len(), 2);
     }
 
     #[test]
@@ -278,7 +334,11 @@ mod tests {
             let correct: usize = fields[2].parse().unwrap();
             let input = json!({"op":"measure","alpha":0.05,"attempts":attempts,
                 "completed":completed,"correct":correct,"suitable":null,"latencies":vec![Some(1.0); attempts]});
-            assert_eq!(calculate(&input).is_ok(), fields[3] == "allow", "{line}");
+            assert_eq!(
+                calculate(&input, &mut RateCache::new()).is_ok(),
+                fields[3] == "allow",
+                "{line}"
+            );
         }
     }
 
@@ -292,7 +352,7 @@ mod tests {
             {"status":"completed","latencyMs":30,"checks":{"correct":false,"fast":true}},
             {"status":"timeout","latencyMs":40}
         ]});
-        let result = calculate(&input).unwrap();
+        let result = calculate(&input, &mut RateCache::new()).unwrap();
         assert_eq!(result["attempts"], 4);
         assert_eq!(result["reliability"]["successes"], 3);
         assert_eq!(result["correctness"]["successes"], 2);
