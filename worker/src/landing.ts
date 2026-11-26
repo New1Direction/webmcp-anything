@@ -715,7 +715,7 @@ tools = [
         <li>No live execute</li>
         <li>Best-effort cache</li>
       </ul>
-      <a class="pick muted-btn" href="/dashboard">Use anonymously →</a>
+      <a class="pick muted-btn" href="/start?source=home_pricing">Preview a URL free →</a>
     </div>
     <div class="plan featured">
       <h3>Builder</h3>
@@ -921,7 +921,16 @@ const ORIGIN = ${JSON.stringify(origin)};
   var go = document.getElementById("hc-go");
   var err = document.getElementById("hc-err");
   if (!box || !go) return;
-  var plan = "builder";
+  var plan = "builder", signedIn = false;
+  fetch(ORIGIN + "/api/v1/me", { credentials: "include" })
+    .then(function(r) { return r.json(); })
+    .then(function(me) {
+      if (me && me.authenticated) {
+        signedIn = true;
+        email.style.display = "none";
+        email.removeAttribute("required");
+      }
+    }).catch(function() {});
   var labels = { builder: "Builder — $39/mo", pro: "Pro — $99/mo", reseller: "Reseller — $299/mo" };
   document.querySelectorAll("button.pick[data-plan]").forEach(function (b) {
     b.addEventListener("click", function () {
@@ -930,22 +939,22 @@ const ORIGIN = ${JSON.stringify(origin)};
       box.classList.add("show");
       err.textContent = "";
       box.scrollIntoView({ behavior: "smooth", block: "center" });
-      email.focus();
+      if (!signedIn) email.focus();
     });
   });
   async function start() {
     var addr = (email.value || "").trim();
     err.textContent = "";
-    if (!addr || addr.indexOf("@") < 0) { err.textContent = "Enter a valid email."; return; }
+    if (!signedIn && (!addr || addr.indexOf("@") < 0)) { err.textContent = "Enter a valid email or sign in."; return; }
     go.disabled = true; go.textContent = "Loading…";
     try {
       var r = await fetch(ORIGIN + "/api/v1/stripe/checkout", {
-        method: "POST",
+        method: "POST", credentials: "include",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ email: addr, plan: plan, origin: ORIGIN }),
+        body: JSON.stringify({ email: addr, plan: plan, source: "home_pricing" }),
       });
       var d = await r.json();
-      if (!r.ok || !d.url) { err.textContent = d.error || "Checkout failed."; go.disabled = false; go.textContent = "Continue →"; return; }
+      if (!r.ok || !d.url) { if (d.error === "already_subscribed") { window.location.href = "/dashboard#billing"; return; } err.textContent = d.error || "Checkout failed."; go.disabled = false; go.textContent = "Continue →"; return; }
       window.location.href = d.url;
     } catch (e) {
       err.textContent = "Network error — try again."; go.disabled = false; go.textContent = "Continue →";

@@ -49,6 +49,8 @@ describe("WebMCP hub", () => {
     const inline = html.match(/<script>\s*([\s\S]*?)<\/script>/)?.[1];
     expect(inline).toBeTruthy();
     expect(() => new Function(inline!)).not.toThrow();
+    expect(html).toContain("read-tool snapshots");
+    expect(html).toContain("/managed?source=webmcp");
     expect(html).toContain(`${origin}/webmcp/`); // example shim snippet
     expect(html).toContain(`${origin}/connect`);
     expect(html).toContain(`${origin}/mcp/leaderboard`);

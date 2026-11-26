@@ -103,7 +103,7 @@ describe("stripeWebhook — non-plan SKUs NEVER mint an API key", () => {
     expect(env.KEYS.__keys("user:").length).toBe(0);
   });
 
-  it("agent_ready_fix → records a fix job + verified, mints no key", async () => {
+  it("agent_ready_fix → queues fulfillment without premature verification or keys", async () => {
     const { env, res } = await fireSigned({
       kind: "agent_ready_fix",
       slug: "foo-com",
@@ -112,8 +112,56 @@ describe("stripeWebhook — non-plan SKUs NEVER mint an API key", () => {
     expect(res.status).toBe(200);
     expect(res.body.action).toBe("fix_recorded");
     expect(env.KEYS.__keys("fix:").length).toBe(1);
-    expect(env.KEYS.__map.has("verified:foo-com")).toBe(true);
+    expect(env.KEYS.__map.has("verified:foo-com")).toBe(false);
+    expect(env.KEYS.__keys("fixsession:").length).toBe(1);
     expect(env.KEYS.__keys("key:").length).toBe(0);
+  });
+
+  it("sends the operator one paid-fix fulfillment alert per checkout", async () => {
+    const env = envMock({
+      STRIPE_WEBHOOK_SECRET: WHSEC,
+      LEAD_ALERT_WEBHOOK: "https://hooks.example.test/paid-alerts",
+    });
+    const requests: string[] = [];
+    vi.stubGlobal("fetch", vi.fn(async (url: string, init: any) => {
+      requests.push(String(url) + " " + JSON.parse(init.body).text);
+      return { ok: true };
+    }));
+    const raw = checkoutCompleted({
+      kind: "agent_ready_fix", slug: "foo-com", site_url: "https://foo.com",
+    });
+    for (let i = 0; i < 2; i++) {
+      const ctx = makeCtx({ env, body: raw, headers: { "stripe-signature": signStripe(raw, WHSEC) } });
+      await stripeWebhook(ctx);
+      await Promise.all(ctx.__waited);
+    }
+    expect(env.KEYS.__keys("fix:")).toHaveLength(1);
+    expect(requests).toHaveLength(1);
+    expect(requests[0]).toContain("Paid agent-ready fix needs fulfillment");
+  });
+
+  it("unpaid async one-time checkout does not fulfill, then settles only once", async () => {
+    const env = envMock({ STRIPE_WEBHOOK_SECRET: WHSEC });
+    const metadata = { kind: "agent_ready_fix", slug: "paid-com", site_url: "https://paid.com" };
+    async function fire(type: string, payment_status: string) {
+      const payload = JSON.parse(checkoutCompleted(metadata, { payment_status }));
+      payload.type = type;
+      const raw = JSON.stringify(payload);
+      const ctx = makeCtx({ env, body: raw, headers: { "stripe-signature": signStripe(raw, WHSEC) } });
+      const result = await stripeWebhook(ctx);
+      await Promise.all(ctx.__waited);
+      return result;
+    }
+    const pending = await fire("checkout.session.completed", "unpaid");
+    expect(pending.body.action).toBe("payment_pending");
+    expect(env.KEYS.__keys("fix:")).toHaveLength(0);
+    const paid = await fire("checkout.session.async_payment_succeeded", "paid");
+    expect(paid.body.action).toBe("fix_recorded");
+    expect(env.KEYS.__keys("fix:")).toHaveLength(1);
+    expect(env.KEYS.__map.has("verified:paid-com")).toBe(false);
+    const replay = await fire("checkout.session.async_payment_succeeded", "paid");
+    expect(replay.body.action).toBe("fix_already_recorded");
+    expect(env.KEYS.__keys("fix:")).toHaveLength(1);
   });
 
   it("unknown kind → provisions NOTHING", async () => {
