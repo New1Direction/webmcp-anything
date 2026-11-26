@@ -11,6 +11,7 @@ node_modules/
 dist/
 build/
 /tools/wmcp-admin/target/
+/tools/wmcp-stats/target/
 
 # OS noise
 .DS_Store

@@ -37,6 +37,7 @@ Chromium 151 exposed the descriptions and input schemas through the native regis
 From the repository root, with Playwright Python installed and a Chrome build that exposes the WebMCP testing API:
 
 ```sh
+cargo build --locked --manifest-path tools/wmcp-stats/Cargo.toml
 node --test cli/*.test.mjs actions/mcp-doctor/*.test.mjs
 python3 scripts/test-taskboard-affordances.py --chrome /path/to/chrome-headless-shell
 ```

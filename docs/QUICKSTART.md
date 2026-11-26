@@ -104,6 +104,7 @@ This is not a remote MCP connection and does not require a WMCP subscription.
 Run tests:
 
 ~~~sh
+cargo build --locked --manifest-path tools/wmcp-stats/Cargo.toml
 node --test cli/*.test.mjs
 node adapters/_test/run.mjs
 cd worker && npm install && npm run verify

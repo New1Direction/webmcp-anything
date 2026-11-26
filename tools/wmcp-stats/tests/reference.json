@@ -1,0 +1,946 @@
+{
+  "rates": [
+    {
+      "successes": 0,
+      "trials": 0,
+      "alpha": 0.05,
+      "expected": {
+        "successes": 0,
+        "trials": 0,
+        "estimate": null,
+        "lower": null
+      }
+    },
+    {
+      "successes": 0,
+      "trials": 0,
+      "alpha": 0.001,
+      "expected": {
+        "successes": 0,
+        "trials": 0,
+        "estimate": null,
+        "lower": null
+      }
+    },
+    {
+      "successes": 0,
+      "trials": 1,
+      "alpha": 0.05,
+      "expected": {
+        "successes": 0,
+        "trials": 1,
+        "estimate": 0,
+        "lower": 0
+      }
+    },
+    {
+      "successes": 0,
+      "trials": 1,
+      "alpha": 0.001,
+      "expected": {
+        "successes": 0,
+        "trials": 1,
+        "estimate": 0,
+        "lower": 0
+      }
+    },
+    {
+      "successes": 1,
+      "trials": 1,
+      "alpha": 0.05,
+      "expected": {
+        "successes": 1,
+        "trials": 1,
+        "estimate": 1,
+        "lower": 0.04999999999999716
+      }
+    },
+    {
+      "successes": 1,
+      "trials": 1,
+      "alpha": 0.001,
+      "expected": {
+        "successes": 1,
+        "trials": 1,
+        "estimate": 1,
+        "lower": 0.0009999999999976694
+      }
+    },
+    {
+      "successes": 0,
+      "trials": 2,
+      "alpha": 0.05,
+      "expected": {
+        "successes": 0,
+        "trials": 2,
+        "estimate": 0,
+        "lower": 0
+      }
+    },
+    {
+      "successes": 0,
+      "trials": 2,
+      "alpha": 0.001,
+      "expected": {
+        "successes": 0,
+        "trials": 2,
+        "estimate": 0,
+        "lower": 0
+      }
+    },
+    {
+      "successes": 1,
+      "trials": 2,
+      "alpha": 0.05,
+      "expected": {
+        "successes": 1,
+        "trials": 2,
+        "estimate": 0.5,
+        "lower": 0.025320565519102445
+      }
+    },
+    {
+      "successes": 1,
+      "trials": 2,
+      "alpha": 0.001,
+      "expected": {
+        "successes": 1,
+        "trials": 2,
+        "estimate": 0.5,
+        "lower": 0.000500125062536938
+      }
+    },
+    {
+      "successes": 2,
+      "trials": 2,
+      "alpha": 0.05,
+      "expected": {
+        "successes": 2,
+        "trials": 2,
+        "estimate": 1,
+        "lower": 0.2236067977499765
+      }
+    },
+    {
+      "successes": 2,
+      "trials": 2,
+      "alpha": 0.001,
+      "expected": {
+        "successes": 2,
+        "trials": 2,
+        "estimate": 1,
+        "lower": 0.031622776601683
+      }
+    },
+    {
+      "successes": 0,
+      "trials": 10,
+      "alpha": 0.05,
+      "expected": {
+        "successes": 0,
+        "trials": 10,
+        "estimate": 0,
+        "lower": 0
+      }
+    },
+    {
+      "successes": 0,
+      "trials": 10,
+      "alpha": 0.001,
+      "expected": {
+        "successes": 0,
+        "trials": 10,
+        "estimate": 0,
+        "lower": 0
+      }
+    },
+    {
+      "successes": 5,
+      "trials": 10,
+      "alpha": 0.05,
+      "expected": {
+        "successes": 5,
+        "trials": 10,
+        "estimate": 0.5,
+        "lower": 0.2224411010081262
+      }
+    },
+    {
+      "successes": 5,
+      "trials": 10,
+      "alpha": 0.001,
+      "expected": {
+        "successes": 5,
+        "trials": 10,
+        "estimate": 0.5,
+        "lower": 0.08981318981185282
+      }
+    },
+    {
+      "successes": 10,
+      "trials": 10,
+      "alpha": 0.05,
+      "expected": {
+        "successes": 10,
+        "trials": 10,
+        "estimate": 1,
+        "lower": 0.7411344491069443
+      }
+    },
+    {
+      "successes": 10,
+      "trials": 10,
+      "alpha": 0.001,
+      "expected": {
+        "successes": 10,
+        "trials": 10,
+        "estimate": 1,
+        "lower": 0.5011872336272702
+      }
+    },
+    {
+      "successes": 0,
+      "trials": 59,
+      "alpha": 0.05,
+      "expected": {
+        "successes": 0,
+        "trials": 59,
+        "estimate": 0,
+        "lower": 0
+      }
+    },
+    {
+      "successes": 0,
+      "trials": 59,
+      "alpha": 0.001,
+      "expected": {
+        "successes": 0,
+        "trials": 59,
+        "estimate": 0,
+        "lower": 0
+      }
+    },
+    {
+      "successes": 29,
+      "trials": 59,
+      "alpha": 0.05,
+      "expected": {
+        "successes": 29,
+        "trials": 59,
+        "estimate": 0.4915254237288136,
+        "lower": 0.37829555040419294
+      }
+    },
+    {
+      "successes": 29,
+      "trials": 59,
+      "alpha": 0.001,
+      "expected": {
+        "successes": 29,
+        "trials": 59,
+        "estimate": 0.4915254237288136,
+        "lower": 0.292452864274523
+      }
+    },
+    {
+      "successes": 59,
+      "trials": 59,
+      "alpha": 0.05,
+      "expected": {
+        "successes": 59,
+        "trials": 59,
+        "estimate": 1,
+        "lower": 0.9504923901117728
+      }
+    },
+    {
+      "successes": 59,
+      "trials": 59,
+      "alpha": 0.001,
+      "expected": {
+        "successes": 59,
+        "trials": 59,
+        "estimate": 1,
+        "lower": 0.8895134973108227
+      }
+    },
+    {
+      "successes": 0,
+      "trials": 100,
+      "alpha": 0.05,
+      "expected": {
+        "successes": 0,
+        "trials": 100,
+        "estimate": 0,
+        "lower": 0
+      }
+    },
+    {
+      "successes": 0,
+      "trials": 100,
+      "alpha": 0.001,
+      "expected": {
+        "successes": 0,
+        "trials": 100,
+        "estimate": 0,
+        "lower": 0
+      }
+    },
+    {
+      "successes": 50,
+      "trials": 100,
+      "alpha": 0.05,
+      "expected": {
+        "successes": 50,
+        "trials": 100,
+        "estimate": 0.5,
+        "lower": 0.41362171463091
+      }
+    },
+    {
+      "successes": 50,
+      "trials": 100,
+      "alpha": 0.001,
+      "expected": {
+        "successes": 50,
+        "trials": 100,
+        "estimate": 0.5,
+        "lower": 0.34479800642531444
+      }
+    },
+    {
+      "successes": 100,
+      "trials": 100,
+      "alpha": 0.05,
+      "expected": {
+        "successes": 100,
+        "trials": 100,
+        "estimate": 1,
+        "lower": 0.9704869503929601
+      }
+    },
+    {
+      "successes": 100,
+      "trials": 100,
+      "alpha": 0.001,
+      "expected": {
+        "successes": 100,
+        "trials": 100,
+        "estimate": 1,
+        "lower": 0.9332543007969889
+      }
+    },
+    {
+      "successes": 0,
+      "trials": 300,
+      "alpha": 0.05,
+      "expected": {
+        "successes": 0,
+        "trials": 300,
+        "estimate": 0,
+        "lower": 0
+      }
+    },
+    {
+      "successes": 0,
+      "trials": 300,
+      "alpha": 0.001,
+      "expected": {
+        "successes": 0,
+        "trials": 300,
+        "estimate": 0,
+        "lower": 0
+      }
+    },
+    {
+      "successes": 150,
+      "trials": 300,
+      "alpha": 0.05,
+      "expected": {
+        "successes": 150,
+        "trials": 300,
+        "estimate": 0.5,
+        "lower": 0.45100875470879487
+      }
+    },
+    {
+      "successes": 150,
+      "trials": 300,
+      "alpha": 0.001,
+      "expected": {
+        "successes": 150,
+        "trials": 300,
+        "estimate": 0.5,
+        "lower": 0.4099412707025536
+      }
+    },
+    {
+      "successes": 300,
+      "trials": 300,
+      "alpha": 0.05,
+      "expected": {
+        "successes": 300,
+        "trials": 300,
+        "estimate": 1,
+        "lower": 0.9900639180555402
+      }
+    },
+    {
+      "successes": 300,
+      "trials": 300,
+      "alpha": 0.001,
+      "expected": {
+        "successes": 300,
+        "trials": 300,
+        "estimate": 1,
+        "lower": 0.9772372209558107
+      }
+    }
+  ],
+  "latency": [
+    {
+      "latencies": [],
+      "alpha": 0.05,
+      "expected": {
+        "estimateMs": null,
+        "upperMs": null,
+        "rank": null,
+        "status": "insufficient-sample"
+      }
+    },
+    {
+      "latencies": [],
+      "alpha": 0.05,
+      "expected": {
+        "estimateMs": null,
+        "upperMs": null,
+        "rank": null,
+        "status": "insufficient-sample"
+      }
+    },
+    {
+      "latencies": [
+        1
+      ],
+      "alpha": 0.05,
+      "expected": {
+        "estimateMs": 1,
+        "upperMs": null,
+        "rank": null,
+        "status": "insufficient-sample"
+      }
+    },
+    {
+      "latencies": [
+        null
+      ],
+      "alpha": 0.05,
+      "expected": {
+        "estimateMs": null,
+        "upperMs": null,
+        "rank": null,
+        "status": "insufficient-sample"
+      }
+    },
+    {
+      "latencies": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58
+      ],
+      "alpha": 0.05,
+      "expected": {
+        "estimateMs": 56,
+        "upperMs": null,
+        "rank": null,
+        "status": "insufficient-sample"
+      }
+    },
+    {
+      "latencies": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        null
+      ],
+      "alpha": 0.05,
+      "expected": {
+        "estimateMs": 56,
+        "upperMs": null,
+        "rank": null,
+        "status": "insufficient-sample"
+      }
+    },
+    {
+      "latencies": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59
+      ],
+      "alpha": 0.05,
+      "expected": {
+        "estimateMs": 57,
+        "upperMs": 59,
+        "rank": 59,
+        "status": "bounded"
+      }
+    },
+    {
+      "latencies": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        null
+      ],
+      "alpha": 0.05,
+      "expected": {
+        "estimateMs": 57,
+        "upperMs": null,
+        "rank": 59,
+        "status": "unbounded"
+      }
+    },
+    {
+      "latencies": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99,
+        100
+      ],
+      "alpha": 0.05,
+      "expected": {
+        "estimateMs": 95,
+        "upperMs": 99,
+        "rank": 99,
+        "status": "bounded"
+      }
+    },
+    {
+      "latencies": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99,
+        null
+      ],
+      "alpha": 0.05,
+      "expected": {
+        "estimateMs": 95,
+        "upperMs": 99,
+        "rank": 99,
+        "status": "bounded"
+      }
+    }
+  ]
+}

@@ -7,6 +7,29 @@ on:
     branches: [main]
 
 jobs:
+  admin-lean:
+    name: Admin and selection models (Lean)
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: tools/wmcp-admin/formal
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check Lean proofs and shared test cases
+        shell: bash
+        run: |
+          version="$(cut -d: -f2 lean-toolchain)"
+          archive="lean-${version#v}-linux.tar.zst"
+          curl --fail --silent --show-error --location "https://github.com/leanprover/lean4/releases/download/${version}/${archive}" -o "$RUNNER_TEMP/$archive"
+          printf '%s  %s\n' '2b7ab1ed8b92d2e6abfaf41344823b510064dbc9c0260cac73eb496ab2dea6eb' "$RUNNER_TEMP/$archive" | sha256sum --check
+          tar --zstd -xf "$RUNNER_TEMP/$archive" -C "$RUNNER_TEMP"
+          "$RUNNER_TEMP/${archive%.tar.zst}/bin/lean" --run Safety.lean > "$RUNNER_TEMP/admin-confirmation.tsv"
+          diff -u confirmation.tsv "$RUNNER_TEMP/admin-confirmation.tsv"
+          "$RUNNER_TEMP/${archive%.tar.zst}/bin/lean" --run Safety.lean retry > "$RUNNER_TEMP/admin-retry.tsv"
+          diff -u retry.tsv "$RUNNER_TEMP/admin-retry.tsv"
+          "$RUNNER_TEMP/${archive%.tar.zst}/bin/lean" --run ../../wmcp-stats/formal/Counts.lean > "$RUNNER_TEMP/selection-counts.tsv"
+          diff -u ../../wmcp-stats/formal/counts.tsv "$RUNNER_TEMP/selection-counts.tsv"
+
   admin-cli:
     name: Rust admin CLI
     runs-on: ubuntu-latest
@@ -46,6 +69,11 @@ jobs:
           node-version: "22"
       - name: Check CLI JavaScript syntax
         run: node --check cli/wmcp.mjs
+      - name: Test and build Rust selection engine
+        run: |
+          cargo fmt --check --manifest-path tools/wmcp-stats/Cargo.toml
+          cargo test --locked --manifest-path tools/wmcp-stats/Cargo.toml
+          cargo build --locked --manifest-path tools/wmcp-stats/Cargo.toml
       - name: Test CLI and browser demo
         run: node --test cli/*.test.mjs actions/mcp-doctor/*.test.mjs
 

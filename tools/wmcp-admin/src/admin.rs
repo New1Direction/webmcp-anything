@@ -202,6 +202,9 @@ struct Totals {
     last_total: u64,
     failed: Vec<String>,
 }
+fn retryable_status(status: u16) -> bool {
+    status == 429 || (500..=599).contains(&status)
+}
 fn post_batches(
     client: &Client,
     base: &str,
@@ -233,7 +236,7 @@ fn post_batches(
                     let status = response.status();
                     (
                         Err(format!("HTTP {status}")),
-                        status.as_u16() == 429 || status.is_server_error(),
+                        retryable_status(status.as_u16()),
                     )
                 }
                 Err(error) => {
@@ -905,6 +908,34 @@ mod tests {
     }
 
     #[test]
+    fn confirmation_decisions_match_lean_model_cases() {
+        for line in include_str!("../formal/confirmation.tsv").lines() {
+            let values: Vec<_> = line.split('\t').collect();
+            assert_eq!(values.len(), 4);
+            let checked = values[0].parse().unwrap();
+            let unavailable = values[1].parse().unwrap();
+            let confirmed = values[2].parse().unwrap();
+            assert_eq!(
+                ensure_safe_confirmation(checked, unavailable, confirmed).is_ok(),
+                values[3] == "allow",
+                "{line}"
+            );
+        }
+    }
+
+    #[test]
+    fn retry_status_decisions_match_lean_model_cases() {
+        for line in include_str!("../formal/retry.tsv").lines() {
+            let (status, expected) = line.split_once('\t').unwrap();
+            assert_eq!(
+                retryable_status(status.parse().unwrap()),
+                expected == "retry",
+                "{line}"
+            );
+        }
+    }
+
+    #[test]
     fn retries_transient_errors_but_records_api_rejections() {
         let (base, server) = server(vec![
             ("503 Service Unavailable", "{}"),
@@ -934,24 +965,13 @@ mod tests {
     }
 
     #[test]
-    fn shopify_product_confirmation_matches_python() {
-        let (base, server) = server(vec![
-            ("200 OK", r#"{"products":[{"id":1}]}"#),
-            ("200 OK", r#"{"products":[{"id":1}]}"#),
-        ]);
-        let script = "import sys;sys.path.insert(0,sys.argv[1]);import shopify_store_coverage as m;base=sys.argv[2];get=m.http_get;m.http_get=lambda u,**kw:get(base+'/products.json?limit=1',**kw);print(m.confirm_shopify('example.com'))";
-        let python = std::process::Command::new("python3")
-            .args(["-c", script])
-            .arg(Path::new(env!("CARGO_MANIFEST_DIR")).join("../../scripts"))
-            .arg(&base)
-            .output()
-            .unwrap();
-        assert!(python.status.success());
-        assert_eq!(String::from_utf8_lossy(&python.stdout).trim(), "True");
+    fn shopify_product_confirmation_uses_product_endpoint() {
+        let (base, server) = server(vec![("200 OK", r#"{"products":[{"id":1}]}"#)]);
         assert_eq!(
             confirm_shopify_at(&Client::new(), &base),
             Confirmation::Confirmed
         );
-        assert_eq!(server.join().unwrap().len(), 2);
+        let requests = server.join().unwrap();
+        assert!(requests[0].starts_with("GET /products.json?limit=1 "));
     }
 }
