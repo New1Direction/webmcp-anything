@@ -6,8 +6,11 @@ on:
     paths: &lab_paths
       - ".github/workflows/webmcp-tool-lab.yml"
       - "cli/**"
-      - "examples/browser-demo/tool-lab.*"
       - "scripts/test-webmcp-tool-lab.py"
+      - "worker/package*.json"
+      - "worker/public/demo/**"
+      - "worker/src/**"
+      - "worker/wrangler.toml"
   push:
     branches: [main]
     paths: *lab_paths
@@ -29,6 +32,9 @@ jobs:
           python-version: "3.13"
       - name: Install Playwright
         run: python -m pip install playwright==1.62.0
+      - name: Install Worker dependencies
+        working-directory: worker
+        run: npm ci
       - name: Get Chrome for Testing 160
         shell: bash
         run: |
@@ -44,3 +50,22 @@ jobs:
           chmod u+x "$RUNNER_TEMP/wmcp-fixture-chrome"
       - name: Test real browser behavior and Doctor drift
         run: python scripts/test-webmcp-tool-lab.py --chrome "$RUNNER_TEMP/wmcp-fixture-chrome"
+      - name: Verify demo navigation and native tools through Wrangler
+        shell: bash
+        run: |
+          set -euo pipefail
+          origin=http://127.0.0.1:8766
+          log="$RUNNER_TEMP/wmcp-tool-lab-worker.log"
+          worker/node_modules/.bin/wrangler dev --config worker/wrangler.toml --local --ip 127.0.0.1 --port 8766 > "$log" 2>&1 &
+          worker_pid=$!
+          trap 'kill "$worker_pid" 2>/dev/null || true' EXIT
+          for i in $(seq 1 45); do
+            if curl -fs "$origin/api/v1/health" >/dev/null; then
+              python scripts/test-webmcp-tool-lab.py --origin "$origin" --chrome "$RUNNER_TEMP/wmcp-fixture-chrome"
+              exit 0
+            fi
+            if ! kill -0 "$worker_pid" 2>/dev/null; then break; fi
+            sleep 1
+          done
+          cat "$log"
+          exit 1

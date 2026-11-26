@@ -12,19 +12,36 @@ from threading import Thread
 from playwright.sync_api import expect, sync_playwright
 
 ROOT = Path(__file__).resolve().parents[1]
-DEMO = ROOT / "examples" / "browser-demo"
+DEMO = ROOT / "worker" / "public" / "demo"
 FLAGS = ["--enable-features=WebMCP,WebMCPTesting,DevToolsWebMCPSupport"]
 EXPECTED_TOOLS = ["get_guide_results", "search_guides"]
+LAB_HTML = "/demo/tool-lab.html"
+LAB_JS = "/demo/tool-lab.js"
 
 
-def check_behavior(chromium, executable, origin):
+def check_behavior(chromium, executable, origin, *, packaged_worker=False):
     with chromium.launch(executable_path=executable, args=FLAGS) as browser:
         context = browser.new_context(viewport={"width": 375, "height": 790})
         context.route("**/*", lambda route: route.continue_()
                       if route.request.url.startswith(origin + "/") else route.abort())
         page = context.new_page()
         page.set_default_timeout(5000)
-        page.goto(origin + "/tool-lab.html")
+        if packaged_worker:
+            response = page.goto(origin + "/start")
+            assert response.ok, response.status
+            expect(page.get_by_role("button", name="Preview tools")).to_be_visible()
+
+            response = page.goto(origin + "/webmcp")
+            assert response.ok, response.status
+            expect(page.get_by_role("link", name="Open the Tool Lab")).to_be_visible()
+            page.get_by_role("link", name="Try the before-and-after demo").click()
+            expect(page.locator("#status")).to_have_text("FAIL · exit 2")
+            page.get_by_role("button", name="After the fix").click()
+            expect(page.locator("#status")).to_have_text("PASS · exit 0")
+            expect(page.locator("#output")).to_contain_text("list_tasks")
+            page.get_by_role("link", name="Try the WebMCP Tool Lab").click()
+        else:
+            page.goto(origin + LAB_HTML)
         expect(page.get_by_role("status")).to_have_text("3 guides found")
 
         page.get_by_label("Topic", exact=True).select_option("testing")
@@ -70,7 +87,7 @@ def check_doctor(executable, origin, assets):
 
         def scan(*args, expect_code=0):
             run = subprocess.run(
-                ["node", str(ROOT / "cli" / "wmcp.mjs"), "doctor", "web", origin + "/tool-lab.html",
+                ["node", str(ROOT / "cli" / "wmcp.mjs"), "doctor", "web", origin + LAB_HTML,
                  "--chrome", executable, "--json", "--strict", "--wait-ms", "150", *args],
                 capture_output=True, text=True, timeout=35,
             )
@@ -81,9 +98,9 @@ def check_doctor(executable, origin, assets):
         assert [tool["name"] for tool in baseline["toolFingerprints"]] == EXPECTED_TOOLS, baseline
         baseline_path.write_text(json.dumps(baseline), encoding="utf-8")
         variants = [
-            ("/tool-lab.html", 'value="forms"', 'value="html-forms"', "search_guides", "inputSchema"),
-            ("/tool-lab.html", "toolautosubmit", "", "search_guides", "annotations"),
-            ("/tool-lab.js", 'items: { type: "string" }', 'items: { type: "number" }',
+            (LAB_HTML, 'value="forms"', 'value="html-forms"', "search_guides", "inputSchema"),
+            (LAB_HTML, "toolautosubmit", "", "search_guides", "annotations"),
+            (LAB_JS, 'items: { type: "string" }', 'items: { type: "number" }',
              "get_guide_results", "outputSchema"),
         ]
         for path, before, after, name, field in variants:
@@ -105,9 +122,15 @@ def check_doctor(executable, origin, assets):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--chrome", required=True, help="Path to Chrome for Testing 160 or compatible Chromium")
+    parser.add_argument("--origin", help="Check routes and tools on a running Worker")
     args = parser.parse_args()
-    assets = {"/" + name: (DEMO / name).read_text(encoding="utf-8")
-              for name in ("tool-lab.html", "tool-lab.js")}
+    if args.origin:
+        with sync_playwright() as playwright:
+            check_behavior(playwright.chromium, args.chrome, args.origin.rstrip("/"), packaged_worker=True)
+        return
+
+    assets = {path: (DEMO / Path(path).name).read_text(encoding="utf-8")
+              for path in (LAB_HTML, LAB_JS)}
 
     class FixtureHandler(BaseHTTPRequestHandler):
         def log_message(self, *_):

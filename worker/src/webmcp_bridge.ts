@@ -164,6 +164,7 @@ ${uiNav(origin)}
   <section>
     <h2>Check your WebMCP tools</h2>
     <p class="muted">See how a Chrome check catches a missing tool before merge. <a href="${origin}/demo/webmcp-doctor.html">Try the before-and-after demo</a>.</p>
+    <p class="muted">Try a search form that publishes a WebMCP tool and a JavaScript tool that returns the results. <a href="${origin}/demo/tool-lab.html">Open the Tool Lab</a>.</p>
   </section>
 
   <section>
