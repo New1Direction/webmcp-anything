@@ -38,6 +38,22 @@ This is a demo with in-memory, non-sensitive state. It deliberately never preten
 
 Specification: https://webmachinelearning.github.io/webmcp/
 
+## WebMCP Tool Lab
+
+Use the same local server and open `http://localhost:8000/tool-lab.html`. **Find guides** filters a small catalog in the browser. Changing the topic or keyword is useful in a regular browser, too.
+
+- **`search_guides`** comes from the annotated HTML form. Chrome derives its required topic and choices from the native select. Searching changes only the visible filter, so the form can use `toolautosubmit`.
+- **`get_guide_results`** is a JavaScript tool with an `outputSchema` for the active topic, keyword, and matching guide IDs. Chrome documents output schemas from version 159. [Declarative API](https://developer.chrome.com/docs/ai/webmcp/declarative-api) · [Imperative API](https://developer.chrome.com/docs/ai/webmcp/imperative-api#output-schema)
+
+From the repository root, run the behavior and regression checks with Playwright Python and [Chrome for Testing 160](https://googlechromelabs.github.io/chrome-for-testing/):
+
+```sh
+python3 -m pip install playwright==1.62.0
+python3 scripts/test-webmcp-tool-lab.py --chrome /path/to/chrome-headless-shell
+```
+
+The run compares a regular form submission with a native WebMCP call. It then changes a select option, removes automatic submission, and changes an output field type in separate preview variants. Each keeps its tool registration and fails Doctor strict mode with the specific changed field. Restoring the declarations passes. The [Tool Lab workflow](../../.github/workflows/webmcp-tool-lab.yml) runs this check in GitHub Actions.
+
 ## Testing
 
     node --test cli/*.test.mjs

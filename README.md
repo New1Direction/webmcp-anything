@@ -20,6 +20,8 @@ The `doctor web` regression test runs Chrome and reads its native registrations.
 
 Open [the standalone demo HTML](worker/public/demo/webmcp-doctor.html) from a clone to replay the two results. [Run the native regression or add the GitHub Action](docs/WEBMCP_DOCTOR.md). You can also [compare two saved reports offline](tools/doctor-diff/) with the TypeScript and Effect 4 CLI and its Rust diff engine.
 
+The [Tool Lab](examples/browser-demo/README.md#webmcp-tool-lab) tests a native HTML form and a JavaScript tool that declares an output schema. Doctor reports which part changed, such as `changed: search_guides (inputSchema)`, while keeping the report to names and hashes.
+
 ## Try it in 30 seconds
 
 **Option 1: browser, no install.** Paste a public URL into [wmcp.sh/start](https://wmcp.sh/start), review the inferred tools, then choose whether to connect an MCP client.

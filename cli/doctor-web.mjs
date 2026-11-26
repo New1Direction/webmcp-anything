@@ -4,6 +4,7 @@ import { scanWebMcp } from "./webmcp-browser.mjs";
 
 const VERSION = "wmcp-doctor-web/v1";
 const HASH = /^[a-f0-9]{64}$/;
+const CONTRACT_FIELDS = ["title", "description", "inputSchema", "outputSchema", "annotations"];
 const safe = (value) => String(value).replace(/[\p{Cc}\p{Cf}\p{Zl}\p{Zp}]/gu, " ").slice(0, 200);
 
 export function validateWebPage(value) {
@@ -52,6 +53,20 @@ function validateBaseline(baseline, page, endpoint, allowPreviewOrigin) {
   }
 }
 
+function explainContractChanges(current, baseline, drift) {
+  if (!drift?.changed.length || !Array.isArray(baseline.toolFieldFingerprints) ||
+      baseline.toolFieldFingerprints.length > 2000) return [];
+  const previous = new Map(baseline.toolFieldFingerprints.map((tool) => [tool?.name, tool?.hashes]));
+  const observed = new Map(current.map((tool) => [tool.name, tool.hashes]));
+  return drift.changed.flatMap((name) => {
+    const before = previous.get(name);
+    if (!before || !CONTRACT_FIELDS.every((field) => typeof before[field] === "string" && HASH.test(before[field]))) return [];
+    const after = observed.get(name);
+    const fields = CONTRACT_FIELDS.filter((field) => before[field] !== after[field]);
+    return fields.length ? [{ name, fields }] : [];
+  });
+}
+
 export async function doctorWeb(page, { chrome, waitMs, baseline, endpoint, allowPreviewOrigin,
   scan = scanWebMcp, request = fetch } = {}) {
   page = validateWebPage(page);
@@ -60,11 +75,16 @@ export async function doctorWeb(page, { chrome, waitMs, baseline, endpoint, allo
   const browser = await scan(page, { chrome, waitMs });
   const tools = browser.tools.filter((tool) => typeof tool.name === "string" && tool.name.length > 0);
   const surface = fingerprintSurface(tools);
+  const toolFieldFingerprints = tools.map((tool) => ({
+    name: tool.name,
+    hashes: Object.fromEntries(CONTRACT_FIELDS.map((field) => [field, digest({ value: tool[field] })])),
+  })).sort((a, b) => a.name.localeCompare(b.name));
   const findings = [];
   const complete = tools.length === browser.tools.length && new Set(tools.map((tool) => tool.name)).size === tools.length;
   if (!complete) findings.push("The browser returned missing or duplicate tool names. The report is incomplete.");
   else if (!tools.length) findings.push("Chrome observed zero top-level WebMCP tools during the observation window.");
   const drift = baseline && complete ? compareToolFingerprints(surface.toolFingerprints, baseline.toolFingerprints) : null;
+  const contractChanges = explainContractChanges(toolFieldFingerprints, baseline, drift);
   if (drift?.changedAny) findings.push("Browser tool definitions changed since the baseline.");
   if (baseline && new URL(browser.page).pathname !== new URL(baseline.observedPage).pathname) {
     findings.push("Chrome landed on a different path than the reviewed baseline.");
@@ -86,7 +106,7 @@ export async function doctorWeb(page, { chrome, waitMs, baseline, endpoint, allo
   }
   return { schemaVersion: VERSION, page, observedPage: browser.page, browser: browser.browser,
     waitMs: waitMs ?? 1000, complete, status: findings.length ? "fail" : "pass", toolCount: tools.length,
-    ...surface, drift, pair, findings };
+    ...surface, toolFieldFingerprints, drift, contractChanges, pair, findings };
 }
 
 export function formatDoctorWeb(report) {
@@ -95,8 +115,12 @@ export function formatDoctorWeb(report) {
   for (const tool of report.toolFingerprints.slice(0, 40)) lines.push(`  ${safe(tool.name)}`);
   if (report.toolCount > 40) lines.push("  … use --json for the full list");
   if (report.drift) {
+    const changedFields = new Map((report.contractChanges ?? []).map(({ name, fields }) => [name, fields]));
     for (const kind of ["added", "removed", "changed"]) {
-      for (const name of report.drift[kind].slice(0, 40)) lines.push(`  ${kind}: ${safe(name)}`);
+      for (const name of report.drift[kind].slice(0, 40)) {
+        const fields = kind === "changed" && changedFields.get(name);
+        lines.push(`  ${kind}: ${safe(name)}${fields ? ` (${fields.join(", ")})` : ""}`);
+      }
     }
   }
   if (report.pair) {

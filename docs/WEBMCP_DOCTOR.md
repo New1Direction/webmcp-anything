@@ -17,6 +17,8 @@ node cli/wmcp.mjs doctor web https://preview.example/tools \
 
 On the first command, commit the baseline only after the command succeeds and you verify the tool names. Use the same Chrome build and `--wait-ms` setting when comparing runs. The default observation window is 1,000 ms after document load, and `--wait-ms` accepts 0–10,000 ms. The check observes the anonymous page as loaded, including registrations made during that window. The report includes the Chrome build, observed path, and window used.
 
+For changed tools, Doctor reports which observed fields differ when the baseline also has field fingerprints. This can distinguish a form's changed parameter schema from changed annotations, descriptions, titles, or an output schema. The JSON includes `contractChanges` and `toolFieldFingerprints`. The field values are hashed, and older v1 reports remain valid baselines for added, removed, and changed tool names. Fields observed by Doctor depend on the Chrome build's DevTools events.
+
 If the page also has a remote MCP endpoint, append `--pair https://site.example/mcp` to both commands. The pairing lists browser-only and MCP-only tools by name and compares input/output schemas where both surfaces publish them. When a baseline is present, repeated differences are expected and new or resolved differences fail strict mode. Pairing only uses public, unauthenticated MCP discovery. To check an authenticated remote endpoint separately, use [MCP Doctor](MCP_DOCTOR.md).
 
 ### GitHub Actions
@@ -56,3 +58,5 @@ WMCP_CHROME=/path/to/chrome npm test -- test/webmcp_native.test.ts
 ~~~
 
 The test loads the existing native taskboard and confirms its three registrations. It then checks that the legacy WMCP shim removes `list_tasks` from a reviewed preview baseline and exits `2`. Restoring the fixed shim restores `list_tasks` and exits `0`. The [demo page](../worker/public/demo/webmcp-doctor.html) presents the recorded result and runs as a standalone HTML file without a login or WebMCP-capable browser.
+
+The [Tool Lab](../examples/browser-demo/README.md#webmcp-tool-lab) covers changes that keep tool names intact. Chrome synthesizes the HTML form's input schema and reads the JavaScript tool's declared output schema. The lab calls only its own local tools to verify visible results. Doctor checks the declarations without calling tools.
