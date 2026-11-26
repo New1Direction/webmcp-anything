@@ -25,6 +25,7 @@ const HELP = [
   "  node cli/wmcp.mjs config  <public-url>",
   "  node cli/wmcp.mjs doctor  <mcp-endpoint-url> [--json] [--strict] [--baseline path]",
   "  node cli/wmcp.mjs doctor web <page-url> [--json] [--strict] [--baseline path]",
+  "  node cli/wmcp.mjs doctor diff --help  Compare saved reports offline",
   "  node cli/wmcp.mjs compile <source.json> [--json]",
   "  node cli/wmcp.mjs contract <contract.json>",
   "  node cli/wmcp.mjs contract <capability-source.json> --tool <name>",
@@ -51,6 +52,27 @@ const HELP = [
   "parameters or tokens: the remote service may fetch and cache target URLs.",
   "WMCP_API_KEY enables authenticated reads; its value is never printed.",
   "Doctor probes initialize + tools/list, not tools/call. No security certification.",
+].join("\n");
+
+const DIFF_HELP = [
+  "Compare two saved WMCP Doctor JSON reports offline.",
+  "",
+  "Usage: node cli/wmcp.mjs doctor diff <baseline.json> <current.json> [options]",
+  "",
+  "  --json                  Print a machine-readable comparison",
+  "  --strict                Exit 2 when a tool is added, removed or changed",
+  "  --allow-preview-origin  Compare the same browser paths on different origins",
+  "  --engine <path>         Use a built wmcp-doctor-diff binary at this path",
+  "  -h, --help              Show help",
+  "",
+  "Build from the repository root using Node.js 22.18+ and Rust:",
+  "  npm ci --prefix tools/doctor-diff",
+  "  cargo build --locked --manifest-path tools/doctor-diff/native/Cargo.toml",
+  "",
+  "Example:",
+  "  node cli/wmcp.mjs doctor diff .github/webmcp-baseline.json preview.json --strict",
+  "",
+  "Pass - for either report to read it from stdin.",
 ].join("\n");
 
 export function validateTarget(value) {
@@ -260,6 +282,22 @@ export function summarize(command, value, json = false) {
 
 export async function main(argv = process.argv.slice(2), options = {}) {
   try {
+    if (argv[0] === "doctor" && argv[1] === "diff") {
+      const diffArgs = argv.slice(2);
+      if (diffArgs.length === 1 && ["--help", "-h"].includes(diffArgs[0])) {
+        console.log(DIFF_HELP);
+        return 0;
+      }
+      if (!diffArgs.length) throw Error("Pass two saved reports. See doctor diff --help.");
+      if (!process.features.typescript) throw Error("doctor diff requires Node.js 22.18+ with TypeScript enabled");
+      const { runDoctorDiff } = await import("../tools/doctor-diff/src/cli.ts").catch((error) => {
+        if (error.code === "ERR_MODULE_NOT_FOUND" && error.message.includes("'effect'")) {
+          throw Error("Install the doctor diff dependencies with npm ci --prefix tools/doctor-diff");
+        }
+        throw error;
+      });
+      return await runDoctorDiff(diffArgs);
+    }
     const args = parseArgs(argv);
     if (args.help) { console.log(HELP); return 0; }
     const data = await execute(args, { request: options.request || fetch, apiKey: options.apiKey ?? process.env.WMCP_API_KEY ?? "", scan: options.scan });
