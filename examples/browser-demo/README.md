@@ -72,3 +72,23 @@ Run the real-browser checks from the repository root with Playwright Python and 
     python3 scripts/test-taskboard-affordances.py --chrome /path/to/chrome-headless-shell
 
 [Affordance design language and test coverage](../../docs/affordance-design-language.md).
+
+### Test with the WebMCP polyfill
+
+The taskboard also supports the JavaScript registration API provided by
+[@w3c/webmcp-polyfill](https://github.com/w3c-oss/webmcp-polyfill).
+With Python Playwright installed, run this from the repository root:
+
+```sh
+bundle_dir=$(mktemp -d)
+npm pack @w3c/webmcp-polyfill@0.2.0 --pack-destination "$bundle_dir"
+tar -xzf "$bundle_dir/w3c-webmcp-polyfill-0.2.0.tgz" -C "$bundle_dir"
+python3 scripts/test-taskboard-affordances.py --chrome /path/to/chrome \
+  --polyfill "$bundle_dir/package/dist/polyfill.js"
+```
+
+The check disables native WebMCP, loads the bundle before the taskboard
+registers its tools, discovers all three registrations, and reads the two
+initial tasks through `executeTool()`. The bundle is only loaded in the test
+browser. Run the native checks above for Chrome agent integration and the
+Tool Lab’s declarative form.
