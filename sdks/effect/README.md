@@ -62,8 +62,7 @@ and the wasm32-unknown-unknown target installed. Copy the resulting
 script. Each embeds its Wasm module. Build optional variants before packing
 if consumers need the scripts in their tarball.
 
-In the initial build comparison, the default, Zig, and Rust builds measured 1,106, 7,303, and 14,344 gzip bytes,
-respectively, with the pinned compiler and bundler versions. To measure your
+The [benchmark report](../../docs/browser-walkthrough.md#runtime-benchmark) compares bundle sizes and browser timings for all four builds and links the individual trials. To measure your
 local builds in Chrome, install Python Playwright and run:
 
 ```sh
