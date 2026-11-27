@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# /// script
+# requires-python = ">=3.10"
+# dependencies = ["playwright==1.62.0"]
+# ///
 """Exercise the demo through keyboard input, Chromium AX, and native WebMCP."""
 
 import argparse
@@ -10,7 +14,7 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from threading import Thread
 
-from playwright.sync_api import expect, sync_playwright
+from playwright.sync_api import Error as PlaywrightError, expect, sync_playwright
 
 DEMO = Path(__file__).resolve().parents[1] / "examples" / "browser-demo"
 
@@ -283,9 +287,27 @@ def taskboard_journey(page, origin, runtime):
                 stream.write("### Taskboard journey\n\n```text\n" + "\n".join(report) + "\n```\n\n")
 
 
+def launch_browser(chromium, executable, flags):
+    if executable:
+        return chromium.launch(executable_path=executable, args=flags)
+    try:
+        return chromium.launch(args=flags)
+    except PlaywrightError as error:
+        if "Executable doesn't exist" not in str(error):
+            raise
+    try:
+        return chromium.launch(channel="chrome", args=flags)
+    except PlaywrightError as error:
+        if "not found" not in str(error) and "doesn't exist" not in str(error):
+            raise
+        raise SystemExit("Install Chrome or pass --chrome /path/to/chrome "
+                         "(or set WMCP_CHROME).") from None
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--chrome", help="Chrome executable with the WebMCP testing API")
+    parser.add_argument("--chrome", default=os.environ.get("WMCP_CHROME"),
+                        help="Chrome executable (also accepts WMCP_CHROME)")
     parser.add_argument("--polyfill", type=Path, metavar="BUNDLE",
                         help="Run taskboard interoperability checks with a local polyfill bundle")
     parser.add_argument("--journey", action="store_true", help="Run the completion and cancellation journey")
@@ -302,7 +324,7 @@ def main():
                 if args.polyfill:
                     flags = ["--disable-features=WebMCP"]
                     checks = (polyfill_checks,)
-                with playwright.chromium.launch(executable_path=args.chrome, args=flags) as browser:
+                with launch_browser(playwright.chromium, args.chrome, flags) as browser:
                     context = browser.new_context(viewport={"width": 1024, "height": 800})
                     context.route("**/*", lambda route: route.continue_()
                                   if route.request.url.startswith(origin) else route.abort())

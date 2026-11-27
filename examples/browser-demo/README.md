@@ -64,12 +64,17 @@ To check a running Worker, pass `--origin http://127.0.0.1:8787` to the same scr
 
 ## Check a complete agent journey
 
-From the repository root, run the taskboard journey with Python Playwright and a WebMCP-capable Chrome executable:
+From the repository root, run this command with [uv](https://docs.astral.sh/uv/) and a WebMCP-capable Chrome installation:
 
 ```sh
-python3 -m pip install playwright==1.62.0
-python3 scripts/test-taskboard-affordances.py --journey --chrome /path/to/chrome
+uv run scripts/test-taskboard-affordances.py --journey
 ```
+
+uv installs the script's pinned Python dependency in an isolated environment.
+The runner uses Playwright's bundled browser if installed, then falls back to
+system Chrome if that executable is missing. Set `WMCP_CHROME` or pass
+`--chrome /path/to/chrome` to select a specific build. If your Python environment
+already has Playwright installed, use `python3` in place of `uv run`.
 
 The runner serves the fixture on loopback and invokes its registered tools. It lists the two open tasks, cancels a request to complete task 1, and verifies both remain open. It then approves the same request, checks the visible state of both task IDs, and verifies the returned record. GitHub Actions writes each step and the tested runtime to the job summary. No model key is needed.
 
