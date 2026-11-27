@@ -6,6 +6,8 @@ on:
     paths: &lab_paths
       - ".github/workflows/webmcp-tool-lab.yml"
       - "cli/**"
+      - "examples/browser-demo/**"
+      - "scripts/test-taskboard-affordances.py"
       - "scripts/test-webmcp-tool-lab.py"
       - "worker/package*.json"
       - "worker/public/demo/**"
@@ -48,6 +50,8 @@ jobs:
           exec "$RUNNER_TEMP/chrome-headless-shell-linux64/chrome-headless-shell" --no-sandbox "$@"
           SH
           chmod u+x "$RUNNER_TEMP/wmcp-fixture-chrome"
+      - name: Taskboard journey with native WebMCP
+        run: python scripts/test-taskboard-affordances.py --journey --chrome "$RUNNER_TEMP/wmcp-fixture-chrome"
       - name: Test real browser behavior and Doctor drift
         run: python scripts/test-webmcp-tool-lab.py --chrome "$RUNNER_TEMP/wmcp-fixture-chrome"
       - name: Verify demo navigation and native tools through Wrangler
