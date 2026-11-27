@@ -1,36 +1,28 @@
-# Publishing wmcp to the official MCP registry
+# MCP registry listing
 
-`server.json` (repo root) is the manifest for the **official MCP registry**
-(`registry.modelcontextprotocol.io`) — the upstream that **Smithery, Glama,
-PulseMCP and most MCP directories sync from**. One publish cascades to them.
+The root `server.json` describes the hosted trust-checking endpoint at
+`https://wmcp.sh/mcp/trust`. It exposes tools for grading a server, checking
+tool drift, and reviewing an endpoint before execution. The page-side browser
+SDK and per-URL gateway have separate [setup instructions](README.md#start-here).
 
-The listed remote `https://wmcp.sh/mcp/trust` is **auth `none`** and stable, so the
-registry's validator can connect, `initialize`, and `tools/list` without credentials.
+## Verify the remote
 
-## Publish (one-time, ~2 min)
+From the repository root, inspect the public tool list:
 
 ```sh
-# 1. Install the publisher CLI
-brew install mcp-publisher           # or: see github.com/modelcontextprotocol/registry releases
-
-# 2. Authenticate — this proves you own the io.github.New1Direction/* namespace
-#    via your GitHub login (the namespace must match your GitHub username).
-mcp-publisher login github
-
-# 3. Validate + publish server.json from the repo root
-mcp-publisher publish
+node cli/wmcp.mjs doctor https://wmcp.sh/mcp/trust --json
 ```
 
-If the namespace is rejected, lowercase it: `io.github.new1direction/webmcp-anything`
-(GitHub usernames are case-insensitive; the registry may expect lowercase).
+Review the negotiated protocol, tool names, and findings before publishing
+changes to the listing.
 
-To update later, bump `version` in `server.json` and re-run `mcp-publisher publish`.
+## Publish a registry update
 
-## Why no `smithery.yaml`
+Install the [official registry publisher](https://github.com/modelcontextprotocol/registry),
+sign in with the GitHub account authorized for the manifest namespace, and
+review the version in `server.json`. Each published update needs a new version.
 
-`smithery.yaml` is for servers Smithery **builds/deploys** (TypeScript runtime or a
-container with a `startCommand`). wmcp is an **already-hosted remote** server, so a
-`smithery.yaml` is the wrong artifact. Smithery reaches wmcp via (a) the official
-registry sync above, or (b) "Add Server" → remote URL on smithery.ai. The repo's
-GitHub topics (`mcp`, `model-context-protocol`, `mcp-server`, `mcp-security`) also
-let Glama and others auto-index it.
+```sh
+mcp-publisher login github
+mcp-publisher publish
+```

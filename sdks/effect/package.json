@@ -22,7 +22,7 @@
   },
   "types": "./dist/browser.d.ts",
   "scripts": {
-    "build": "tsc && esbuild src/auto.ts --bundle --minify --format=iife --outfile=dist/webmcp.min.js && esbuild src/select.ts --bundle --splitting --format=esm --minify --outdir=dist/selector",
+    "build": "tsc && esbuild src/auto.ts --bundle --minify --format=iife --outfile=dist/webmcp.min.js && esbuild src/select.ts --bundle --splitting --format=esm --minify --outdir=dist/selector && node scripts/copy-licenses.mjs",
     "build:zig": "zig build-exe experiments/zig/registry.zig -target wasm32-freestanding -O ReleaseSmall -fno-entry -rdynamic -femit-bin=experiments/zig/registry.wasm && esbuild experiments/zig/browser.js --bundle --minify --loader:.wasm=binary --outfile=dist/webmcp-zig.min.js",
     "build:rust": "rustc experiments/rust/registry.rs --edition=2021 --crate-type=cdylib --target wasm32-unknown-unknown -C opt-level=z -C lto -C panic=abort -C strip=symbols -o experiments/rust/registry.wasm && esbuild experiments/rust/browser.js --bundle --minify --loader:.wasm=binary --outfile=dist/webmcp-rust.min.js"
   },
@@ -46,5 +46,12 @@
     "effect": {
       "optional": true
     }
+  },
+  "description": "Page-side WebMCP runtime with automatic fallback selection and optional Effect integration.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/New1Direction/webmcp-anything.git",
+    "directory": "sdks/effect"
   }
 }
