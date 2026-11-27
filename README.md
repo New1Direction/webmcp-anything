@@ -1,15 +1,25 @@
-# WMCP — catch WebMCP tool regressions before merge
+# WebMCP Anything (WMCP)
 
-Record the tools Chrome sees on a page, then fail CI when a preview drops or changes them. WMCP also exposes candidate tools from supported public URLs over remote MCP.
+Give browser agents tools on your page, check tool contracts before merging changes, or connect an MCP client to a supported public URL.
 
 [![CI](https://github.com/New1Direction/webmcp-anything/actions/workflows/ci.yml/badge.svg)](https://github.com/New1Direction/webmcp-anything/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-56cda0)](LICENSE)
 [![Node.js 18+](https://img.shields.io/badge/CLI-Node.js%2018%2B-239a73)](cli/README.md)
 [![Open MCP](https://img.shields.io/badge/protocol-MCP-4da6dc)](https://modelcontextprotocol.io)
 
-[**Add WebMCP Doctor to CI**](docs/WEBMCP_DOCTOR.md) · [**Try the offline fixture**](tools/doctor-diff/) · [**Explore a public URL**](https://wmcp.sh/)
+## Start here
 
-Build a [page-side browser runtime](sdks/effect/) for single-document tools. Use the [automatic runtime selector](sdks/effect/README.md#automatic-selection) to reuse the browser API or load a fallback for a single page or frames.
+| What you want to do | Where to start |
+| --- | --- |
+| Register tools on your page | [Browser SDK and automatic runtime selection](sdks/effect/README.md#automatic-selection) |
+| Try a working example locally | [Three-tool taskboard](#live-browser-native-example) |
+| Catch a missing or changed tool in a pull request | [WebMCP Doctor for browser pages](docs/WEBMCP_DOCTOR.md) or [MCP Doctor for HTTP servers](docs/MCP_DOCTOR.md) |
+| Discover tools from a public URL | [Hosted gateway](https://wmcp.sh/) or [read-only CLI quickstart](#try-the-hosted-gateway) |
+| Run the gateway yourself | [Self-hosting guide](docs/SELF_HOSTING.md) |
+
+The browser SDK builds from source and supports local tarball installation.
+The hosted gateway is a separate service. Its discovery results depend on the
+URL and adapter, and executing a tool requires authorization.
 
 ## See a missing tool before it ships
 
@@ -24,7 +34,7 @@ Open [the standalone demo HTML](worker/public/demo/webmcp-doctor.html) from a cl
 
 The [Tool Lab](examples/browser-demo/README.md#webmcp-tool-lab) tests a native HTML form and a JavaScript tool that declares an output schema. Doctor reports which part changed, such as `changed: search_guides (inputSchema)`, while keeping the report to names and hashes.
 
-## Try it in 30 seconds
+## Try the hosted gateway
 
 **Option 1: browser, no install.** Start at the [hosted WMCP homepage](https://wmcp.sh/).
 
@@ -56,7 +66,7 @@ Only submit **public** URLs. The hosted service may fetch, cache, or index submi
 
 ## Connect an MCP client
 
-WMCP provides a **real MCP endpoint**, not merely JSON that looks like a tool schema. Encode the URL as base64url, then use the per-URL address format:
+The gateway accepts MCP requests at a per-URL endpoint. Encode the public URL as base64url:
 
     https://wmcp.sh/mcp/u/<base64url-encoded-URL>
 
@@ -135,7 +145,7 @@ This repository also includes a small WebMCP taskboard with real, in-page state�
 
 ~~~sh
 cd examples/browser-demo
-python3 -m http.server 8000
+python3 -m http.server 8000 --bind 127.0.0.1
 ~~~
 
 Open http://localhost:8000. In a supported Chrome/Edge build with WebMCP enabled, compatible browser agents can discover the page's registered tools. On unsupported browsers, the taskboard still works and reports that the native API is unavailable.
@@ -181,7 +191,7 @@ The extension runs automatically on the retail sites listed in its manifest. On 
 
 ## Pricing and hosting
 
-The open-source code is MIT-licensed. The hosted API has an anonymous free-read tier plus [Builder ($39/mo), Pro ($99/mo), and Reseller ($299/mo)](https://wmcp.sh/pricing). Scoped agent-readiness services are offered via [Managed](https://wmcp.sh/managed), starting at $499 for setup; ongoing work is quoted separately.
+The open-source code is MIT-licensed. The hosted API has an anonymous free-read tier and [paid plans](https://wmcp.sh/pricing). See [Managed](https://wmcp.sh/managed) for scoped agent-readiness services.
 
 See [self-hosting](docs/SELF_HOSTING.md) for a deployment you control. Hosted service entitlements and provider OAuth connections are separate from the open-source license.
 
@@ -198,6 +208,6 @@ cargo build --locked --manifest-path tools/wmcp-stats/Cargo.toml
 node --test cli/*.test.mjs
 ~~~
 
-Questions or bugs? [Open an issue](https://github.com/New1Direction/webmcp-anything/issues). If the toolkit saves you time, starring the repository helps more developers find it.
+Report bugs through [GitHub Issues](https://github.com/New1Direction/webmcp-anything/issues). For vulnerabilities, use the [private reporting instructions](SECURITY.md). See the [release acceptance guide](docs/RELEASE_ACCEPTANCE.md) for the manual browser and billing checks.
 
 **License:** [MIT](LICENSE). Not affiliated with browser vendors or the companies whose APIs are referenced.

@@ -1,8 +1,8 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.New1Direction/webmcp-anything",
-  "title": "wmcp.sh - MCP trust oracle + universal adapter",
-  "description": "Independent A-F trust grades for any MCP server, plus a universal URL-to-MCP-tools adapter.",
+  "title": "WMCP MCP server checks",
+  "description": "Inspect an MCP endpoint, grade its observable signals, and check for changes to its tool definitions.",
   "version": "1.0.0",
   "websiteUrl": "https://wmcp.sh",
   "repository": {

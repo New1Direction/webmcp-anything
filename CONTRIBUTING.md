@@ -1,6 +1,15 @@
 # Contributing to WebMCP Anything
 
-Thanks for wanting to make the agentic web bigger. Most contributions land as **new adapters** — code that teaches the system how to turn a specific kind of URL into agent tools. This guide walks through that. Other contributions (bugfixes, docs, the worker itself) are welcome too — same PR process, less ceremony.
+Choose the component you are changing. Run its checks locally and include the commands and results in your pull request.
+
+| Component | Local check from the repository root |
+| --- | --- |
+| Browser SDK and automatic selector | `(cd sdks/effect && npm ci && npm run build)`. CI also exercises the selector in Chrome. |
+| CLI and MCP Doctor action | `cargo build --locked --manifest-path tools/wmcp-stats/Cargo.toml`, then `node --test cli/*.test.mjs actions/mcp-doctor/*.test.mjs` |
+| Hosted Worker | `(cd worker && npm ci && npm run verify)` |
+| URL adapters | `node adapters/_test/run.mjs` |
+
+Report vulnerabilities through [private reporting](SECURITY.md).
 
 ## Quick start (new adapter, 10 minutes)
 
