@@ -23,16 +23,24 @@ WORKLOAD = """async () => {
     inputSchema: {type:'object', properties:{n:{type:'number'}}},
     execute: ({n}) => ({n})
   }, {signal: controllers[i].signal}));
+  const firstStart = performance.now();
   const tools = await ctx.getTools();
+  const firstDiscovery = 1000 * (performance.now() - firstStart);
   if (tools.length !== count) throw Error('Registration count mismatch');
   const handle = tools.find(t => t.name === 'tool_0');
   const discover = await sample(100, () => ctx.getTools());
   const execute = await sample(500, async i => {
     if (JSON.parse(await ctx.executeTool(handle, {n:i})).n !== i) throw Error('Wrong result');
   });
+  const discoverAndRead = await sample(100, async () => {
+    const list = await ctx.getTools();
+    if (list.length !== count || !list.every(tool => tool.inputSchema.properties.n.type === 'number')) {
+      throw Error('Unexpected tool schemas');
+    }
+  });
   controllers.forEach(controller => controller.abort());
   if ((await ctx.getTools()).length) throw Error('Cleanup failed');
-  return {register, discover, execute};
+  return {register, discover, execute, discoverAndRead, firstDiscovery};
 }"""
 
 def main():
