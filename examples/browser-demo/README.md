@@ -62,6 +62,26 @@ The run compares a regular form submission with a native WebMCP call. It then ch
 
 To check a running Worker, pass `--origin http://127.0.0.1:8787` to the same script. It checks the setup page, traverses the demo links, and calls both local-only tools in the Lab. Use this mode with a preview or production origin to verify a deployment.
 
+## Check a complete agent journey
+
+From the repository root, run the taskboard journey with Python Playwright and a WebMCP-capable Chrome executable:
+
+```sh
+python3 -m pip install playwright==1.62.0
+python3 scripts/test-taskboard-affordances.py --journey --chrome /path/to/chrome
+```
+
+The runner serves the fixture on loopback and invokes its registered tools. It lists the two open tasks, cancels a request to complete task 1, and verifies both remain open. It then approves the same request, checks the visible state of both task IDs, and verifies the returned record. GitHub Actions writes each step and the tested runtime to the job summary. No model key is needed.
+
+To run the fallback path, build the [browser SDK](../../sdks/effect/) and append `--polyfill sdks/effect/dist/webmcp.min.js` to the command. This mode disables native WebMCP. To test a modified fixture without editing the demo, pass `--demo-dir /path/to/fixture` pointing to a directory with its own `index.html`.
+
+For example, changing the completion callback in a fixture copy from `completeTask(id)` to `completeTask(2)` produces a nonzero exit and the following diagnostic:
+
+```text
+FAIL  Verify visible task IDs and states after Mark complete
+      Expected #1 Completed, #2 Open. Observed #1 Open, #2 Completed.
+```
+
 ## Testing
 
     cargo build --locked --manifest-path tools/wmcp-stats/Cargo.toml
