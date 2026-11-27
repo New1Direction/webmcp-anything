@@ -1,0 +1,8 @@
+{
+  "name": "Complete only task 1",
+  "tool": "complete_task",
+  "arguments": {"id": 1},
+  "before": {"#list .task:has(#task-number-1) .state": "Open", "#list .task:has(#task-number-2) .state": "Open"},
+  "approval": {"#agent-review[open] #review-approve": "Mark complete"},
+  "after": {"#list .task:has(#task-number-1) .state": "Completed", "#list .task:has(#task-number-2) .state": "Open"}
+}

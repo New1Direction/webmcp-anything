@@ -29,6 +29,12 @@ jobs:
       - name: Taskboard journey with the WMCP browser core
         run: python ../../scripts/test-taskboard-affordances.py --journey --polyfill dist/webmcp.min.js
 
+      - name: Run a configured page journey
+        run: >-
+          python ../../scripts/test-taskboard-affordances.py
+          --journey-config ../../examples/browser-demo/journey.json
+          --polyfill dist/webmcp.min.js
+
   admin-lean:
     name: Admin and selection models (Lean)
     runs-on: ubuntu-24.04

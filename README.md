@@ -12,7 +12,7 @@ Give browser agents tools on your page, check tool contracts before merging chan
 | What you want to do | Where to start |
 | --- | --- |
 | Register tools on your page | [Browser SDK and automatic runtime selection](sdks/effect/README.md#automatic-selection) |
-| Verify a tool call changes the intended task | [Taskboard journey check](examples/browser-demo/README.md#check-a-complete-agent-journey) |
+| Verify a tool call changes the intended task | [Run the taskboard example](examples/browser-demo/README.md#check-a-complete-agent-journey) or [check your own app](examples/browser-demo/README.md#check-your-own-app) |
 | Try a working example locally | [Three-tool taskboard](#live-browser-native-example) |
 | Catch a missing or changed tool in a pull request | [WebMCP Doctor for browser pages](docs/WEBMCP_DOCTOR.md) or [MCP Doctor for HTTP servers](docs/MCP_DOCTOR.md) |
 | Discover tools from a public URL | [Hosted gateway](https://wmcp.sh/) or [read-only CLI quickstart](#try-the-hosted-gateway) |

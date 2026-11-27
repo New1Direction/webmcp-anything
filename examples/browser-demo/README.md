@@ -87,6 +87,31 @@ FAIL  Verify visible task IDs and states after Mark complete
       Expected #1 Completed, #2 Open. Observed #1 Open, #2 Completed.
 ```
 
+## Check your own app
+
+Copy [journey.json](journey.json) and change the tool name, arguments, and CSS selectors. Run it against a local app or a preview you control:
+
+```sh
+uv run scripts/test-taskboard-affordances.py --journey-config my-journey.json --url http://localhost:3000
+```
+
+For a static app, pass `--demo-dir path/to/site` instead of `--url`; the runner starts a loopback server. To try the included example immediately, run:
+
+```sh
+uv run scripts/test-taskboard-affordances.py --journey-config examples/browser-demo/journey.json
+```
+
+| Field | Meaning |
+| --- | --- |
+| `name` | Journey name shown in terminal output and GitHub job summaries |
+| `tool`, `arguments` | Discover one tool by exact name, then invoke it once. Arguments default to an empty object. |
+| `before`, `after` | Required maps of CSS selectors to expected visible text. Each selector should match one element. Include a neighboring row if a change to the wrong record should fail the check. |
+| `approval` | Optional map with one button selector and its expected text. The runner checks the starting state again before clicking. |
+
+For a second example, [counter-journey.json](counter-journey.json) invokes `increment` with an amount of two and verifies that the visible count goes from zero to two. It was exercised against the [W3C polyfill project's counter fixture](https://github.com/w3c-oss/webmcp-polyfill/blob/08e1ee4eed18fd049629b58bc82c2a5cdf589c4b/tests/fixtures/app.js) served locally at `http://127.0.0.1:8793/app`.
+
+Use repeatable test data. The runner opens a fresh browser context and executes the configured action against the target app. A failure exits with status 1 and shows the failed step; invalid configuration exits with status 2.
+
 ## Testing
 
     cargo build --locked --manifest-path tools/wmcp-stats/Cargo.toml
