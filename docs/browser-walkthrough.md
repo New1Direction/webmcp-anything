@@ -42,14 +42,16 @@ The [hosted gateway](API.md) handles a different workflow. An MCP client submits
 
 | Runtime | Gzip bytes | Register one tool (µs) | List 32 tools (µs) | Call and verify (µs) |
 | --- | ---: | ---: | ---: | ---: |
-| WMCP core | 1,146 | 3.28 | 53.32 | 2.60 |
-| W3C polyfill 0.2.0 | 6,926 | 14.92 | 28.32 | 13.93 |
-| Core + Zig registry | 7,345 | 3.52 | 56.27 | 3.15 |
-| Core + Rust registry | 14,386 | 3.75 | 55.75 | 2.89 |
+| WMCP core | 1,264 | 3.20 | 21.47 | 2.21 |
+| W3C polyfill 0.2.0 | 6,926 | 13.28 | 25.40 | 13.04 |
+| Core + Zig registry | 7,474 | 3.44 | 22.37 | 2.84 |
+| Core + Rust registry | 14,513 | 3.75 | 19.92 | 3.26 |
 
-The core had the smallest standalone download and the lowest median registration and execution times. W3C listed 32 tools in about half the core’s time and supports frame discovery. Both Wasm variants share the core’s browser execution path. Neither improved the median for this workload. The selector chooses by required capabilities.
+The core listed 32 tools in **21.47 µs**. Its 12 trial means ranged from 19.65 to 22.80 µs. W3C measured 25.40 µs in the same run. The [earlier run](https://github.com/New1Direction/webmcp-anything/blob/61b00a1/docs/browser-walkthrough.md#runtime-benchmark) measured 53.32 µs for the core and 28.32 µs for W3C. The optimization adds 118 gzip bytes and batches metadata cloning across registrations. Callers still receive fresh handles and independent snapshots on every list.
 
-**Method.** On November 27, 2026, we built the bundles from commit `0830b5f` and ran 12 rotating-order trials per runtime on macOS arm64 in headless Chrome 158.0.8127.88 with native WebMCP disabled. Each trial used a fresh page, one warm-up workload, then 32 registrations, 100 list operations, and 500 verified echo calls. Each timing entry is the median of the 12 per-trial means. Gzip sizes cover the individual self-installing bundles. Startup, selector overhead, network calls, and cross-frame operations were outside the timed workload.
+Rust had the lowest median discovery time in this run. Its trial range overlaps the core’s. Both Wasm variants share the optimized browser discovery path, and the core remains the smallest download. W3C supports frame discovery. The selector chooses by required capabilities.
+
+**Method.** On November 27, 2026, we built the bundles using the runtime from commit `e8d3346` and ran 12 rotating-order trials per runtime on macOS arm64 in headless Chrome 158.0.8127.88 with native WebMCP disabled. Each trial used a fresh page, one warm-up workload, then 32 registrations, 100 list operations, and 500 verified echo calls. Each timing entry is the median of the 12 per-trial means. Gzip sizes cover the individual self-installing bundles. Startup, selector overhead, network calls, and cross-frame operations were outside the timed workload.
 
 [Individual trials, bundle sizes and SHA-256 hashes](visuals/browser-benchmark.json) · [Benchmark harness](../sdks/effect/test/benchmark.py) · [Chart source](visuals/plot.py)
 
