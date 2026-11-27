@@ -177,9 +177,28 @@ def native_checks(page, origin):
     cdp.detach()
 
 
+def polyfill_checks(page, origin):
+    page.goto(origin)
+    expect(page.locator("#status")).to_have_text("3 of 3 agent tools available.")
+    tasks = page.evaluate("""async () => {
+      const ctx = document.modelContext;
+      const tools = await ctx.getTools();
+      const names = tools.map(tool => tool.name).sort();
+      if (names.join() !== "add_task,complete_task,list_tasks") {
+        throw Error("Unexpected tools: " + names.join());
+      }
+      const list = tools.find(tool => tool.name === "list_tasks");
+      const response = JSON.parse(await ctx.executeTool(list));
+      return JSON.parse(response.content[0].text);
+    }""")
+    assert [task["id"] for task in tasks] == [1, 2], tasks
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--chrome", help="Chrome executable with the WebMCP testing API")
+    parser.add_argument("--polyfill", type=Path, metavar="BUNDLE",
+                        help="Run taskboard interoperability checks with a local polyfill bundle")
     args = parser.parse_args()
     with ThreadingHTTPServer(("127.0.0.1", 0), partial(QuietHandler, directory=DEMO)) as server:
         thread = Thread(target=server.serve_forever, daemon=True)
@@ -188,11 +207,21 @@ def main():
         try:
             with sync_playwright() as playwright:
                 flags = ["--enable-features=WebMCP,WebMCPTesting,DevToolsWebMCPSupport"]
+                checks = (keyboard_checks, ax_checks, native_checks)
+                if args.polyfill:
+                    flags = ["--disable-features=WebMCP"]
+                    checks = (polyfill_checks,)
                 with playwright.chromium.launch(executable_path=args.chrome, args=flags) as browser:
                     context = browser.new_context(viewport={"width": 1024, "height": 800})
                     context.route("**/*", lambda route: route.continue_()
                                   if route.request.url.startswith(origin) else route.abort())
-                    for check in (keyboard_checks, ax_checks, native_checks):
+                    if args.polyfill:
+                        probe = context.new_page()
+                        probe.goto(origin)
+                        assert not probe.evaluate("'modelContext' in document"), "Native WebMCP still active"
+                        probe.close()
+                        context.add_init_script(path=args.polyfill)
+                    for check in checks:
                         page = context.new_page()
                         page.set_default_timeout(3000)
                         try:

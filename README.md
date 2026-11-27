@@ -9,6 +9,8 @@ Record the tools Chrome sees on a page, then fail CI when a preview drops or cha
 
 [**Add WebMCP Doctor to CI**](docs/WEBMCP_DOCTOR.md) · [**Try the offline fixture**](tools/doctor-diff/) · [**Explore a public URL**](https://wmcp.sh/)
 
+Build a [page-side browser runtime](sdks/effect/) for single-document tools. Use the [automatic runtime selector](sdks/effect/README.md#automatic-selection) to reuse the browser API or load a fallback for a single page or frames.
+
 ## See a missing tool before it ships
 
 The `doctor web` regression test runs Chrome and reads its native registrations. In the taskboard fixture, the legacy shim hid `list_tasks`. The fixed shim restored it.

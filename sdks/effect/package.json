@@ -1,0 +1,50 @@
+{
+  "name": "@wmcp/browser",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/browser.d.ts",
+      "import": "./dist/browser.js"
+    },
+    "./auto": {
+      "types": "./dist/auto.d.ts",
+      "import": "./dist/auto.js"
+    },
+    "./effect": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./select": {
+      "types": "./dist/select.d.ts",
+      "import": "./dist/select.js"
+    }
+  },
+  "types": "./dist/browser.d.ts",
+  "scripts": {
+    "build": "tsc && esbuild src/auto.ts --bundle --minify --format=iife --outfile=dist/webmcp.min.js && esbuild src/select.ts --bundle --splitting --format=esm --minify --outdir=dist/selector",
+    "build:zig": "zig build-exe experiments/zig/registry.zig -target wasm32-freestanding -O ReleaseSmall -fno-entry -rdynamic -femit-bin=experiments/zig/registry.wasm && esbuild experiments/zig/browser.js --bundle --minify --loader:.wasm=binary --outfile=dist/webmcp-zig.min.js",
+    "build:rust": "rustc experiments/rust/registry.rs --edition=2021 --crate-type=cdylib --target wasm32-unknown-unknown -C opt-level=z -C lto -C panic=abort -C strip=symbols -o experiments/rust/registry.wasm && esbuild experiments/rust/browser.js --bundle --minify --loader:.wasm=binary --outfile=dist/webmcp-rust.min.js"
+  },
+  "dependencies": {
+    "@w3c/webmcp-polyfill": "0.2.0",
+    "webmcp-types": "0.2.0"
+  },
+  "devDependencies": {
+    "effect": "4.1.5",
+    "esbuild": "0.25.12",
+    "typescript": "5.9.3"
+  },
+  "version": "0.1.0",
+  "files": [
+    "dist"
+  ],
+  "peerDependencies": {
+    "effect": "^4.1.5"
+  },
+  "peerDependenciesMeta": {
+    "effect": {
+      "optional": true
+    }
+  }
+}
