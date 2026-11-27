@@ -10,6 +10,7 @@ type Registry = Pick<Map<string, Entry>, "get" | "has" | "set" | "delete"> & {
 export class PageContext extends EventTarget {
   get [Symbol.for("@wmcp/browser/document-only")]() { return true; }
 
+  private discovery?: { entries: Entry[]; metadata: (object | null)[] };
   private handles = new WeakMap<WebMCP.Tool, Entry>();
   ontoolchange: WebMCP.ModelContext["ontoolchange"] = null;
   ontoolactivated: WebMCP.ModelContext["ontoolactivated"] = null;
@@ -34,8 +35,10 @@ export class PageContext extends EventTarget {
     const descriptor = structuredClone({ name, title, description, inputSchema: tool.inputSchema ?? null,
       outputSchema: tool.outputSchema ?? null, annotations: tool.annotations ?? null });
     this.entries.set(name, { descriptor, execute: execute as WebMCP.ToolExecuteCallback<object> });
+    this.discovery = undefined;
     options.signal?.addEventListener("abort", () => {
       this.entries.delete(name);
+      this.discovery = undefined;
       this.dispatchEvent(new Event("toolchange"));
     }, { once: true });
     this.dispatchEvent(new Event("toolchange"));
@@ -43,8 +46,23 @@ export class PageContext extends EventTarget {
 
   async getTools(options: WebMCP.ModelContextGetToolOptions = {}) {
     if (options.fromOrigins?.length) throw new DOMException("Frame discovery is unavailable", "NotSupportedError");
-    return Array.from(this.entries.values(), entry => {
-      const tool = Object.freeze({ ...structuredClone(entry.descriptor), source: window, origin: location.origin });
+    if (!this.discovery) {
+      const entries = Array.from(this.entries.values());
+      const metadata = entries.flatMap(({ descriptor }) => [
+        descriptor.inputSchema, descriptor.outputSchema, descriptor.annotations,
+      ]);
+      this.discovery = { entries, metadata };
+    }
+    // Copy mutable metadata in one operation while preserving aliases within each snapshot.
+    const metadata = structuredClone(this.discovery.metadata);
+    const origin = location.origin;
+    return this.discovery.entries.map((entry, index) => {
+      const { name, title, description } = entry.descriptor;
+      const offset = index * 3;
+      const tool = Object.freeze({
+        name, title, description, inputSchema: metadata[offset], outputSchema: metadata[offset + 1],
+        annotations: metadata[offset + 2], source: window, origin,
+      });
       this.handles.set(tool, entry);
       return tool;
     });

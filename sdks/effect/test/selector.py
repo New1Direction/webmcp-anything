@@ -29,6 +29,26 @@ with ThreadingHTTPServer(("127.0.0.1", 0), partial(SimpleHTTPRequestHandler, dir
             assert [u for u in requests if "/selector/" in u] == [origin + "selector/select.js"]
             page.goto(origin)
             assert page.evaluate(select, "auto") == "core"
+            page.evaluate("""async () => {
+              const ctx = document.modelContext;
+              const registration = new AbortController();
+              const schema = {type: 'object', properties: {n: {type: 'number'}}};
+              const definition = {name: 'echo', description: 'Echo', inputSchema: schema,
+                outputSchema: schema, execute: ({n}) => n};
+              await ctx.registerTool(definition, {signal: registration.signal});
+              const [first] = await ctx.getTools();
+              first.inputSchema.properties.n.type = 'string';
+              const [second] = await ctx.getTools();
+              if (first === second || second.inputSchema.properties.n.type !== 'number' ||
+                  second.inputSchema !== second.outputSchema) throw Error('Invalid metadata snapshot');
+              registration.abort();
+              if ((await ctx.getTools()).length) throw Error('Removed tool still visible');
+              await ctx.registerTool(definition);
+              const stale = await ctx.executeTool(first, {n: 1}).then(() => '', e => e.name);
+              const [replacement] = await ctx.getTools();
+              if (stale !== 'NotFoundError' || await ctx.executeTool(replacement, {n: 1}) !== '1')
+                throw Error('Incorrect handle after re-registration');
+            }""")
             page.goto(origin)
             page.evaluate("""() => new Promise(resolve => {
               const frame = document.createElement('iframe');
