@@ -7,10 +7,43 @@ type Registry = Pick<Map<string, Entry>, "get" | "has" | "set" | "delete"> & {
   values(): Iterable<Entry>;
 };
 
+// Replay shallow copies and their links for ordinary schema graphs. Native cloning
+// handles collections, typed arrays and other structured-clone types.
+function snapshotFactory(metadata: (object | null)[]) {
+  const nodes: object[] = [metadata];
+  const indices = new Map<object, number>([[metadata, 0]]);
+  const links: { parent: number; key: string; child: number }[] = [];
+  for (let parent = 0; parent < nodes.length; parent++) {
+    const node = nodes[parent];
+    if (Object.getPrototypeOf(node) !== Object.prototype && !Array.isArray(node)) {
+      return () => structuredClone(metadata);
+    }
+    // Arrays can carry named enumerable properties that slice() would omit.
+    for (const [key, value] of Object.entries(node)) {
+      if (Array.isArray(node) && (!/^(0|[1-9][0-9]*)$/.test(key) || Number(key) >= node.length)) {
+        return () => structuredClone(metadata);
+      }
+      if (value === null || typeof value !== "object") continue;
+      let child = indices.get(value);
+      if (child === undefined) {
+        child = nodes.length;
+        indices.set(value, child);
+        nodes.push(value);
+      }
+      links.push({ parent, key, child });
+    }
+  }
+  return () => {
+    const copies = nodes.map(node => Array.isArray(node) ? node.slice() : { ...node });
+    for (const { parent, key, child } of links) Reflect.set(copies[parent], key, copies[child]);
+    return copies[0] as (object | null)[];
+  };
+}
+
 export class PageContext extends EventTarget {
   get [Symbol.for("@wmcp/browser/document-only")]() { return true; }
 
-  private discovery?: { entries: Entry[]; metadata: (object | null)[] };
+  private discovery?: { entries: Entry[]; copyMetadata: ReturnType<typeof snapshotFactory> };
   private handles = new WeakMap<WebMCP.Tool, Entry>();
   ontoolchange: WebMCP.ModelContext["ontoolchange"] = null;
   ontoolactivated: WebMCP.ModelContext["ontoolactivated"] = null;
@@ -51,10 +84,9 @@ export class PageContext extends EventTarget {
       const metadata = entries.flatMap(({ descriptor }) => [
         descriptor.inputSchema, descriptor.outputSchema, descriptor.annotations,
       ]);
-      this.discovery = { entries, metadata };
+      this.discovery = { entries, copyMetadata: snapshotFactory(metadata) };
     }
-    // Copy mutable metadata in one operation while preserving aliases within each snapshot.
-    const metadata = structuredClone(this.discovery.metadata);
+    const metadata = this.discovery.copyMetadata();
     const origin = location.origin;
     return this.discovery.entries.map((entry, index) => {
       const { name, title, description } = entry.descriptor;

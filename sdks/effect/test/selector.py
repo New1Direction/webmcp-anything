@@ -49,6 +49,25 @@ with ThreadingHTTPServer(("127.0.0.1", 0), partial(SimpleHTTPRequestHandler, dir
               if (stale !== 'NotFoundError' || await ctx.executeTool(replacement, {n: 1}) !== '1')
                 throw Error('Incorrect handle after re-registration');
             }""")
+            page.evaluate("""async () => {
+              const ctx = document.modelContext;
+              const schema = JSON.parse('{"__proto__":{"marker":1}}');
+              schema.self = schema;
+              schema.list = [schema, , schema];
+              await ctx.registerTool({name:'graph', description:'Graph', inputSchema:schema, execute() {}});
+              const read = async name => (await ctx.getTools()).find(t => t.name === name).inputSchema;
+              const graph = await read('graph');
+              if (graph.self !== graph || graph.list[2] !== graph || 1 in graph.list ||
+                  !Object.hasOwn(graph, '__proto__')) throw Error('Broken graph');
+              graph.__proto__.marker = 2;
+              if ((await read('graph')).__proto__.marker !== 1) throw Error('Shared snapshot');
+              const named = [];
+              named.extra = new Map([['a', 1]]);
+              await ctx.registerTool({name:'special', description:'Special', inputSchema:named, execute() {}});
+              const special = await read('special');
+              special.extra.clear();
+              if ((await read('special')).extra.get('a') !== 1) throw Error('Invalid fallback copy');
+            }""")
             page.goto(origin)
             page.evaluate("""() => new Promise(resolve => {
               const frame = document.createElement('iframe');

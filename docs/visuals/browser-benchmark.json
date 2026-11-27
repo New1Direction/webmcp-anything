@@ -5,69 +5,93 @@
   "timing_unit": "microseconds per operation",
   "bundles": {
     "Browser core": {
-      "bytes": 2915,
-      "gzip_bytes": 1264,
-      "sha256": "8ba841dcd886794074868afe6ad788a391bcfde7ca41eb2df0c13a252fccee32",
+      "bytes": 3500,
+      "gzip_bytes": 1544,
+      "sha256": "f09ad58e4566415af8c3f83d4f81813c67833a6b6e62d0d5f91dac7b3abccdce",
       "trials": [
         {
-          "register": 3.125004470348358,
-          "discover": 19.649999141693115,
-          "execute": 2.0900001525878906
-        },
-        {
-          "register": 3.2812505960464478,
-          "discover": 21.8500018119812,
-          "execute": 2.140000343322754
-        },
-        {
-          "register": 3.4374967217445374,
-          "discover": 21.700000762939453,
-          "execute": 2.1299996376037598
-        },
-        {
-          "register": 2.9687508940696716,
-          "discover": 21.34999990463257,
-          "execute": 2.2100000381469727
-        },
-        {
-          "register": 2.9687508940696716,
-          "discover": 20.899999141693115,
-          "execute": 2.1500000953674316
-        },
-        {
-          "register": 3.2812505960464478,
-          "discover": 22.799999713897705,
-          "execute": 2.320000171661377
+          "register": 2.812497317790985,
+          "discover": 5.300002098083496,
+          "execute": 1.9799995422363281,
+          "discoverAndRead": 8.000001907348633,
+          "firstDiscovery": 49.99995231628418
         },
         {
           "register": 3.4375041723251343,
-          "discover": 21.549999713897705,
-          "execute": 2.2199997901916504
-        },
-        {
-          "register": 3.4374967217445374,
-          "discover": 21.399998664855957,
-          "execute": 2.2300000190734863
-        },
-        {
-          "register": 3.2812505960464478,
-          "discover": 21.34999990463257,
-          "execute": 2.190000057220459
-        },
-        {
-          "register": 2.9687508940696716,
-          "discover": 21.700000762939453,
-          "execute": 2.309999942779541
+          "discover": 5.899999141693115,
+          "execute": 2.3400001525878906,
+          "discoverAndRead": 9.749999046325684,
+          "firstDiscovery": 49.99995231628418
         },
         {
           "register": 3.1249970197677612,
-          "discover": 22.300000190734863,
-          "execute": 2.2800002098083496
+          "discover": 6.6500020027160645,
+          "execute": 2.369999885559082,
+          "discoverAndRead": 11.649999618530273,
+          "firstDiscovery": 59.999942779541016
+        },
+        {
+          "register": 3.1249970197677612,
+          "discover": 6.449999809265137,
+          "execute": 2.2200002670288086,
+          "discoverAndRead": 12.450001239776611,
+          "firstDiscovery": 59.999942779541016
+        },
+        {
+          "register": 3.2812505960464478,
+          "discover": 5.850000381469727,
+          "execute": 2.3199996948242188,
+          "discoverAndRead": 9.500000476837158,
+          "firstDiscovery": 49.99995231628418
+        },
+        {
+          "register": 3.1249970197677612,
+          "discover": 5.999999046325684,
+          "execute": 2.3899998664855957,
+          "discoverAndRead": 9.700000286102295,
+          "firstDiscovery": 55.00006675720215
         },
         {
           "register": 3.125004470348358,
-          "discover": 21.15000009536743,
-          "execute": 2.2899999618530273
+          "discover": 5.850000381469727,
+          "execute": 2.1599998474121094,
+          "discoverAndRead": 9.250001907348633,
+          "firstDiscovery": 55.00006675720215
+        },
+        {
+          "register": 3.593742847442627,
+          "discover": 6.349999904632568,
+          "execute": 2.369999885559082,
+          "discoverAndRead": 11.349999904632568,
+          "firstDiscovery": 70.00017166137695
+        },
+        {
+          "register": 2.812504768371582,
+          "discover": 5.750000476837158,
+          "execute": 2.179999828338623,
+          "discoverAndRead": 9.449999332427979,
+          "firstDiscovery": 50.00019073486328
+        },
+        {
+          "register": 3.90625,
+          "discover": 6.000001430511475,
+          "execute": 2.2699999809265137,
+          "discoverAndRead": 9.600000381469727,
+          "firstDiscovery": 69.99993324279785
+        },
+        {
+          "register": 3.1249970197677612,
+          "discover": 5.999999046325684,
+          "execute": 2.260000228881836,
+          "discoverAndRead": 9.499998092651367,
+          "firstDiscovery": 55.00006675720215
+        },
+        {
+          "register": 3.125004470348358,
+          "discover": 5.950000286102295,
+          "execute": 2.1500000953674316,
+          "discoverAndRead": 9.149999618530273,
+          "firstDiscovery": 59.999942779541016
         }
       ]
     },
@@ -77,198 +101,270 @@
       "sha256": "93b4db481cf395e39f9eb15797f98dc4eba6344ae7b216a1628aa08a54db6dea",
       "trials": [
         {
-          "register": 14.375001192092896,
-          "discover": 25.149998664855957,
-          "execute": 12.389999866485596
-        },
-        {
-          "register": 14.843747019767761,
-          "discover": 25.450000762939453,
-          "execute": 12.450000286102295
-        },
-        {
           "register": 13.750001788139343,
+          "discover": 25.300002098083496,
+          "execute": 12.949999809265137,
+          "discoverAndRead": 24.500000476837158,
+          "firstDiscovery": 29.999971389770508
+        },
+        {
+          "register": 14.218755066394806,
+          "discover": 24.500000476837158,
+          "execute": 12.789999961853027,
+          "discoverAndRead": 24.249999523162842,
+          "firstDiscovery": 49.99995231628418
+        },
+        {
+          "register": 15.156254172325134,
           "discover": 26.25,
-          "execute": 12.5
+          "execute": 13.329999923706055,
+          "discoverAndRead": 25.449998378753662,
+          "firstDiscovery": 24.99985694885254
         },
         {
-          "register": 13.125002384185791,
-          "discover": 25,
-          "execute": 13.070000171661377
-        },
-        {
-          "register": 13.125002384185791,
-          "discover": 25.400002002716064,
-          "execute": 12.809999942779541
+          "register": 14.218755066394806,
+          "discover": 24.95000123977661,
+          "execute": 13.989999771118164,
+          "discoverAndRead": 24.000000953674316,
+          "firstDiscovery": 25.00009536743164
         },
         {
           "register": 12.968748807907104,
-          "discover": 25.150001049041748,
-          "execute": 13.259999752044678
-        },
-        {
-          "register": 13.28124850988388,
-          "discover": 25.400002002716064,
-          "execute": 13.25
-        },
-        {
-          "register": 13.593748211860657,
-          "discover": 25.399999618530273,
-          "execute": 13.079999923706055
-        },
-        {
-          "register": 13.28124850988388,
-          "discover": 25.750000476837158,
-          "execute": 13.309999942779541
-        },
-        {
-          "register": 13.906247913837433,
-          "discover": 25.749998092651367,
-          "execute": 12.84000015258789
-        },
-        {
-          "register": 13.28124850988388,
-          "discover": 25.350000858306885,
-          "execute": 13
+          "discover": 24.550001621246338,
+          "execute": 12.819999694824219,
+          "discoverAndRead": 24.30000066757202,
+          "firstDiscovery": 25.00009536743164
         },
         {
           "register": 12.812502682209015,
-          "discover": 25.999999046325684,
-          "execute": 13.110000133514404
+          "discover": 23.900001049041748,
+          "execute": 12.799999713897705,
+          "discoverAndRead": 25.850000381469727,
+          "firstDiscovery": 24.99985694885254
+        },
+        {
+          "register": 14.687493443489075,
+          "discover": 25.449998378753662,
+          "execute": 13.910000324249268,
+          "discoverAndRead": 26.34999990463257,
+          "firstDiscovery": 25.00009536743164
+        },
+        {
+          "register": 12.656249105930328,
+          "discover": 23.75,
+          "execute": 13.170000076293945,
+          "discoverAndRead": 25.04999876022339,
+          "firstDiscovery": 25.00009536743164
+        },
+        {
+          "register": 12.656249105930328,
+          "discover": 24.050002098083496,
+          "execute": 12.96999979019165,
+          "discoverAndRead": 24.600000381469727,
+          "firstDiscovery": 25.00009536743164
+        },
+        {
+          "register": 16.718752682209015,
+          "discover": 25.900001525878906,
+          "execute": 14,
+          "discoverAndRead": 24.94999885559082,
+          "firstDiscovery": 34.999847412109375
+        },
+        {
+          "register": 12.812495231628418,
+          "discover": 25.199999809265137,
+          "execute": 13.25,
+          "discoverAndRead": 24.29999828338623,
+          "firstDiscovery": 25.00009536743164
+        },
+        {
+          "register": 13.28124850988388,
+          "discover": 25.500001907348633,
+          "execute": 13.320000171661377,
+          "discoverAndRead": 24.099998474121094,
+          "firstDiscovery": 29.999971389770508
         }
       ]
     },
     "Core + Zig": {
-      "bytes": 16918,
-      "gzip_bytes": 7474,
-      "sha256": "0ea200c6f43e53eadcf057a442c9bdc24d73ebc3c9c19f8e0e63cdfbdb549be3",
+      "bytes": 17503,
+      "gzip_bytes": 7764,
+      "sha256": "b365cb12a531f4e6c4185f4a354a16650d60c31b81c7890f37f90e22fd7b4f22",
       "trials": [
         {
           "register": 3.2812505960464478,
-          "discover": 22.100000381469727,
-          "execute": 4.900000095367432
+          "discover": 7.149999141693115,
+          "execute": 4.340000152587891,
+          "discoverAndRead": 9.650001525878906,
+          "firstDiscovery": 59.999942779541016
         },
         {
-          "register": 3.4374967217445374,
-          "discover": 22.40000009536743,
-          "execute": 2.820000171661377
+          "register": 3.90625,
+          "discover": 7.649998664855957,
+          "execute": 2.8499999046325684,
+          "discoverAndRead": 9.749999046325684,
+          "firstDiscovery": 69.99993324279785
         },
         {
-          "register": 4.687495529651642,
-          "discover": 20.749998092651367,
-          "execute": 2.5500001907348633
-        },
-        {
-          "register": 4.374995827674866,
-          "discover": 22.5,
-          "execute": 2.8000001907348633
-        },
-        {
-          "register": 3.4375041723251343,
-          "discover": 23.09999942779541,
-          "execute": 2.8399996757507324
-        },
-        {
-          "register": 3.4375041723251343,
-          "discover": 20.200002193450928,
-          "execute": 2.549999713897705
-        },
-        {
-          "register": 4.0625035762786865,
-          "discover": 22.699999809265137,
-          "execute": 2.8499999046325684
-        },
-        {
-          "register": 3.4374967217445374,
-          "discover": 23.05000066757202,
-          "execute": 2.869999885559082
-        },
-        {
-          "register": 3.4374967217445374,
-          "discover": 22.59999990463257,
-          "execute": 2.7199997901916504
-        },
-        {
-          "register": 3.1249970197677612,
-          "discover": 21.650002002716064,
-          "execute": 2.869999885559082
+          "register": 4.218749701976776,
+          "discover": 7.300000190734863,
+          "execute": 2.7300000190734863,
+          "discoverAndRead": 10,
+          "firstDiscovery": 74.99980926513672
         },
         {
           "register": 2.9687508940696716,
-          "discover": 22.349998950958252,
-          "execute": 2.9499998092651367
+          "discover": 7.149999141693115,
+          "execute": 2.5399999618530273,
+          "discoverAndRead": 8.69999885559082,
+          "firstDiscovery": 60.00018119812012
+        },
+        {
+          "register": 3.4374967217445374,
+          "discover": 7.200000286102295,
+          "execute": 2.7599997520446777,
+          "discoverAndRead": 8.999998569488525,
+          "firstDiscovery": 65.00005722045898
+        },
+        {
+          "register": 3.2812505960464478,
+          "discover": 7.249999046325684,
+          "execute": 2.630000114440918,
+          "discoverAndRead": 9.500000476837158,
+          "firstDiscovery": 59.999942779541016
+        },
+        {
+          "register": 2.812497317790985,
+          "discover": 7.5,
+          "execute": 2.989999771118164,
+          "discoverAndRead": 9.449999332427979,
+          "firstDiscovery": 59.999942779541016
+        },
+        {
+          "register": 3.2812505960464478,
+          "discover": 7.199997901916504,
+          "execute": 2.7800002098083496,
+          "discoverAndRead": 9.249999523162842,
+          "firstDiscovery": 70.00017166137695
+        },
+        {
+          "register": 2.9687508940696716,
+          "discover": 7.200000286102295,
+          "execute": 2.760000228881836,
+          "discoverAndRead": 9.350001811981201,
+          "firstDiscovery": 59.999942779541016
+        },
+        {
+          "register": 3.4374967217445374,
+          "discover": 7.049999237060547,
+          "execute": 2.690000057220459,
+          "discoverAndRead": 9.850001335144043,
+          "firstDiscovery": 65.00005722045898
         },
         {
           "register": 3.1249970197677612,
-          "discover": 21.750001907348633,
-          "execute": 3.1499996185302734
+          "discover": 7.050001621246338,
+          "execute": 2.7300000190734863,
+          "discoverAndRead": 9.34999942779541,
+          "firstDiscovery": 54.99982833862305
+        },
+        {
+          "register": 2.9687508940696716,
+          "discover": 7.200000286102295,
+          "execute": 2.8499999046325684,
+          "discoverAndRead": 8.900001049041748,
+          "firstDiscovery": 55.00006675720215
         }
       ]
     },
     "Core + Rust": {
-      "bytes": 32630,
-      "gzip_bytes": 14513,
-      "sha256": "0145e34b0fa69f4d02365ccc0db372619a165317a2b3c36955b5b12a944570fc",
+      "bytes": 33215,
+      "gzip_bytes": 14816,
+      "sha256": "34ae5b4c82a1fa218e09d75a94cdbb2f257eacc5e026b23350ac30b6ec8c7151",
       "trials": [
         {
-          "register": 3.7499964237213135,
-          "discover": 19.749999046325684,
-          "execute": 3.0799999237060547
-        },
-        {
-          "register": 5.000002682209015,
-          "discover": 20.199999809265137,
-          "execute": 3.3499999046325684
+          "register": 3.593750298023224,
+          "discover": 7.349998950958252,
+          "execute": 2.6700000762939453,
+          "discoverAndRead": 9.449999332427979,
+          "firstDiscovery": 65.00005722045898
         },
         {
           "register": 3.7500038743019104,
-          "discover": 20.750000476837158,
-          "execute": 3.0999999046325684
+          "discover": 7.55000114440918,
+          "execute": 3.0899996757507324,
+          "discoverAndRead": 11.099998950958252,
+          "firstDiscovery": 69.99993324279785
         },
         {
-          "register": 4.06249612569809,
-          "discover": 18.84999990463257,
-          "execute": 2.9800000190734863
-        },
-        {
-          "register": 3.90625,
-          "discover": 20.05000114440918,
-          "execute": 3.330000400543213
-        },
-        {
-          "register": 3.593750298023224,
-          "discover": 19.749999046325684,
-          "execute": 3.1500000953674316
-        },
-        {
-          "register": 3.7499964237213135,
-          "discover": 19.90000009536743,
-          "execute": 3.260000228881836
+          "register": 5.1562488079071045,
+          "discover": 7.350001335144043,
+          "execute": 2.7899999618530273,
+          "discoverAndRead": 9.549999237060547,
+          "firstDiscovery": 80.00016212463379
         },
         {
           "register": 3.4374967217445374,
-          "discover": 20.299999713897705,
-          "execute": 3.179999828338623
+          "discover": 7.400000095367432,
+          "execute": 2.8399996757507324,
+          "discoverAndRead": 9.300000667572021,
+          "firstDiscovery": 60.00018119812012
+        },
+        {
+          "register": 3.2812505960464478,
+          "discover": 7.349998950958252,
+          "execute": 2.9200000762939453,
+          "discoverAndRead": 9.649999141693115,
+          "firstDiscovery": 69.99993324279785
         },
         {
           "register": 3.4375041723251343,
-          "discover": 19.90000009536743,
-          "execute": 3.429999828338623
+          "discover": 7.300000190734863,
+          "execute": 2.6700000762939453,
+          "discoverAndRead": 9.649999141693115,
+          "firstDiscovery": 59.999942779541016
         },
         {
-          "register": 4.218749701976776,
-          "discover": 20.450000762939453,
-          "execute": 3.5099997520446777
-        },
-        {
-          "register": 3.1249970197677612,
-          "discover": 19.94999885559082,
-          "execute": 3.25
+          "register": 3.4375041723251343,
+          "discover": 7.400000095367432,
+          "execute": 2.679999828338623,
+          "discoverAndRead": 10.249998569488525,
+          "firstDiscovery": 59.999942779541016
         },
         {
           "register": 3.593750298023224,
-          "discover": 19.700000286102295,
-          "execute": 3.4700002670288086
+          "discover": 7.999999523162842,
+          "execute": 2.7899999618530273,
+          "discoverAndRead": 9.500000476837158,
+          "firstDiscovery": 65.00005722045898
+        },
+        {
+          "register": 4.375003278255463,
+          "discover": 7.649998664855957,
+          "execute": 2.9600000381469727,
+          "discoverAndRead": 9.549999237060547,
+          "firstDiscovery": 75.00004768371582
+        },
+        {
+          "register": 3.7500038743019104,
+          "discover": 7.649998664855957,
+          "execute": 2.8600001335144043,
+          "discoverAndRead": 9.700000286102295,
+          "firstDiscovery": 59.999942779541016
+        },
+        {
+          "register": 3.90625,
+          "discover": 7.5,
+          "execute": 2.549999713897705,
+          "discoverAndRead": 9.300000667572021,
+          "firstDiscovery": 69.99993324279785
+        },
+        {
+          "register": 3.593750298023224,
+          "discover": 7.55000114440918,
+          "execute": 2.7300000190734863,
+          "discoverAndRead": 9.700000286102295,
+          "firstDiscovery": 64.99981880187988
         }
       ]
     }

@@ -40,18 +40,18 @@ The [hosted gateway](API.md) handles a different workflow. An MCP client submits
 
 ![Four bar charts comparing bundle size, registration, discovery, and execution. Exact values follow.](visuals/browser-benchmark.png)
 
-| Runtime | Gzip bytes | Register one tool (µs) | List 32 tools (µs) | Call and verify (µs) |
-| --- | ---: | ---: | ---: | ---: |
-| WMCP core | 1,264 | 3.20 | 21.47 | 2.21 |
-| W3C polyfill 0.2.0 | 6,926 | 13.28 | 25.40 | 13.04 |
-| Core + Zig registry | 7,474 | 3.44 | 22.37 | 2.84 |
-| Core + Rust registry | 14,513 | 3.75 | 19.92 | 3.26 |
+| Runtime | Gzip bytes | Register one (µs) | First list of 32 (µs) | Repeated list of 32 (µs) | List and read 32 schemas (µs) | Echo call (µs) |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| WMCP core | 1,544 | 3.13 | 55 | 5.97 | 9.55 | 2.27 |
+| W3C polyfill 0.2.0 | 6,926 | 13.52 | 25 | 25.08 | 24.55 | 13.21 |
+| Core + Zig registry | 7,764 | 3.28 | 60 | 7.20 | 9.40 | 2.76 |
+| Core + Rust registry | 14,816 | 3.59 | 65 | 7.45 | 9.60 | 2.79 |
 
-The core listed 32 tools in **21.47 µs**. Its 12 trial means ranged from 19.65 to 22.80 µs. W3C measured 25.40 µs in the same run. The [earlier run](https://github.com/New1Direction/webmcp-anything/blob/61b00a1/docs/browser-walkthrough.md#runtime-benchmark) measured 53.32 µs for the core and 28.32 µs for W3C. The optimization adds 118 gzip bytes and batches metadata cloning across registrations. Callers still receive fresh handles and independent snapshots on every list.
+The core listed 32 tools in **5.97 µs** on repeated discovery (12 trial means, 5.30–6.65 µs). The [previous core](https://github.com/New1Direction/webmcp-anything/blob/9cdaa15/docs/browser-walkthrough.md#runtime-benchmark) measured 21.47 µs. Reading the nested input type on all 32 returned handles took 9.55 µs including discovery. Each returned schema is independently mutable.
 
-Rust had the lowest median discovery time in this run. Its trial range overlaps the core’s. Both Wasm variants share the optimized browser discovery path, and the core remains the smallest download. W3C supports frame discovery. The selector chooses by required capabilities.
+The first discovery after registration builds a reusable plan for copying ordinary schema objects and arrays. It took 55 µs for the core and 25 µs for W3C. A change in registrations invalidates the plan. Metadata containing other browser-supported types uses native structured cloning. The optimization adds 280 gzip bytes to the core. The chart shows warmed timings; the table also includes the first list after registration.
 
-**Method.** On November 27, 2026, we built the bundles using the runtime from commit `e8d3346` and ran 12 rotating-order trials per runtime on macOS arm64 in headless Chrome 158.0.8127.88 with native WebMCP disabled. Each trial used a fresh page, one warm-up workload, then 32 registrations, 100 list operations, and 500 verified echo calls. Each timing entry is the median of the 12 per-trial means. Gzip sizes cover the individual self-installing bundles. Startup, selector overhead, network calls, and cross-frame operations were outside the timed workload.
+**Method.** On November 27, 2026, we built the bundles using the runtime from commit `0bdf1cf` and ran 12 rotating-order trials per runtime on macOS arm64 in headless Chrome 158.0.8127.88 with native WebMCP disabled. Each trial used a fresh page, one warm-up workload, then 32 registrations, one first list, 100 repeated lists, 500 verified echo calls, and 100 lists with a schema read on every handle. The first-list figure is the median of 12 single measurements. Other timing entries are medians of 12 per-trial means. Gzip sizes cover the individual self-installing bundles. Startup, selector overhead, network calls, and cross-frame operations were outside the timed workload.
 
 [Individual trials, bundle sizes and SHA-256 hashes](visuals/browser-benchmark.json) · [Benchmark harness](../sdks/effect/test/benchmark.py) · [Chart source](visuals/plot.py)
 
