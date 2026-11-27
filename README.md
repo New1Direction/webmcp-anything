@@ -21,6 +21,25 @@ The browser SDK builds from source and supports local tarball installation.
 The hosted gateway is a separate service. Its discovery results depend on the
 URL and adapter, and executing a tool requires authorization.
 
+## How the browser runtime works
+
+```mermaid
+flowchart TD
+    A["Page calls selectWebMCP()"] --> B{"Existing WebMCP context?"}
+    B -->|Yes| C{"Registration, discovery and execution available?"}
+    C -->|Yes| D["Use existing context"]
+    C -->|No| E["Report missing API"]
+    B -->|No| F{"Frame support needed?"}
+    F -->|Yes| G["Load W3C polyfill"]
+    F -->|No| H["Load small WMCP core"]
+```
+
+On HTTPS or localhost, the selector checks the page before loading a fallback. By default it detects frames present at selection time. Set the scope explicitly for unrelated embeds or frames created later. The page then registers its callbacks on the selected context.
+
+[See a tool call change a task in the browser](docs/browser-walkthrough.md) and [compare the four runtime builds](docs/browser-walkthrough.md#runtime-benchmark).
+
+![Measured standalone bundle sizes and browser operation timings for WMCP, W3C, Zig, and Rust](docs/visuals/browser-benchmark.png)
+
 ## See a missing tool before it ships
 
 The `doctor web` regression test runs Chrome and reads its native registrations. In the taskboard fixture, the legacy shim hid `list_tasks`. The fixed shim restored it.
@@ -150,7 +169,11 @@ python3 -m http.server 8000 --bind 127.0.0.1
 
 Open http://localhost:8000. In a supported Chrome/Edge build with WebMCP enabled, compatible browser agents can discover the page's registered tools. On unsupported browsers, the taskboard still works and reports that the native API is unavailable.
 
-[View the runnable example and instructions](examples/browser-demo/README.md).
+When a caller asks to complete a task, the demo shows the specific change and waits for the user to approve it.
+
+![Taskboard confirmation for a request to complete the first task](docs/visuals/task-review.png)
+
+[Run the example](examples/browser-demo/README.md) or [follow the call from registration to confirmation](docs/browser-walkthrough.md).
 
 ## Independent MCP trust reports
 
