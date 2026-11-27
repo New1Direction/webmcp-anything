@@ -1,0 +1,33 @@
+name: WebMCP Journey
+description: Invoke a page tool and verify the expected visible state in Chrome.
+inputs:
+  config:
+    description: Journey JSON file in the calling checkout.
+    required: true
+  url:
+    description: Running test application URL. Supply url or site-dir.
+    required: false
+  site-dir:
+    description: Static test site directory to serve on loopback. Supply site-dir or url.
+    required: false
+  chrome:
+    description: Optional Chrome executable path.
+    required: false
+  polyfill:
+    description: Optional local browser bundle to test with native WebMCP disabled.
+    required: false
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: "3.13"
+    - name: Check configured WebMCP journey
+      shell: bash
+      env:
+        JOURNEY_CONFIG: ${{ inputs.config }}
+        JOURNEY_URL: ${{ inputs.url }}
+        JOURNEY_SITE: ${{ inputs.site-dir }}
+        JOURNEY_CHROME: ${{ inputs.chrome }}
+        JOURNEY_POLYFILL: ${{ inputs.polyfill }}
+      run: bash "$GITHUB_ACTION_PATH/run.sh"

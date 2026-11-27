@@ -89,6 +89,8 @@ FAIL  Verify visible task IDs and states after Mark complete
 
 ## Check your own app
 
+To run on pull requests, use the [WebMCP Journey GitHub Action](../../actions/webmcp-journey/).
+
 Copy [journey.json](journey.json) and change the tool name, arguments, and CSS selectors. Run it against a local app or a preview you control:
 
 ```sh
