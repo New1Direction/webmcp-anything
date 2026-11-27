@@ -107,7 +107,7 @@ uv run scripts/test-taskboard-affordances.py --journey-config examples/browser-d
 | --- | --- |
 | `name` | Journey name shown in terminal output and GitHub job summaries |
 | `tool`, `arguments` | Discover one tool by exact name, then invoke it once. Arguments default to an empty object. |
-| `before`, `after` | Required maps of CSS selectors to expected visible text. Each selector should match one element. Include a neighboring row if a change to the wrong record should fail the check. |
+| `before`, `after` | Required maps of CSS selectors to expected visible text or a form value (for example, `{"#amount": {"value": "2"}}`). Each selector should match one element. Include a neighboring row if a change to the wrong record should fail the check. |
 | `approval` | Optional map with one button selector and its expected text. The runner checks the starting state again before clicking. |
 
 For a second example, [counter-journey.json](counter-journey.json) invokes `increment` with an amount of two and verifies that the visible count goes from zero to two. It was exercised against the [W3C polyfill project's counter fixture](https://github.com/w3c-oss/webmcp-polyfill/blob/08e1ee4eed18fd049629b58bc82c2a5cdf589c4b/tests/fixtures/app.js) served locally at `http://127.0.0.1:8793/app`.
