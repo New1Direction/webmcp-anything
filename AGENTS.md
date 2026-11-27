@@ -8,7 +8,7 @@ This file is the single source of truth. If `CLAUDE.md`, `.cursorrules`, or any 
 
 ## 1. What this project is
 
-**wmcp.sh** — a hosted Cloudflare Worker that turns any URL into agent-callable MCP tools, plus a Chrome extension, plus open-source adapters, plus SDKs.
+**wmcp.sh** — a hosted Cloudflare Worker that discovers candidate MCP tools from supported public URLs, plus a Chrome extension, plus open-source adapters, plus SDKs.
 
 - Production worker: `https://wmcp.sh`
 - Public repo: `https://github.com/New1Direction/webmcp-anything`
@@ -35,6 +35,7 @@ This file is the single source of truth. If `CLAUDE.md`, `.cursorrules`, or any 
 │   └── tsconfig.json
 ├── extension/               Chrome MV3 extension (cache-back path)
 ├── sdks/
+│   ├── effect/              Page-side browser SDK, runtime selector and benchmarks
 │   ├── python/wmcp/         Python SDK source
 │   └── javascript/src/      TypeScript SDK (@wmcp/sdk)
 ├── tools/wmcp-admin/        Rust CLI for directory seeding and coverage operations
