@@ -308,9 +308,13 @@ def load_config(path):
         if field == "approval" and field not in config:
             continue
         checks = config.get(field)
-        if (not isinstance(checks, dict) or not checks or
-                any(not selector.strip() or not isinstance(text, str) for selector, text in checks.items())):
-            raise ValueError(f"{path}: {field} must map CSS selectors to expected visible text")
+        if not isinstance(checks, dict) or not checks:
+            raise ValueError(f"{path}: {field} requires a nonempty selector map")
+        for selector, expected in checks.items():
+            value_check = (field != "approval" and isinstance(expected, dict)
+                           and set(expected) == {"value"} and isinstance(expected["value"], str))
+            if not selector.strip() or not (isinstance(expected, str) or value_check):
+                raise ValueError(f"{path}: invalid {field} assertion for {selector!r}")
         if field == "approval" and len(checks) != 1:
             raise ValueError(f"{path}: approval must specify exactly one button")
     return config
@@ -318,10 +322,13 @@ def load_config(path):
 
 def configured_journey(page, url, config, runtime):
     def verify(checks):
-        for selector, text in checks.items():
+        for selector, expected in checks.items():
             element = page.locator("css=" + selector)
             expect(element).to_be_visible()
-            expect(element).to_have_text(text)
+            if isinstance(expected, dict):
+                expect(element).to_have_value(expected["value"])
+            else:
+                expect(element).to_have_text(expected)
 
     with journey_report(config["name"], runtime) as step:
         with step("Open page and check starting state"):
