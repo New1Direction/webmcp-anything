@@ -1,0 +1,7 @@
+{
+  "name": "Increment the visible counter",
+  "tool": "increment",
+  "arguments": {"amount": 2},
+  "before": {"#status": "registered", "#count": "0"},
+  "after": {"#count": "2"}
+}

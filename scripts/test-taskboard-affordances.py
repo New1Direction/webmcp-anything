@@ -8,11 +8,12 @@
 import argparse
 import json
 import os
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from threading import Thread
+from urllib.parse import urlsplit
 
 from playwright.sync_api import Error as PlaywrightError, expect, sync_playwright
 
@@ -200,8 +201,9 @@ def polyfill_checks(page, origin):
     assert [task["id"] for task in tasks] == [1, 2], tasks
 
 
-def taskboard_journey(page, origin, runtime):
-    report = [f"Complete task 1 after approval | {runtime}"]
+@contextmanager
+def journey_report(name, runtime):
+    report = [f"{name} | {runtime}"]
 
     @contextmanager
     def step(label):
@@ -212,6 +214,16 @@ def taskboard_journey(page, origin, runtime):
             raise SystemExit(1) from error
         report.append(f"PASS  {label}")
 
+    try:
+        yield step
+    finally:
+        print("\n".join(report), flush=True)
+        if summary := os.environ.get("GITHUB_STEP_SUMMARY"):
+            with open(summary, "a", encoding="utf-8") as stream:
+                stream.write("### WebMCP journey\n\n```text\n" + "\n".join(report) + "\n```\n\n")
+
+
+def taskboard_journey(page, origin, runtime):
     def start_call(name, arguments):
         page.evaluate("""({name, args}) => {
           const context = document.modelContext;
@@ -243,7 +255,7 @@ def taskboard_journey(page, origin, runtime):
 
     initial = [["#1", "Open"], ["#2", "Open"]]
     completed = [["#1", "Completed"], ["#2", "Open"]]
-    try:
+    with journey_report("Complete task 1 after approval", runtime) as step:
         with step("Discover list_tasks and complete_task"):
             page.goto(origin)
             expect(page.locator("#status")).to_have_text("3 of 3 agent tools available.")
@@ -280,11 +292,73 @@ def taskboard_journey(page, origin, runtime):
         with step("Verify the approved tool returned completed task #1"):
             if result != {**tasks[0], "done": True}:
                 raise AssertionError(f"Unexpected result: {result}")
-    finally:
-        print("\n".join(report), flush=True)
-        if summary := os.environ.get("GITHUB_STEP_SUMMARY"):
-            with open(summary, "a", encoding="utf-8") as stream:
-                stream.write("### Taskboard journey\n\n```text\n" + "\n".join(report) + "\n```\n\n")
+
+
+def load_config(path):
+    config = json.loads(path.read_text(encoding="utf-8"))
+    fields = {"name", "tool", "arguments", "before", "approval", "after"}
+    if not isinstance(config, dict) or config.keys() - fields:
+        raise ValueError(f"{path}: expected a journey object with fields {', '.join(sorted(fields))}")
+    for field in ("name", "tool"):
+        if not isinstance(config.get(field), str) or not config[field].strip():
+            raise ValueError(f"{path}: {field} must be nonempty text")
+    if not isinstance(config.get("arguments", {}), dict):
+        raise ValueError(f"{path}: arguments must be an object")
+    for field in ("before", "after", "approval"):
+        if field == "approval" and field not in config:
+            continue
+        checks = config.get(field)
+        if (not isinstance(checks, dict) or not checks or
+                any(not selector.strip() or not isinstance(text, str) for selector, text in checks.items())):
+            raise ValueError(f"{path}: {field} must map CSS selectors to expected visible text")
+        if field == "approval" and len(checks) != 1:
+            raise ValueError(f"{path}: approval must specify exactly one button")
+    return config
+
+
+def configured_journey(page, url, config, runtime):
+    def verify(checks):
+        for selector, text in checks.items():
+            element = page.locator("css=" + selector)
+            expect(element).to_be_visible()
+            expect(element).to_have_text(text)
+
+    with journey_report(config["name"], runtime) as step:
+        with step("Open page and check starting state"):
+            page.goto(url, wait_until="domcontentloaded")
+            verify(config["before"])
+        with step(f"Discover {config['tool']}"):
+            # Keep the discovered handle in the page. Native tool handles cannot
+            # be serialized to Python and reconstructed for execution.
+            tool = page.wait_for_function("""async name => {
+              const ctx = document.modelContext;
+              if (!ctx) return false;
+              const matches = (await ctx.getTools()).filter(t => t.name === name);
+              if (matches.length > 1) throw Error('Ambiguous tool name: ' + name);
+              return matches[0] || false;
+            }""", arg=config["tool"], timeout=5000)
+        with step("Invoke tool"):
+            pending = page.evaluate_handle("""([tool, args]) => {
+              const signal = AbortSignal.timeout(15000);
+              const state = {done:false, error:null};
+              document.modelContext.executeTool(tool, args, {signal}).then(
+                () => { state.done = true; },
+                e => { state.error = String(e); state.done = true; });
+              return state;
+            }""", [tool, config.get("arguments", {})])
+        if "approval" in config:
+            with step("Check approval button and approve"):
+                verify(config["approval"])
+                verify(config["before"])
+                selector, = config["approval"]
+                page.locator("css=" + selector).click()
+        with step("Check tool completed"):
+            page.wait_for_function("state => state.done", arg=pending, timeout=15000)
+            error = pending.evaluate("state => state.error")
+            if error is not None:
+                raise AssertionError(error)
+        with step("Check visible result"):
+            verify(config["after"])
 
 
 def launch_browser(chromium, executable, flags):
@@ -304,53 +378,81 @@ def launch_browser(chromium, executable, flags):
                          "(or set WMCP_CHROME).") from None
 
 
-def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--chrome", default=os.environ.get("WMCP_CHROME"),
-                        help="Chrome executable (also accepts WMCP_CHROME)")
-    parser.add_argument("--polyfill", type=Path, metavar="BUNDLE",
-                        help="Run taskboard interoperability checks with a local polyfill bundle")
-    parser.add_argument("--journey", action="store_true", help="Run the completion and cancellation journey")
-    parser.add_argument("--demo-dir", type=Path, default=DEMO, help="Local taskboard fixture directory")
-    args = parser.parse_args()
-    with ThreadingHTTPServer(("127.0.0.1", 0), partial(QuietHandler, directory=args.demo_dir)) as server:
+@contextmanager
+def fixture_origin(directory):
+    with ThreadingHTTPServer(("127.0.0.1", 0), partial(QuietHandler, directory=directory)) as server:
         thread = Thread(target=server.serve_forever, daemon=True)
         thread.start()
         origin = f"http://127.0.0.1:{server.server_port}/"
         try:
-            with sync_playwright() as playwright:
-                flags = ["--enable-features=WebMCP,WebMCPTesting,DevToolsWebMCPSupport"]
-                checks = (keyboard_checks, ax_checks, native_checks)
-                if args.polyfill:
-                    flags = ["--disable-features=WebMCP"]
-                    checks = (polyfill_checks,)
-                with launch_browser(playwright.chromium, args.chrome, flags) as browser:
-                    context = browser.new_context(viewport={"width": 1024, "height": 800})
-                    context.route("**/*", lambda route: route.continue_()
-                                  if route.request.url.startswith(origin) else route.abort())
-                    if args.polyfill:
-                        probe = context.new_page()
-                        probe.goto(origin)
-                        assert not probe.evaluate("'modelContext' in document"), "Native WebMCP still active"
-                        probe.close()
-                        context.add_init_script(path=args.polyfill)
-                    if args.journey:
-                        page = context.new_page()
-                        page.set_default_timeout(5000)
-                        runtime = args.polyfill.name if args.polyfill else "Native WebMCP"
-                        taskboard_journey(page, origin, f"{runtime} (Chrome {browser.version})")
-                        return
-                    for check in checks:
-                        page = context.new_page()
-                        page.set_default_timeout(3000)
-                        try:
-                            check(page, origin)
-                            print(f"PASS {check.__name__} ({browser.version})")
-                        finally:
-                            page.close()
+            yield origin
         finally:
             server.shutdown()
             thread.join()
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__, epilog="Example: uv run %(prog)s "
+                                     "--journey-config examples/browser-demo/journey.json")
+    parser.add_argument("--chrome", default=os.environ.get("WMCP_CHROME"),
+                        help="Chrome executable (also accepts WMCP_CHROME)")
+    parser.add_argument("--polyfill", type=Path, metavar="BUNDLE",
+                        help="Run taskboard interoperability checks with a local polyfill bundle")
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--journey-config", type=Path, help="JSON file describing a tool call and UI assertions")
+    parser.add_argument("--url", help="Running application page (default: serve --demo-dir locally)")
+    mode.add_argument("--journey", action="store_true", help="Run the completion and cancellation journey")
+    parser.add_argument("--demo-dir", type=Path, default=DEMO, help="Local taskboard fixture directory")
+    args = parser.parse_args()
+    if args.url and not args.journey_config:
+        parser.error("--url requires --journey-config")
+    if args.url:
+        target = urlsplit(args.url)
+        if target.scheme not in ("http", "https") or not target.hostname:
+            parser.error("--url must be an HTTP or HTTPS page")
+    config = None
+    if args.journey_config:
+        try:
+            config = load_config(args.journey_config)
+        except (OSError, ValueError) as error:
+            parser.error(str(error))
+    with (nullcontext(args.url) if args.url else fixture_origin(args.demo_dir)) as origin:
+        with sync_playwright() as playwright:
+            flags = ["--enable-features=WebMCP,WebMCPTesting,DevToolsWebMCPSupport"]
+            checks = (keyboard_checks, ax_checks, native_checks)
+            if args.polyfill:
+                flags = ["--disable-features=WebMCP"]
+                checks = (polyfill_checks,)
+            with launch_browser(playwright.chromium, args.chrome, flags) as browser:
+                context = browser.new_context(viewport={"width": 1024, "height": 800})
+                if not args.url:
+                    context.route("**/*", lambda route: route.continue_()
+                              if route.request.url.startswith(origin) else route.abort())
+                if args.polyfill:
+                    probe = context.new_page()
+                    probe.route("**/*", lambda route: route.fulfill(content_type="text/html", body="<title>Probe</title>"))
+                    probe.goto(origin)
+                    assert not probe.evaluate("'modelContext' in document"), "Native WebMCP still active"
+                    probe.close()
+                    context.add_init_script(path=args.polyfill)
+                if args.journey or config:
+                    page = context.new_page()
+                    page.set_default_timeout(5000)
+                    runtime = args.polyfill.name if args.polyfill else ("Page WebMCP" if args.url or config else "Native WebMCP")
+                    label = f"{runtime} (Chrome {browser.version})"
+                    if config:
+                        configured_journey(page, origin, config, label)
+                    else:
+                        taskboard_journey(page, origin, label)
+                    return
+                for check in checks:
+                    page = context.new_page()
+                    page.set_default_timeout(3000)
+                    try:
+                        check(page, origin)
+                        print(f"PASS {check.__name__} ({browser.version})")
+                    finally:
+                        page.close()
 
 
 if __name__ == "__main__":
